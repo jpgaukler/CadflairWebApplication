@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <assemblyIdentity name="SiloAutomationPlugin" version="1.0.0.0"></assemblyIdentity>
+  <clrClass clsid="{36a1d82b-0a25-4e34-b527-9966b7f6e966}" progid="SiloAutomationPlugin.PluginServer" threadingModel="Both" name="SiloAutomationPlugin.PluginServer"></clrClass>
+  <file name="SiloAutomationPlugin.dll" hashalg="SHA1"></file>
+</assembly>

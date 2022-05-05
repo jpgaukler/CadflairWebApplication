@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DresserAutomationPlugin", "DresserAutomationPlugin\DresserAutomationPlugin.csproj", "{A29CDEBB-76B9-4FFB-B3E5-78AEE8D35A94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiloAutomationPlugin", "SiloAutomationPlugin\SiloAutomationPlugin.csproj", "{9F3D8955-3C2A-4625-B0A9-2C9F14A1038F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairWebApplication", "CadflairWebApplication\CadflairWebApplication.csproj", "{80EC7B4B-722D-4854-8EA0-9E00D7C0224E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A29CDEBB-76B9-4FFB-B3E5-78AEE8D35A94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A29CDEBB-76B9-4FFB-B3E5-78AEE8D35A94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A29CDEBB-76B9-4FFB-B3E5-78AEE8D35A94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A29CDEBB-76B9-4FFB-B3E5-78AEE8D35A94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F3D8955-3C2A-4625-B0A9-2C9F14A1038F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F3D8955-3C2A-4625-B0A9-2C9F14A1038F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F3D8955-3C2A-4625-B0A9-2C9F14A1038F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F3D8955-3C2A-4625-B0A9-2C9F14A1038F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80EC7B4B-722D-4854-8EA0-9E00D7C0224E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80EC7B4B-722D-4854-8EA0-9E00D7C0224E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80EC7B4B-722D-4854-8EA0-9E00D7C0224E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80EC7B4B-722D-4854-8EA0-9E00D7C0224E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A39BD543-21C8-4A68-ABDD-D204D0B834EC}
+	EndGlobalSection
+EndGlobal

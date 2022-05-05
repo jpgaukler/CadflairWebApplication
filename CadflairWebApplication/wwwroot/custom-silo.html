@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Configure Custom Silo</title>
+    <link rel="shortcut icon" href="https://github.com/Autodesk-Forge/learn.forge.viewhubmodels/raw/master/img/favicon.ico">
+
+    <!-- Common packages: jQuery -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Autodesk Forge Viewer files -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" type="text/css">
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+
+    <!-- .NET SignalR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/3.1.7/signalr.min.js"></script>
+
+    <!--script for this page-->
+    <script type="text/javascript" src="../js/configurator.js"></script>
+
+    <!-- styles for this page -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" />
+    <link rel="stylesheet" type="text/css" href="../css/nav.css" />
+    <link rel="stylesheet" type="text/css" href="../css/footer.css" />
+    <link rel="stylesheet" type="text/css" href="../css/configurator.css" />
+</head>
+
+<body>
+    <div id="nav-placeholder"></div>
+    <div id="main-grid">
+        <div id="sidebar-container">
+            <!-- Silo Dimension -->
+            <div id="param-container">
+                <div class="param-group">
+                    <div class="param-group-header">
+                        <h1>Silo Dimensions:</h1>
+                        <div class="chevron expanded"></div>
+                    </div>
+                    <div class="param-group-panel expanded">
+                        <div class="input-group">
+                            <label for="innerDiam">Inner Diameter:</label>
+                            <select class="combobox" id="innerDiam">
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                            </select>
+                            <div class="units-label">ft</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="siloHeight">Silo Height:</label>
+                            <select class="combobox" id="siloHeight">
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
+                                <option value="35">35</option>
+                                <option value="40">40</option>
+                            </select>
+                            <div class="units-label">ft</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="coneAngle">Cone Angle:</label>
+                            <select class="combobox" id="coneAngle">
+                                <option value="45">45</option>
+                                <option value="50">50</option>
+                                <option value="55">55</option>
+                                <option value="60">60</option>
+                                <option value="65">65</option>
+                                <option value="70">70</option>
+                            </select>
+                            <div class="units-label">deg</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="outletDiam">Outlet Diameter:</label>
+                            <select class="combobox" id="outletDiam">
+                                <option value="8">8</option>
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                            </select>
+                            <div class="units-label">in</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="dischargeHeight">Discharge Height:</label>
+                            <input class="textbox" type="number" pattern="[0-9]*" id="dischargeHeight" placeholder="Enter height">
+                            <div class="units-label">in</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="ladderAngle">Ladder Location:</label>
+                            <input class="textbox" type="number" pattern="[0-9]*" id="ladderAngle" placeholder="Enter angle">
+                            <div class="units-label">deg</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="param-group">
+                    <div class="param-group-header">
+                        <h1>Silo Dimensions:</h1>
+                        <div class="chevron"></div>
+                    </div>
+                    <div class="param-group-panel">
+                        <div class="input-group">
+                            <label for="innerDiam">Inner Diameter:</label>
+                            <select class="combobox" id="innerDiam">
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                            </select>
+                            <div class="units-label">ft</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="siloHeight">Silo Height:</label>
+                            <select class="combobox" id="siloHeight">
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
+                                <option value="35">35</option>
+                                <option value="40">40</option>
+                            </select>
+                            <div class="units-label">ft</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="coneAngle">Cone Angle:</label>
+                            <select class="combobox" id="coneAngle">
+                                <option value="45">45</option>
+                                <option value="50">50</option>
+                                <option value="55">55</option>
+                                <option value="60">60</option>
+                                <option value="65">65</option>
+                                <option value="70">70</option>
+                            </select>
+                            <div class="units-label">deg</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="outletDiam">Outlet Diameter:</label>
+                            <select class="combobox" id="outletDiam">
+                                <option value="8">8</option>
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                            </select>
+                            <div class="units-label">in</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="dischargeHeight">Discharge Height:</label>
+                            <input class="textbox" type="number" pattern="[0-9]*" id="dischargeHeight" placeholder="Enter height">
+                            <div class="units-label">in</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="ladderAngle">Ladder Location:</label>
+                            <input class="textbox" type="number" pattern="[0-9]*" id="ladderAngle" placeholder="Enter angle">
+                            <div class="units-label">deg</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="param-group">
+                    <div class="param-group-header">
+                        <h1>Silo Dimensions:</h1>
+                        <div class="chevron"></div>
+                    </div>
+                    <div class="param-group-panel">
+                        <div class="input-group">
+                            <label for="innerDiam">Inner Diameter:</label>
+                            <select class="combobox" id="innerDiam">
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                            </select>
+                            <div class="units-label">ft</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="siloHeight">Silo Height:</label>
+                            <select class="combobox" id="siloHeight">
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
+                                <option value="35">35</option>
+                                <option value="40">40</option>
+                            </select>
+                            <div class="units-label">ft</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="coneAngle">Cone Angle:</label>
+                            <select class="combobox" id="coneAngle">
+                                <option value="45">45</option>
+                                <option value="50">50</option>
+                                <option value="55">55</option>
+                                <option value="60">60</option>
+                                <option value="65">65</option>
+                                <option value="70">70</option>
+                            </select>
+                            <div class="units-label">deg</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="outletDiam">Outlet Diameter:</label>
+                            <select class="combobox" id="outletDiam">
+                                <option value="8">8</option>
+                                <option value="10">10</option>
+                                <option value="12">12</option>
+                                <option value="14">14</option>
+                                <option value="16">16</option>
+                                <option value="18">18</option>
+                                <option value="20">20</option>
+                            </select>
+                            <div class="units-label">in</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="dischargeHeight">Discharge Height:</label>
+                            <input class="textbox" type="number" pattern="[0-9]*" id="dischargeHeight" placeholder="Enter height">
+                            <div class="units-label">in</div>
+                        </div>
+                        <div class="input-group">
+                            <label for="ladderAngle">Ladder Location:</label>
+                            <input class="textbox" type="number" pattern="[0-9]*" id="ladderAngle" placeholder="Enter angle">
+                            <div class="units-label">deg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="button-container">
+                <button id="submitWorkitem">Generate Model</button>
+                <button id="pdfButton" class="disabled">Download PDF</button>
+                <button id="stepButton" class="disabled">Download STEP</button>
+                <button id="iptButton" class="disabled">Download IPT</button>
+            </div>
+        </div>
+        <div id="viewer-container">
+            <div id="forgeViewer"></div>
+            <div id="loader">
+                <div class="spinner"></div>
+                <div id="loader-message">Please wait...</div>
+            </div>
+        </div>
+    </div>
+    <div id="footer-placeholder"></div>
+</body>
+
+</html>
+
+

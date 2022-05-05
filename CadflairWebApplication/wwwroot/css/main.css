@@ -1,0 +1,18 @@
+﻿/*html, body {
+    min-height: 100vh;
+}*/
+
+:root {
+    --pure-white: #ffffff;
+    --primary-dark: #292929;
+    --primary-medium: #808080;
+    --primary-light: #b9b9b9;
+    --primary-accent: #50C0FF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+

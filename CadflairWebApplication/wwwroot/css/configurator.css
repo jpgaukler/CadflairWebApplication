@@ -1,0 +1,303 @@
+﻿/*#region page sizing, variables, etc. */
+
+:root {
+    --pure-white: #ffffff;
+    --primary-dark: #292929;
+    --primary-medium: #808080;
+    --primary-medlight: #a0a0a0;
+    --primary-light: #b9b9b9;
+    --primary-accent: #50C0FF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: fixed;
+    font-family: 'Poppins', sans-serif;
+}
+
+nav{
+    position: initial;
+}
+
+/*#endregion */
+
+
+/*#region nav ribbon */
+
+.nav-container{
+    width: 100%;
+}
+
+.nav-links{
+    padding-right: 2em;
+}
+
+.cadflair-logo{
+    height: 2.5em;
+    padding: 4px 0px;
+}
+
+.flair-text{
+    fill: var(--pure-white);
+}
+
+/*#endregion */
+
+/*#region layout */
+
+#main-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    overflow-y: hidden;
+}
+
+#sidebar-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--primary-medium);
+    overflow-y: hidden;
+}
+
+#viewer-container {
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+/*#endregion */
+
+/*#region param groups*/
+
+#param-container{
+    overflow-y: hidden;
+    /*overflow-y: scroll;*/
+}
+
+/*    .param-container::-webkit-scrollbar {
+        display: none;
+    }*/
+
+.param-group {
+    border-bottom: 1px solid black;
+}
+
+    .param-group.expanded {
+        /*border-bottom: none;*/
+    }
+
+.param-group-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em 1em;
+    cursor: pointer;
+}
+
+    .param-group-header:hover {
+        background-color: var(--primary-medlight);
+    }
+
+    .param-group-header > h1 {
+        font-size: 1.2rem;
+        font-weight: 900;
+        text-align: left;
+    }
+
+.chevron {
+    width: 0px;
+    height: 0px;
+    border-top: 13px solid black;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    transition: 0.3s ease;
+}
+
+.chevron.expanded {
+    transform: rotate(180deg);
+    transition: 200ms ease;
+}
+
+.param-group-panel {
+    background-color: var(--primary-medlight);
+    visibility: hidden;
+    /*opacity: 0;*/
+    max-height: 0;
+    padding: 0;
+    transition: 200ms linear;
+}
+
+.param-group-panel.expanded {
+    visibility: initial;
+    /*opacity: 1;*/
+    padding: 0.25em 0px;
+    max-height: 1000px;
+}
+
+/*#endregion */
+
+
+
+/*#region input types */
+
+.input-group {
+    display: grid;
+    padding: .35em 2em;
+    text-align: left;
+}
+
+    .input-group > label {
+        font-size: 1rem;
+    }
+
+.units-label {
+    padding: 0px 0.5ch;
+    text-align: left;
+    font-size: 1rem;
+}
+
+.combobox-group{
+    grid-template-columns: 50% 1fr;
+}
+
+.combobox {
+    width: 100%;
+    border-radius: 4px;
+    border-width: 1px;
+    background: var(--pure-white);
+}
+
+.textbox-group{
+    grid-template-columns: 40% 50% 1fr;
+}
+
+.textbox {
+    width: 100%;
+    border-radius: 4px;
+    border-width: 1px;
+    background: var(--pure-white);
+}
+
+
+.radio-group{
+    grid-template-columns: 35%  1fr;
+}
+
+.radio-options{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+    input[type="radio"] + label {
+        flex-grow: 1;
+        cursor: pointer;
+        margin: 0px 0.25em;
+        padding: 0.4em 0px;
+        text-align: center;
+        border-radius: 4px;
+        color: var(--primary-light);
+        background: var(--primary-dark);
+        box-shadow: var(--primary-dark) 4px 4px 7px;
+    }
+
+input[type=radio]:checked + label {
+    color: var(--primary-dark);
+    background-color: var(--primary-accent);
+}
+
+/*#endregion */
+
+
+/* #region buttons */
+
+#button-container {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+}
+
+button {
+    color: var(--primary-accent);
+    background: var(--primary-dark);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0.4em 0em;
+    margin: 0.25em 0.5em;
+}
+
+    button:hover {
+        color: var(--primary-dark);
+        background: var(--primary-accent);
+    }
+
+.disabled {
+    pointer-events: none;
+    filter: grayscale(100%);
+    opacity: 0.65;
+}
+
+/*#endregion */
+
+
+/*#region forge viewer  */
+
+#forgeViewer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--primary-medium);
+    padding: 0.5em 0.7em;
+    border-radius: 5px;
+    box-shadow: var(--primary-dark) 4px 4px 7px;
+}
+
+#loaderMessage {
+    padding-top: .7em;
+}
+
+.spinner {
+    width: 35px;
+    height: 35px;
+    border: 5px solid var(--primary-accent);
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/*#endregion */

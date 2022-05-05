@@ -1,0 +1,30 @@
+﻿/*#region page sizing, variables, etc. */
+
+/*:root {
+    --pure-white: #ffffff;
+    --primary-dark: #543701;
+    --primary-medium: #d5ac6f;
+    --primary-medlight: #ffd89d;
+    --primary-light: #fff7e0;
+    --primary-accent: #ffffff;
+}*/
+
+body {
+    /*font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;*/
+}
+
+/*#endregion */
+
+
+/*#region mobile layout */
+
+/*#endregion */
+
+/*#region desktop layout */
+
+@media only screen and (min-width: 1200px) {
+}
+
+
+/*#endregion */
+
