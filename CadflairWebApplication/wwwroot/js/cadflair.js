@@ -1,14 +1,18 @@
 ﻿$(document).ready(function () {
-    $("#nav-placeholder").load("nav.html");
-    $("#footer-placeholder").load("footer.html");
-    $('#collapse-sidebar').bind('click', toggleSidebar);
-    $('.param-group-header').bind('click', toggleParamGroup);
+    $("#nav-placeholder").load("html/nav.html");
+    $("#footer-placeholder").load("html/footer.html");
+    $("#param-container").load("html/custom-dresser.html", bindUIEvents);
     $('#loader').hide();
-    $('#pdfButton').bind('click', openFile);
-    $('#iamButton').bind('click', openFile);
 });
 
 //#region UI elements
+
+function bindUIEvents() {
+    $('#collapse-sidebar').bind('click', toggleSidebar);
+    $('.param-group-header').bind('click', toggleParamGroup);
+    $('#pdfButton').bind('click', openFile);
+    $('#iamButton').bind('click', openFile);
+}
 
 function toggleParamGroup()
 {
@@ -92,7 +96,7 @@ async function submitWorkItem(endpoint, formData) {
 
     showLoader('Connecting to server...');
 
-    if (connection == null) {
+    if (connection == null || connection.state == 'Disconnected'){
         await startConnection();
     }
 

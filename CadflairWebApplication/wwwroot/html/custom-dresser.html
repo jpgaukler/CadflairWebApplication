@@ -1,0 +1,96 @@
+﻿<!--Overall Dims-->
+<div class="param-group">
+    <div class="param-group-header">
+        <h1>Dresser Dimensions:</h1>
+        <div class="chevron expanded"></div>
+    </div>
+    <div class="param-group-panel expanded">
+        <div class="input-group textbox-group">
+            <label for="dresserHeight">Height:</label>
+            <input class="textbox" type="number" pattern="[0-9]*" id="dresserHeight" placeholder="Enter desired height">
+            <div class="units-label">in</div>
+        </div>
+        <div class="input-group textbox-group">
+            <label for="dresserWidth" class="dimension-label">Width:</label>
+            <input class="textbox" type="number" pattern="[0-9]*" id="dresserWidth" placeholder="Enter desired width">
+            <div class="units-label">in</div>
+        </div>
+        <div class="input-group textbox-group">
+            <label for="dresserDepth">Depth:</label>
+            <input class="textbox" type="number" pattern="[0-9]*" id="dresserDepth" placeholder="Enter desired depth">
+            <div class="units-label">in</div>
+        </div>
+        <div class="input-group textbox-group">
+            <label for="legExposure">Leg Height:</label>
+            <input class="textbox" type="number" pattern="[0-9]*" id="legExposure" placeholder="Enter leg length">
+            <div class="units-label">in</div>
+        </div>
+    </div>
+</div>
+<!-- Drawer dims-->
+<div class="param-group">
+    <div class="param-group-header">
+        <h1>Drawer Layout:</h1>
+        <div class="chevron"></div>
+    </div>
+    <div class="param-group-panel">
+        <div class="input-group radio-group">
+            <label for="drawerRows">Rows:</label>
+            <div class="radio-options">
+                <input type="radio" name="drawerRows" id="rows1" value="1" /><label for="rows1">1</label>
+                <input type="radio" name="drawerRows" id="rows2" value="2" checked="checked" /><label for="rows2">2</label>
+                <input type="radio" name="drawerRows" id="rows3" value="3" /><label for="rows3">3</label>
+                <input type="radio" name="drawerRows" id="rows4" value="4" /><label for="rows4">4</label>
+                <input type="radio" name="drawerRows" id="rows5" value="5" /><label for="rows5">5</label>
+            </div>
+        </div>
+        <div class="input-group radio-group">
+            <label for="drawerColumns">Columns:</label>
+            <div class="radio-options">
+                <input type="radio" name="drawerColumns" id="columns1" value="1" /><label for="columns1">1</label>
+                <input type="radio" name="drawerColumns" id="columns2" value="2" checked="checked" /><label for="columns2">2</label>
+                <input type="radio" name="drawerColumns" id="columns3" value="3" /><label for="columns3">3</label>
+                <input type="radio" name="drawerColumns" id="columns4" value="4" /><label for="columns4">4</label>
+                <input type="radio" name="drawerColumns" id="columns5" value="5" /><label for="columns5">5</label>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Finish and style -->
+<div class="param-group">
+    <div class="param-group-header">
+        <h1>Finish and Style:</h1>
+        <div class="chevron"></div>
+    </div>
+    <div class="param-group-panel">
+        <div class="input-group combobox-group">
+            <!--might need to add name attribute to the label for form input to work-->
+            <label for="finishDropdown">Finish:</label>
+            <select class="combobox" id="finishDropdown">
+                <option value="Light Birch">Light Birch</option>
+                <option value="Matte Gray">Matte Gray</option>
+                <option value="Matte White">Matte White</option>
+                <option value="Stained Oak">Stained Oak</option>
+            </select>
+            <div class="units-label"></div>
+        </div>
+        <div class="input-group combobox-group">
+            <label for="handleDropdown">Handle:</label>
+            <select class="combobox" id="handleDropdown">
+                <option value="Round Knob">Round Knob</option>
+                <option value="Bin Pull">Bin Pull</option>
+                <option value="Square Handle">Square Handle</option>
+            </select>
+            <div class="units-label"></div>
+        </div>
+        <div class="input-group combobox-group">
+            <label for="edgeDropdown">Edge Style:</label>
+            <select class="combobox" id="edgeDropdown">
+                <option value="Square">Square</option>
+                <option value="Round">Round</option>
+                <!--<option value="Elegant">Elegant</option>-->
+            </select>
+            <div class="units-label"></div>
+        </div>
+    </div>
+</div>

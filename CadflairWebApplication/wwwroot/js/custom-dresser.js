@@ -61,39 +61,3 @@ function createDresserModel() {
 
     submitWorkItem('api/forge/designautomation/workitems/createdressermodel', formData);
 }
-
-
-//var connection = null;
-//var connectionId = null;
-
-//async function startConnection() {
-//    connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/designautomation").build();
-
-//    connection.on('onComplete', function (message) {
-//        console.log(message);
-//    });
-
-//    connection.on('downloadZip', function (url) {
-//        console.log('Download inventor files here: ' + url);
-//    }); 
-
-//    connection.on('downloadPdf', function (url) {
-//        console.log('Download drawing Pdf here: ' + url);
-//        toggleDownloadPdf(url);
-//    }); 
-
-//    connection.on('translationComplete', function (urn) {
-//        workItemRunning = false;
-//        launchViewer(urn);
-//    });
-
-//    try {
-//        await connection.start();
-//        console.log('Signal R connected');
-//        connectionId = await connection.invoke('getConnectionId')
-//        console.log('connectionId: ' + connectionId);       
-//    } catch (err) {
-//        console.log(err);
-//    }
-//}
-
