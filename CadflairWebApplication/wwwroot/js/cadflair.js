@@ -1,7 +1,5 @@
 ﻿$(document).ready(function () {
-    $("#nav-placeholder").load("html/nav.html");
-    $("#footer-placeholder").load("html/footer.html");
-    $("#param-container").load("html/custom-dresser.html", bindUIEvents);
+    $("#param-container").load('custom-dresser.html', bindUIEvents);
     $('#loader').hide();
 });
 
