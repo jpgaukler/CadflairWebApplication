@@ -1,32 +1,51 @@
 ﻿$(document).ready(function () {
     $("#param-container").load('custom-dresser.html', bindUIEvents);
+
+    //initialize UI
     $('#loader').hide();
+    $('#review-section').hide();
+    $('#settings-section').hide();
+    $('#contact-section').hide();
 });
 
 //#region UI elements
 
 function bindUIEvents() {
-    $('#collapse-sidebar').bind('click', toggleSidebar);
+    //nav buttons
+    $('#nav-createButton').bind('click', { id: '#create-section' }, showSection);
+    $('#nav-reviewButton').bind('click', { id: '#review-section' }, showSection);
+    $('#nav-settingsButton').bind('click', { id: '#settings-section' }, showSection);
+    $('#nav-contactButton').bind('click', { id: '#contact-section' }, showSection);
+
+    //create buttons
     $('.param-group-header').bind('click', toggleParamGroup);
     $('#pdfButton').bind('click', openFile);
     $('#iamButton').bind('click', openFile);
+    //$('#collapse-sidebar').bind('click', toggleSidebar);
 }
 
-function toggleParamGroup()
-{
+function showSection(event) {
+    $('section').each(function() {
+        $(this).hide();
+    });
+
+    $(event.data.id).show();
+}
+
+function toggleParamGroup() {
     $(this).next().toggleClass('expanded');
     $(this).children('.chevron').toggleClass('expanded');
 }
 
-function toggleSidebar()
-{
-    $('#sidebar-container').toggleClass('hide-sidebar');
-}
+//function toggleSidebar()
+//{
+//    $('#sidebar-container').toggleClass('hide-sidebar');
+//}
 
 function showLoader(message) {
+    $('#loaderMessage').text(message);
     $('#forgeViewer').hide();
     $('#loader').show();
-    $('#loaderMessage').text(message);
 }
 
 function openFile() {
@@ -94,7 +113,7 @@ async function submitWorkItem(endpoint, formData) {
 
     showLoader('Connecting to server...');
 
-    if (connection == null || connection.state == 'Disconnected'){
+    if (connection == null || connection.state == 'Disconnected') {
         await startConnection();
     }
 
