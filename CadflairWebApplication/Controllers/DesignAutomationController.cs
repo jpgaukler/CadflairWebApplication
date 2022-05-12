@@ -90,7 +90,7 @@ namespace Forge.Controllers
         /// Start a new workitem to create a dresser model
         /// </summary>
         [HttpPost]
-        [Route("api/forge/designautomation/workitems/createdressermodel")]
+        [Route("configurator/api/forge/designautomation/workitems/createdressermodel")]
         public async Task<IActionResult> CreateDresserModel([FromForm] WorkItemInputs inputs)
         {
             try

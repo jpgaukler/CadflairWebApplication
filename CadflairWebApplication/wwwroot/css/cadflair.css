@@ -321,3 +321,6 @@ button {
 
 /*#endregion */
 
+.footer{
+    background: var(--primary-dark);
+}

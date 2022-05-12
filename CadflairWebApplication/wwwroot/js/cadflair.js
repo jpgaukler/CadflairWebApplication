@@ -14,6 +14,7 @@ function bindUIEvents() {
     //nav buttons
     $('#nav-createButton').bind('click', { id: '#create-section' }, showSection);
     $('#nav-reviewButton').bind('click', { id: '#review-section' }, showSection);
+    $('#nav-reviewButton').bind('click', getBuckets);
     $('#nav-settingsButton').bind('click', { id: '#settings-section' }, showSection);
     $('#nav-contactButton').bind('click', { id: '#contact-section' }, showSection);
 
@@ -82,7 +83,6 @@ async function startConnection() {
     connection.on('onProgress', (message) => { console.log(message) });
     connection.on('translationRequested', () => showLoader('Generating preview...'));
     connection.on('translationComplete', launchViewer);
-
     connection.on('workItemComplete', (status) => {
         console.log(status);
         workItemRunning = false;
@@ -144,6 +144,24 @@ async function submitWorkItem(endpoint, formData) {
                 currentBucketKey = res.outputBucketKey;
                 launchViewer(res.urn);
             }
+        }
+    });
+}
+
+async function getBuckets() {
+    console.log('Getting buckets...');
+
+    $.ajax({
+        url: 'api/forge/oss/buckets',
+        type: 'GET',
+        success: function (buckets) {
+            console.log(buckets);
+            buckets.each(function () {
+                var template = document.getElementById('reviewBucketTemplate');
+                var bucket = template.content.cloneNode(true);
+
+                document.getElementById('review-section').appendChild(bucket);
+            })
         }
     });
 }

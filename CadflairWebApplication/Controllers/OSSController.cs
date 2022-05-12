@@ -1,6 +1,7 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,40 +10,52 @@ namespace Forge.Controllers
     [ApiController]
     public class OSSController : ControllerBase
     {
+        /// <summary>
+        /// Return list of buckets 
+        /// </summary>
+        [HttpGet]
+        [Route("configurator/api/forge/oss/buckets")]
+        public async Task<dynamic> GetBucketsAsync(int limit, string startAt)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                // in this case, let's return all buckets
+                BucketsApi appBuckets = new BucketsApi();
+                appBuckets.Configuration.AccessToken = oauth.access_token;
+
+                // to simplify, let's return only the first 100 buckets
+                dynamic buckets = await appBuckets.GetBucketsAsync("US", 100);
+                return buckets.items;
+
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
         ///// <summary>
-        ///// Return list of buckets (id=#) or list of objects (id=bucketKey)
+        ///// Return list of objects in a bucket
         ///// </summary>
         //[HttpGet]
         //[Route("api/forge/oss/buckets")]
-        //public async Task<IList<TreeNode>> GetOSSAsync([FromQuery] string id)
+        //public async Task<IList<TreeNode>> GetObjectsAsync(string bucketKey)
         //{
         //    dynamic oauth = await OAuthController.GetInternalAsync();
 
-        //    if (id == "#") // root
-        //    {
-        //        // in this case, let's return all buckets
-        //        BucketsApi appBckets = new BucketsApi();
-        //        appBckets.Configuration.AccessToken = oauth.access_token;
+        //    // as we have the id (bucketKey), let's return all 
+        //    ObjectsApi objects = new ObjectsApi();
+        //    objects.Configuration.AccessToken = oauth.access_token;
+        //    var objectsList = objects.GetObjects(bucketKey);
 
-        //        // to simplify, let's return only the first 100 buckets
-        //        dynamic buckets = await appBckets.GetBucketsAsync("US", 100);
-        //        foreach (KeyValuePair<string, dynamic> bucket in new DynamicDictionaryItems(buckets.items))
-        //        {
-        //            nodes.Add(new TreeNode(bucket.Value.bucketKey, bucket.Value.bucketKey.Replace(ClientId + "-", string.Empty), "bucket", true));
-        //        }
-        //    }
-        //    else
+        //    foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
         //    {
-        //        // as we have the id (bucketKey), let's return all 
-        //        ObjectsApi objects = new ObjectsApi();
-        //        objects.Configuration.AccessToken = oauth.access_token;
-        //        var objectsList = objects.GetObjects(id);
-        //        foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
-        //        {
-        //            nodes.Add(new TreeNode(Base64Encode((string)objInfo.Value.objectId),
-        //              objInfo.Value.objectKey, "object", false));
-        //        }
+        //        nodes.Add(new TreeNode(Base64Encode((string)objInfo.Value.objectId),
+        //          objInfo.Value.objectKey, "object", false));
         //    }
+
         //    return nodes;
         //}
 
@@ -89,7 +102,7 @@ namespace Forge.Controllers
             {
                 return null;
             }
-           
+
         }
 
         /// <summary>
