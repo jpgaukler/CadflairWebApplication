@@ -25,7 +25,6 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" />
     <link rel="stylesheet" type="text/css" href="../css/footer.css" />
     <link rel="stylesheet" type="text/css" href="../css/cadflair.css" />
-
 </head>
 
 <body>
@@ -50,24 +49,24 @@
                 </g>
             </svg>
         </a>
-        <div class="nav-buttons">
-            <div id="nav-createButton" class="nav-button">Create</div>
-            <div id="nav-reviewButton" class="nav-button">Review</div>
-            <div id="nav-settingsButton" class="nav-button">Settings</div>
-            <div id="nav-contactButton" class="nav-button">Contact Us</div>
+        <div id="navButtons">
+            <div id="navCreateButton" class="nav-button">Create</div>
+            <div id="navReviewButton" class="nav-button">Review</div>
+            <div id="navSettingsButton" class="nav-button">Settings</div>
+            <div id="navContactButton" class="nav-button">Contact Us</div>
         </div>
     </nav>
-    <section id="create-section">
-        <div id="sidebar-container">
-            <div id="param-container"></div>
-            <div id="button-container">
+    <section id="createSection">
+        <div id="sidebarContainer">
+            <div id="paramContainer"></div>
+            <div id="buttonContainer">
                 <button id="submitWorkitem">Generate Model</button>
                 <button id="pdfButton" class="disabled">Download PDF</button>
                 <button id="stepButton" class="disabled">Download STEP</button>
                 <button id="iamButton" class="disabled">Download IAM</button>
             </div>
         </div>
-        <div id="viewer-container">
+        <div id="viewerContainer">
             <div id="forgeViewer"></div>
             <div id="loader">
                 <div class="spinner"></div>
@@ -75,17 +74,22 @@
             </div>
         </div>
     </section>
-    <section id="review-section">
-        <div>review</div>
-        <template id="reviewBucketTemplate">
-            <h1 class="bucket-header">Bucket Key</h1>
-            <h3 class="bucket-create-date">Date created</h3>
+    <section id="reviewSection">
+        <template id="bucketTemplate">
+            <div class="bucket">
+                <h1 class="key">Bucket Key</h1>
+                <h3 class="create-date">Date created</h3>
+                <h3 class="policy-key">Policy Key</h3>
+                <img class="delete-bucket-icon" src="images/delete-icon.svg" alt="delete" />
+            </div>
         </template>
+        <div id="bucketList"></div>
+        <div>Details shown here</div>
     </section>
-    <section id="settings-section">
+    <section id="settingsSection">
         <div>settings</div>
     </section>
-    <section id="contact-section">
+    <section id="contactSection">
         <div>contact</div>
     </section>
     <footer>FOOTER</footer>

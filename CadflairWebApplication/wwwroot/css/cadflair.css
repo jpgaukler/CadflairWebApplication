@@ -52,7 +52,7 @@ nav {
 }
 
 
-.nav-buttons {
+#navButtons {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -63,11 +63,12 @@ nav {
     font-size: 1.25em;
     color: var(--pure-white);
     padding: 0.5em 1em;
+    border-radius: 0.5em;
 }
 
 .nav-button:hover {
     color: var(--primary-accent);
-    background: var(--primary-light);
+    background: var(--primary-medium);
 }
 
 
@@ -75,13 +76,13 @@ nav {
 
 /*#region create-section */
 
-#create-section {
+#createSection {
     display: grid;
     grid-template-columns: 350px 1fr;
     overflow-y: hidden;
 }
 
-#sidebar-container {
+#sidebarContainer {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -89,7 +90,7 @@ nav {
     overflow-y: hidden;
 }
 
-#viewer-container {
+#viewerContainer {
     background: var(--primary-light);
     display: flex;
     align-items: center;
@@ -100,7 +101,7 @@ nav {
 
 /*#region param groups*/
 
-#param-container{
+#paramContainer{
     overflow-y: hidden;
     /*overflow-y: scroll;*/
 }
@@ -246,7 +247,7 @@ input[type=radio]:checked + label {
 
 /* #region buttons */
 
-#button-container {
+#buttonContainer {
     display: flex;
     flex-direction: column;
     margin-top: 0.25em;
@@ -292,7 +293,7 @@ button {
     align-items: center;
     background: var(--primary-medium);
     padding: 0.5em 0.7em;
-    border-radius: 5px;
+    border-radius: 4px;
     box-shadow: var(--primary-dark) 4px 4px 7px;
 }
 
@@ -324,3 +325,38 @@ button {
 .footer{
     background: var(--primary-dark);
 }
+
+
+/*#region review section */
+
+#reviewSection {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    overflow-y: hidden;
+}
+
+#bucketList {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--primary-medium);
+    overflow-y: scroll;
+}
+
+.bucket{
+    background: var(--primary-light);
+    border-radius: 4px;
+    /*box-shadow: var(--primary-dark) 4px 4px 7px;*/
+    margin: 0.25em 0.5em;
+    padding: 0.5em 0.5em;
+    position: relative;
+}
+
+.delete-bucket-icon{
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 1em;
+}
+
+/*#endregion */

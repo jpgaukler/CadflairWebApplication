@@ -1,6 +1,7 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,8 +15,8 @@ namespace Forge.Controllers
         /// Return list of buckets 
         /// </summary>
         [HttpGet]
-        [Route("configurator/api/forge/oss/buckets")]
-        public async Task<dynamic> GetBucketsAsync(int limit, string startAt)
+        [Route("api/forge/oss/buckets")]
+        public async Task<IActionResult> GetBucketsAsync(string startAt)
         {
             try
             {
@@ -27,37 +28,99 @@ namespace Forge.Controllers
 
                 // to simplify, let's return only the first 100 buckets
                 dynamic buckets = await appBuckets.GetBucketsAsync("US", 100);
-                return buckets.items;
+                
+                //format buckets into viewable format
+                List<Bucket> bucketsList = new List<Bucket>();
+                foreach (KeyValuePair<string, dynamic> item in new DynamicDictionaryItems(buckets.items))
+                {
+                    string bucketKey = item.Value.bucketKey;
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(item.Value.createdDate);
+                    string createdDate = dateTimeOffset.Date.ToShortDateString(); 
+                    string policyKey = item.Value.policyKey;
 
+                    //do not return the base model bucket, so that it does not accidentally get deleted
+                    if (bucketKey.Contains("basemodel")) continue;
+
+                    Bucket bucket = new Bucket(bucketKey, null, createdDate, null, policyKey);
+                    bucketsList.Add(bucket);
+                }
+
+                return Ok(new { Buckets = bucketsList });
             }
             catch (Exception ex)
             {
-                return ex.ToString();
+                return BadRequest(ex.ToString());
+            }
+        }
+
+        /// <summary>
+        /// Delete a bucket from OSS
+        /// </summary>
+        /// <param name="bucketKey"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("api/forge/oss/buckets/delete")]
+        public async Task<IActionResult> DeleteBucketAsync(string bucketKey)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                BucketsApi appBuckets = new BucketsApi();
+                appBuckets.Configuration.AccessToken = oauth.access_token;
+                appBuckets.DeleteBucket(bucketKey);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
             }
         }
 
         ///// <summary>
-        ///// Return list of objects in a bucket
+        ///// Model data for bucket view used on GetBucketsASync
         ///// </summary>
-        //[HttpGet]
-        //[Route("api/forge/oss/buckets")]
-        //public async Task<IList<TreeNode>> GetObjectsAsync(string bucketKey)
+        //public class BucketInfo
         //{
-        //    dynamic oauth = await OAuthController.GetInternalAsync();
-
-        //    // as we have the id (bucketKey), let's return all 
-        //    ObjectsApi objects = new ObjectsApi();
-        //    objects.Configuration.AccessToken = oauth.access_token;
-        //    var objectsList = objects.GetObjects(bucketKey);
-
-        //    foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objectsList.items))
-        //    {
-        //        nodes.Add(new TreeNode(Base64Encode((string)objInfo.Value.objectId),
-        //          objInfo.Value.objectKey, "object", false));
-        //    }
-
-        //    return nodes;
+        //    public string bucketKey { get; set; }
+        //    public long createdDate { get; set; }
         //}
+
+        /// <summary>
+        /// Return list of objects in a bucket
+        /// </summary>
+        [HttpGet]
+        [Route("api/forge/oss/objects")]
+        public async Task<IActionResult> GetObjectsAsync(string bucketKey)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                // as we have the id (bucketKey), let's return all 
+                ObjectsApi objectsApi = new ObjectsApi();
+                objectsApi.Configuration.AccessToken = oauth.access_token;
+                dynamic objects = objectsApi.GetObjects(bucketKey);
+
+                //format buckets into viewable format
+                List<ObjectDetails> objectsList = new List<ObjectDetails>();
+                foreach (KeyValuePair<string, dynamic> objInfo in new DynamicDictionaryItems(objects.items))
+                {
+                    string urn = Base64Encode((string)objInfo.Value.objectId);
+                    string key = objInfo.Value.objectKey;
+
+                    ObjectDetails objectDetails = new ObjectDetails(bucketKey, urn, key);
+                    objectsList.Add(objectDetails);
+                }
+
+                return Ok(new { Objects = objectsList });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
 
         /// <summary>
         /// Return urn of an object within a bucket

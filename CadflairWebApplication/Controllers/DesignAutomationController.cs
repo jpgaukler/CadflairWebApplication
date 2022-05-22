@@ -90,7 +90,7 @@ namespace Forge.Controllers
         /// Start a new workitem to create a dresser model
         /// </summary>
         [HttpPost]
-        [Route("configurator/api/forge/designautomation/workitems/createdressermodel")]
+        [Route("api/forge/designautomation/workitems/createdressermodel")]
         public async Task<IActionResult> CreateDresserModel([FromForm] WorkItemInputs inputs)
         {
             try
@@ -247,7 +247,7 @@ namespace Forge.Controllers
                 };
 
                 // prepare workitem
-                string callbackUrl = string.Format("{0}/api/forge/callback/createdressermodel?id={1}&outputBucketKey={2}&outputIamName={3}&rootFileName={4}&outputPdfName={5}", OAuthController.GetAppSetting("FORGE_CALLBACK_URL"), inputs.connectionId, outputBucketKey, outputIamName, pathInZip, outputPdfName);
+                string callbackUrl = string.Format("{0}/api/forge/designautomation/workitems/callback?id={1}&outputBucketKey={2}&outputIamName={3}&rootFileName={4}&outputPdfName={5}", OAuthController.GetAppSetting("FORGE_CALLBACK_URL"), inputs.connectionId, outputBucketKey, outputIamName, pathInZip, outputPdfName);
                 WorkItem workItemSpec = new WorkItem()
                 {
                     ActivityId = "jgaukler.CreateDresserModel+v1",
@@ -275,11 +275,11 @@ namespace Forge.Controllers
         }
 
         /// <summary>
-        /// Callback from Design Automation Workitem (onProgress or onComplete) for creating the 3D dresser model
+        /// Callback from Design Automation Workitem (onProgress or onComplete) 
         /// </summary>
         [HttpPost]
-        [Route("/api/forge/callback/createdressermodel")]
-        public async Task<IActionResult> CreateDresserModel_OnCallback(string id, string outputBucketKey, string outputIamName, string rootFileName, string outputPdfName, [FromBody] dynamic body)
+        [Route("api/forge/designautomation/workitems/callback")]
+        public async Task<IActionResult> Workitem_OnCallback(string id, string outputBucketKey, string outputIamName, string rootFileName, string outputPdfName, [FromBody] dynamic body)
         {
             try
             {

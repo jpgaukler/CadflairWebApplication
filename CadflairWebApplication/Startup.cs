@@ -33,7 +33,7 @@ namespace CadflairWebApplication
             app.UseRouting();
             app.UseEndpoints(routes =>
             {
-                routes.MapHub<Forge.Controllers.DesignAutomationHub>("/api/signalr/designautomation");
+                routes.MapHub<Forge.Controllers.DesignAutomationHub>("api/signalr/designautomation");
             });
         }
     }

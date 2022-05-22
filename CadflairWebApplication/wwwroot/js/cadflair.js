@@ -1,22 +1,22 @@
 ﻿$(document).ready(function () {
-    $("#param-container").load('custom-dresser.html', bindUIEvents);
+    $("#paramContainer").load('configurator/custom-dresser.html', bindUIEvents);
 
     //initialize UI
     $('#loader').hide();
-    $('#review-section').hide();
-    $('#settings-section').hide();
-    $('#contact-section').hide();
+    $('#reviewSection').hide();
+    $('#settingsSection').hide();
+    $('#contactSection').hide();
 });
 
 //#region UI elements
 
 function bindUIEvents() {
     //nav buttons
-    $('#nav-createButton').bind('click', { id: '#create-section' }, showSection);
-    $('#nav-reviewButton').bind('click', { id: '#review-section' }, showSection);
-    $('#nav-reviewButton').bind('click', getBuckets);
-    $('#nav-settingsButton').bind('click', { id: '#settings-section' }, showSection);
-    $('#nav-contactButton').bind('click', { id: '#contact-section' }, showSection);
+    $('#navCreateButton').bind('click', { id: '#createSection' }, showSection);
+    $('#navReviewButton').bind('click', { id: '#reviewSection' }, showSection);
+    $('#navReviewButton').bind('click', getBuckets);
+    $('#navSettingsButton').bind('click', { id: '#settingsSection' }, showSection);
+    $('#navContactButton').bind('click', { id: '#contactSection' }, showSection);
 
     //create buttons
     $('.param-group-header').bind('click', toggleParamGroup);
@@ -62,7 +62,7 @@ var connectionId = null;
 var workItemRunning = null;
 
 async function startConnection() {
-    connection = new signalR.HubConnectionBuilder().withUrl("/api/signalr/designautomation").build();
+    connection = new signalR.HubConnectionBuilder().withUrl("api/signalr/designautomation").build();
 
     //declare callback functions
     connection.on('downloadResult', (fileType, url) => {
@@ -148,20 +148,89 @@ async function submitWorkItem(endpoint, formData) {
     });
 }
 
+var loadedBuckets = null;
+
 async function getBuckets() {
-    console.log('Getting buckets...');
+    let startAt = null;
+    //if (loadedBuckets != null) {
+    //    startAt = loadedBuckets[loadedBuckets.length - 1].bucketKey;
+    //}
+    //console.log('start at: ' + startAt);
 
     $.ajax({
-        url: 'api/forge/oss/buckets',
+        url: 'api/forge/oss/buckets?startAt=' + startAt,
         type: 'GET',
-        success: function (buckets) {
-            console.log(buckets);
-            buckets.each(function () {
-                var template = document.getElementById('reviewBucketTemplate');
-                var bucket = template.content.cloneNode(true);
+        success: function (res) {
+            loadedBuckets = res.buckets;
 
-                document.getElementById('review-section').appendChild(bucket);
-            })
+            let buckets = res.buckets;
+            let bucketTemplate = document.getElementById('bucketTemplate').content;
+            let bucketList = document.getElementById('bucketList');
+
+            //clear the current buckets from the webpage
+            bucketList.innerHTML = '';
+
+            //add list of buckets to the page
+            for (let i = 0; i < buckets.length; i++) {
+                //console.log(buckets[i]);
+
+                //clone template and populate bucket info
+                let bucketView = bucketTemplate.cloneNode(true);
+                bucketView.querySelector('.key').innerText = buckets[i].bucketKey;
+                bucketView.querySelector('.create-date').innerText = 'Date created: ' + buckets[i].createdDate;
+                bucketView.querySelector('.policy-key').innerText = 'Policy key: ' + buckets[i].policyKey;
+
+                bucketView.querySelector('.bucket').addEventListener('click', getObjects);
+                bucketView.querySelector('.delete-bucket-icon').addEventListener('click', deleteBucket);
+
+                bucketList.appendChild(bucketView);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+            console.log(err.responseText);
+        }
+    });
+}
+
+
+async function deleteBucket() {
+    let bucket = $(this).parent();
+    let bucketKey = bucket.children('.key').text();
+    console.log('Deleting bucket: ' + bucketKey);
+
+    $.ajax({
+        url: 'api/forge/oss/buckets/delete?bucketKey=' + bucketKey,
+        type: 'DELETE',
+        success: function (result) {
+            console.log('Bucket deleted. ' + result);
+            bucket.remove();
+        },
+        error: function (err) {
+            console.log(err);
+            console.log(err.responseText);
+        }
+    });
+}
+
+async function getObjects(){
+    let bucketKey = $(this).children('.key').text();
+    console.log('Get Objects: ' + bucketKey);
+
+    $.ajax({
+        url: 'api/forge/oss/objects?bucketKey=' + bucketKey,
+        type: 'GET',
+        success: function (res) {
+            let objects = res.objects;
+
+            //add list of buckets to the page
+            for (let i = 0; i < objects.length; i++) {
+                console.log(objects[i]);
+            }
+        },
+        error: function (err) {
+            console.log(err);
+            console.log(err.responseText);
         }
     });
 }
@@ -203,10 +272,10 @@ function onDocumentLoadFailure(errorCode, errorMsg) {
 }
 
 function getForgeToken() {
-    return fetch('/api/forge/oauth/token')
+    return fetch('api/forge/oauth/token')
         .then(res => res.json())
         .then(data => data.access_token)
-        .catch(err => null);
+        .catch(err => console.log(err));
 }
 
 //#endregion
