@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -118,5 +119,52 @@ namespace Forge.Controllers
         //    return jobPosted;
 
         //}
+
+
+        /// <summary>
+        /// Get the thumbnail for a model in Forge OSS storage
+        /// </summary>
+        /// <param name="urn"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("api/forge/modelderivative/thumbnail")]
+        public async Task<IActionResult> GetThumbnail(string urn)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+                DerivativesApi derivative = new DerivativesApi();
+                derivative.Configuration.AccessToken = oauth.access_token;
+                Stream thumbnailStream = await derivative.GetThumbnailAsync(urn);
+                byte[] byteArray;
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    thumbnailStream.CopyTo(memoryStream);
+                    byteArray = memoryStream.ToArray();
+                }
+
+                return Ok(new { Base64String = Convert.ToBase64String(byteArray) });
+
+                //return File((System.IO.Stream)thumbnail, "image/png");
+                //using (var memoryStream = new MemoryStream())
+                //{
+                //    System.IO.Stream stream = (System.IO.Stream)thumbnail;
+                //    stream.CopyTo(memoryStream);
+                //    return File(memoryStream.ToArray(),)
+                //    return Ok(new { Thumbnail = memoryStream.ToArray() });
+
+                //}
+
+                //return File(,"thumbnail")
+
+
+                //return Ok(new { Thumbnail = "thumbnail retrieved" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
     }
 }

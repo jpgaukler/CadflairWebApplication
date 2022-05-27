@@ -189,6 +189,17 @@ async function getBuckets() {
         error: function (err) {
             console.log(err);
             console.log(err.responseText);
+
+            let bucketTemplate = document.getElementById('bucketTemplate').content;
+            let bucketList = document.getElementById('bucketList');
+
+            //add list of buckets to the page
+            for (let i = 0; i < 11; i++) {
+                //clone template and populate bucket info
+                let bucketView = bucketTemplate.cloneNode(true);
+                bucketList.appendChild(bucketView);
+            }
+
         }
     });
 }
@@ -213,8 +224,8 @@ async function deleteBucket() {
     });
 }
 
-async function getObjects(){
-    let bucketKey = $(this).children('.key').text();
+async function getObjects() {
+    let bucketKey = $(this).children('.bucket-info').children('.key').text();
     console.log('Get Objects: ' + bucketKey);
 
     $.ajax({
@@ -226,11 +237,34 @@ async function getObjects(){
             //add list of buckets to the page
             for (let i = 0; i < objects.length; i++) {
                 console.log(objects[i]);
+                if (objects[i].objectKey.includes('.zip')) {
+                    //launchViewer(objects[i].objectId);
+                    getThumbnail(objects[i].objectId, this);
+                }
             }
         },
         error: function (err) {
-            console.log(err);
-            console.log(err.responseText);
+            console.error(err);
+            console.error(err.responseText);
+        }
+    });
+}
+
+async function getThumbnail(urn, bucketView) {
+    console.log('Getting thumbnail: ' + urn);
+
+    $.ajax({
+        url: 'api/forge/modelderivative/thumbnail?urn=' + urn,
+        type: 'GET',
+        success: function (res) {
+            let imageString = res.base64String;
+            console.log(imageString);
+            imageTag.addClass('image-added');
+            imageTag.attr('src', `data:image/png;base64,${imageString}`);
+        },
+        error: function (err) {
+            console.error(err);
+            console.error("error:" + err.responseText);
         }
     });
 }
@@ -253,7 +287,7 @@ async function launchViewer(urn) {
     $('#loader').hide();
 
     Autodesk.Viewing.Initializer(options, () => {
-        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['Autodesk.DocumentBrowser'] });
+        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer2'), { extensions: ['Autodesk.DocumentBrowser'] });
         viewer.start();
         var documentId = 'urn:' + urn;
         Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);

@@ -77,14 +77,22 @@
     <section id="reviewSection">
         <template id="bucketTemplate">
             <div class="bucket">
-                <h1 class="key">Bucket Key</h1>
-                <h3 class="create-date">Date created</h3>
-                <h3 class="policy-key">Policy Key</h3>
-                <img class="delete-bucket-icon" src="images/delete-icon.svg" alt="delete" />
+                <div class="thumbnail">
+                    <img class="thumbnail-image" src="" alt="Thumnail image" />
+                </div>
+                <div class="bucket-info">
+                    <h1 class="key">Bucket Key</h1>
+                    <h3 class="create-date">Date created</h3>
+                    <h3 class="policy-key">Policy Key</h3>
+                    <img class="delete-bucket-icon" src="images/delete-icon.svg" alt="delete" />
+                </div>
             </div>
         </template>
         <div id="bucketList"></div>
-        <div>Details shown here</div>
+        <div id="viewerContainer2">
+            <div id="forgeViewer2"></div>
+        </div>
+        <!--<div>Details shown here</div>-->
     </section>
     <section id="settingsSection">
         <div>settings</div>

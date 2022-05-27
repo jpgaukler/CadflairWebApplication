@@ -331,7 +331,7 @@ button {
 
 #reviewSection {
     display: grid;
-    grid-template-columns: 350px 1fr;
+    grid-template-columns: 650px 1fr;
     overflow-y: hidden;
 }
 
@@ -350,6 +350,17 @@ button {
     margin: 0.25em 0.5em;
     padding: 0.5em 0.5em;
     position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2em;
+}
+
+.thumbnail-image{
+    background: var(--primary-accent);
+    width: 64px;
+    height: 64px;
+    margin: 0em 0.5em;
 }
 
 .delete-bucket-icon{
@@ -357,6 +368,11 @@ button {
     right: 5px;
     top: 5px;
     width: 1em;
+}
+
+
+#viewerContainer2{
+    background: var(--primary-light);
 }
 
 /*#endregion */
