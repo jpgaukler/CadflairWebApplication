@@ -158,7 +158,7 @@ async function getBuckets() {
         return;
     }
 
-    //let startAt = null;
+    let startAt = null;
     //if (loadedBuckets != null) {
     //    startAt = loadedBuckets[loadedBuckets.length - 1].bucketKey;
     //}

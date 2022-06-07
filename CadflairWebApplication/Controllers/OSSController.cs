@@ -45,6 +45,7 @@ namespace Forge.Controllers
                     bucketsList.Add(bucket);
                 }
 
+                bucketsList.Sort((x, y) => y.CreatedDate.CompareTo(x.CreatedDate));
                 return Ok(new { Buckets = bucketsList });
             }
             catch (Exception ex)
