@@ -56,16 +56,43 @@
             <div id="navContactButton" class="nav-button">Contact Us</div>
         </div>
     </nav>
-    <section id="createSection">
-        <div id="sidebarContainer">
-            <div id="paramContainer"></div>
-            <div id="buttonContainer">
-                <button id="submitWorkitem">Generate Model</button>
-                <button id="pdfButton" class="disabled">Download PDF</button>
-                <button id="stepButton" class="disabled">Download STEP</button>
-                <button id="iamButton" class="disabled">Download IAM</button>
+    <div id="mainGrid">
+        <section id="createSection">
+            <div id="sidebarContainer">
+                <div id="paramContainer"></div>
+                <div id="buttonContainer">
+                    <button id="submitWorkitem">Generate Model</button>
+                    <button id="pdfButton" class="disabled">Download PDF</button>
+                    <button id="stepButton" class="disabled">Download STEP</button>
+                    <button id="iamButton" class="disabled">Download IAM</button>
+                </div>
             </div>
-        </div>
+        </section>
+        <section id="reviewSection">
+            <template id="bucketTemplate">
+                <div class="bucket">
+                    <img class="thumbnail-image" src="" alt="Thumbnail image" />
+                    <div class="bucket-info">
+                        <h1 class="key">Bucket Key</h1>
+                        <h3 class="create-date">Date created</h3>
+                        <h3 class="policy-key">Policy Key</h3>
+                        <div>Files:</div>
+                        <a class="pdf-link" href="#">Download PDF</a>
+                        <a class="zip-link" href="#">Download Zip</a>
+                    </div>
+                    <img class="delete-bucket-icon" src="images/delete-icon.svg" alt="delete" />
+                </div>
+            </template>
+            <input id="bucketSearchBox" type="text" placeholder="Search...">
+            <div id="bucketList"></div>
+            <!--<div>Details shown here</div>-->
+        </section>
+        <section id="settingsSection">
+            <div>settings</div>
+        </section>
+        <section id="contactSection">
+            <div>contact</div>
+        </section>
         <div id="viewerContainer">
             <div id="forgeViewer"></div>
             <div id="loader">
@@ -73,33 +100,7 @@
                 <div id="loaderMessage">Please wait...</div>
             </div>
         </div>
-    </section>
-    <section id="reviewSection">
-        <template id="bucketTemplate">
-            <div class="bucket">
-                <div class="thumbnail">
-                    <img class="thumbnail-image" src="" alt="Thumnail image" />
-                </div>
-                <div class="bucket-info">
-                    <h1 class="key">Bucket Key</h1>
-                    <h3 class="create-date">Date created</h3>
-                    <h3 class="policy-key">Policy Key</h3>
-                    <img class="delete-bucket-icon" src="images/delete-icon.svg" alt="delete" />
-                </div>
-            </div>
-        </template>
-        <div id="bucketList"></div>
-        <div id="viewerContainer2">
-            <div id="forgeViewer2"></div>
-        </div>
-        <!--<div>Details shown here</div>-->
-    </section>
-    <section id="settingsSection">
-        <div>settings</div>
-    </section>
-    <section id="contactSection">
-        <div>contact</div>
-    </section>
+    </div>
     <footer>FOOTER</footer>
 </body>
 

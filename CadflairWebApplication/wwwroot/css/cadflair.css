@@ -24,6 +24,12 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+#mainGrid{
+    display: grid;
+    grid-template-columns: auto 1fr;
+    overflow-y: hidden;
+}
+
 /*#endregion */
 
 
@@ -76,14 +82,10 @@ nav {
 
 /*#region create-section */
 
-#createSection {
-    display: grid;
-    grid-template-columns: 350px 1fr;
-    overflow-y: hidden;
-}
-
 #sidebarContainer {
     display: flex;
+    height: 100%;
+    width: 400px;
     flex-direction: column;
     justify-content: space-between;
     background: var(--primary-medium);
@@ -244,7 +246,6 @@ input[type=radio]:checked + label {
 
 /*#endregion */
 
-
 /* #region buttons */
 
 #buttonContainer {
@@ -330,16 +331,24 @@ button {
 /*#region review section */
 
 #reviewSection {
-    display: grid;
-    grid-template-columns: 650px 1fr;
+    display: flex;
+    height: 100%;
+    width: 700px;
+    flex-direction: column;
     overflow-y: hidden;
+    background: var(--primary-medium);
+}
+
+#bucketSearchBox{
+    margin: 0.25em 0.5em;
+    padding: 0.5em 0.5em;
+    border-radius: 4px;
 }
 
 #bucketList {
     display: flex;
+    height: 100%;
     flex-direction: column;
-    justify-content: space-between;
-    background: var(--primary-medium);
     overflow-y: scroll;
 }
 
@@ -356,11 +365,14 @@ button {
     gap: 2em;
 }
 
+.bucket-info{
+    display: flex;
+    flex-direction: column;
+}
+
 .thumbnail-image{
-    background: var(--primary-accent);
-    width: 64px;
-    height: 64px;
-    margin: 0em 0.5em;
+    /*background: var(--primary-accent);*/
+    width: 8em;
 }
 
 .delete-bucket-icon{
@@ -368,11 +380,6 @@ button {
     right: 5px;
     top: 5px;
     width: 1em;
-}
-
-
-#viewerContainer2{
-    background: var(--primary-light);
 }
 
 /*#endregion */

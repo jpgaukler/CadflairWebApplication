@@ -148,10 +148,17 @@ async function submitWorkItem(endpoint, formData) {
     });
 }
 
-var loadedBuckets = null;
 
 async function getBuckets() {
-    let startAt = null;
+    console.log('Getting buckets...');
+    let bucketTemplate = document.getElementById('bucketTemplate').content;
+    let bucketList = document.getElementById('bucketList');
+
+    if (bucketList.children.length > 0) {
+        return;
+    }
+
+    //let startAt = null;
     //if (loadedBuckets != null) {
     //    startAt = loadedBuckets[loadedBuckets.length - 1].bucketKey;
     //}
@@ -161,53 +168,52 @@ async function getBuckets() {
         url: 'api/forge/oss/buckets?startAt=' + startAt,
         type: 'GET',
         success: function (res) {
-            loadedBuckets = res.buckets;
-
             let buckets = res.buckets;
-            let bucketTemplate = document.getElementById('bucketTemplate').content;
-            let bucketList = document.getElementById('bucketList');
-
-            //clear the current buckets from the webpage
-            bucketList.innerHTML = '';
 
             //add list of buckets to the page
             for (let i = 0; i < buckets.length; i++) {
                 //console.log(buckets[i]);
+                let bucketKey = buckets[i].bucketKey;
+                let createdDate = buckets[i].createdDate;
+                let policyKey = buckets[i].policyKey;
 
                 //clone template and populate bucket info
-                let bucketView = bucketTemplate.cloneNode(true);
-                bucketView.querySelector('.key').innerText = buckets[i].bucketKey;
-                bucketView.querySelector('.create-date').innerText = 'Date created: ' + buckets[i].createdDate;
-                bucketView.querySelector('.policy-key').innerText = 'Policy key: ' + buckets[i].policyKey;
+                let bucketNode = bucketTemplate.cloneNode(true);
+                bucketNode.querySelector('.bucket').id = bucketKey;
+                bucketNode.querySelector('.key').innerText = bucketKey;
+                bucketNode.querySelector('.create-date').innerText = 'Date created: ' + createdDate;
+                bucketNode.querySelector('.policy-key').innerText = 'Policy key: ' + policyKey;
+                bucketNode.querySelector('.bucket').addEventListener('click', viewObject);
+                bucketNode.querySelector('.delete-bucket-icon').addEventListener('click', deleteBucket);
 
-                bucketView.querySelector('.bucket').addEventListener('click', getObjects);
-                bucketView.querySelector('.delete-bucket-icon').addEventListener('click', deleteBucket);
+                //add node to page
+                bucketList.appendChild(bucketNode);
 
-                bucketList.appendChild(bucketView);
+                //get the objects that are included in the bucket
+                getObjects(bucketKey);
             }
         },
         error: function (err) {
-            console.log(err);
-            console.log(err.responseText);
-
-            let bucketTemplate = document.getElementById('bucketTemplate').content;
-            let bucketList = document.getElementById('bucketList');
-
-            //add list of buckets to the page
-            for (let i = 0; i < 11; i++) {
-                //clone template and populate bucket info
-                let bucketView = bucketTemplate.cloneNode(true);
-                bucketList.appendChild(bucketView);
-            }
-
+            //console.error(err);
+            console.error(err.responseText);
         }
     });
+}
+
+function refreshBuckets() {
+    let bucketList = document.getElementById('bucketList');
+
+    //clear the current buckets from the webpage
+    bucketList.innerHTML = '';
+
+    //refresh the list
+    getBuckets();
 }
 
 
 async function deleteBucket() {
     let bucket = $(this).parent();
-    let bucketKey = bucket.children('.key').text();
+    let bucketKey = bucket.attr('id');
     console.log('Deleting bucket: ' + bucketKey);
 
     $.ajax({
@@ -218,15 +224,15 @@ async function deleteBucket() {
             bucket.remove();
         },
         error: function (err) {
-            console.log(err);
-            console.log(err.responseText);
+            console.error(err.responseText);
         }
     });
 }
 
-async function getObjects() {
-    let bucketKey = $(this).children('.bucket-info').children('.key').text();
+async function getObjects(bucketKey) {
     console.log('Get Objects: ' + bucketKey);
+
+    let bucketNode = $('#' + bucketKey);
 
     $.ajax({
         url: 'api/forge/oss/objects?bucketKey=' + bucketKey,
@@ -236,34 +242,42 @@ async function getObjects() {
 
             //add list of buckets to the page
             for (let i = 0; i < objects.length; i++) {
-                console.log(objects[i]);
+                //console.log(objects[i]);
+
+                if (objects[i].objectKey.includes('.pdf')) {
+                    let pdfLink = bucketNode.children('.bucket-info').children('.pdf-link');
+                    pdfLink.text(objects[i].objectKey);
+                }
+
                 if (objects[i].objectKey.includes('.zip')) {
-                    //launchViewer(objects[i].objectId);
-                    getThumbnail(objects[i].objectId, this);
+                    let zipLink = bucketNode.children('.bucket-info').children('.zip-link');
+                    zipLink.text(objects[i].objectKey);
+                    getThumbnail(objects[i].objectId, bucketNode);
                 }
             }
         },
         error: function (err) {
-            console.error(err);
+            //console.error(err);
             console.error(err.responseText);
         }
     });
 }
 
-async function getThumbnail(urn, bucketView) {
+async function getThumbnail(urn, bucketNode) {
     console.log('Getting thumbnail: ' + urn);
+
+    let bucketImage = bucketNode.children('.thumbnail-image');
 
     $.ajax({
         url: 'api/forge/modelderivative/thumbnail?urn=' + urn,
         type: 'GET',
         success: function (res) {
             let imageString = res.base64String;
-            console.log(imageString);
-            imageTag.addClass('image-added');
-            imageTag.attr('src', `data:image/png;base64,${imageString}`);
+            bucketImage.attr('src', 'data:image/png;base64,' + imageString);
+            bucketImage.attr('id', urn);
         },
         error: function (err) {
-            console.error(err);
+            //console.error(err);
             console.error("error:" + err.responseText);
         }
     });
@@ -274,6 +288,12 @@ async function getThumbnail(urn, bucketView) {
 //#region forge viewer 
 
 var viewer;
+
+function viewObject() {
+    urn = $(this).children('.thumbnail-image').attr('id');
+    console.log(urn);
+    launchViewer(urn);
+}
 
 async function launchViewer(urn) {
     var access_token = await getForgeToken();
@@ -287,7 +307,7 @@ async function launchViewer(urn) {
     $('#loader').hide();
 
     Autodesk.Viewing.Initializer(options, () => {
-        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer2'), { extensions: ['Autodesk.DocumentBrowser'] });
+        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['Autodesk.DocumentBrowser'] });
         viewer.start();
         var documentId = 'urn:' + urn;
         Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
