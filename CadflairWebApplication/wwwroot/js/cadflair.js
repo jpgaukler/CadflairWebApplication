@@ -22,6 +22,7 @@ function bindUIEvents() {
     $('.param-group-header').bind('click', toggleParamGroup);
     $('#pdfButton').bind('click', openFile);
     $('#iamButton').bind('click', openFile);
+    $('#refreshBucketsButton').bind('click', refreshBuckets);
     //$('#collapse-sidebar').bind('click', toggleSidebar);
 }
 

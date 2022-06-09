@@ -339,6 +339,11 @@ button {
     background: var(--primary-medium);
 }
 
+#bucketsSearch{
+    display: grid;
+    grid-template-columns: 1fr auto;
+}
+
 #bucketSearchBox{
     margin: 0.25em 0.5em;
     padding: 0.5em 0.5em;
