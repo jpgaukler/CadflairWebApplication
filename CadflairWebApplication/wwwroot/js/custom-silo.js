@@ -1,60 +1,39 @@
-﻿function validateInputs() {
+﻿$(document).ready(function () {
+    $(".form-inputbox").blur(validateInputs);
+    $('#submitWorkitem').click(createSiloModel);
+});
+
+function validateInputs() {
     if ($('#dresserHeight').val()) {
-        if ($('#dresserHeight').val() > 72) { $('#dresserHeight').val(72); }
-        else if ($('#dresserHeight').val() < 24) { $('#dresserHeight').val(24); }
-        else { $('#dresserHeight').val(Number($('#dresserHeight').val()).toFixed()); }
+        if ($('#dischargeHeight').val() < 1) { $('#dischargeHeight').val(1); }
+        else if ($('#dischargeHeight').val() > 120) { $('#dischargeHeight').val(120); }
+        else { $('#dischargeHeight').val(Number($('#dischargeHeight').val()).toFixed()); }
     }
 
-    if ($('#dresserWidth').val()) {
-        if ($('#dresserWidth').val() > 120) { $('#dresserWidth').val(120); }
-        else if ($('#dresserWidth').val() < 24) { $('#dresserWidth').val(24); }
-        else { $('#dresserWidth').val(Number($('#dresserWidth').val()).toFixed()); }
-    }
-
-    if ($('#dresserDepth').val()) {
-        if ($('#dresserDepth').val() > 40) { $('#dresserDepth').val(40); }
-        else if ($('#dresserDepth').val() < 18) { $('#dresserDepth').val(18); }
-        else { $('#dresserDepth').val(Number($('#dresserDepth').val()).toFixed()); }
-    }
-
-    if ($('#legExposure').val()) {
-        var maxLegHeight;
-        if ($('#dresserHeight').val() > 10) {
-            maxLegHeight = $('#dresserHeight').val() - 10
-        }
-        else {
-            maxLegHeight = 100
-        }
-
-        if ($('#legExposure').val() > maxLegHeight) { $('#legExposure').val(maxLegHeight); }
-        else if ($('#legExposure').val() < 1) { $('#legExposure').val(1); }
-        else { $('#legExposure').val(Number($('#legExposure').val()).toFixed()); }
+    if ($('#ladderAngle').val()) {
+        if ($('#ladderAngle').val() < 0) { $('#ladderAngle').val(0); }
+        else if ($('#ladderAngle').val() > 360) { $('#ladderAngle').val(360); }
+        else { $('#ladderAngle').val(Number($('#ladderAngle').val()).toFixed()); }
     }
 }
 
 
 function createSiloModel() {
     if (workItemRunning == true) { console.log('workitem already running'); return; }
-    if (!$('#dresserHeight').val()) { alert('Please enter a value for the Dresser Height.'); return; }
-    if (!$('#dresserWidth').val()) { alert('Please enter a value for the Dresser Width.'); return; }
-    if (!$('#dresserDepth').val()) { alert('Please enter a value for the Dresser Depth.'); return; }
-    if (!$('#legExposure').val()) { alert('Please enter a value for the Leg Height.'); return; }
+    if (!$('#dischargeHeight').val()) { alert('Please enter a value for the discharge height.'); return; }
+    if (!$('#ladderAngle').val()) { alert('Please enter a value for the ladder location.'); return; }
 
     validateInputs();
 
     var formData = new FormData();
-    formData.append('data', JSON.stringify({
-        browerConnectionId: connectionId,
-        dresserWidth: $('#dresserWidth').val(),
-        dresserHeight: $('#dresserHeight').val(),
-        dresserDepth: $('#dresserDepth').val(),
-        legExposure: $('#legExposure').val(),
-        drawerRows: $('input[name="drawerRows"]:checked').val(),
-        drawerColumns: $('input[name="drawerColumns"]:checked').val(),
-        finishStyle: $('#finishDropdown').val(),
-        edgeStyle: $('#edgeDropdown').val(),
-        handleStyle: $('#handleDropdown').val()
+    formData.append('inventorParams', JSON.stringify({
+        innerDiam: $('#innerDiam').val() + " ft",
+        siloHeight: $('#siloHeight').val() + " ft",
+        coneAngle: $('#coneAngle').val() + " deg",
+        outletDiam: $('#outletDiam').val() + " in",
+        dischargeHeight: $('#dischargeHeight').val() + " in",
+        ladderAngle: $('#ladderAngle').val() + " deg"
     }));
 
-    submitWorkItem('api/forge/designautomation/workitems/createdressermodel', formData);
+    submitWorkItem('api/forge/designautomation/workitems/createsilomodel', formData);
 }

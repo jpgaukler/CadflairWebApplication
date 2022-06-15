@@ -326,8 +326,6 @@ namespace Forge.Controllers
 
 
 
-
-
         #region Silo Demo
 
         /// <summary>
@@ -341,15 +339,14 @@ namespace Forge.Controllers
             {
                 // pull out input parameters
                 JObject formInputData = JObject.Parse(inputs.inventorParams);
-                double innerDiam = formInputData["innerDiam"].Value<double>();
-                double siloHeight = formInputData["siloHeight"].Value<double>();
-                double coneAngle = formInputData["coneAngle"].Value<double>();
-                double outletDiam = formInputData["outletDiam"].Value<double>();
-                double dischargeHeight = formInputData["dischargeHeight"].Value<double>();
-                double ladderAngle = formInputData["ladderAngle"].Value<double>();
-                string connectionId = formInputData["connectionId"].Value<string>();
+                string innerDiam = formInputData["innerDiam"].Value<string>();
+                string siloHeight = formInputData["siloHeight"].Value<string>();
+                string coneAngle = formInputData["coneAngle"].Value<string>();
+                string outletDiam = formInputData["outletDiam"].Value<string>();
+                string dischargeHeight = formInputData["dischargeHeight"].Value<string>();
+                string ladderAngle = formInputData["ladderAngle"].Value<string>();
 
-                string partNumber = "d" + innerDiam.ToString() + "h" + siloHeight.ToString() + "c" + coneAngle.ToString() + "-o" + outletDiam.ToString() + "d" + dischargeHeight.ToString() + "l" + ladderAngle.ToString();
+                string partNumber = "d" + innerDiam + "h" + siloHeight + "c" + coneAngle + "-o" + outletDiam + "d" + dischargeHeight + "l" + ladderAngle;
 
                 // OAuth token
                 dynamic oauth = await OAuthController.GetInternalAsync();
@@ -372,11 +369,11 @@ namespace Forge.Controllers
                 // 2. input json
                 dynamic inputJson = new JObject();
                 inputJson.partNumber = partNumber.ToUpper();
-                inputJson.innerDiam = innerDiam * 12 * 2.54;
-                inputJson.siloHeight = siloHeight * 12 * 2.54;
+                inputJson.innerDiam = innerDiam;
+                inputJson.siloHeight = siloHeight;
                 inputJson.coneAngle = coneAngle;
-                inputJson.outletDiam = outletDiam * 2.54;
-                inputJson.dischargeHeight = dischargeHeight * 2.54;
+                inputJson.outletDiam = outletDiam;
+                inputJson.dischargeHeight = dischargeHeight;
                 inputJson.ladderAngle = ladderAngle;
 
                 XrefTreeArgument inputJsonArgument = new XrefTreeArgument()
@@ -394,7 +391,8 @@ namespace Forge.Controllers
                 buckets.Configuration.AccessToken = oauth.access_token;
                 try
                 {
-                    PostBucketsPayload bucketPayload = new PostBucketsPayload(outputBucketKey, null, PostBucketsPayload.PolicyKeyEnum.Temporary);
+                    //part number has spaces in it which is causing bucket creation to fail. Also need to check the activity on Postman
+                    PostBucketsPayload bucketPayload = new PostBucketsPayload("jgauklertestingbigsilo", null, PostBucketsPayload.PolicyKeyEnum.Temporary);
                     await buckets.CreateBucketAsync(bucketPayload, "US");
                 }
                 catch
@@ -426,7 +424,7 @@ namespace Forge.Controllers
                 //};
 
                 // prepare workitem
-                string callbackUrl = string.Format("{0}/api/forge/callback/createsilomodel?id={1}&outputBucketKey={2}&outputIptName={3}&outputPdfName={4}", OAuthController.GetAppSetting("FORGE_CALLBACK_URL"), connectionId, outputBucketKey, outputIptName, outputPdfName);
+                string callbackUrl = string.Format("{0}/api/forge/callback/createsilomodel?id={1}&outputBucketKey={2}&outputIptName={3}&outputPdfName={4}", OAuthController.GetAppSetting("FORGE_CALLBACK_URL"), inputs.connectionId, outputBucketKey, outputIptName, outputPdfName);
                 WorkItem workItemSpec = new WorkItem()
                 {
                     ActivityId = "jgaukler.ConfigureSiloModel+v1",
@@ -448,7 +446,7 @@ namespace Forge.Controllers
             }
             catch (Exception e)
             {
-                await _hubContext.Clients.All.SendAsync("onComplete", "error: " + e.ToString());
+                await _hubContext.Clients.All.SendAsync("onError", "error: " + e.ToString());
                 return BadRequest();
             }
 
@@ -461,36 +459,39 @@ namespace Forge.Controllers
         [Route("/api/forge/callback/createsilomodel")]
         public async Task<IActionResult> CreateSiloModel_OnCallback(string id, string outputBucketKey, string outputIptName, string outputPdfName, [FromBody] dynamic body)
         {
+
             try
             {
+
+                //parse json data
                 JObject workItem = JObject.Parse((string)body.ToString());
-                string status = workItem["status"].Value<string>();
-                string reportUrl = workItem["reportUrl"].Value<string>();
+                await _hubContext.Clients.Client(id).SendAsync("workItemComplete", workItem.ToString());
 
-                RestClient client = new RestClient(reportUrl);
+                //download workitem report
+                RestClient client = new RestClient(workItem["reportUrl"].Value<string>());
                 string reportTxt = Encoding.Default.GetString(client.DownloadData(new RestRequest(string.Empty)));
+                await _hubContext.Clients.Client(id).SendAsync("onProgress", reportTxt);
 
-                await _hubContext.Clients.Client(id).SendAsync("onComplete", "workitem complete: " + workItem.ToString());
-                await _hubContext.Clients.Client(id).SendAsync("onComplete", "workitem report: " + reportTxt);
+                //create download links for result files
+                //ObjectsApi objectsApi = new ObjectsApi();
+                //dynamic signedIptUrl = await objectsApi.CreateSignedResourceAsyncWithHttpInfo(outputBucketKey, outputIptName, new PostBucketsSigned(10), "read");
+                //dynamic signedPdfUrl = await objectsApi.CreateSignedResourceAsyncWithHttpInfo(outputBucketKey, outputPdfName, new PostBucketsSigned(10), "read");
+                //await _hubContext.Clients.Client(id).SendAsync("downloadResult", "pdf", (string)signedPdfUrl.Data.signedUrl);
+                //await _hubContext.Clients.Client(id).SendAsync("downloadResult", "zip", (string)signedIptUrl.Data.signedUrl);
 
-                ObjectsApi objectsApi = new ObjectsApi();
-                dynamic signedIptUrl = await objectsApi.CreateSignedResourceAsyncWithHttpInfo(outputBucketKey, outputIptName, new PostBucketsSigned(10), "read");
-                dynamic signedPdfUrl = await objectsApi.CreateSignedResourceAsyncWithHttpInfo(outputBucketKey, outputPdfName, new PostBucketsSigned(10), "read");
-
-                await _hubContext.Clients.Client(id).SendAsync("downloadIpt", (string)(signedIptUrl.Data.signedUrl));
-                await _hubContext.Clients.Client(id).SendAsync("downloadPdf", (string)(signedPdfUrl.Data.signedUrl));
-
-                if (status == "success")
+                //start translation if job was successful
+                if (workItem["status"].Value<string>() == "success")
                 {
                     //get the urn and start the translation
                     dynamic resultObjectDetails = await OSSController.GetObjectDetailsAsync(outputBucketKey, outputIptName);
                     HttpResponseMessage requestTranslation = await ModelDerivativeController.TranslateObject(id, (string)resultObjectDetails.encodedURN);
-                    await _hubContext.Clients.Client(id).SendAsync("onComplete", "translation requested: " + requestTranslation.ToString());
+                    await _hubContext.Clients.Client(id).SendAsync("translationRequested", "Translation requested: " + requestTranslation.ToString());
 
                     //dynamic translationJob = await ModelDerivativeController.TranslateObject((string)resultObjectDetails.encodedURN, rootFileName);
                     //JObject jobJson = JObject.Parse((string)translationJob.ToString());
                     //await _hubContext.Clients.Client(id).SendAsync("onComplete", "job JSON: " + jobJson.ToString());                  
                 }
+
             }
             catch (Exception ex)
             {

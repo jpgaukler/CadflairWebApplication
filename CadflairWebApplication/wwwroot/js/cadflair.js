@@ -1,15 +1,4 @@
-﻿$(document).ready(function () {
-    $("#paramContainer").load('configurator/custom-dresser.html', bindUIEvents);
-
-    //initialize UI
-    $('#loader').hide();
-    $('#reviewSection').hide();
-    $('#settingsSection').hide();
-    $('#contactSection').hide();
-});
-
-//#region UI elements
-
+﻿//#region UI elements
 function bindUIEvents() {
     //nav buttons
     $('#navCreateButton').bind('click', { id: '#createSection' }, showSection);

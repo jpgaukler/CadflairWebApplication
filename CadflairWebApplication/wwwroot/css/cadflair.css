@@ -342,12 +342,25 @@ button {
 #bucketsSearch{
     display: grid;
     grid-template-columns: 1fr auto;
+    padding: .4em;
 }
 
 #bucketSearchBox{
     margin: 0.25em 0.5em;
     padding: 0.5em 0.5em;
     border-radius: 4px;
+}
+
+#refreshBucketsButton{
+    width: 2em;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    fill: var(--primary-dark);
+}
+
+#refreshBucketsButton:hover{
+    fill: var(--primary-accent);
 }
 
 #bucketList {
