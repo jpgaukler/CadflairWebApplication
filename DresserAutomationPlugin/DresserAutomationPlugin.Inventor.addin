@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Addin Type="Plugin">
-  <ClassId>{3d1a41c1-fbb3-45ff-a943-61de5d300286}</ClassId>
-  <ClientId>{3d1a41c1-fbb3-45ff-a943-61de5d300286}</ClientId>
-  <DisplayName>DresserAutomationPlugin</DisplayName>
-  <Description>a DresserAutomationPlugin</Description>
-  <Assembly>DresserAutomationPlugin.dll</Assembly>
-</Addin>

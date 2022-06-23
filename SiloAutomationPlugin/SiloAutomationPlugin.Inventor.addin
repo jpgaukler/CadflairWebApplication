@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Addin Type="Plugin">
-  <ClassId>{36a1d82b-0a25-4e34-b527-9966b7f6e966}</ClassId>
-  <ClientId>{36a1d82b-0a25-4e34-b527-9966b7f6e966}</ClientId>
-  <DisplayName>SiloAutomationPlugin</DisplayName>
-  <Description>a SiloAutomationPlugin</Description>
-  <Assembly>SiloAutomationPlugin.dll</Assembly>
-</Addin>

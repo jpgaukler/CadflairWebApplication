@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Addin Type="Plugin">
+  <ClassId>{9d41134c-f6e2-4b5a-baea-468758059a53}</ClassId>
+  <ClientId>{9d41134c-f6e2-4b5a-baea-468758059a53}</ClientId>
+  <DisplayName>CadflairInventorPlugin</DisplayName>
+  <Description>a CadflairInventorPlugin</Description>
+  <Assembly>CadflairInventorPlugin.dll</Assembly>
+</Addin>

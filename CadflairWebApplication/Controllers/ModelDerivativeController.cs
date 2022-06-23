@@ -25,7 +25,7 @@ namespace Forge.Controllers
         /// <param name="objectURN"></param>
         /// <param name="rootFileName"></param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> TranslateObject(string id, string objectURN, string rootFileName = null)
+        public static async Task<HttpResponseMessage> TranslateObject(string _connectionId, string objectURN, string rootFileName = null)
         {
             dynamic oauth = await OAuthController.GetInternalAsync();
 
@@ -34,8 +34,8 @@ namespace Forge.Controllers
                 input = new
                 {
                     urn = objectURN,
-                    compressedUrn = rootFileName != null,
-                    rootFilename = rootFileName
+                    //compressedUrn = rootFileName != null,
+                    //rootFilename = rootFileName ?? "",
                 },
                 output = new
                 {
@@ -60,7 +60,7 @@ namespace Forge.Controllers
                     workflow = "translateObjectWorkflow",
                     workflowAttribute = new
                     {
-                        connectionId = id,
+                        connectionId = _connectionId,
                     }
                 }
             };
@@ -122,6 +122,96 @@ namespace Forge.Controllers
 
 
         /// <summary>
+        /// Translate an object in a given bucket
+        /// </summary>
+        /// <param name="_connectionId"></param>
+        /// <param name="bucketKey"></param>
+        /// <param name="objectKey"></param>
+        /// <param name="rootFileName"></param>
+        /// <returns></returns>
+        public static async Task<HttpResponseMessage> TranslateObject(string _connectionId, string bucketKey, string objectKey, string rootFileName = null)
+        {
+            dynamic oauth = await OAuthController.GetInternalAsync();
+
+            ObjectsApi objects = new ObjectsApi();
+            objects.Configuration.AccessToken = oauth.access_token;
+
+            string objectUrn = await OSSController.GetEncodedUrnAsync(bucketKey, objectKey);
+
+            //input argument
+            dynamic inputArg;
+            if(rootFileName == null)
+            {
+                inputArg = new
+                {
+                    urn = objectUrn
+                };
+            }
+            else
+            {
+                inputArg = new
+                {
+                    urn = objectUrn,
+                    compressedUrn = true,
+                    rootFilename = rootFileName
+                };
+            }
+
+            //output argument
+            dynamic outputArg = new
+            {
+                destination = new
+                {
+                    region = "us"
+                },
+                formats = new[]
+                {
+                        new
+                        {
+                            type = "svf",
+                            views = new[]
+                            {
+                                "2d", "3d"
+                            }
+                        }
+                },
+            };
+
+            //workflow webhook
+            dynamic miscArg = new
+            {
+                workflow = "translateObjectWorkflow",
+                workflowAttribute = new
+                {
+                    connectionId = _connectionId,
+                }
+            };
+
+
+            //json Request
+            dynamic translateJson = new
+            {
+                input = inputArg,
+                output = outputArg,
+                misc = miscArg
+            };
+
+            var translationRequest = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://developer.api.autodesk.com/modelderivative/v2/designdata/job"),
+                Headers = {
+                                { HttpRequestHeader.Authorization.ToString(), "Bearer " +  oauth.access_token},
+                           },
+                Content = new StringContent(JsonConvert.SerializeObject(translateJson), System.Text.Encoding.UTF8, "application/json")
+            };
+
+            HttpResponseMessage response = _httpClient.SendAsync(translationRequest).Result;
+            return response;
+        }
+
+
+        /// <summary>
         /// Get the thumbnail for a model in Forge OSS storage
         /// </summary>
         /// <param name="urn"></param>
@@ -133,8 +223,10 @@ namespace Forge.Controllers
             try
             {
                 dynamic oauth = await OAuthController.GetInternalAsync();
+
                 DerivativesApi derivative = new DerivativesApi();
                 derivative.Configuration.AccessToken = oauth.access_token;
+
                 Stream thumbnailStream = await derivative.GetThumbnailAsync(urn);
                 byte[] byteArray;
 
@@ -145,21 +237,6 @@ namespace Forge.Controllers
                 }
 
                 return Ok(new { Base64String = Convert.ToBase64String(byteArray) });
-
-                //return File((System.IO.Stream)thumbnail, "image/png");
-                //using (var memoryStream = new MemoryStream())
-                //{
-                //    System.IO.Stream stream = (System.IO.Stream)thumbnail;
-                //    stream.CopyTo(memoryStream);
-                //    return File(memoryStream.ToArray(),)
-                //    return Ok(new { Thumbnail = memoryStream.ToArray() });
-
-                //}
-
-                //return File(,"thumbnail")
-
-
-                //return Ok(new { Thumbnail = "thumbnail retrieved" });
             }
             catch (Exception ex)
             {

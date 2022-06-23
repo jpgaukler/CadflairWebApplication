@@ -47,7 +47,7 @@ namespace Forge.Controllers
 
   
         /// <summary>
-        /// Callback from Model Translation webhook.
+        /// Callback from Model Translation webhook. Delete this after switching to the cadflair forge app
         /// </summary>
         [HttpPost]
         [Route("/api/forge/modelderivative/jobs/finished")]
@@ -75,7 +75,40 @@ namespace Forge.Controllers
             return Ok();
         }
 
+
+  
+        /// <summary>
+        /// Callback from Model Translation webhook.
+        /// </summary>
+        [HttpPost]
+        [Route("/api/forge/modelderivative/jobs/translationcomplete")]
+        public async Task<IActionResult> TranslationComplete([FromBody] dynamic body)
+        {
+            try
+            {
+                JObject bodyJson = JObject.Parse((string)body.ToString());
+                JObject payload = bodyJson["payload"].Value<JObject>();
+                JObject workflowAttributes = payload["WorkflowAttributes"].Value<JObject>();
+
+                string resourceURN = bodyJson["resourceUrn"].Value<string>();
+                string id = workflowAttributes["connectionId"].Value<string>();
+
+                await _hubContext.Clients.Client(id).SendAsync("onProgress", "translation completed: " + bodyJson.ToString());
+                await _hubContext.Clients.Client(id).SendAsync("translationComplete", resourceURN);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+            }
+
+            // ALWAYS return ok (200)
+            return Ok();
+        }
+
+
         #region Dresser Demo
+        
 
         /// <summary>
         /// Input for StartWorkitem
@@ -382,7 +415,7 @@ namespace Forge.Controllers
                 };
 
                 //output file arguments
-                string outputBucketKey = partNumber;
+                string outputBucketKey = Guid.NewGuid().ToString();
                 string outputIptName = partNumber.ToUpper() + ".ipt";
                 string outputPdfName = partNumber.ToUpper() + " Appr.pdf";
 
@@ -392,7 +425,7 @@ namespace Forge.Controllers
                 try
                 {
                     //part number has spaces in it which is causing bucket creation to fail. Also need to check the activity on Postman
-                    PostBucketsPayload bucketPayload = new PostBucketsPayload("jgauklertestingbigsilo", null, PostBucketsPayload.PolicyKeyEnum.Temporary);
+                    PostBucketsPayload bucketPayload = new PostBucketsPayload(outputBucketKey, null, PostBucketsPayload.PolicyKeyEnum.Temporary);
                     await buckets.CreateBucketAsync(bucketPayload, "US");
                 }
                 catch
@@ -485,6 +518,7 @@ namespace Forge.Controllers
                     //get the urn and start the translation
                     dynamic resultObjectDetails = await OSSController.GetObjectDetailsAsync(outputBucketKey, outputIptName);
                     HttpResponseMessage requestTranslation = await ModelDerivativeController.TranslateObject(id, (string)resultObjectDetails.encodedURN);
+                    await _hubContext.Clients.Client(id).SendAsync("onProgress", "encoded urn: " + (string)resultObjectDetails.encodedURN);
                     await _hubContext.Clients.Client(id).SendAsync("translationRequested", "Translation requested: " + requestTranslation.ToString());
 
                     //dynamic translationJob = await ModelDerivativeController.TranslateObject((string)resultObjectDetails.encodedURN, rootFileName);
@@ -495,7 +529,7 @@ namespace Forge.Controllers
             }
             catch (Exception ex)
             {
-                await _hubContext.Clients.Client(id).SendAsync("onComplete", "error: " + ex.ToString());
+                await _hubContext.Clients.Client(id).SendAsync("onError", "error: " + ex.ToString());
             }
 
             // ALWAYS return ok (200)
@@ -503,6 +537,210 @@ namespace Forge.Controllers
         }
 
         #endregion
+
+        /// <summary>
+        /// Input for StartWorkitem
+        /// </summary>
+        public class WorkitemInputs
+        {
+            public string connectionId { get; set; }
+            public string inventorParams { get; set; }
+            public string activityId { get; set; }
+            public string inputBucketKey { get; set; }
+            public string inputObjectKey { get; set; }
+            public string pathInZip { get; set; }
+            public string modelBucketKey { get; set; }
+            public string pdfBucketKey { get; set; }
+            public string stpBucketKey { get; set; }
+            public string outputObjectKey { get; set; }
+        }
+
+
+
+        /// <summary>
+        /// Start a new workitem 
+        /// </summary>
+        [HttpPost]
+        [Route("api/forge/designautomation/workitems/createmodelconfiguration")]
+        public async Task<IActionResult> ConfigureModel([FromForm] WorkitemInputs inputs)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+
+                //--------------------------------------------------------------- input file ---------------------------------------------------------------------
+                string workingFolderName = "NewModel"; //this is the name of the folder where the input files will be unzipped to on the InventorServer machine
+                
+                XrefTreeArgument inputModelArgument = new XrefTreeArgument()
+                {
+                    Url = string.Format("https://developer.api.autodesk.com/oss/v2/buckets/{0}/objects/{1}", inputs.inputBucketKey, inputs.inputObjectKey),
+                    Verb = Verb.Get,
+                    LocalName = workingFolderName,
+                    PathInZip = inputs.pathInZip,
+                    Headers = new Dictionary<string, string>()
+                    {
+                        { "Authorization", "Bearer " + oauth.access_token }
+                    }
+                };
+
+
+
+                //--------------------------------------------------------------- inventor params ---------------------------------------------------------------------
+                JObject inventorParams = JObject.Parse(inputs.inventorParams);
+
+                XrefTreeArgument inventorParamsArgument = new XrefTreeArgument()
+                {
+                    Url = "data:application/json, " + inventorParams.ToString(Formatting.None).Replace("\"", "'"),
+                    LocalName = "params.json"
+                };
+
+
+
+                //---------------------------------------------------------- check for duplicate object ---------------------------------------------------------------------
+
+                ////uploading an object with the same name will overwrite the previous object. may want to account for this outside of the activity
+                //dynamic existingObject = await OSSController.GetObjectDetailsAsync(inputs.modelBucketKey, inputs.outputObjectKey + ".zip");
+                //if (existingObject != null)
+                //{
+                //    await _hubContext.Clients.Client(inputs.connectionId).SendAsync("onError", "An existing object was found: " + (string)existingObject.objectId);
+                //    return Ok(new { Result = "Configuration already exists",  Urn = (string)existingObject.encodedURN }); ;
+                //}
+
+
+                //--------------------------------------------- create output buckets (in case they don't exist) ---------------------------------------------------------
+
+                await OSSController.CreateBucket(inputs.modelBucketKey);
+                await OSSController.CreateBucket(inputs.pdfBucketKey);
+                await OSSController.CreateBucket(inputs.stpBucketKey);
+
+                //--------------------------------------------------------------- output files ---------------------------------------------------------------------
+
+                //output zip of models pdf
+                string outputModelName = inputs.outputObjectKey + ".zip";
+
+                XrefTreeArgument outputModelArgument = new XrefTreeArgument()
+                {
+                    Url = string.Format("https://developer.api.autodesk.com/oss/v2/buckets/{0}/objects/{1}", inputs.modelBucketKey, outputModelName),
+                    Verb = Verb.Put,
+                    LocalName = workingFolderName,
+                    Headers = new Dictionary<string, string>()
+                    {
+                        {"Authorization", "Bearer " + oauth.access_token }
+                    }
+                };
+
+                //drawing pdf
+                string outputPdfName = inputs.outputObjectKey + ".pdf";
+
+                XrefTreeArgument outputPdfArgument = new XrefTreeArgument()
+                {
+                    Url = string.Format("https://developer.api.autodesk.com/oss/v2/buckets/{0}/objects/{1}", inputs.pdfBucketKey, outputPdfName),
+                    Verb = Verb.Put,
+                    LocalName = workingFolderName + "\\" + outputPdfName,
+                    Headers = new Dictionary<string, string>()
+                    {
+                        {"Authorization", "Bearer " + oauth.access_token }
+                    }
+                };
+
+                //model stp file
+                string outputStpName = inputs.outputObjectKey + ".stp";
+
+                XrefTreeArgument outputStpArgument = new XrefTreeArgument()
+                {
+                    Url = string.Format("https://developer.api.autodesk.com/oss/v2/buckets/{0}/objects/{1}", inputs.stpBucketKey, outputStpName),
+                    Verb = Verb.Put,
+                    LocalName = workingFolderName + "\\" + outputStpName,
+                    Headers = new Dictionary<string, string>()
+                    {
+                        {"Authorization", "Bearer " + oauth.access_token }
+                    }
+                };
+
+
+
+                //--------------------------------------------------------------- callback url ---------------------------------------------------------------------
+                string callbackUrl = string.Format("{0}/api/forge/designautomation/workitems/configuremodel/callback?connectionId={1}&modelBucketKey={2}&modelObjectKey={3}&pathInZip={4}",
+                                                    OAuthController.GetAppSetting("FORGE_CALLBACK_URL"),
+                                                    inputs.connectionId,
+                                                    inputs.modelBucketKey,
+                                                    outputModelName,
+                                                    inputs.pathInZip);
+
+                XrefTreeArgument callbackUrlArgument = new XrefTreeArgument()
+                {
+                    Verb = Verb.Post,
+                    Url = callbackUrl
+                };
+
+
+
+                //--------------------------------------------------------------- submit workitem ---------------------------------------------------------------------
+                WorkItem workItemSpec = new WorkItem()
+                {
+                    ActivityId = inputs.activityId,
+                    Arguments = new Dictionary<string, IArgument>()
+                    {
+                        { "inputModel", inputModelArgument },
+                        { "inventorParams", inventorParamsArgument },
+                        { "outputModel", outputModelArgument },
+                        { "outputPdf", outputPdfArgument },
+                        { "outputStp", outputStpArgument },
+                        { "onComplete", callbackUrlArgument }
+                    }
+                };
+
+                // submit workitem
+                WorkItemStatus workItemStatus = await _designAutomation.CreateWorkItemAsync(workItemSpec);
+
+                return Ok(new { Result = "Workitem started" });
+            }
+            catch (Exception ex)
+            {
+                await _hubContext.Clients.Client(inputs.connectionId).SendAsync("onError", ex.ToString());
+                return BadRequest(new { Error = ex.ToString() });
+            }
+
+        }
+
+
+        /// <summary>
+        /// Callback from Design Automation Workitem (onComplete) 
+        /// </summary>
+        [HttpPost]
+        [Route("api/forge/designautomation/workitems/configuremodel/callback")]
+        public async Task<IActionResult> Workitem_OnCallback(string connectionId, string modelBucketKey, string modelObjectKey, string pathInZip, [FromBody] dynamic body)
+        {
+            try
+            {
+                //parse json data
+                JObject workItem = JObject.Parse((string)body.ToString());
+                string status = workItem["status"].Value<string>();
+                string reportUrl = workItem["reportUrl"].Value<string>();
+
+                //download workitem report
+                RestClient client = new RestClient(reportUrl);
+                RestRequest request = new RestRequest(string.Empty);
+                string reportTxt = Encoding.Default.GetString(client.DownloadData(request));
+
+                await _hubContext.Clients.Client(connectionId).SendAsync("workItemComplete", workItem.ToString());
+                await _hubContext.Clients.Client(connectionId).SendAsync("onProgress", reportTxt);
+
+                if (status == "success")
+                {
+                    //start translation if job was successful
+                    HttpResponseMessage requestTranslation = await ModelDerivativeController.TranslateObject(connectionId, modelBucketKey, modelObjectKey, pathInZip);
+                    await _hubContext.Clients.Client(connectionId).SendAsync("translationRequested", "Translation requested: " + requestTranslation.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            //ALWAYS RETURN OK TO THE FORGE API
+            return Ok();
+        }
 
     }
 

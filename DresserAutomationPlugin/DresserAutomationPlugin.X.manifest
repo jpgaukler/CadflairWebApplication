@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="DresserAutomationPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{3d1a41c1-fbb3-45ff-a943-61de5d300286}" progid="DresserAutomationPlugin.PluginServer" threadingModel="Both" name="DresserAutomationPlugin.PluginServer"></clrClass>
-  <file name="DresserAutomationPlugin.dll" hashalg="SHA1"></file>
-</assembly>

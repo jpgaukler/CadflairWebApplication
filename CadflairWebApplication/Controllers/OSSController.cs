@@ -11,6 +11,27 @@ namespace Forge.Controllers
     [ApiController]
     public class OSSController : ControllerBase
     {
+        public static async Task<dynamic> CreateBucket(string bucketKey)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                BucketsApi buckets = new BucketsApi();
+                buckets.Configuration.AccessToken = oauth.access_token;
+
+                PostBucketsPayload bucketPayload = new PostBucketsPayload(bucketKey, null, PostBucketsPayload.PolicyKeyEnum.Persistent);
+                dynamic bucket = await buckets.CreateBucketAsync(bucketPayload, "US");
+
+                return bucket;
+            }
+            catch
+            {
+                return null; //return null if the bucket can not be created, this can occur if the bucket already exists, or has an invalid name
+            }
+        }
+
+
         /// <summary>
         /// Return list of buckets 
         /// </summary>
@@ -102,7 +123,7 @@ namespace Forge.Controllers
                 // as we have the id (bucketKey), let's return all 
                 ObjectsApi objectsApi = new ObjectsApi();
                 objectsApi.Configuration.AccessToken = oauth.access_token;
-                dynamic objects = objectsApi.GetObjects(bucketKey);
+                dynamic objects = objectsApi.GetObjects(bucketKey, 100);
 
                 //format buckets into viewable format
                 List<ObjectDetails> objectsList = new List<ObjectDetails>();
@@ -123,28 +144,28 @@ namespace Forge.Controllers
             }
         }
 
-        /// <summary>
-        /// Return urn of an object within a bucket
-        /// </summary>
-        [HttpGet]
-        [Route("api/forge/oss/buckets/bucket/object")]
-        public async Task<IActionResult> GetObjectURNAsync([FromQuery] string bucketKey, [FromQuery] string objectName)
-        {
-            dynamic oauth = await OAuthController.GetInternalAsync();
+        ///// <summary>
+        ///// Return urn of an object within a bucket
+        ///// </summary>
+        //[HttpGet]
+        //[Route("api/forge/oss/buckets/bucket/object")]
+        //public async Task<IActionResult> GetObjectURNAsync([FromQuery] string bucketKey, [FromQuery] string objectName)
+        //{
+        //    dynamic oauth = await OAuthController.GetInternalAsync();
 
-            ObjectsApi objects = new ObjectsApi();
-            objects.Configuration.AccessToken = oauth.access_token;
-            try
-            {
-                dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
-                return Ok(new { Result = "Success", ObjectURN = Base64Encode((string)objectDetails.objectId) });
-            }
-            catch
-            {
-                return NotFound(new { Result = "Object Not Found" });
-            }
+        //    ObjectsApi objects = new ObjectsApi();
+        //    objects.Configuration.AccessToken = oauth.access_token;
+        //    try
+        //    {
+        //        dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
+        //        return Ok(new { Result = "Success", ObjectURN = Base64Encode((string)objectDetails.objectId) });
+        //    }
+        //    catch
+        //    {
+        //        return NotFound(new { Result = "Object Not Found" });
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// Return urn of an object within a bucket
@@ -159,8 +180,61 @@ namespace Forge.Controllers
                 objects.Configuration.AccessToken = oauth.access_token;
 
                 dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
+
+                //add the encoded urn to the object
                 objectDetails.encodedURN = Base64Encode((string)objectDetails.objectId);
+
                 return objectDetails;
+            }
+            catch
+            {
+                return null; //call to GetObjectDetailsAsync should fail if no object is found
+            }
+
+        }
+
+        /// <summary>
+        /// Return signed url to download an object
+        /// </summary>
+        [HttpGet]
+        [Route("api/forge/oss/objects/getsignedurl")]
+        public async Task<IActionResult> GetObjectSignedUrl(string bucketKey, string objectKey)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                ObjectsApi objectsApi = new ObjectsApi();
+                objectsApi.Configuration.AccessToken = oauth.access_token;
+
+                dynamic resource = await objectsApi.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(10), "read");
+
+                return Ok(new { Url = (string)resource.signedUrl});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// Get the Base64 encoded URN for an object
+        /// </summary>
+        /// <param name="bucketKey"></param>
+        /// <param name="objectName"></param>
+        /// <returns></returns>
+        public static async Task<string> GetEncodedUrnAsync(string bucketKey, string objectName)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                ObjectsApi objects = new ObjectsApi();
+                objects.Configuration.AccessToken = oauth.access_token;
+
+                dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
+                return Base64Encode((string)objectDetails.objectId);
             }
             catch
             {
@@ -169,10 +243,11 @@ namespace Forge.Controllers
 
         }
 
+
         /// <summary>
         /// Base64 enconde a string
         /// </summary>
-        public static string Base64Encode(string plainText)
+        private static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return System.Convert.ToBase64String(plainTextBytes);
