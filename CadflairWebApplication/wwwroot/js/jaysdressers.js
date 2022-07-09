@@ -3,6 +3,7 @@
 }
 
 function bindEvents() {
+    $('.param-group-header').bind('click', toggleParamGroup);
     $(".form-inputbox").blur(validateInputs);
     $('#submitWorkitem').click(createDresserModel);
 }

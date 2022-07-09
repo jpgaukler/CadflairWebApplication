@@ -39,6 +39,7 @@ body {
 nav {
     width: 100%;
     margin: auto;
+    padding: 0em 1.5em;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
@@ -46,17 +47,12 @@ nav {
     background-color: var(--primary-dark);
 }
 
-.cadflair-logo{
+.nav-logo {
     height: 2.5em;
     margin: .7em 0em;
     cursor: pointer;
     display: flex;
 }
-
-.flair-text{
-    fill: var(--pure-white);
-}
-
 
 #navButtons {
     display: flex;
@@ -68,7 +64,7 @@ nav {
     cursor: pointer;
     font-size: 1.25em;
     color: var(--pure-white);
-    padding: 0.5em 1em;
+    padding: 0.5em 0.7em;
     border-radius: 0.5em;
 }
 
@@ -85,7 +81,7 @@ nav {
 #sidebarContainer {
     display: flex;
     height: 100%;
-    width: 400px;
+    width: auto;
     flex-direction: column;
     justify-content: space-between;
     background: var(--primary-medium);
@@ -106,14 +102,16 @@ nav {
 #paramContainer{
     overflow-y: hidden;
     /*overflow-y: scroll;*/
+    flex-grow: 1;
 }
+
 
 /*    .param-container::-webkit-scrollbar {
         display: none;
     }*/
 
 .param-group {
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--primary-dark);
 }
 
     .param-group.expanded {
@@ -180,6 +178,7 @@ nav {
 }
 
     .input-group > label {
+        white-space: pre;
         font-size: 1rem;
     }
 
@@ -190,7 +189,7 @@ nav {
 }
 
 .combobox-group{
-    grid-template-columns: 50% 1fr;
+    grid-template-columns: 50% 40% 1fr;
 }
 
 .combobox {
@@ -201,7 +200,7 @@ nav {
 }
 
 .textbox-group{
-    grid-template-columns: 40% 50% 1fr;
+    grid-template-columns: 50% 40% 1fr;
 }
 
 .textbox {
@@ -261,7 +260,8 @@ button {
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.9rem;
     padding: 0.4em 0em;
     margin: 0.25em 0.5em;
 }
@@ -333,7 +333,7 @@ button {
 #reviewSection {
     display: flex;
     height: 100%;
-    width: 700px;
+    width: auto;
     flex-direction: column;
     overflow-y: hidden;
     background: var(--primary-medium);
@@ -370,42 +370,82 @@ button {
     overflow-y: scroll;
 }
 
-.object{
+    #objectList::-webkit-scrollbar {
+        display: none;
+    }
+
+.object {
     background: var(--primary-light);
     border-radius: 4px;
-    /*box-shadow: var(--primary-dark) 4px 4px 7px;*/
     margin: 0.25em 0.5em;
-    padding: 0.5em 0.5em;
+    padding: 0.75em;
     position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 2em;
+    color: var(--primary-dark);
 }
 
 .object-info{
     display: flex;
     flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    padding: 0.5em 0em;
 }
 
 .thumbnail-image{
-    /*background: var(--primary-accent);*/
-    width: 8em;
+    width: 6em;
 }
 
-.delete-object-icon{
+.object-key:hover{
+    color: var(--primary-accent);
+    cursor: pointer;
+}
+
+.object-downloads {
+    display: flex;
+    flex-direction: row;
+    gap: 0.75em;
+}
+
+.download-object {
+    display: flex;
+    align-items: center;
+    font-size: .9rem;
+    cursor: pointer;
+    gap: 0.5em;
+}
+
+    .download-object:hover {
+        transform: scale(1.05);
+    }
+
+.download-icon{
+    width: 1.5em;
+}
+
+.delete-object-icon {
     position: absolute;
     right: 5px;
     top: 5px;
     width: 1em;
 }
 
-.download-object{
-    background: var(--primary-medium);
-    color: var(--primary-accent);
-    margin: 0.25em 0.5em;
-    padding: 0.5em 0.5em;
-    cursor: pointer;
+/*#endregion */
+
+
+
+/*#region footer */
+footer{
+    background: var(--primary-dark);
+    color: var(--pure-white);
 }
+
+#disclaimer{
+    padding: .5em 1em;
+}
+
 
 /*#endregion */

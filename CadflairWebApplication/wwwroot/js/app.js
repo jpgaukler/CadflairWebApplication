@@ -18,7 +18,6 @@ function initializeUI() {
     $('#navContactButton').bind('click', { id: '#contactSection' }, showSection);
 
     //create buttons
-    $('.param-group-header').bind('click', toggleParamGroup);
     $('#pdfButton').bind('click', openFile);
     $('#iamButton').bind('click', openFile);
     $('#refreshObjectsButton').bind('click', refreshObjects);
@@ -261,7 +260,7 @@ async function getObjects() {
                     //clone template and populate object info
                     let objectNode = objectTemplate.cloneNode(true);
                     objectNode.querySelector('.object').id = objectId;
-                    objectNode.querySelector('.key').innerText = objectKey;
+                    objectNode.querySelector('.object-key').innerText = objectKey;
 
                     //add zip data
                     objectNode.querySelector('.download-zip').dataset.objectKey = objectKey;
@@ -276,7 +275,7 @@ async function getObjects() {
                     objectNode.querySelector('.download-stp').dataset.bucketKey = stpBucketKey;
 
                     //add event listeners
-                    objectNode.querySelector('.object').addEventListener('click', viewObject);
+                    objectNode.querySelector('.object-key').addEventListener('click', viewObject);
                     objectNode.querySelector('.delete-object-icon').addEventListener('click', deleteObject);
                     objectNode.querySelector('.download-zip').addEventListener('click', downloadFile);
                     objectNode.querySelector('.download-pdf').addEventListener('click', downloadFile);
@@ -378,8 +377,8 @@ async function downloadFile() {
 var viewer;
 
 function viewObject() {
-    urn = $(this).attr('id');
-    //console.log(urn);
+    urn = $(this).parent().parent().attr('id');
+    console.log(urn);
     launchViewer(urn);
 }
 
