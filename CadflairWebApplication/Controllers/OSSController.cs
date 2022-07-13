@@ -245,6 +245,34 @@ namespace Forge.Controllers
 
 
         /// <summary>
+        /// Deletes an object from OSS
+        /// </summary>
+        /// <param name="bucketKey"></param>
+        /// <param name="objectKey"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("api/forge/oss/objects/delete")]
+        public async Task<IActionResult> DeleteObjectAsync(string bucketKey, string objectKey)
+        {
+            try
+            {
+                dynamic oauth = await OAuthController.GetInternalAsync();
+
+                ObjectsApi objects = new ObjectsApi();
+                objects.Configuration.AccessToken = oauth.access_token;
+
+                objects.DeleteObject(bucketKey, objectKey);
+
+                return Ok(new { Result = objectKey + " successfully deleted" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.ToString());
+            }
+        }
+
+
+        /// <summary>
         /// Base64 enconde a string
         /// </summary>
         private static string Base64Encode(string plainText)

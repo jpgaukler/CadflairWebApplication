@@ -276,7 +276,7 @@ async function getObjects() {
 
                     //add event listeners
                     objectNode.querySelector('.object-key').addEventListener('click', viewObject);
-                    objectNode.querySelector('.delete-object-icon').addEventListener('click', deleteObject);
+                    objectNode.querySelector('.delete-object-icon').addEventListener('click', deleteRecord);
                     objectNode.querySelector('.download-zip').addEventListener('click', downloadFile);
                     objectNode.querySelector('.download-pdf').addEventListener('click', downloadFile);
                     objectNode.querySelector('.download-stp').addEventListener('click', downloadFile);
@@ -327,26 +327,44 @@ function refreshObjects() {
     getObjects();
 }
 
-async function deleteObject() {
-    let object = $(this).parent();
-    let objectKey = object.children('object-info').children('key').text();
-    console.log("delete object (incomplete functoin): " + objectKey);
+function deleteRecord() {
+    let objectRecord = $(this).parent();
+    let downloadsInfo = objectRecord.children('.object-info').children('.object-downloads');
+    let objectKey = objectRecord.children('.object-info').children('.object-key').text();
+    console.log("Deleting record for: " + objectKey);
 
-    //let bucket = $(this).parent();
-    //let bucketKey = bucket.attr('id');
-    //console.log('Deleting object: ' + bucketKey);
+    //delete zip
+    let zipBucketKey = downloadsInfo.children('.download-zip').data('bucketKey');
+    let zipKey = downloadsInfo.children('.download-zip').data('objectKey');
+    deleteObject(zipBucketKey, zipKey);
 
-    //$.ajax({
-    //    url: 'api/forge/oss/buckets/delete?bucketKey=' + bucketKey,
-    //    type: 'DELETE',
-    //    success: function (result) {
-    //        console.log('Bucket deleted. ' + result);
-    //        bucket.remove();
-    //    },
-    //    error: function (err) {
-    //        console.error(err.responseText);
-    //    }
-    //});
+    //delete pdf
+    let pdfBucketKey = downloadsInfo.children('.download-pdf').data('bucketKey');
+    let pdfKey = downloadsInfo.children('.download-pdf').data('objectKey');
+    deleteObject(pdfBucketKey, pdfKey);
+
+    //delete stp
+    let stpBucketKey = downloadsInfo.children('.download-stp').data('bucketKey');
+    let stpKey = downloadsInfo.children('.download-stp').data('objectKey');
+    deleteObject(stpBucketKey, stpKey);
+
+    //remove record from list in UI
+    objectRecord.remove();
+}
+
+async function deleteObject(bucketKey, objectKey) {
+    console.log('Deleting object: ' + bucketKey + ' - ' + objectKey);
+
+    $.ajax({
+        url: 'api/forge/oss/objects/delete?bucketKey=' + bucketKey + '&objectKey=' + objectKey,
+        type: 'DELETE',
+        success: function (res) {
+            console.log(res.result);
+        },
+        error: function (err) {
+            console.error(err.responseText);
+        }
+    });
 }
 
 async function downloadFile() {
