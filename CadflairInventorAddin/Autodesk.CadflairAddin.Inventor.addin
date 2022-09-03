@@ -1,0 +1,14 @@
+<Addin Type="Standard">
+  <!--Created for Autodesk Inventor Version 26.0-->
+  <ClassId>{DCC57B37-B24B-4A47-BB10-68BF826C9488}</ClassId>
+  <ClientId>{DCC57B37-B24B-4A47-BB10-68BF826C9488}</ClientId>
+  <DisplayName>Cadflair</DisplayName>
+  <Description>Provides tools to publish and manage Cadflair content.</Description>
+  <Assembly>CadflairInventorAddin.dll</Assembly>
+  <LoadOnStartUp>1</LoadOnStartUp>
+  <UserUnloadable>1</UserUnloadable>
+  <Hidden>0</Hidden>
+  <SupportedSoftwareVersionGreaterThan>25..</SupportedSoftwareVersionGreaterThan>
+  <DataVersion>1</DataVersion>
+  <UserInterfaceVersion>1</UserInterfaceVersion>
+</Addin>
