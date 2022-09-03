@@ -437,6 +437,34 @@ button {
 
 
 
+/*#region settings section */
+
+#settingsSection {
+    display: flex;
+    height: 100%;
+    width: auto;
+    flex-direction: column;
+    overflow-y: hidden;
+    background: var(--primary-medium);
+    color: var(--pure-white);
+}
+
+/*#endregion */
+
+/*#region contact section */
+
+#contactSection {
+    display: flex;
+    height: 100%;
+    width: auto;
+    flex-direction: column;
+    overflow-y: hidden;
+    background: var(--primary-medium);
+    color: var(--pure-white);
+}
+
+/*#endregion */
+
 /*#region footer */
 footer{
     background: var(--primary-dark);
