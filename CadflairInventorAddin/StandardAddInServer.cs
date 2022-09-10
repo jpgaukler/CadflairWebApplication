@@ -23,6 +23,7 @@ namespace CadflairInventorAddin
         private UserInterfaceManager _userInterfaceManager;
         private ButtonDefinition _addDimensionAttributesButton;
         private ButtonDefinition _refreshDimensionsButton;
+        private ButtonDefinition _convertiLogicFormButton;
 
 
         public void Activate(Inventor.ApplicationAddInSite addInSiteObject, bool firstTime)
@@ -46,10 +47,12 @@ namespace CadflairInventorAddin
             ControlDefinitions controlDefs = Globals.InventorApplication.CommandManager.ControlDefinitions;
             _addDimensionAttributesButton = controlDefs.AddButtonDefinition("Add Automation\nAttributes", "Add Automation Attributes Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Add AttributeSets to automate drawing elements.", "Save drawing data to AttributeSets for drawing automation.", PictureDispConverter.ToIPictureDisp(Resources.LockSmall), PictureDispConverter.ToIPictureDisp(Resources.LockLarge));
             _refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
+            _convertiLogicFormButton = controlDefs.AddButtonDefinition("Convert iLogic\nForm Spec", "Convert iLogic Form Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Convert an iLogic form to html for use with Cadflair.", "Convert an iLogic form to html for use with Cadflair.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
 
             //add button handlers
-            _addDimensionAttributesButton.OnExecute += AttributesCommand.AddDimensionAttributesButton_OnExecute;
-            _refreshDimensionsButton.OnExecute += AttributesCommand.RefreshDimensionsButton_OnExecute;
+            _addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
+            _refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+            _convertiLogicFormButton.OnExecute += ConvertiLogicFormSpec.ConvertiLogicFormButton_OnExecute;
 
 
             if (firstTime)
@@ -65,16 +68,22 @@ namespace CadflairInventorAddin
 
         private void AddToUserInterface()
         {
-            //setup ribbons and panels
-            Ribbons ribbons = _userInterfaceManager.Ribbons;
-            Ribbon drawingRibbon = ribbons["Drawing"];
-            RibbonTab drawingTab = drawingRibbon.RibbonTabs.Add("Cadflair", "Cadflair Drawing Tab", Globals.AddInCLSIDString);
-            RibbonPanel linearDimsPanel = drawingTab.RibbonPanels.Add("Dimensions", "Cadflair Drawing Panel", Globals.AddInCLSIDString);
-        
+            //setup tabs
+            RibbonTab assemblyTab = _userInterfaceManager.Ribbons["Assembly"].RibbonTabs.Add("Cadflair", "Cadflair Assembly Tab", Globals.AddInCLSIDString);
+            RibbonTab partTab = _userInterfaceManager.Ribbons["Part"].RibbonTabs.Add("Cadflair", "Cadflair Part Tab", Globals.AddInCLSIDString);
+            RibbonTab drawingTab = _userInterfaceManager.Ribbons["Drawing"].RibbonTabs.Add("Cadflair", "Cadflair Drawing Tab", Globals.AddInCLSIDString);
+
+            //setup panels
+            RibbonPanel assemblyPanel = assemblyTab.RibbonPanels.Add("Cadflair", "Cadflair Assembly Panel", Globals.AddInCLSIDString);
+            RibbonPanel partPanel = partTab.RibbonPanels.Add("Cadflair", "Cadflair Part Panel", Globals.AddInCLSIDString);
+            RibbonPanel drawingPanel = drawingTab.RibbonPanels.Add("Cadflair", "Cadflair Drawing Panel", Globals.AddInCLSIDString);
+
 
             //add components to user interface
-            linearDimsPanel.CommandControls.AddButton(_addDimensionAttributesButton, true);
-            linearDimsPanel.CommandControls.AddButton(_refreshDimensionsButton, true);
+            assemblyPanel.CommandControls.AddButton(_convertiLogicFormButton, true);
+            partPanel.CommandControls.AddButton(_convertiLogicFormButton, true);
+            drawingPanel.CommandControls.AddButton(_addDimensionAttributesButton, true);
+            drawingPanel.CommandControls.AddButton(_refreshDimensionsButton, true);
 
         }
 
@@ -86,8 +95,9 @@ namespace CadflairInventorAddin
 
             // disconnected events
             _userInterfaceManager.UserInterfaceEvents.OnResetRibbonInterface -= UserInterfaceEvents_OnResetRibbonInterface;
-            _addDimensionAttributesButton.OnExecute -= AttributesCommand.AddDimensionAttributesButton_OnExecute;
-            _refreshDimensionsButton.OnExecute -= AttributesCommand.RefreshDimensionsButton_OnExecute;
+            _addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
+            _refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+            _convertiLogicFormButton.OnExecute -= ConvertiLogicFormSpec.ConvertiLogicFormButton_OnExecute;
 
             // Release objects.
             Globals.InventorApplication = null;
@@ -97,6 +107,7 @@ namespace CadflairInventorAddin
             //buttons 
             _addDimensionAttributesButton = null;
             _refreshDimensionsButton = null;
+            _convertiLogicFormButton = null;
 
 
             GC.Collect();

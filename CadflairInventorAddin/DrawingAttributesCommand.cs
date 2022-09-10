@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace CadflairInventorAddin
 {
-    public static class AttributesCommand
+    internal static class DrawingAttributesCommand
     {
 
         //button handlers
