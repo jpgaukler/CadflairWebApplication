@@ -82,10 +82,10 @@
     <AssemblyName>CadflairInventorAddin</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="autodesk.inventor.interop, Version=26.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
+    <Reference Include="autodesk.inventor.interop, Version=27.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_26.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_27.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
@@ -145,9 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LockLarge.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LargeTemplate.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Template.ico" />

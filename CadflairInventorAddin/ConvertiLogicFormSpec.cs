@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace CadflairInventorAddin
 {
@@ -39,7 +41,7 @@ namespace CadflairInventorAddin
                     string xmlString = System.Text.Encoding.UTF8.GetString(bytes);
 
                     //print string to txt file
-                    string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\CadflairInventorAddin\bin\Debug";
+                    string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug";
                     string fileName = set.Name + " - " + formSpec.Name + ".xml";
                     string fullName = System.IO.Path.Combine(folderName, fileName);
 
@@ -68,6 +70,9 @@ namespace CadflairInventorAddin
             //pull out form name to be able to allow user to select which form drives the design
             //handle control groups 
             //handle tab groups
+
+
+
 
         }
 
