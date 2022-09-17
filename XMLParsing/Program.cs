@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using System.Web.UI;
 
 namespace XMLParsing
 {
@@ -23,7 +24,15 @@ namespace XMLParsing
             XElement formSpec = doc.Element("FormSpecification");
             XElement formItems = formSpec.Element("Items");
 
-            ConvertFormSpecToHTML(formItems, ns, 0);
+
+            StringWriter stringWriter = new StringWriter();
+
+            using (HtmlTextWriter writer = new HtmlTextWriter(stringWriter))
+            {
+                ConvertFormSpecToHTML(writer, formItems, ns);
+            }
+
+            Console.WriteLine(stringWriter.ToString());
 
             Console.ReadLine();
         }
@@ -37,16 +46,8 @@ namespace XMLParsing
         //do I want to handle caption images???
 
 
-        private static void ConvertFormSpecToHTML(XElement items, XNamespace ns, int indentLevel)
+        private static void ConvertFormSpecToHTML(HtmlTextWriter writer, XElement items, XNamespace ns)
         {
-            string indents = "";
-            for (int i = 0; i < indentLevel; i++)
-            {
-                indents += "\t";
-            }
-
-            indentLevel++;
-
             foreach (XElement uiElementSpec in items.Elements())
             {
                 string uiElementType = uiElementSpec.Attribute(ns + "type").Value;
@@ -56,37 +57,145 @@ namespace XMLParsing
                 string toolTip = uiElementSpec.Element("ToolTip")?.Value;
                 string readOnly = uiElementSpec.Element("ReadOnly")?.Value;
                 string enablingParameterName = uiElementSpec.Element("EnablingParameterName")?.Value;
+                string idPrefix = "InventorParam-";
 
-                Console.WriteLine(indents + "Element Type: " + uiElementType);
-                Console.WriteLine(indents + "Element Name: " + uiElementName);
-                Console.WriteLine(indents + "Parameter Name: " + parameterName);
-                Console.WriteLine(indents + "Control Type: " + editControlType);
-                Console.WriteLine(indents + "Tooltip: " + toolTip);
 
                 switch (uiElementType)
                 {
-                    case "ControlTabGroupSpec":
-                    case "ControlGroupSpec":
-                        //recurse through sub items
-                        XElement subItems = uiElementSpec.Element("Items");
-                        ConvertFormSpecToHTML(subItems, ns, indentLevel);
 
-                        //close tag
+                    case "ControlTabGroupSpec":
+                        //recurse through sub items
+                        ConvertFormSpecToHTML(writer, uiElementSpec.Element("Items"), ns);
+                        break;
+
+                    case "ControlGroupSpec":
+                        //open group div
+                        writer.AddAttribute("class", uiElementType);
+                        writer.RenderBeginTag("div");
+
+                        //add header for parameter group
+                        writer.AddAttribute("class", "header");
+                        writer.RenderBeginTag("div");
+
+                        //add h1 for group name
+                        writer.RenderBeginTag("span");
+                        writer.Write(uiElementName);
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+
+                        //add dropdown indicator
+                        writer.AddAttribute("class", "dropdown-indicator");
+                        writer.RenderBeginTag("span");
+                        writer.RenderEndTag();
+
+                        //end header tag
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+
+                        //open div to contain group items
+                        writer.AddAttribute("class", "items");
+                        writer.RenderBeginTag("div");
+
+                        //recurse through sub items
+                        ConvertFormSpecToHTML(writer, uiElementSpec.Element("Items"), ns);
+
+                        //close group div and parent div
+                        writer.RenderEndTag();
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+
                         break;
 
                     case "NumericParameterControlSpec":
-                    case "MultiValueNumericParameterControlSpec":
-                    case "BooleanParameterControlSpec":
+
+                        //NEED TO GET THE PARAMETER MAX AND MIN VALUES 
+
+
+                        //open div with uiElementType
+                        writer.AddAttribute("class", uiElementType);
+                        writer.RenderBeginTag("div");
+
+                        //add label for parameter
+                        writer.AddAttribute("for", idPrefix + parameterName);
+                        writer.RenderBeginTag("label");
+                        writer.Write(uiElementName);
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+
+                        //add input for parameter
+                        writer.AddAttribute("class", editControlType);
+                        writer.AddAttribute("id", idPrefix + parameterName);
+                        writer.AddAttribute("type", "number");
+                        writer.AddAttribute("pattern", "[0-9]*");
+                        writer.AddAttribute("placeholder", "Enter " + uiElementName);
+                        writer.RenderBeginTag("input");
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+
+                        //add label for unit type
+                        writer.AddAttribute("class", "units-label");
+                        writer.RenderBeginTag("span");
+                        writer.Write("in");
+                        writer.RenderEndTag();
+
+
+                        //end parent div
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+                        break;
+
                     case "TextParameterControlSpec":
+
+                        //open div with uiElementType
+                        writer.AddAttribute("class", uiElementType);
+                        writer.RenderBeginTag("div");
+
+                        //add label for parameter
+                        writer.AddAttribute("for", idPrefix + parameterName);
+                        writer.RenderBeginTag("label");
+                        writer.Write(uiElementName);
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+
+                        //add input for parameter
+                        writer.AddAttribute("class", editControlType);
+                        writer.AddAttribute("id",  idPrefix + parameterName);
+                        writer.AddAttribute("type", "text");
+                        writer.AddAttribute("placeholder", "Enter " + uiElementName);
+                        writer.RenderBeginTag("input");
+                        writer.RenderEndTag();
+
+                        //end parent div
+                        writer.RenderEndTag();
+                        writer.WriteLine();
+                        break;
+
+                    case "MultiValueNumericParameterControlSpec":
+
+                        //handle radio groups, listboxes, and comboboxes
+
                     case "MultiValueTextParameterControlSpec":
 
+                    //handle radio groups, listboxes, and comboboxes
 
+                    //use size attribute on html select element to make a listbox https://www.javatpoint.com/html-list-box
+
+                    case "BooleanParameterControlSpec":
+
+                        //need to handle true/false, or check box
+
+
+
+
+
+                       
+                    case "TextPropertyControlSpec": //this is an iProperty
+                    case "iLogicRuleControlSpec": //this is an iLogic Rule
                     default:
                         break;
                 }
-            }
 
-            indentLevel--;
+            }
         }
 
 

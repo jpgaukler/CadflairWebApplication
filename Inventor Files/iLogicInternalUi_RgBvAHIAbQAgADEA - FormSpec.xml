@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<FormSpecification xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Form 1</Name>
+  <Guid>43198cc8-4ce5-4d7b-aafa-7e1dba4f0937</Guid>
+  <Items>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Common</Name>
+      <Guid>160174b5-aa79-4445-9b71-8cfd5c654ce2</Guid>
+      <Items>
+        <UiElementSpec xsi:type="ControlGroupSpec">
+          <Name>Numbers</Name>
+          <Guid>fe09614d-3dfd-4155-a1c9-36a9479ca02f</Guid>
+          <Items>
+            <UiElementSpec xsi:type="NumericParameterControlSpec">
+              <Name>numeric</Name>
+              <Guid>ef88eeb6-66d9-4774-946b-d37ab8495a4d</Guid>
+              <ToolTip />
+              <ParameterName>numeric</ParameterName>
+              <EditControlType>TextBox</EditControlType>
+              <TrackBarProperties>
+                <MinimumValue>1</MinimumValue>
+                <MaximumValue>10</MaximumValue>
+                <ValueIncrement>1</ValueIncrement>
+              </TrackBarProperties>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
+              <Name>numeric_radio</Name>
+              <Guid>cfd200d9-981b-494e-ac1c-4a21801b5ac7</Guid>
+              <ToolTip />
+              <ParameterName>numeric_radio</ParameterName>
+              <EditControlType>RadioGroup</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
+              <Name>numeric_combo</Name>
+              <Guid>06a7a745-3e86-450d-ba84-22f7d5a1638d</Guid>
+              <ToolTip />
+              <ParameterName>numeric_combo</ParameterName>
+              <EditControlType>ComboBox</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
+              <Name>numeric_list</Name>
+              <Guid>7a6cd4d9-5ba6-4ba3-8ed5-e664633bb4c9</Guid>
+              <ToolTip />
+              <ParameterName>numeric_list</ParameterName>
+              <EditControlType>ListBox</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+          </Items>
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+          <BordersVisible>true</BordersVisible>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="ControlGroupSpec">
+          <Name>Boolean</Name>
+          <Guid>f326326f-c47b-4daa-ac22-0bc7527f519c</Guid>
+          <Items>
+            <UiElementSpec xsi:type="BooleanParameterControlSpec">
+              <Name>boolean</Name>
+              <Guid>14d338d8-5adc-4e78-aa49-ca0156687907</Guid>
+              <ToolTip />
+              <ParameterName>boolean</ParameterName>
+              <EditControlType>TrueOrFalse</EditControlType>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="BooleanParameterControlSpec">
+              <Name>boolen_checkbox</Name>
+              <Guid>78219d32-c1e7-46cf-80ac-d9a3b771712a</Guid>
+              <ToolTip />
+              <ParameterName>boolen_checkbox</ParameterName>
+              <EditControlType>CheckBox</EditControlType>
+            </UiElementSpec>
+          </Items>
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+          <BordersVisible>true</BordersVisible>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="ControlGroupSpec">
+          <Name>Text</Name>
+          <Guid>50770084-e749-42d8-a21d-0b43a1e1d902</Guid>
+          <Items>
+            <UiElementSpec xsi:type="TextParameterControlSpec">
+              <Name>text</Name>
+              <Guid>60f0d7ba-b580-41ea-a9f3-8e3b04900299</Guid>
+              <ToolTip />
+              <ParameterName>text</ParameterName>
+              <EditControlType>TextBox</EditControlType>
+              <MinimumLinesToShow>2</MinimumLinesToShow>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+              <Name>textMulti_combo</Name>
+              <Guid>3dc3450e-69df-4f0e-aa2e-4bd67d9591dd</Guid>
+              <ToolTip />
+              <ParameterName>textMulti_combo</ParameterName>
+              <EditControlType>ComboBox</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+              <Name>text_list</Name>
+              <Guid>d169236a-72c0-44d8-88d7-46736c465422</Guid>
+              <ToolTip />
+              <ParameterName>text_list</ParameterName>
+              <EditControlType>ListBox</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+              <Name>text_radio</Name>
+              <Guid>724b8279-8ca6-46b9-b04e-7d445acd558d</Guid>
+              <ToolTip />
+              <ParameterName>text_radio</ParameterName>
+              <EditControlType>RadioGroup</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+          </Items>
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+          <BordersVisible>true</BordersVisible>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Other</Name>
+      <Guid>e4a73c00-592e-4a3e-aea8-c57a0ac6935d</Guid>
+      <Items>
+        <UiElementSpec xsi:type="NumericParameterControlSpec">
+          <Name>read_only_numeric</Name>
+          <Guid>bc650194-e4e3-4475-ab5e-e94a7d802b92</Guid>
+          <ToolTip />
+          <ReadOnly>true</ReadOnly>
+          <ParameterName>read_only_numeric</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <TrackBarProperties>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>10</MaximumValue>
+            <ValueIncrement>1</ValueIncrement>
+          </TrackBarProperties>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="NumericParameterControlSpec">
+          <Name>enabling</Name>
+          <Guid>fb5ad9cd-a61a-4d4a-84a6-727ff54c9c71</Guid>
+          <ToolTip />
+          <EnablingParameterName>boolen_checkbox</EnablingParameterName>
+          <ParameterName>enabling</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <TrackBarProperties>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>10</MaximumValue>
+            <ValueIncrement>1</ValueIncrement>
+          </TrackBarProperties>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="iLogicRuleControlSpec">
+      <Name>Test Rule</Name>
+      <Guid>77a8a3b7-f8ed-45e1-aba2-02582ec675c7</Guid>
+      <Image>
+        <BitmapByteArray />
+      </Image>
+      <TextVisible>true</TextVisible>
+      <RuleName>Test Rule</RuleName>
+      <RuleButtonBehavior>RunRule</RuleButtonBehavior>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="TextPropertyControlSpec">
+      <Name>Part Number</Name>
+      <Guid>7085f2ef-639c-4090-b177-747896826763</Guid>
+      <PropertyName>Part Number</PropertyName>
+      <PropertySetName>Project</PropertySetName>
+    </UiElementSpec>
+  </Items>
+  <StyleAndSkinName>
+    <StyleName>Default</StyleName>
+  </StyleAndSkinName>
+  <AllowCustomization>true</AllowCustomization>
+  <PredefinedButtons>Done</PredefinedButtons>
+  <Modal>false</Modal>
+</FormSpecification>
