@@ -62,6 +62,41 @@ namespace CadflairInventorAddin
                 return null;
             }
         }
+
+
+        public static Inventor.Property GetProperty(this Document doc, string propertyName)
+        {
+            foreach(PropertySet propSet in doc.PropertySets)
+            {
+                foreach(Property prop in propSet)
+                {
+                    if (prop.Name == propertyName) return prop;
+                }
+            }
+
+            return null;
+        }
+
+        public static Inventor.Parameter GetParameter(this Document doc, string parameterName)
+        {
+            try
+            {
+                if (doc is PartDocument)
+                {
+                    PartDocument partDoc = (PartDocument)doc;
+                    return partDoc.ComponentDefinition.Parameters[parameterName];
+                }
+
+                if (doc is AssemblyDocument)
+                {
+                    AssemblyDocument assemDoc = (AssemblyDocument)doc;
+                    return assemDoc.ComponentDefinition.Parameters[parameterName];
+                }
+            }
+            catch { }
+
+            return null;
+        }
     }
 
     /// <summary>
