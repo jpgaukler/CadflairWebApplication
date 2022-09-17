@@ -1,0 +1,128 @@
+<div class="ControlTabGroupSpec">
+	<h1>
+		<span>Common</span>
+
+	</h1>
+	<div class="items">
+		<div class="ControlGroupSpec">
+			<h1>
+				<span>Numbers</span>
+				<span class="dropdown-indicator"></span>
+			</h1>
+			<div class="items">
+				<div class="NumericParameterControlSpec">
+					<label for="InventorParam-numeric">numeric</label>
+					<input id="InventorParam-numeric" type="number" pattern="[0-9]*" placeholder="Enter numeric (in)" data-max-value="0" data-min-value="0" />
+					<span class="units-label">in</span>
+				</div>
+				<div class="MultiValueNumericParameterControlSpec">
+					<label for="InventorParam-numeric_radio">numeric_radio</label>
+					<div class="radio-options">
+						<label for="InventorParam-numeric_radio1">1</label>
+						<input id="InventorParam-numeric_radio1" type="radio" name="InventorParam-numeric_radio" value="1" />
+						<label for="InventorParam-numeric_radio2">2</label>
+						<input id="InventorParam-numeric_radio2" type="radio" name="InventorParam-numeric_radio" value="2" />
+						<label for="InventorParam-numeric_radio3">3</label>
+						<input id="InventorParam-numeric_radio3" type="radio" name="InventorParam-numeric_radio" value="3" />
+					</div>
+				</div>
+				<div class="MultiValueNumericParameterControlSpec">
+					<label for="InventorParam-numeric_combo">numeric_combo</label>
+					<select id="InventorParam-numeric_combo" class="combobox-options">
+						<option value="1.0 in">
+							1.0 in
+						</option>
+						<option value="1">
+							1
+						</option>
+						<option value="2">
+							2
+						</option>
+						<option value="3">
+							3
+						</option>
+						<option value="10">
+							10
+						</option>
+					</select>
+				</div>
+				<div class="MultiValueNumericParameterControlSpec">
+
+				</div>
+
+			</div>
+		</div>
+		<div class="ControlGroupSpec">
+			<h1>
+				<span>Boolean</span>
+				<span class="dropdown-indicator"></span>
+			</h1>
+			<div class="items">
+				<div class="BooleanParameterControlSpec">
+
+				</div>
+				<div class="BooleanParameterControlSpec">
+
+				</div>
+
+			</div>
+		</div>
+		<div class="ControlGroupSpec">
+			<h1>
+				<span>Text</span>
+				<span class="dropdown-indicator"></span>
+			</h1>
+			<div class="items">
+				<div class="TextParameterControlSpec">
+					<label for="InventorParam-text">text</label>
+					<input id="InventorParam-text" type="text" placeholder="Enter text" />
+
+				</div>
+				<div class="MultiValueTextParameterControlSpec">
+					<label for="InventorParam-textMulti_combo">textMulti_combo</label>
+					<select id="InventorParam-textMulti_combo" class="combobox-options">
+						<option value="test">
+							test
+						</option>
+						<option value="Test2">
+							Test2
+						</option>
+					</select>
+				</div>
+				<div class="MultiValueTextParameterControlSpec">
+
+				</div>
+				<div class="MultiValueTextParameterControlSpec">
+					<label for="InventorParam-text_radio">text_radio</label>
+					<div class="radio-options">
+						<label for="InventorParam-text_radiothis">this</label>
+						<input id="InventorParam-text_radiothis" type="radio" name="InventorParam-text_radio" value="this" />
+						<label for="InventorParam-text_radiothat">that</label>
+						<input id="InventorParam-text_radiothat" type="radio" name="InventorParam-text_radio" value="that" />
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+</div>
+<div class="ControlTabGroupSpec">
+	<h1>
+		<span>Other</span>
+
+	</h1>
+	<div class="items">
+		<div class="NumericParameterControlSpec">
+			<label for="InventorParam-read_only_numeric">read_only_numeric</label>
+			<input id="InventorParam-read_only_numeric" type="number" pattern="[0-9]*" placeholder="Enter read_only_numeric (in)" data-max-value="0" data-min-value="0" />
+			<span class="units-label">in</span>
+		</div>
+		<div class="NumericParameterControlSpec">
+			<label for="InventorParam-enabling">enabling</label>
+			<input id="InventorParam-enabling" type="number" pattern="[0-9]*" placeholder="Enter enabling (in)" data-max-value="0" data-min-value="0" />
+			<span class="units-label">in</span>
+		</div>
+
+	</div>
+</div>

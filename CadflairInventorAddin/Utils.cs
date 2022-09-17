@@ -1,5 +1,6 @@
 ﻿using Inventor;
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 
@@ -97,7 +98,19 @@ namespace CadflairInventorAddin
 
             return null;
         }
+
+        /// <summary>
+        /// Removes all white space characters that are not spaces (line breaks, and tabs) from a string. 
+        /// </summary>
+        /// <param name="self"></param>
+        /// <returns></returns>
+        public static string RemoveWhiteSpace(this string self)
+        {
+            return new string(self.Where(c => Char.IsSeparator(' ') || !Char.IsWhiteSpace(c)).ToArray());
+        }
     }
+
+
 
     /// <summary>
     /// Class for converting icons to IPictureDisp to be usable by Inventor API elements.

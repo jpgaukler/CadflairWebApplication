@@ -1,0 +1,116 @@
+<div class="ControlGroupSpec">
+	<h1>
+		<span>Size</span>
+		<span class="dropdown-indicator"></span>
+	</h1>
+	<div class="items">
+		<div class="NumericParameterControlSpec">
+			<label for="InventorParam-dresserWidth">Width</label>
+			<input id="InventorParam-dresserWidth" type="number" pattern="[0-9]*" placeholder="Enter width (in)" data-max-value="0" data-min-value="0" />
+			<span class="units-label">in</span>
+		</div><div class="NumericParameterControlSpec">
+			<label for="InventorParam-dresserHeight">Height</label>
+			<input id="InventorParam-dresserHeight" type="number" pattern="[0-9]*" placeholder="Enter height (in)" data-max-value="0" data-min-value="0" />
+			<span class="units-label">in</span>
+		</div><div class="NumericParameterControlSpec">
+			<label for="InventorParam-dresserDepth">Depth</label>
+			<input id="InventorParam-dresserDepth" type="number" pattern="[0-9]*" placeholder="Enter depth (in)" data-max-value="0" data-min-value="0" />
+			<span class="units-label">in</span>
+		</div>
+	</div>
+</div><div class="ControlGroupSpec">
+	<h1>
+		<span>Legs</span>
+		<span class="dropdown-indicator"></span>
+	</h1>
+	<div class="items">
+		<div class="NumericParameterControlSpec">
+			<label for="InventorParam-legExposure">Leg Length</label>
+			<input id="InventorParam-legExposure" type="number" pattern="[0-9]*" placeholder="Enter leg length (in)" data-max-value="0" data-min-value="0" />
+			<span class="units-label">in</span>
+		</div>
+	</div>
+</div><div class="ControlGroupSpec">
+	<h1>
+		<span>Drawers</span>
+		<span class="dropdown-indicator"></span>
+	</h1>
+	<div class="items">
+		<div class="MultiValueNumericParameterControlSpec">
+			<label for="InventorParam-drawerRows">Rows</label>
+			<div class="radio-options">
+				<label for="InventorParam-drawerRows1">1</label>
+				<input id="InventorParam-drawerRows1" type="radio" name="InventorParam-drawerRows" value="1" />
+				<label for="InventorParam-drawerRows2">2</label>
+				<input id="InventorParam-drawerRows2" type="radio" name="InventorParam-drawerRows" value="2" />
+				<label for="InventorParam-drawerRows3">3</label>
+				<input id="InventorParam-drawerRows3" type="radio" name="InventorParam-drawerRows" value="3" />
+				<label for="InventorParam-drawerRows4">4</label>
+				<input id="InventorParam-drawerRows4" type="radio" name="InventorParam-drawerRows" value="4" />
+				<label for="InventorParam-drawerRows5">5</label>
+				<input id="InventorParam-drawerRows5" type="radio" name="InventorParam-drawerRows" value="5" />
+			</div>
+		</div><div class="MultiValueNumericParameterControlSpec">
+			<label for="InventorParam-drawerColumns">Columns</label>
+			<div class="radio-options">
+				<label for="InventorParam-drawerColumns1">1</label>
+				<input id="InventorParam-drawerColumns1" type="radio" name="InventorParam-drawerColumns" value="1" />
+				<label for="InventorParam-drawerColumns2">2</label>
+				<input id="InventorParam-drawerColumns2" type="radio" name="InventorParam-drawerColumns" value="2" />
+				<label for="InventorParam-drawerColumns3">3</label>
+				<input id="InventorParam-drawerColumns3" type="radio" name="InventorParam-drawerColumns" value="3" />
+				<label for="InventorParam-drawerColumns4">4</label>
+				<input id="InventorParam-drawerColumns4" type="radio" name="InventorParam-drawerColumns" value="4" />
+				<label for="InventorParam-drawerColumns5">5</label>
+				<input id="InventorParam-drawerColumns5" type="radio" name="InventorParam-drawerColumns" value="5" />
+			</div>
+		</div>
+	</div>
+</div><div class="ControlGroupSpec">
+	<h1>
+		<span>Options</span>
+		<span class="dropdown-indicator"></span>
+	</h1>
+	<div class="items">
+		<div class="MultiValueTextParameterControlSpec">
+			<label for="InventorParam-edgeStyle">Edge Style</label>
+			<select id="InventorParam-edgeStyle" class="combobox-options">
+				<option value="Round">
+					Round
+				</option>
+				<option value="Square">
+					Square
+				</option>
+			</select>
+		</div><div class="MultiValueTextParameterControlSpec">
+			<label for="InventorParam-finishStyle">Finish</label>
+			<select id="InventorParam-finishStyle" class="combobox-options">
+				<option value="Matte White">
+					Matte White
+				</option>
+				<option value="Matte Gray">
+					Matte Gray
+				</option>
+				<option value="Stained Oak">
+					Stained Oak
+				</option>
+				<option value="Light Birch">
+					Light Birch
+				</option>
+			</select>
+		</div><div class="MultiValueTextParameterControlSpec">
+			<label for="InventorParam-handleStyle">Handle Type</label>
+			<select id="InventorParam-handleStyle" class="combobox-options">
+				<option value="Bin Pull">
+					Bin Pull
+				</option>
+				<option value="Square Handle">
+					Square Handle
+				</option>
+				<option value="Round Knob">
+					Round Knob
+				</option>
+			</select>
+		</div>
+	</div>
+</div>
