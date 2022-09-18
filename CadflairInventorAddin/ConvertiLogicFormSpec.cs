@@ -43,7 +43,7 @@ namespace CadflairInventorAddin
                     string htmlString = ConvertiLogicFormSpecToHtml(Globals.InventorApplication.ActiveDocument, xmlString);
 
                     //print results string to txt files
-                    string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+                    string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
 
                     string xmlFileName = System.IO.Path.Combine(folderName, formName + ".xml");
                     string htmlFileName = System.IO.Path.Combine(folderName, formName + ".html");
@@ -88,7 +88,7 @@ namespace CadflairInventorAddin
             }
 
             //need to fine tune white space removal
-            return stringWriter.ToString().RemoveWhiteSpace();
+            return stringWriter.ToString().RemoveLineBreaks();
         }
 
 
@@ -106,8 +106,11 @@ namespace CadflairInventorAddin
 
         private static void ConvertiLogicFormSpecItemsToHTML(Document doc, HtmlTextWriter writer, XElement items, XNamespace ns)
         {
-            //do I want to handle caption images???
             //how should I handle readonly parameters?
+            //should I handle rows?
+            //should I handle picture folders?
+            //should I handle empty space?
+            //should I handle iProperties or iLogic rules?
 
 
             foreach (XElement uiElementSpec in items.Elements())
@@ -119,6 +122,8 @@ namespace CadflairInventorAddin
                 string toolTip = uiElementSpec.Element("ToolTip")?.Value;
                 string readOnly = uiElementSpec.Element("ReadOnly")?.Value;
                 string enablingParameterName = uiElementSpec.Element("EnablingParameterName")?.Value;
+                string pictureBoxImgData = uiElementSpec.Element("Image")?.Element("BitmapByteArray")?.Value;
+                string captionImgData = uiElementSpec.Element("CaptionImage")?.Element("BitmapByteArray")?.Value;
 
                 //open div for element type
                 writer.AddAttribute("class", uiElementType);
@@ -131,15 +136,16 @@ namespace CadflairInventorAddin
                         //add header for tab group
                         writer.RenderBeginTag("h1");
 
+                        //add caption image if it exists
+                        RenderBase64Image(writer, captionImgData, $"{uiElementName}-image");
+
                         //add span for tab name
                         writer.RenderBeginTag("span");
                         writer.Write(uiElementName);
                         writer.RenderEndTag();
-                        writer.WriteLine();
 
                         //end header tag
                         writer.RenderEndTag();
-                        writer.WriteLine();
 
                         //open div to contain items
                         writer.AddAttribute("class", "items");
@@ -159,11 +165,13 @@ namespace CadflairInventorAddin
                         //add header for parameter group
                         writer.RenderBeginTag("h1");
 
+                        //add caption image if it exists
+                        RenderBase64Image(writer, captionImgData, $"{uiElementName}-image");
+
                         //add span for group name
                         writer.RenderBeginTag("span");
                         writer.Write(uiElementName);
                         writer.RenderEndTag();
-                        writer.WriteLine();
 
                         //add dropdown indicator
                         writer.AddAttribute("class", "dropdown-indicator");
@@ -172,7 +180,6 @@ namespace CadflairInventorAddin
 
                         //end header tag
                         writer.RenderEndTag();
-                        writer.WriteLine();
 
                         //open div to contain group items
                         writer.AddAttribute("class", "items");
@@ -201,46 +208,73 @@ namespace CadflairInventorAddin
                         break;
 
                     case "MultiValueNumericParameterControlSpec":
-
-                    //handle radio groups, listboxes, and comboboxes
-
                     case "MultiValueTextParameterControlSpec":
 
-                        //handle radio groups, listboxes, and comboboxes
                         switch (editControlType)
                         {
                             case "RadioGroup":
-
                                 //add radio group input
                                 RenderInputForInventorParameter(doc, writer, "radio", parameterName, uiElementName);
-
                                 break;
 
                             case "ComboBox":
-
-
                                 //add combo box input
-                                RenderInputForInventorParameter(doc, writer, "select", parameterName, uiElementName);
-
+                                RenderInputForInventorParameter(doc, writer, "combobox", parameterName, uiElementName);
                                 break;
 
                             case "ListBox":
-
-                                //use size attribute on html select element to make a listbox https://www.javatpoint.com/html-list-box
-
+                                //add combo box input
+                                RenderInputForInventorParameter(doc, writer, "listbox", parameterName, uiElementName);
                                 break;
                         }
 
-
                         break;
-
 
                     case "BooleanParameterControlSpec":
 
-                    //need to handle true/false, or check box
+                        switch (editControlType)
+                        {
+                            case "CheckBox":
+                                //add radio group input
+                                RenderInputForInventorParameter(doc, writer, "checkbox", parameterName, uiElementName);
+                                break;
+
+                            case "TrueOrFalse":
+                                //add combo box input
+                                RenderInputForInventorParameter(doc, writer, "boolean", parameterName, uiElementName);
+                                break;
+                        }
+
+                        break;
+
+                    case "LabelSpec":
+
+                        //add a label
+                        writer.RenderBeginTag("h1");
+                        writer.Write(uiElementName);
+                        writer.RenderEndTag();
+
+                        break;
+
+                    case "SplitterSpec":
+
+                        //add a horizontal rule
+                        writer.RenderBeginTag("hr");
+                        writer.RenderEndTag();
+
+                        break;
+
+                    case "PictureControlSpec":
+
+                        //add picturebox
+                        RenderBase64Image(writer, pictureBoxImgData, uiElementName);
+
+                        break;
 
                     case "TextPropertyControlSpec": //this is an iProperty
                     case "iLogicRuleControlSpec": //this is an iLogic Rule
+
+
                     default:
                         break;
 
@@ -248,7 +282,6 @@ namespace CadflairInventorAddin
 
                 //end parent div
                 writer.RenderEndTag();
-                //writer.WriteLine();
             }
         }
 
@@ -264,19 +297,34 @@ namespace CadflairInventorAddin
             writer.RenderBeginTag("label");
             writer.Write(labelText);
             writer.RenderEndTag();
-            writer.WriteLine();
         }
 
+        /// <summary>
+        /// Adds an image tag with a bmp image from a base64 string. This can be used to render images that are included in the iLogic form.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="base64String"></param>
+        /// <param name="altText"></param>
+        private static void RenderBase64Image(HtmlTextWriter writer, string base64String, string altText)
+        {
+            if (!string.IsNullOrWhiteSpace(base64String))
+            {
+                writer.AddAttribute("src", $"data:image/bmp;base64,{base64String}");
+                writer.AddAttribute("alt", altText);
+                writer.RenderBeginTag("img");
+                writer.RenderEndTag();
+            }
+        }
 
         /// <summary>
         /// Add an input tag to the HtmlTextWriter for an Inventor parameter.
         /// </summary>
         /// <param name="doc">Inventor document object.</param>
         /// <param name="writer">HtmlTextWriter to add the input tag to.</param>
-        /// <param name="htmlInputType">Type of input tag to render.</param>
+        /// <param name="inputType">Type of input tag to render.</param>
         /// <param name="parameterName">Name of the Inventor model parameter.</param>
         /// <param name="parameterLabel">Text value of label for parametet input.</param>
-        private static void RenderInputForInventorParameter(Document doc, HtmlTextWriter writer, string htmlInputType, string parameterName, string parameterLabel)
+        private static void RenderInputForInventorParameter(Document doc, HtmlTextWriter writer, string inputType, string parameterName = null, string parameterLabel = null)
         {
             //get parameter for add parameter data
             Parameter param = doc.GetParameter(parameterName);
@@ -284,7 +332,7 @@ namespace CadflairInventorAddin
             //prefix for html id attributes 
             string prefix = "InventorParam-";
 
-            switch (htmlInputType)
+            switch (inputType)
             {
                 case "text":
 
@@ -297,7 +345,6 @@ namespace CadflairInventorAddin
                     writer.AddAttribute("placeholder", $"Enter {parameterLabel.ToLower()}");
                     writer.RenderBeginTag("input");
                     writer.RenderEndTag();
-                    writer.WriteLine();
 
                     break;
 
@@ -317,7 +364,6 @@ namespace CadflairInventorAddin
                     writer.AddAttribute("data-min-value", param.Tolerance.Lower.ToString());
                     writer.RenderBeginTag("input");
                     writer.RenderEndTag();
-                    writer.WriteLine();
 
                     //add label for unit type
                     writer.AddAttribute("class", "units-label");
@@ -326,6 +372,51 @@ namespace CadflairInventorAddin
                     writer.RenderEndTag();
 
                     break;
+
+                case "range":
+
+                    //use range to make a slider input: https://www.w3schools.com/tags/att_input_type_range.asp
+
+                    break;
+
+                case "checkbox":
+
+                    //add label
+                    RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
+
+                    //add checkbox input
+                    writer.AddAttribute("id", prefix + parameterName);
+                    writer.AddAttribute("type", "checkbox");
+                    writer.RenderBeginTag("input");
+                    writer.RenderEndTag();
+
+                    break;
+
+                case "boolean":
+
+                    //add label
+                    RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
+
+                    //open select tag for combo box 
+                    writer.AddAttribute("id", prefix + parameterName);
+                    writer.AddAttribute("class", "combobox-options");
+                    writer.RenderBeginTag("select");
+
+                    //add true/false combobox
+                    foreach (string val in new string[] { "True", "False" })
+                    {
+                        //add input for option
+                        writer.AddAttribute("value", val);
+                        writer.RenderBeginTag("option");
+                        writer.Write(val);
+                        writer.RenderEndTag();
+                    }
+
+                    //close options select tag
+                    writer.RenderEndTag();
+
+                    break;
+
 
                 case "radio":
 
@@ -351,8 +442,6 @@ namespace CadflairInventorAddin
                         writer.AddAttribute("value", expression);
                         writer.RenderBeginTag("input");
                         writer.RenderEndTag();
-
-                        if (i < param.ExpressionList.Count) writer.WriteLine();
                     }
 
                     //close options div
@@ -360,7 +449,7 @@ namespace CadflairInventorAddin
 
                     break;
 
-                case "select":
+                case "combobox":
 
                     //add label
                     RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
@@ -380,8 +469,6 @@ namespace CadflairInventorAddin
                         writer.RenderBeginTag("option");
                         writer.Write(expression);
                         writer.RenderEndTag();
-
-                        if (i < param.ExpressionList.Count) writer.WriteLine();
                     }
 
                     //close options select tag
@@ -389,10 +476,43 @@ namespace CadflairInventorAddin
 
                     break;
 
-                case "range":
-                    //use range to make a slider input: https://www.w3schools.com/tags/att_input_type_range.asp
+                case "listbox":
+
+                    //add label
+                    RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
+
+                    //open select tag for radio options
+                    writer.AddAttribute("id", prefix + parameterName);
+                    writer.AddAttribute("class", "listbox-options");
+                    writer.AddAttribute("size", param.Expression.Count().ToString());
+                    writer.RenderBeginTag("select");
+
+                    //add input options
+                    for (int i = 1; i <= param.ExpressionList.Count; i++)
+                    {
+                        string expression = param.ExpressionList[i].Replace("\"", "");
+
+                        //add input for option
+                        writer.AddAttribute("value", expression);
+                        writer.RenderBeginTag("option");
+                        writer.Write(expression);
+                        writer.RenderEndTag();
+                    }
+
+                    //close options select tag
+                    writer.RenderEndTag();
 
                     break;
+
+                case "splitter":
+
+
+                    break;
+
+                case "picturebox":
+
+                    break;
+
             }
 
         }

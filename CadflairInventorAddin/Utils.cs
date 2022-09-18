@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-
+using System.Text.RegularExpressions;
 
 namespace CadflairInventorAddin
 {
@@ -11,12 +11,12 @@ namespace CadflairInventorAddin
         /// <summary>
         /// Global Inventor Application object.
         /// </summary>
-        public static Inventor.Application InventorApplication;
+        public static Inventor.Application InventorApplication { get; set; }
 
         /// <summary>
         /// Addin ID for customizing UI.
         /// </summary>
-        public static string AddInCLSIDString;
+        public static string AddInCLSIDString { get; set; }
     }
 
     internal static class ExtensionMethods
@@ -24,7 +24,7 @@ namespace CadflairInventorAddin
         /// <summary>
         /// Get the associated drawing view object for the given dimension.
         /// </summary>
-        /// <param name="dim"></param>
+        /// <param name="dim"></param>RemoveWhiteSpace
         /// <returns></returns>
         public static DrawingView GetView(this DrawingDimension dim)
         {
@@ -104,9 +104,14 @@ namespace CadflairInventorAddin
         /// </summary>
         /// <param name="self"></param>
         /// <returns></returns>
-        public static string RemoveWhiteSpace(this string self)
+        public static string RemoveLineBreaks(this string self)
         {
-            return new string(self.Where(c => Char.IsSeparator(' ') || !Char.IsWhiteSpace(c)).ToArray());
+            // learn regular expressions here: https://regexr.com/
+            // [\S ] = find non-whitespace characters, in addition to the space character
+            // ^ = negate the set 
+            // + = match 1 or more of the preceding token
+
+            return Regex.Replace(self, @"[^\S ]+", "");
         }
     }
 
