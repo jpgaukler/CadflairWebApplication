@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -63,6 +66,79 @@ namespace CadflairInventorAddin
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), "Error");
+            }
+        }
+
+        public static void UploadToCadflairButton_OnExecute(NameValueMap Context)
+        {
+            UploadToCadflairDialog commandDialog = new UploadToCadflairDialog();
+            commandDialog.ShowDialog();
+
+        }
+
+        public static async void UploadModelToForge(string fullFileName, string bucketKey, string objectName)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                MultipartFormDataContent content = new MultipartFormDataContent();
+
+                //add bucket key content to the request
+                StringContent bucketKeyContent = new StringContent(bucketKey);
+                bucketKeyContent.Headers.Add("Content-Disposition", "form-data; name=\"bucketKey\"");
+                content.Add(bucketKeyContent, "bucketKey");
+
+                //add bucket key content to the request
+                StringContent objectNameContent = new StringContent(objectName);
+                objectNameContent.Headers.Add("Content-Disposition", "form-data; name=\"objectName\"");
+                content.Add(objectNameContent, "objectName");
+
+                //add file data to the form as a stream content
+                byte[] bytes = System.IO.File.ReadAllBytes(fullFileName);
+                MemoryStream stream = new MemoryStream(bytes);
+                StreamContent streamContent = new StreamContent(stream);
+                streamContent.Headers.Add("Content-Type", "application/octet-stream");
+                streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"file\"; filename=\"{System.IO.Path.GetFileName(fullFileName)}\"");
+                content.Add(streamContent, "file", System.IO.Path.GetFileName(fullFileName));
+
+                HttpRequestMessage request = new HttpRequestMessage()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = new Uri($"http://www.cadflair.com/api/forge/oss/objects/upload"),
+                    Content = content
+                };
+
+                HttpResponseMessage response = await client.SendAsync(request);
+
+                //print to txt file
+                string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
+                StreamWriter txt = System.IO.File.CreateText(fileName);
+                string responseMessage = await response.Content.ReadAsStringAsync();
+
+                //string reqTxt = await request.Content.ReadAsStringAsync(); this will fail if the memory stream is closed before this line is called
+                //txt.WriteLine("Request content:");
+                //txt.Write(reqTxt);
+                //txt.WriteLine();
+
+                txt.WriteLine("Response content:");
+                txt.Write(responseMessage);
+                txt.Close();
+                Process.Start(fileName);
+
+                //clean up
+                txt.Dispose();
+                stream.Dispose();
+                bucketKeyContent.Dispose();
+                objectNameContent.Dispose();
+                streamContent.Dispose();
+                content.Dispose();
+                response.Dispose();
+                request.Dispose();
+                client.Dispose();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

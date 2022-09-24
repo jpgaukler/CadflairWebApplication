@@ -17,6 +17,11 @@ namespace CadflairInventorAddin
         /// Addin ID for customizing UI.
         /// </summary>
         public static string AddInCLSIDString { get; set; }
+
+        /// <summary>
+        /// Guid attribute of the addin class.
+        /// </summary>
+        public static string AddInGuid { get; set; }
     }
 
     internal static class ExtensionMethods

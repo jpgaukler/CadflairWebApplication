@@ -1,10 +1,15 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Forge.Controllers
 {
@@ -49,14 +54,14 @@ namespace Forge.Controllers
 
                 // to simplify, let's return only the first 100 buckets
                 dynamic buckets = await appBuckets.GetBucketsAsync("US", 100);
-                
+
                 //format buckets into viewable format
                 List<Bucket> bucketsList = new List<Bucket>();
                 foreach (KeyValuePair<string, dynamic> item in new DynamicDictionaryItems(buckets.items))
                 {
                     string bucketKey = item.Value.bucketKey;
                     DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeMilliseconds(item.Value.createdDate);
-                    string createdDate = dateTimeOffset.Date.ToShortDateString(); 
+                    string createdDate = dateTimeOffset.Date.ToShortDateString();
                     string policyKey = item.Value.policyKey;
 
                     //do not return the base model bucket, so that it does not accidentally get deleted
@@ -209,7 +214,7 @@ namespace Forge.Controllers
 
                 dynamic resource = await objectsApi.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(10), "read");
 
-                return Ok(new { Url = (string)resource.signedUrl});
+                return Ok(new { Url = (string)resource.signedUrl });
             }
             catch (Exception ex)
             {
@@ -271,6 +276,61 @@ namespace Forge.Controllers
             }
         }
 
+        public class ForgeFileUploadData
+        {
+            public string bucketKey { get; set; }
+            public string objectName { get; set; }
+            public IFormFile file { get; set; }
+        }
+
+        /// <summary>
+        /// Receive a file from the client and upload to the bucket
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/forge/oss/objects/upload")]
+        public async Task<IActionResult> UploadObject([FromForm] ForgeFileUploadData fileUploadData)
+        {
+            try
+            {
+                string[] validFileTypes = { ".ipt", "iam", ".idw", ".dwg" };
+
+                //validate data
+                if (string.IsNullOrWhiteSpace(fileUploadData.bucketKey)) throw new Exception("bucketKey parameter was not provided.");
+                if (string.IsNullOrWhiteSpace(fileUploadData.objectName)) throw new Exception("objectName parameter was not provided.");
+                if (!validFileTypes.Any(i => i == Path.GetExtension(fileUploadData.file.FileName))) throw new Exception("Invalid file type provided.");
+                if (fileUploadData.file.Length == 0) throw new Exception("File does not contain any data.");
+
+                //// Upload check if less than 2mb!
+                //if (memoryStream.Length < 2097152)
+                //{
+                //}
+                //else
+                //{
+                //}
+
+                // get the auth token
+                dynamic oauth = await OAuthController.GetInternalAsync();
+                ObjectsApi objects = new ObjectsApi();
+                objects.Configuration.AccessToken = oauth.access_token;
+
+                using MemoryStream stream = new MemoryStream();
+                await fileUploadData.file.CopyToAsync(stream);
+
+                // upload the file/object, which will create a new object
+                dynamic uploadedObj = await objects.UploadObjectAsync(bucketKey: fileUploadData.bucketKey,
+                                                                      objectName: fileUploadData.objectName,
+                                                                      contentLength: (int)stream.Length,
+                                                                      body: stream);
+
+                return Ok(new { Result = uploadedObj });
+                //return Ok(new { BucketKey = fileUploadData.objectName, ObjectName = fileUploadData.objectName, FileLength = fileUploadData.file.Length.ToString() });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = $"Failed to upload object to Forge: {ex}" });
+            }
+        }
 
         /// <summary>
         /// Base64 enconde a string
