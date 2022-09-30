@@ -95,7 +95,7 @@ namespace Forge.Controllers
 
                 BucketsApi appBuckets = new BucketsApi();
                 appBuckets.Configuration.AccessToken = oauth.access_token;
-                appBuckets.DeleteBucket(bucketKey);
+                await appBuckets.DeleteBucketAsync(bucketKey);
 
                 return Ok();
             }
@@ -104,15 +104,6 @@ namespace Forge.Controllers
                 return BadRequest(ex.ToString());
             }
         }
-
-        ///// <summary>
-        ///// Model data for bucket view used on GetBucketsASync
-        ///// </summary>
-        //public class BucketInfo
-        //{
-        //    public string bucketKey { get; set; }
-        //    public long createdDate { get; set; }
-        //}
 
         /// <summary>
         /// Return list of objects in a bucket
@@ -128,6 +119,7 @@ namespace Forge.Controllers
                 // as we have the id (bucketKey), let's return all 
                 ObjectsApi objectsApi = new ObjectsApi();
                 objectsApi.Configuration.AccessToken = oauth.access_token;
+
                 dynamic objects = objectsApi.GetObjects(bucketKey, 100);
 
                 //format buckets into viewable format
@@ -148,29 +140,6 @@ namespace Forge.Controllers
                 return BadRequest(ex.ToString());
             }
         }
-
-        ///// <summary>
-        ///// Return urn of an object within a bucket
-        ///// </summary>
-        //[HttpGet]
-        //[Route("api/forge/oss/buckets/bucket/object")]
-        //public async Task<IActionResult> GetObjectURNAsync([FromQuery] string bucketKey, [FromQuery] string objectName)
-        //{
-        //    dynamic oauth = await OAuthController.GetInternalAsync();
-
-        //    ObjectsApi objects = new ObjectsApi();
-        //    objects.Configuration.AccessToken = oauth.access_token;
-        //    try
-        //    {
-        //        dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
-        //        return Ok(new { Result = "Success", ObjectURN = Base64Encode((string)objectDetails.objectId) });
-        //    }
-        //    catch
-        //    {
-        //        return NotFound(new { Result = "Object Not Found" });
-        //    }
-
-        //}
 
         /// <summary>
         /// Return urn of an object within a bucket
@@ -266,7 +235,7 @@ namespace Forge.Controllers
                 ObjectsApi objects = new ObjectsApi();
                 objects.Configuration.AccessToken = oauth.access_token;
 
-                objects.DeleteObject(bucketKey, objectKey);
+                await objects.DeleteObjectAsync(bucketKey, objectKey);
 
                 return Ok(new { Result = objectKey + " successfully deleted" });
             }
@@ -283,6 +252,8 @@ namespace Forge.Controllers
             public IFormFile file { get; set; }
         }
 
+        private static readonly string[] _validFileTypesForUpload = { ".ipt", "iam", ".idw", ".dwg" };
+
         /// <summary>
         /// Receive a file from the client and upload to the bucket
         /// </summary>
@@ -293,12 +264,10 @@ namespace Forge.Controllers
         {
             try
             {
-                string[] validFileTypes = { ".ipt", "iam", ".idw", ".dwg" };
-
                 //validate data
                 if (string.IsNullOrWhiteSpace(fileUploadData.bucketKey)) throw new Exception("bucketKey parameter was not provided.");
                 if (string.IsNullOrWhiteSpace(fileUploadData.objectName)) throw new Exception("objectName parameter was not provided.");
-                if (!validFileTypes.Any(i => i == Path.GetExtension(fileUploadData.file.FileName))) throw new Exception("Invalid file type provided.");
+                if (!_validFileTypesForUpload.Any(i => i == Path.GetExtension(fileUploadData.file.FileName))) throw new Exception("Invalid file type provided.");
                 if (fileUploadData.file.Length == 0) throw new Exception("File does not contain any data.");
 
                 //// Upload check if less than 2mb!
@@ -321,7 +290,17 @@ namespace Forge.Controllers
                 dynamic uploadedObj = await objects.UploadObjectAsync(bucketKey: fileUploadData.bucketKey,
                                                                       objectName: fileUploadData.objectName,
                                                                       contentLength: (int)stream.Length,
-                                                                      body: stream);
+                                                                      body: stream,
+                                                                      contentDisposition: "application/octet-stream");
+
+                //UploadItemDesc itemDesc = new UploadItemDesc(fileUploadData.objectName);
+                //List<UploadItemDesc> objectList = new List<UploadItemDesc>
+                //{
+                //    itemDesc
+                //};
+
+                //dynamic uploadedObj = await objects.uploadResources(bucketKey: fileUploadData.bucketKey,
+                //                                                    objects: objectList);
 
                 return Ok(new { Result = uploadedObj });
                 //return Ok(new { BucketKey = fileUploadData.objectName, ObjectName = fileUploadData.objectName, FileLength = fileUploadData.file.Length.ToString() });
