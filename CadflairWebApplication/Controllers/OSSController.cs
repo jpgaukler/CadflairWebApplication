@@ -1,13 +1,17 @@
 ﻿using Autodesk.Forge;
+using Autodesk.Forge.Client;
 using Autodesk.Forge.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
@@ -270,6 +274,36 @@ namespace Forge.Controllers
                 if (!_validFileTypesForUpload.Any(i => i == Path.GetExtension(fileUploadData.file.FileName))) throw new Exception("Invalid file type provided.");
                 if (fileUploadData.file.Length == 0) throw new Exception("File does not contain any data.");
 
+
+                // get the auth token
+                dynamic oauth = await OAuthController.GetInternalAsync();
+                ObjectsApi objects = new ObjectsApi();
+                objects.Configuration.AccessToken = oauth.access_token;
+
+                //create output buckets (in case they don't exist) 
+                await OSSController.CreateBucket(fileUploadData.bucketKey);
+
+                async Task<Bearer> onRefreshToken()
+                {
+                    //ApiResponse<dynamic>? bearer = await oauthExecAsync();
+                    //// Note our oauthExecAsync method already updates the API wrappers
+                    //// returning the bearer isn't stricly required (we could have returned null)
+                    //return (new Bearer(bearer));
+
+                    dynamic oauth = await OAuthController.GetInternalAsync();
+                    objects.Configuration.AccessToken = oauth.access_token;
+                    return null;
+                }
+
+                //void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
+                //{
+                //    Console.WriteLine("progress: {0} elapsed: {1} objects: {2}", progress, elapsed, string.Join(", ", objects));
+                //}
+
+                //read the file to memory
+                using MemoryStream stream = new MemoryStream();
+                await fileUploadData.file.CopyToAsync(stream);
+
                 //// Upload check if less than 2mb!
                 //if (memoryStream.Length < 2097152)
                 //{
@@ -278,32 +312,78 @@ namespace Forge.Controllers
                 //{
                 //}
 
-                // get the auth token
-                dynamic oauth = await OAuthController.GetInternalAsync();
-                ObjectsApi objects = new ObjectsApi();
-                objects.Configuration.AccessToken = oauth.access_token;
+                var uploadList = new List<UploadItemDesc>
+                {
+                    new UploadItemDesc (fileUploadData.file.FileName, stream)
 
-                using MemoryStream stream = new MemoryStream();
-                await fileUploadData.file.CopyToAsync(stream);
+                    //new UploadItemDesc (FILE_NAME0, "this is a string"), // string test
+					//new UploadItemDesc (FILE_NAME1 + ".txt", _buffer.ToString ()), // file:// test, we know it is a text file
+					//new UploadItemDesc (FILE_NAME1, _buffer), // file:// test, but as Buffer this time
+					//new UploadItemDesc (FILE_NAME1 + ".bin", _stream), // file:// test, but as ReadableStream this time
+                };
 
-                // upload the file/object, which will create a new object
-                dynamic uploadedObj = await objects.UploadObjectAsync(bucketKey: fileUploadData.bucketKey,
-                                                                      objectName: fileUploadData.objectName,
-                                                                      contentLength: (int)stream.Length,
-                                                                      body: stream,
-                                                                      contentDisposition: "application/octet-stream");
+                var uploadOptions = new Dictionary<string, object>()
+                {
+                    //{ "chunkSize", 3 }, // use 3Mb to make it fails, use a debug ApiClient, objectsApi.apiClient.isDebugMode = true
+                    { "minutesExpiration", 2 },
+                    { "useAcceleration", true }
+                };
+                    
+                var uploadRes = await objects.uploadResources(bucketKey: fileUploadData.bucketKey,
+                                                              objects: uploadList,
+                                                              opts: uploadOptions,
+                                                              onUploadProgress: null, //onUploadProgress
+                                                              onRefreshToken: onRefreshToken);
 
-                //UploadItemDesc itemDesc = new UploadItemDesc(fileUploadData.objectName);
-                //List<UploadItemDesc> objectList = new List<UploadItemDesc>
-                //{
-                //    itemDesc
-                //};
+                UploadItemDesc result = uploadRes.First();
 
-                //dynamic uploadedObj = await objects.uploadResources(bucketKey: fileUploadData.bucketKey,
-                //                                                    objects: objectList);
+                return Ok(new { BucketKey = fileUploadData.objectName, ObjectName = fileUploadData.objectName, Error = result.Error.ToString(), Response = result.completed.ToString()});
 
-                return Ok(new { Result = uploadedObj });
-                //return Ok(new { BucketKey = fileUploadData.objectName, ObjectName = fileUploadData.objectName, FileLength = fileUploadData.file.Length.ToString() });
+                ////report progress
+                //Console.WriteLine("**** Upload object(s) response(s):");
+
+                //foreach (var resp in uploadRes) Console.WriteLine("{0} {1}{2}", resp.objectKey, resp.Error ? "Error: " : "", resp.completed.ToString());
+
+                ////verify SHA1 codes
+                //Console.WriteLine("**** Verifying SHA1 codes"); // re-assembling files takes times, but we uploaded these files in 1 part :)
+
+                //await verifyServerObjectsSha1(BucketKey, uploadRes);
+
+                //           // Large Files < 5Mb <
+                //           Console.WriteLine("**** Testing Large files");
+
+                //           _buffer = File.ReadAllBytes(FILE_NAME2);
+                //           _stream = File.Open(FILE_NAME2, FileMode.Open);
+
+                //           byte[] _buffer3 = File.ReadAllBytes(FILE_NAME3);
+                //           FileStream _stream3 = File.Open(FILE_NAME3, FileMode.Open);
+                //           long size = _buffer3.LongLength;
+
+
+                //           uploadRes = await ObjectsAPI.uploadResources(
+                //               BucketKey,
+                //               new List<UploadItemDesc>() {
+                //               new UploadItemDesc (FILE_NAME2, _buffer),
+                //               new UploadItemDesc (FILE_NAME2 + ".bin", _stream),
+                //               new UploadItemDesc (FILE_NAME3, _buffer3),
+                //               new UploadItemDesc (FILE_NAME3 + ".bin", _stream3),
+                //               },
+                //               new Dictionary<string, object>() {
+                ////{ "chunkSize", 3 }, // use 3Mb to make it fails, use a debug ApiClient, objectsApi.apiClient.isDebugMode = true
+                //{ "minutesExpiration", 60 }, // use 1 to stress error code 403 - Forbidden
+                //{ "Timeout", Timeout.InfiniteTimeSpan } // TimeSpan.FromSeconds (100) }
+                //               },
+                //               onUploadProgress
+                //           );
+
+
+                //           Console.WriteLine("**** Upload file(s) response(s):");
+                //           foreach (var resp in uploadRes) Console.WriteLine("{0} {1}{2}", resp.objectKey, resp.Error ? "Error: " : "", resp.completed.ToString());
+
+                //           Console.WriteLine("**** Verifying SHA1 codes (please wait, the system is reassembling parts)");
+                //           await verifyServerObjectsSha1(BucketKey, uploadRes);
+
+
             }
             catch (Exception ex)
             {

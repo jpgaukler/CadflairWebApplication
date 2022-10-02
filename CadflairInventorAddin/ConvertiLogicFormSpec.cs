@@ -111,7 +111,8 @@ namespace CadflairInventorAddin
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 //print to txt file
-                string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
+                //string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
+                string fileName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
                 StreamWriter txt = System.IO.File.CreateText(fileName);
                 string responseMessage = await response.Content.ReadAsStringAsync();
 
