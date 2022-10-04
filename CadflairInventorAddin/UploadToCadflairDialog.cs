@@ -32,8 +32,8 @@ namespace CadflairInventorAddin
                 return;
             }
 
-            string fullFileName = Globals.InventorApplication.ActiveDocument.FullFileName;
-            ConvertiLogicFormSpec.UploadModelToForge(fullFileName, textBoxBucketKey.Text, textBoxObjectName.Text);
+            //string fullFileName = Globals.InventorApplication.ActiveDocument.FullFileName;
+            ConvertiLogicFormSpec.UploadModelToForge(textBoxFilename.Text, textBoxBucketKey.Text, textBoxObjectName.Text);
         }
     }
 }

@@ -300,9 +300,12 @@ namespace Forge.Controllers
                 //    Console.WriteLine("progress: {0} elapsed: {1} objects: {2}", progress, elapsed, string.Join(", ", objects));
                 //}
 
-                //read the file to memory
-                using MemoryStream stream = new MemoryStream();
-                await fileUploadData.file.CopyToAsync(stream);
+                //temporarily store the file on the server
+                string tempFileName = Path.GetTempFileName();
+                using (FileStream stream = System.IO.File.Create(tempFileName))
+                {
+                    await fileUploadData.file.CopyToAsync(stream);
+                }
 
                 //// Upload check if less than 2mb!
                 //if (memoryStream.Length < 2097152)
@@ -312,9 +315,12 @@ namespace Forge.Controllers
                 //{
                 //}
 
+                //read the file to stream
+                StreamReader reader = new StreamReader(tempFileName);
+
                 var uploadList = new List<UploadItemDesc>
                 {
-                    new UploadItemDesc (fileUploadData.file.FileName, stream)
+                    new UploadItemDesc (fileUploadData.file.FileName, reader.BaseStream)
 
                     //new UploadItemDesc (FILE_NAME0, "this is a string"), // string test
 					//new UploadItemDesc (FILE_NAME1 + ".txt", _buffer.ToString ()), // file:// test, we know it is a text file
@@ -329,6 +335,7 @@ namespace Forge.Controllers
                     { "useAcceleration", true }
                 };
                     
+                //upload to aws using direct to s3 approach
                 var uploadRes = await objects.uploadResources(bucketKey: fileUploadData.bucketKey,
                                                               objects: uploadList,
                                                               opts: uploadOptions,
@@ -337,7 +344,13 @@ namespace Forge.Controllers
 
                 UploadItemDesc result = uploadRes.First();
 
-                return Ok(new { BucketKey = fileUploadData.objectName, ObjectName = fileUploadData.objectName, Error = result.Error.ToString(), Response = result.completed.ToString()});
+
+                //delete the temp file from the server
+                reader.Dispose();
+                System.IO.File.Delete(tempFileName);
+
+                //return the result
+                return Ok(new { BucketKey = fileUploadData.bucketKey, ObjectName = fileUploadData.objectName, Error = result.Error.ToString(), Response = result.completed.ToString()});
 
                 ////report progress
                 //Console.WriteLine("**** Upload object(s) response(s):");

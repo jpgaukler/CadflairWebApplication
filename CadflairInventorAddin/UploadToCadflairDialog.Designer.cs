@@ -33,6 +33,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxObjectName = new System.Windows.Forms.TextBox();
             this.buttonUpload = new System.Windows.Forms.Button();
+            this.textBoxFilename = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // textBoxBucketKey
@@ -41,7 +43,7 @@
             this.textBoxBucketKey.Name = "textBoxBucketKey";
             this.textBoxBucketKey.Size = new System.Drawing.Size(100, 20);
             this.textBoxBucketKey.TabIndex = 0;
-            this.textBoxBucketKey.Text = "cadflair.jaysdressers.models";
+            this.textBoxBucketKey.Text = "cadflair.testbucket";
             // 
             // label1
             // 
@@ -79,11 +81,30 @@
             this.buttonUpload.UseVisualStyleBackColor = true;
             this.buttonUpload.Click += new System.EventHandler(this.buttonUpload_Click);
             // 
+            // textBoxFilename
+            // 
+            this.textBoxFilename.Location = new System.Drawing.Point(140, 140);
+            this.textBoxFilename.Name = "textBoxFilename";
+            this.textBoxFilename.Size = new System.Drawing.Size(425, 20);
+            this.textBoxFilename.TabIndex = 5;
+            this.textBoxFilename.Text = "Test";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(62, 143);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(50, 13);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "File path:";
+            // 
             // UploadToCadflairDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 278);
+            this.ClientSize = new System.Drawing.Size(688, 278);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.textBoxFilename);
             this.Controls.Add(this.buttonUpload);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.textBoxObjectName);
@@ -103,5 +124,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBoxObjectName;
         private System.Windows.Forms.Button buttonUpload;
+        private System.Windows.Forms.TextBox textBoxFilename;
+        private System.Windows.Forms.Label label3;
     }
 }

@@ -94,8 +94,10 @@ namespace CadflairInventorAddin
                 content.Add(objectNameContent, "objectName");
 
                 //add file data to the form as a stream content
-                byte[] bytes = System.IO.File.ReadAllBytes(fullFileName);
-                MemoryStream stream = new MemoryStream(bytes);
+                //byte[] bytes = System.IO.File.ReadAllBytes(fullFileName);
+                //MemoryStream stream = new MemoryStream(bytes);
+                FileStream stream = System.IO.File.Open(fullFileName, FileMode.Open);
+
                 StreamContent streamContent = new StreamContent(stream);
                 streamContent.Headers.Add("Content-Type", "application/octet-stream");
                 streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"file\"; filename=\"{System.IO.Path.GetFileName(fullFileName)}\"");
@@ -108,18 +110,19 @@ namespace CadflairInventorAddin
                     Content = content
                 };
 
+                string reqTxt = await request.Content.ReadAsStringAsync(); //this will fail if the memory stream is closed before this line is called
+
                 HttpResponseMessage response = await client.SendAsync(request);
 
                 //print to txt file
-                //string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
-                string fileName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
+                string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
+                //string fileName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
                 StreamWriter txt = System.IO.File.CreateText(fileName);
                 string responseMessage = await response.Content.ReadAsStringAsync();
 
-                //string reqTxt = await request.Content.ReadAsStringAsync(); this will fail if the memory stream is closed before this line is called
-                //txt.WriteLine("Request content:");
-                //txt.Write(reqTxt);
-                //txt.WriteLine();
+                txt.WriteLine("Request content:");
+                txt.Write(reqTxt);
+                txt.WriteLine();
 
                 txt.WriteLine("Response content:");
                 txt.Write(responseMessage);
