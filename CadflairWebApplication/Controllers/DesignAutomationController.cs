@@ -17,7 +17,7 @@ using WorkItem = Autodesk.Forge.DesignAutomation.Model.WorkItem;
 using WorkItemStatus = Autodesk.Forge.DesignAutomation.Model.WorkItemStatus;
 
 
-namespace Forge.Controllers
+namespace CadflairWebApplication.Controllers.Forge
 {
     /// <summary>
     /// Class used by SignalR

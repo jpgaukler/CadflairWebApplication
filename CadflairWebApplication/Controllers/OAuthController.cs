@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace Forge.Controllers
+namespace CadflairWebApplication.Controllers.Forge
 {
     [ApiController]
     public class OAuthController : ControllerBase

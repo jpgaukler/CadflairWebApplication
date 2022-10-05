@@ -15,7 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Net.WebRequestMethods;
 
-namespace Forge.Controllers
+namespace CadflairWebApplication.Controllers.Forge
 {
     [ApiController]
     public class OSSController : ControllerBase

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Forge.Controllers
+namespace CadflairWebApplication
 {
     internal static class Utils
     {
@@ -25,6 +25,12 @@ namespace Forge.Controllers
             return System.Convert.ToBase64String(plainTextBytes);
         }
 
+        /// <summary>
+        /// Create a list of UploadItemDesc for a single file. This can be used with the Objects.API.uploadResources() method for uploading files directly to Amazon S3.
+        /// </summary>
+        /// <param name="objectKey"></param>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         internal static List<UploadItemDesc> CreateSingleUploadList(string objectKey, Stream stream)
         {
             var uploadList = new List<UploadItemDesc>
