@@ -86,10 +86,6 @@
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\..\..\..\..\..\Windows\Microsoft.NET\assembly\GAC_MSIL\Autodesk.Inventor.Interop\v4.0_27.0.0.0__d84147f8b4276564\autodesk.inventor.interop.dll</HintPath>
-    </Reference>
-    <Reference Include="Autodesk.PackAndGo.Interop">
-      <HintPath>..\..\..\..\..\..\..\Program Files\Autodesk\Inventor 2023\Bin\Autodesk.PackAndGo.Interop.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -102,6 +98,8 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Web" />

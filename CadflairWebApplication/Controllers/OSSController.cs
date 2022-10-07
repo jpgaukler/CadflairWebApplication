@@ -27,7 +27,7 @@ namespace CadflairWebApplication.Controllers.Forge
 
         private static readonly BucketsApi _bucketsApi = new BucketsApi();
 
-        private static readonly string[] _uploadFileExtensions = { ".ipt", "iam", ".idw", ".dwg" };
+        private static readonly string[] _uploadFileExtensions = { ".ipt", "iam", ".idw", ".dwg", ".zip"};
 
         #endregion
 
@@ -255,6 +255,9 @@ namespace CadflairWebApplication.Controllers.Forge
                 if (!_uploadFileExtensions.Any(i => i == Path.GetExtension(fileUploadData.file.FileName))) throw new Exception("Invalid file type provided.");
                 if (fileUploadData.file.Length == 0) throw new Exception("File does not contain any data.");
 
+                string bucketKey = fileUploadData.bucketKey.ToLower();
+                string objectKey = fileUploadData.objectName;
+
                 //// Upload check if less than 2mb!
                 //if (memoryStream.Length < 2097152)
                 //{
@@ -264,7 +267,7 @@ namespace CadflairWebApplication.Controllers.Forge
                 //}
 
                 //create output bucket (in case is 't exist) 
-                await CreateBucket(fileUploadData.bucketKey);
+                await CreateBucket(bucketKey);
 
                 //void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
                 //{
@@ -303,8 +306,8 @@ namespace CadflairWebApplication.Controllers.Forge
                 UploadItemDesc result;
                 using (StreamReader reader = new StreamReader(tempFileName))
                 {
-                    var uploadRes = await ObjectsApi.uploadResources(bucketKey: fileUploadData.bucketKey,
-                                                                     objects: Utils.CreateSingleUploadList(fileUploadData.file.FileName, reader.BaseStream),
+                    var uploadRes = await ObjectsApi.uploadResources(bucketKey: bucketKey,
+                                                                     objects: Utils.CreateSingleUploadList(objectKey, reader.BaseStream),
                                                                      opts: uploadOptions,
                                                                      onUploadProgress: null, //onUploadProgress
                                                                      onRefreshToken: onRefreshToken);
@@ -320,7 +323,7 @@ namespace CadflairWebApplication.Controllers.Forge
                 //}
 
                 //return the result
-                return Ok(new { BucketKey = fileUploadData.bucketKey, ObjectName = fileUploadData.objectName, Error = result.Error.ToString(), Response = result.completed.ToString() });
+                return Ok(new { BucketKey = bucketKey, ObjectName = objectKey, Error = result.Error.ToString(), Response = result.completed.ToString() });
             }
             catch (Exception ex)
             {

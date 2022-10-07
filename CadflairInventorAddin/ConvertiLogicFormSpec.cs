@@ -14,6 +14,8 @@ using System.Web.UI;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
+using File = System.IO.File;
+using Path = System.IO.Path;
 
 namespace CadflairInventorAddin
 {
@@ -71,10 +73,97 @@ namespace CadflairInventorAddin
 
         public static void UploadToCadflairButton_OnExecute(NameValueMap Context)
         {
-            UploadToCadflairDialog commandDialog = new UploadToCadflairDialog();
-            commandDialog.ShowDialog();
+            try
+            {
+                string zipFileName = CreateTemporaryZipFile(Globals.InventorApplication.ActiveDocument, true);
 
+                UploadToCadflairDialog commandDialog = new UploadToCadflairDialog(zipFileName);
+                commandDialog.ShowDialog();
+
+                File.Delete(zipFileName);
+
+                //Process.Start(zipFileName);
+                //MessageBox.Show(zipFileName, "Success");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
+
+        /// <summary>
+        /// Create a zip folder in the temp directory for the Inventor document that is provided. 
+        /// Resulting zip file will include all related child documents.
+        /// Method will fail if the document has not yet been saved.
+        /// <br></br>
+        /// <br></br>
+        /// includeDrawings - If a drawing file with the same name (.idw only) exists for any of the files given, it will be copied with the file.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="includeDrawings"></param>
+        /// <returns>The full file name of the resulting zip file.</returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        private static string CreateTemporaryZipFile(Document doc, bool includeDrawings)
+        {
+            if (doc.FileSaveCounter == 0) throw new FileNotFoundException();
+
+            //save the doc
+            doc.Save();
+
+            //create the temp folder
+            string tempFolderName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            DirectoryInfo dir = Directory.CreateDirectory(tempFolderName);
+
+            //copy the doc to the temp folder
+            CopyInventorFile(doc, tempFolderName, true);
+
+            //copy all the references to the temp folder
+            foreach (Document refDoc in doc.AllReferencedDocuments)
+            {
+                CopyInventorFile(refDoc, tempFolderName, true);
+            }
+
+            //zip up the temp folder
+            string zipFileName = $"{tempFolderName}.zip";
+            System.IO.Compression.ZipFile.CreateFromDirectory(tempFolderName, zipFileName);
+
+            //delete the copied files
+            dir.Delete(true);
+
+            //return the path of the zip file
+            return zipFileName;
+        }
+
+        /// <summary>
+        /// Copies an Inventor model to the specified directory. 
+        /// <br></br>
+        /// <br></br>
+        /// includeDrawing - If a drawing file with the same name exists (.idw only), it will be copied with the file.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="destinationFolderName"></param>
+        /// <param name="includeDrawing"></param>
+        private static void CopyInventorFile(Document doc, string destinationFolderName, bool includeDrawing)
+        {
+            string filePath = Path.GetDirectoryName(doc.FullFileName);
+            string fileName = Path.GetFileName(doc.FullFileName);
+            string idwFileName = Path.GetFileNameWithoutExtension(fileName) + ".idw";
+            string fullIdwFileName = Path.Combine(filePath, idwFileName);
+
+            //copy the doc to the temp folder
+            File.Copy(doc.FullFileName, Path.Combine(destinationFolderName, fileName));
+
+            //copy drawing if it exists
+            if (includeDrawing && File.Exists(fullIdwFileName))
+            {
+                File.Copy(fullIdwFileName, Path.Combine(destinationFolderName, idwFileName));
+            }
+        }
+
+
+
+
 
         public static async void UploadModelToForge(string fullFileName, string bucketKey, string objectName)
         {
@@ -110,7 +199,7 @@ namespace CadflairInventorAddin
                     Content = content
                 };
 
-                string reqTxt = await request.Content.ReadAsStringAsync(); //this will fail if the memory stream is closed before this line is called
+                //string reqTxt = await request.Content.ReadAsStringAsync(); //this will fail if the memory stream is closed before this line is called
 
                 HttpResponseMessage response = await client.SendAsync(request);
 
@@ -120,9 +209,9 @@ namespace CadflairInventorAddin
                 StreamWriter txt = System.IO.File.CreateText(fileName);
                 string responseMessage = await response.Content.ReadAsStringAsync();
 
-                txt.WriteLine("Request content:");
-                txt.Write(reqTxt);
-                txt.WriteLine();
+                //txt.WriteLine("Request content:");
+                //txt.Write(reqTxt);
+                //txt.WriteLine();
 
                 txt.WriteLine("Response content:");
                 txt.Write(responseMessage);
@@ -145,6 +234,8 @@ namespace CadflairInventorAddin
                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
 
 
         /// <summary>

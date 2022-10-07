@@ -12,9 +12,13 @@ namespace CadflairInventorAddin
 {
     public partial class UploadToCadflairDialog : Form
     {
-        public UploadToCadflairDialog()
+        private string _fileName;
+
+        public UploadToCadflairDialog(string fileName)
         {
             InitializeComponent();
+
+            _fileName = fileName;
         }
 
         private void buttonUpload_Click(object sender, EventArgs e)
@@ -33,7 +37,7 @@ namespace CadflairInventorAddin
             }
 
             //string fullFileName = Globals.InventorApplication.ActiveDocument.FullFileName;
-            ConvertiLogicFormSpec.UploadModelToForge(textBoxFilename.Text, textBoxBucketKey.Text, textBoxObjectName.Text);
+            ConvertiLogicFormSpec.UploadModelToForge(_fileName, textBoxBucketKey.Text, $"{textBoxObjectName.Text}.zip");
         }
     }
 }

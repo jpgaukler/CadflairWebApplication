@@ -33,8 +33,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.textBoxObjectName = new System.Windows.Forms.TextBox();
             this.buttonUpload = new System.Windows.Forms.Button();
-            this.textBoxFilename = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.textBoxFilename = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // textBoxBucketKey
@@ -81,14 +81,6 @@
             this.buttonUpload.UseVisualStyleBackColor = true;
             this.buttonUpload.Click += new System.EventHandler(this.buttonUpload_Click);
             // 
-            // textBoxFilename
-            // 
-            this.textBoxFilename.Location = new System.Drawing.Point(140, 140);
-            this.textBoxFilename.Name = "textBoxFilename";
-            this.textBoxFilename.Size = new System.Drawing.Size(425, 20);
-            this.textBoxFilename.TabIndex = 5;
-            this.textBoxFilename.Text = "Test";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -97,6 +89,15 @@
             this.label3.Size = new System.Drawing.Size(50, 13);
             this.label3.TabIndex = 6;
             this.label3.Text = "File path:";
+            // 
+            // textBoxFilename
+            // 
+            this.textBoxFilename.Enabled = false;
+            this.textBoxFilename.Location = new System.Drawing.Point(140, 140);
+            this.textBoxFilename.Name = "textBoxFilename";
+            this.textBoxFilename.Size = new System.Drawing.Size(425, 20);
+            this.textBoxFilename.TabIndex = 5;
+            this.textBoxFilename.Text = "Test";
             // 
             // UploadToCadflairDialog
             // 
@@ -124,7 +125,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox textBoxObjectName;
         private System.Windows.Forms.Button buttonUpload;
-        private System.Windows.Forms.TextBox textBoxFilename;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxFilename;
     }
 }
