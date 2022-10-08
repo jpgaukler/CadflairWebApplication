@@ -19,7 +19,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "DresserWebApplication": {
+    "CadflairWebApplication": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
