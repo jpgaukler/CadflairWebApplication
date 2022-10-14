@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace CadflairWebApplication
+namespace BlazorAppTest3
 {
     internal static class Utils
     {
@@ -11,9 +11,9 @@ namespace CadflairWebApplication
         /// <summary>
         /// Reads appsettings from web.config
         /// </summary>
-        internal static string GetAppSetting(string settingKey)
+        internal static string? GetAppSetting(string settingKey)
         {
-            return Environment.GetEnvironmentVariable(settingKey).Trim();
+            return Environment.GetEnvironmentVariable(settingKey)?.Trim();
         }
 
         /// <summary>

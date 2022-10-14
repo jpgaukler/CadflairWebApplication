@@ -1,0 +1,32 @@
+<svg width="100" height="100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <mask id="a" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+    <circle cx="50" cy="50" r="50" fill="#fff"/>
+  </mask>
+  <g mask="url(#a)">
+    <path fill="#292929" d="M0 0h100v100H0z"/>
+    <path fill="#DBDBDB" d="M84.546 0h6.955v100h-6.955z"/>
+    <path fill="#50C0FF" d="M83 0h1.545v100H83z"/>
+    <path d="m77 75 17.25-1.732v3.464L77 75ZM85.5 48l10.875-1.732v3.464L85.5 48Z" fill="#292929"/>
+    <circle cx="87.5" cy="26" r="1" fill="#292929"/>
+    <path fill="#50C0FF" d="m83.264 21.416 1.484 1.717-11.477 9.914-1.484-1.717z"/>
+    <path fill="#DBDBDB" d="m86.097 20.238 2.034 2.354-18.24 15.756-2.034-2.354z"/>
+    <path fill="#DBDBDB" d="M58.5 0H75v100H58.5z"/>
+    <path fill="#50C0FF" d="M54 0h4.5v100H54z"/>
+    <path fill="#DBDBDB" d="m40.422 64.397 2.075-2.492 18.524 15.422-2.075 2.492z"/>
+    <path fill="#50C0FF" d="m38.095 64.093.83-.997L57.45 78.517l-.83.998z"/>
+    <circle cx="64" cy="20.5" r="1" fill="#292929"/>
+    <path d="m60 13 17.25-1.732v3.464L60 13ZM66.5 82.5l-17.25 1.732v-3.464L66.5 82.5ZM56.5 54.5 76 50.603v7.794L56.5 54.5ZM68 36.5l-19.5 3.897v-7.794L68 36.5Z" fill="#292929"/>
+    <circle cx="69.5" cy="67.5" r="1.5" fill="#292929"/>
+    <path fill="#DBDBDB" d="M34.5 0h9v100h-9z"/>
+    <path fill="#50C0FF" d="M32.5 0h2v100h-2z"/>
+    <path d="m36.905 77.976 9.821-1.546v3.093l-9.821-1.547ZM48 60.5l-16.5 3.464v-6.928L48 60.5ZM33.5 39 50 37.701v2.598L33.5 39ZM42.5 21 26 22.732v-3.464L42.5 21Z" fill="#292929"/>
+    <circle cx="40.5" cy="47" r="1.5" fill="#292929"/>
+    <path fill="#50C0FF" d="m15.06 40.432-.476-.64 19.336-14.39.476.64z"/>
+    <path fill="#DBDBDB" d="m16.477 41.927-1.33-1.788 19.851-14.776 1.331 1.788z"/>
+    <path fill="#DBDBDB" d="M11.393 0H22v100H11.393z"/>
+    <path fill="#50C0FF" d="M8.5 0h2.893v100H8.5z"/>
+    <circle cx="17.5" cy="62" r="1" fill="#292929"/>
+    <circle cx="14" cy="21.5" r="1.5" fill="#292929"/>
+    <path d="m7 52.5 17.25-3.464v6.928L7 52.5ZM20.5 69 5.125 72.464v-6.928L20.5 69ZM18.5 30.5 1.25 33.964v-6.928L18.5 30.5Z" fill="#292929"/>
+  </g>
+</svg>
