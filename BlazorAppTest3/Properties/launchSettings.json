@@ -26,5 +26,8 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
+  },
+  "ConnectionStrings": {
+    "default": "Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=cadflairlocaldb;Integrated Security=True"
   }
 }

@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairInventorAddin", "Ca
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorAppTest3", "BlazorAppTest3\BlazorAppTest3.csproj", "{3AD3A338-136C-416F-8568-5949D815ED7D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairDataAccess", "CadflairDataAccess\CadflairDataAccess.csproj", "{CAFA1AC2-91EB-4EF2-A6C4-3C63D8E81E15}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CadflairDatabase", "CadflairDatabase\CadflairDatabase.sqlproj", "{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,16 @@ Global
 		{3AD3A338-136C-416F-8568-5949D815ED7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AD3A338-136C-416F-8568-5949D815ED7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AD3A338-136C-416F-8568-5949D815ED7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAFA1AC2-91EB-4EF2-A6C4-3C63D8E81E15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAFA1AC2-91EB-4EF2-A6C4-3C63D8E81E15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAFA1AC2-91EB-4EF2-A6C4-3C63D8E81E15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAFA1AC2-91EB-4EF2-A6C4-3C63D8E81E15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

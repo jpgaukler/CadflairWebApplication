@@ -12,4 +12,8 @@
     <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="5.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
+  </ItemGroup>
+
 </Project>
