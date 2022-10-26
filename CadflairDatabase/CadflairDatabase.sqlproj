@@ -61,7 +61,10 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="dbo\User Defined Types\" />
-    <Folder Include="Publish" />
+    <Folder Include="Publish Scripts" />
+    <Folder Include="dbo\Views" />
+    <Folder Include="Compare" />
+    <Folder Include="Post Deployment Scripts" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\SubscriptionType.sql" />
@@ -77,6 +80,10 @@
     <Build Include="dbo\User Defined Types\ForgeObjectKey.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Publish\HP_Z420_cadflairlocaldb.publish.xml" />
+    <None Include="Publish Scripts\HP_Z420_cadflairlocaldb.publish.xml" />
+    <None Include="Compare\HP_Z420_cadflairlocaldb_compare.scmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Post Deployment Scripts\AddDemoData.PostDeployment.sql" />
   </ItemGroup>
 </Project>
