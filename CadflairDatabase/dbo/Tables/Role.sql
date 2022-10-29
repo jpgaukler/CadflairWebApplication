@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Role] (
-    [RoleId]      INT          IDENTITY (1, 1) NOT NULL,
-    [DisplayName] VARCHAR (20) NOT NULL,
-    CONSTRAINT [PK_Role] PRIMARY KEY CLUSTERED ([RoleId] ASC)
+	[Id]         INT           NOT NULL PRIMARY KEY IDENTITY, 
+    [DisplayName] [dbo].[TypeName] NOT NULL UNIQUE,
+    [CreatedOn] DATETIME NOT NULL DEFAULT getdate(), 
 );
 

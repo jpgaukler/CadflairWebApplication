@@ -68,22 +68,27 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\SubscriptionType.sql" />
-    <Build Include="dbo\Tables\Subscription.sql" />
     <Build Include="dbo\Tables\Role.sql" />
     <Build Include="dbo\Tables\Account.sql" />
     <Build Include="dbo\Tables\Theme.sql" />
     <Build Include="dbo\Tables\User.sql" />
     <Build Include="dbo\Tables\Product.sql" />
-    <Build Include="dbo\Tables\Configuration.sql" />
+    <Build Include="dbo\Tables\ProductConfiguration.sql" />
     <Build Include="dbo\Tables\RequestForQuote.sql" />
-    <Build Include="dbo\User Defined Types\ForgeBucketKey.sql" />
-    <Build Include="dbo\User Defined Types\ForgeObjectKey.sql" />
+    <Build Include="dbo\Tables\EmailAddress.sql" />
+    <Build Include="dbo\Tables\EmailAddressType.sql" />
+    <Build Include="dbo\User Defined Types\TypeName.sql" />
+    <Build Include="dbo\Tables\ProductFamily.sql" />
+    <Build Include="dbo\User Defined Types\DisplayName.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Publish Scripts\HP_Z420_cadflairlocaldb.publish.xml" />
+    <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />
     <None Include="Compare\HP_Z420_cadflairlocaldb_compare.scmp" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post Deployment Scripts\AddDemoData.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="CadflairDatabase.refactorlog" />
   </ItemGroup>
 </Project>

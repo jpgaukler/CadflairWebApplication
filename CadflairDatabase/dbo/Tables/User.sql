@@ -1,15 +1,13 @@
 ﻿CREATE TABLE [dbo].[User] (
-    [UserId]       INT            IDENTITY (1, 1) NOT NULL,
+	[Id]           INT            NOT NULL PRIMARY KEY IDENTITY, 
     [AccountId]    INT            NULL,
     [RoleId]       INT            NOT NULL,
-    [EmailAddress] NVARCHAR (100) NOT NULL,
-    [PhoneNumber]  NVARCHAR (25)  NULL,
     [PasswordHash] VARCHAR (30)   NOT NULL,
-    [FirstName]    NVARCHAR (50)  NOT NULL,
-    [LastName]     NVARCHAR (50)  NOT NULL,
-    [CreatedOn]    DATETIME       CONSTRAINT [DF_User_CreatedOn] DEFAULT (getdate()) NOT NULL,
-    CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([UserId] ASC),
-    CONSTRAINT [FK_User_Account] FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Account] ([AccountId]),
-    CONSTRAINT [FK_User_Role] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Role] ([RoleId])
+    [FirstName]    NVARCHAR (25)  NOT NULL,
+    [LastName]     NVARCHAR (25)  NOT NULL,
+    [CreatedOn]    DATETIME       NOT NULL DEFAULT getdate(),
+    CONSTRAINT [FK_User_Account] FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Account] ([Id]),
+    CONSTRAINT [FK_User_Role] FOREIGN KEY ([RoleId]) REFERENCES [dbo].[Role] ([Id]),
+    CONSTRAINT [UQ_FirstName_LastName] UNIQUE(FirstName,LastName), 
 );
 

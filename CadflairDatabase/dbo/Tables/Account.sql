@@ -1,11 +1,14 @@
 ﻿CREATE TABLE [dbo].[Account] (
-    [AccountId]      INT            IDENTITY (1, 1) NOT NULL,
-    [SubscriptionId] INT            NULL,
-    [CompanyName]    NVARCHAR (100) NOT NULL,
-    [CreatedOn]      DATETIME       CONSTRAINT [DF_Account_CreatedOn] DEFAULT (getdate()) NOT NULL,
-    [CreatedBy]      INT            NOT NULL,
-    [Owner]          INT            NOT NULL,
-    CONSTRAINT [PK_Customer] PRIMARY KEY CLUSTERED ([AccountId] ASC),
-    CONSTRAINT [FK_Account_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([SubscriptionId])
+	[Id]                    INT            NOT NULL PRIMARY KEY IDENTITY, 
+    [CompanyName]           NVARCHAR (100) NOT NULL,
+    [SubDirectory]          VARCHAR(50)    NOT NULL UNIQUE,
+    [CreatedBy]             INT            NOT NULL,
+    [CreatedOn]             DATETIME       NOT NULL DEFAULT getdate(),
+    [Owner]                 INT            NOT NULL,
+    [SubscriptionTypeId]    INT            NOT NULL, 
+    [SubscriptionExpiresOn] DATETIME       NOT NULL, 
+    CONSTRAINT [FK_Account_SubscriptionType] FOREIGN KEY ([SubscriptionTypeId]) REFERENCES [dbo].[SubscriptionType]([Id]),
+    CONSTRAINT [FK_Account_User1] FOREIGN KEY ([CreatedBy]) REFERENCES [dbo].[User]([Id]),
+    CONSTRAINT [FK_Account_User2] FOREIGN KEY ([Owner]) REFERENCES [dbo].[User]([Id]),
 );
 

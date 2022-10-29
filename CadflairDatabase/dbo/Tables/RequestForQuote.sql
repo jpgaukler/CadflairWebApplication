@@ -8,6 +8,6 @@
     [PhoneExtension]    NVARCHAR (25)  NULL,
     [CreatedOn]         DATETIME       CONSTRAINT [DF_RequestForQuote_RequestedOn] DEFAULT (getdate()) NOT NULL,
     CONSTRAINT [PK_RequestForQuote] PRIMARY KEY CLUSTERED ([RequestForQuoteId] ASC),
-    CONSTRAINT [FK_RequestForQuote_Configuration] FOREIGN KEY ([ConfigurationId]) REFERENCES [dbo].[Configuration] ([ConfigurationId])
+    CONSTRAINT [FK_RequestForQuote_Configuration] FOREIGN KEY ([ConfigurationId]) REFERENCES [dbo].[ProductConfiguration] ([Id])
 );
 
