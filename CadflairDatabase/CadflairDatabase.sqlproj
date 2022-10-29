@@ -67,8 +67,8 @@
     <Folder Include="Post Deployment Scripts" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\SubscriptionType.sql" />
-    <Build Include="dbo\Tables\Role.sql" />
+    <Build Include="dbo\Tables\AccountType.sql" />
+    <Build Include="dbo\Tables\UserType.sql" />
     <Build Include="dbo\Tables\Account.sql" />
     <Build Include="dbo\Tables\Theme.sql" />
     <Build Include="dbo\Tables\User.sql" />
