@@ -7,8 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Shared\ForgeViewer.razor.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autodesk.Forge" Version="1.9.7" />
     <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="5.1.0" />
+    <PackageReference Include="Syncfusion.Blazor" Version="20.3.0.52" />
   </ItemGroup>
 
   <ItemGroup>
