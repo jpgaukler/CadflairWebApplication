@@ -1,0 +1,59 @@
+﻿@inject AccountService _accountService
+
+<h3>Accounts</h3>
+<h3>Account By User Id: @_companyName</h3>
+
+<div class="form-container">
+    <SfTextBox Placeholder="Company Name" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+    <SfTextBox Placeholder="Sub Directory" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+    <SfButton OnClick="AddAccount" IsPrimary="true" CssClass="e-outline">Add Account</SfButton>
+    <SfButton OnClick="GetAccount" IsPrimary="true" CssClass="e-outline">Get Account</SfButton>
+</div>
+
+<SfGrid DataSource="@_accounts">
+    <GridColumns>
+        <GridColumn Field=@nameof(Account.Id) HeaderText="Id" />
+        <GridColumn Field=@nameof(Account.AccountTypeId) HeaderText="Type Id" />
+        <GridColumn Field=@nameof(Account.CompanyName) HeaderText="Company Name" />
+        <GridColumn Field=@nameof(Account.SubDirectory) HeaderText="Sub-Directory" />
+        <GridColumn Field=@nameof(Account.CreatedById) HeaderText="Created By" />
+        <GridColumn Field=@nameof(Account.CreatedOn) HeaderText="Created On" />
+        <GridColumn Field=@nameof(Account.OwnerId) HeaderText="Owner" />
+        <GridColumn Field=@nameof(Account.SubscriptionExpiresOn) HeaderText="Expires On" />
+    </GridColumns>
+</SfGrid>
+
+@code {
+    private List<Account> _accounts = new();
+    private string _companyName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _accounts = await _accountService.GetAccounts();
+    }
+
+    private async Task AddAccount()
+    {
+        Account newAccount = new()
+        {
+            CompanyName = Guid.NewGuid().ToString(),
+            SubDirectory = Guid.NewGuid().ToString(),
+            CreatedById = 1,
+            OwnerId = 1,
+            AccountTypeId = 1,
+            SubscriptionExpiresOn = DateTime.Now,
+        };
+
+        await _accountService.CreateAccount(newAccount);
+        _accounts = await _accountService.GetAccounts();
+        //await OnInitializedAsync();
+    }
+
+    private async Task GetAccount()
+    {
+        var acc = await _accountService.GetAccountById(1);
+        _companyName = acc.CompanyName;
+    }
+
+
+}

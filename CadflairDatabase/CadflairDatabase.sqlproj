@@ -70,7 +70,6 @@
     <Build Include="dbo\Tables\AccountType.sql" />
     <Build Include="dbo\Tables\UserType.sql" />
     <Build Include="dbo\Tables\Account.sql" />
-    <Build Include="dbo\Tables\Theme.sql" />
     <Build Include="dbo\Tables\User.sql" />
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductConfiguration.sql" />

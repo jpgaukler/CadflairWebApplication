@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairDataAccess", "Cadfl
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CadflairDatabase", "CadflairDatabase\CadflairDatabase.sqlproj", "{92153CA6-1DE7-4B76-9FF6-210F8A4997E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairBlazorServer", "CadflairBlazorServer\CadflairBlazorServer.csproj", "{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairBlazorServer", "CadflairBlazorServer\CadflairBlazorServer.csproj", "{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

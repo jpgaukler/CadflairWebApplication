@@ -4,7 +4,7 @@
     [ParentId]      INT              NULL,
     [AccountId]     INT              NOT NULL,
     [DisplayName]   [dbo].[DisplayName]    NOT NULL,
-    [CreatedBy]	    INT              NOT NULL,
+    [CreatedById]   INT              NOT NULL,
     [CreatedOn]     DATETIME         NOT NULL DEFAULT getdate(),
     CONSTRAINT [PK_ProductFamily] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_ProductFamily_Account] FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Account] ([Id]),

@@ -112,4 +112,32 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ProductConfigurationId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="7b8434a2-0a0e-4de2-9bd8-94062edb5344" ChangeDateTime="11/03/2022 00:39:03">
+    <Property Name="ElementName" Value="[dbo].[Account].[Owner]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Account]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[OwnerId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="5dda16ce-b76a-4f48-b64e-cfb2c8bd58d2" ChangeDateTime="11/03/2022 00:39:28">
+    <Property Name="ElementName" Value="[dbo].[Account].[CreatedBy]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Account]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6de8c864-322e-4309-8cd7-ade98ab9e3de" ChangeDateTime="11/03/2022 00:40:54">
+    <Property Name="ElementName" Value="[dbo].[Product].[CreatedBy]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Product]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreatedById]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="9b6f0dfa-f09c-4058-b48d-663318b23921" ChangeDateTime="11/03/2022 00:43:00">
+    <Property Name="ElementName" Value="[dbo].[ProductFamily].[CreatedBy]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProductFamily]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[CreatedById]" />
+  </Operation>
 </Operations>
