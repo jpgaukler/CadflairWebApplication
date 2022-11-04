@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[RequestForQuote] (
+﻿CREATE TABLE [dbo].[ProductQuoteRequest] (
     [Id] INT            NOT NULL IDENTITY (1, 1), 
     [ProductConfigurationId]   INT            NOT NULL,
     [FirstName]         NVARCHAR (50)  NOT NULL,

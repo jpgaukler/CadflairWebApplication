@@ -8,7 +8,7 @@ namespace CadflairDataAccess.Models
     {
         public int Id { get; set; }
         public int AccountId { get; set; }
-        public int RoleId { get; set; }
+        public int UserTypeId { get; set; }
         public string PasswordHash { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

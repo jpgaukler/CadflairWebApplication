@@ -20,6 +20,7 @@ namespace CadflairDataAccess.Services
         public Task<List<Account>> GetAccounts()
         {
             string sql = "select * from dbo.Account";
+
             return _db.LoadDataAsync<Account, dynamic>(sql, new { });
         }
 
@@ -33,20 +34,22 @@ namespace CadflairDataAccess.Services
             };
 
             List<Account> accounts = await _db.LoadDataAsync<Account, dynamic>(sql, values);
+
             return accounts.First();
         }
 
-        public Task<List<User>> GetUsersByAccountId(int accountId)
+        public async Task<Account> GetAccountBySubDirectory(string subDirectory)
         {
-            string sql = "select * from dbo.User where AccountId = @AccountId";
+            string sql = "select * from dbo.Account where SubDirectory = @SubDirectory";
 
             dynamic values = new
             {
-                AccountId = accountId,
+                SubDirectory = subDirectory,
             };
 
-            return _db.LoadDataAsync<User, dynamic>(sql, values);
+            List<Account> accounts = await _db.LoadDataAsync<Account, dynamic>(sql, values);
 
+            return accounts.First();
         }
 
         public Task CreateAccount(Account newAccount)
@@ -66,8 +69,19 @@ namespace CadflairDataAccess.Services
                            ,@AccountTypeId
                            ,@SubscriptionExpiresOn)";
 
-            return _db.SaveDataAsync<Account>(sql, newAccount);
+            return _db.SaveDataAsync(sql, newAccount);
         }
 
+        public Task DeleteAccount(Account account)
+        {
+            string sql = "DELETE FROM [dbo].[Account] WHERE Id = @Id";
+
+            dynamic values = new
+            {
+                Id = account.Id,
+            };
+
+            return _db.SaveDataAsync(sql, values);
+        }
     }
 }

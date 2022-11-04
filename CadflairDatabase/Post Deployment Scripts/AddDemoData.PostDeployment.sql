@@ -43,7 +43,7 @@ if not exists (select * from dbo.[EmailAddressType] where [EmailAddressType].[Na
 --add demo user
 if not exists (select * from dbo.[User] where [User].[UserName] = 'demouser')
 	begin
-		insert into dbo.[User](RoleId, UserName, FirstName, LastName, PasswordHash)
+		insert into dbo.[User]([UserTypeId], UserName, FirstName, LastName, PasswordHash)
 		values
 			(1, 'demouser', 'Demo', 'User', 'dhivebisdy'),
 			(2, 'jpgaukler', 'Justin', 'Gaukler', 'akjweohialkjdgoj'),
