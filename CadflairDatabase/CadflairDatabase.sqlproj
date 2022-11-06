@@ -68,9 +68,9 @@
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AccountType.sql" />
-    <Build Include="dbo\Tables\UserType.sql" />
+    <Build Include="dbo\Tables\ApplicationRole.sql" />
     <Build Include="dbo\Tables\Account.sql" />
-    <Build Include="dbo\Tables\User.sql" />
+    <Build Include="dbo\Tables\ApplicationUser.sql" />
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductConfiguration.sql" />
     <Build Include="dbo\Tables\ProductQuoteRequest.sql" />

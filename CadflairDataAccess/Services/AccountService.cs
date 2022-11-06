@@ -24,6 +24,13 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<Account, dynamic>(sql, new { });
         }
 
+        public Task<List<AccountType>> GetAccountTypes()
+        {
+            string sql = "select * from dbo.AccountType";
+
+            return _db.LoadDataAsync<AccountType, dynamic>(sql, new { });
+        }
+
         public async Task<Account> GetAccountById(int accountId)
         {
             string sql = "select * from dbo.Account where Id = @Id";

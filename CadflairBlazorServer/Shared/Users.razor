@@ -1,0 +1,88 @@
+﻿@inject IUserStore<ApplicationUser> _userStore;
+@*@inject IRoleStore<ApplicationRole> _roleStore;*@
+@inject PasswordHasher<ApplicationUser> _passwordHasher;
+
+<h3>Users</h3>
+
+<div class="form-container">
+    <SfTextBox Placeholder="First Name" @bind-Value="_firstNameValue" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+    <SfTextBox Placeholder="Last Name" @bind-Value="_lastNameValue" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+    <SfTextBox Placeholder="User Name" @bind-Value="_userNameValue" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+    <SfTextBox Placeholder="Password" @bind-Value="_passwordValue" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+
+    <SfDropDownList TItem="ApplicationRole" TValue="int" DataSource="@_applicationRoles" @bind-Value="_applicationRoleValue" Placeholder="Select Role">
+        <DropDownListFieldSettings Text="@nameof(ApplicationRole.Name)" Value="@nameof(ApplicationRole.Id)" />
+    </SfDropDownList>
+
+    <SfButton OnClick="AddUser" IsPrimary="true" CssClass="e-outline">Add User</SfButton>
+    <SfButton OnClick="TestPasswordHash" IsPrimary="true" CssClass="e-outline">Test Password</SfButton>
+</div>
+
+<div class="grid-container">
+    <SfGrid DataSource="@_applicationUsers" TValue="ApplicationUser">
+        <GridColumns>
+            <GridColumn Field=@nameof(ApplicationUser.Id) HeaderText="Id" />
+            <GridColumn Field=@nameof(ApplicationUser.AccountId) HeaderText="Account Id" />
+            <GridColumn Field=@nameof(ApplicationUser.ApplicationRoleId) HeaderText="Role Id" />
+            <GridColumn Field=@nameof(ApplicationUser.UserName) HeaderText="User Name" />
+            <GridColumn Field=@nameof(ApplicationUser.NormalizedUserName) HeaderText="Normalized User Name" />
+            <GridColumn Field=@nameof(ApplicationUser.FirstName) HeaderText="First Name" />
+            <GridColumn Field=@nameof(ApplicationUser.LastName) HeaderText="Last Name" />
+            <GridColumn Field=@nameof(ApplicationUser.PasswordHash) HeaderText="Password Hash" />
+            <GridColumn Field=@nameof(ApplicationUser.CreatedOn) HeaderText="Created On" />
+        </GridColumns>
+    </SfGrid>
+</div>
+
+@code {
+
+    //data
+    private List<ApplicationUser> _applicationUsers = new();
+    private List<ApplicationRole> _applicationRoles = new();
+
+    //form variables
+    private string _firstNameValue = string.Empty;
+    private string _lastNameValue = string.Empty;
+    private string _userNameValue = string.Empty;
+    private string _passwordValue = string.Empty;
+    private int _applicationRoleValue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //initialize form data
+        //_userTypes = await _userService.GetUserTypes();
+        //_applicationRoles = await _userService.GetUserTypes();
+
+        //initialize grid
+        await RefreshDataGrid();
+    }
+
+    private async Task RefreshDataGrid()
+    {
+        //_users = await _userService.GetUsers();
+    }
+
+    private async Task AddUser()
+    {
+        ApplicationUser newUser = new()
+        {
+            ApplicationRoleId = 1,
+            UserName = _userNameValue,
+            NormalizedUserName = _userNameValue,
+            FirstName = _firstNameValue,
+            LastName = _lastNameValue,
+            PasswordHash = _passwordHasher.HashPassword(null , _lastNameValue),
+        };
+
+        //await _userService.CreateUser(newUser);
+        await _userStore.CreateAsync(newUser, CancellationToken.None);
+        await RefreshDataGrid();
+    }
+
+    private void TestPasswordHash() 
+    {
+        string hashValue = _passwordHasher.HashPassword(new ApplicationUser(), _passwordValue);
+        Debug.WriteLine($"Password: {_passwordValue}");
+        Debug.WriteLine($"Password: {hashValue} Length: {hashValue.Length}");
+    }
+}
