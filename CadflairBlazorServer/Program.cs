@@ -11,20 +11,51 @@ using Syncfusion.Blazor;
 var builder = WebApplication.CreateBuilder(args);
 
 
+// Add identity service
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
+
+// Add data access services
+builder.Services.AddSingleton<DataAccess>();
+builder.Services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
+builder.Services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
+//builder.Services.AddTransient<AccountService>();
+//builder.Services.AddTransient<UserService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
-builder.Services.AddSingleton<DataAccess>();
-//builder.Services.AddTransient<AccountService>();
-//builder.Services.AddTransient<UserService>();
-builder.Services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
-builder.Services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
-builder.Services.AddTransient<PasswordHasher<ApplicationUser>>();
 
+//Identity configuration  
+//builder.Services.Configure<IdentityOptions>(options =>
+//{
+//    // Password settings  
+//    options.Password.RequiredLength = 8;
+//    options.Password.RequireDigit = true;
+//    options.Password.RequireNonAlphanumeric = false;
+//    options.Password.RequireUppercase = true;
+//    options.Password.RequireLowercase = true;
+
+//    // Lockout settings  
+//    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(60);
+//    options.Lockout.MaxFailedAccessAttempts = 10;
+//    options.Lockout.AllowedForNewUsers = true;
+
+//    // User settings  
+//    options.User.RequireUniqueEmail = true;
+//});
+
+// Cookie configuration  
+//builder.Services.ConfigureApplicationCookie(options =>
+//{
+//    options.Cookie.HttpOnly = true;
+//    options.Cookie.Expiration = TimeSpan.FromDays(30);
+//    options.LoginPath = "/Account/Login";
+//    options.LogoutPath = "/Account/Logout";
+//    options.AccessDeniedPath = "/Account/AccessDenied";
+//    options.SlidingExpiration = true;
+//});
 
 var app = builder.Build();
 
@@ -43,7 +74,6 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 

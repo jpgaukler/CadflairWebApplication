@@ -1,8 +1,9 @@
 ﻿@inject IUserStore<ApplicationUser> _userStore;
 @*@inject IRoleStore<ApplicationRole> _roleStore;*@
-@inject PasswordHasher<ApplicationUser> _passwordHasher;
+
 
 <h3>Users</h3>
+
 
 <div class="form-container">
     <SfTextBox Placeholder="First Name" @bind-Value="_firstNameValue" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
@@ -71,8 +72,11 @@
             NormalizedUserName = _userNameValue,
             FirstName = _firstNameValue,
             LastName = _lastNameValue,
-            PasswordHash = _passwordHasher.HashPassword(null , _lastNameValue),
         };
+
+        //store hashed password
+        PasswordHasher<ApplicationUser> hasher = new();
+        newUser.PasswordHash = hasher.HashPassword(newUser, _passwordValue);
 
         //await _userService.CreateUser(newUser);
         await _userStore.CreateAsync(newUser, CancellationToken.None);
@@ -81,7 +85,8 @@
 
     private void TestPasswordHash() 
     {
-        string hashValue = _passwordHasher.HashPassword(new ApplicationUser(), _passwordValue);
+        PasswordHasher<ApplicationUser> hasher = new();
+        string hashValue = hasher.HashPassword(new ApplicationUser(), _passwordValue);
         Debug.WriteLine($"Password: {_passwordValue}");
         Debug.WriteLine($"Password: {hashValue} Length: {hashValue.Length}");
     }
