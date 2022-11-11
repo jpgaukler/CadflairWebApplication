@@ -11,7 +11,7 @@
     [IsConfigurable]     BIT                       NOT NULL DEFAULT 0,
     CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Product_ProductFamily] FOREIGN KEY ([ProductFamilyId]) REFERENCES [dbo].[ProductFamily] ([Id]),
-    CONSTRAINT [FK_Product_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[ApplicationUser] ([Id]),
+    CONSTRAINT [FK_Product_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
     CONSTRAINT [UC_ProductFamilyId_DisplayName] UNIQUE([ProductFamilyId],[DisplayName])
 );
 

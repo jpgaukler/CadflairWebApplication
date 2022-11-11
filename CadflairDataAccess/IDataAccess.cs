@@ -7,9 +7,8 @@ namespace CadflairDataAccess
     {
         string ConnectionStringName { get; set; }
 
-        List<T> LoadData<T, U>(string sql, U parameters);
         Task<List<T>> LoadDataAsync<T, U>(string sql, U parameters);
-        void SaveData<T>(string sql, T parameters);
+        Task<T> LoadSingleAsync<T, U>(string sql, U parameters);
         Task SaveDataAsync<T>(string sql, T parameters);
     }
 }

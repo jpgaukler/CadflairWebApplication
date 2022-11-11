@@ -21,13 +21,13 @@ if not exists (select * from dbo.[AccountType] where [AccountType].[Name] = 'Bas
 
 
 --add user roles
-if not exists (select * from dbo.[ApplicationRole] where [ApplicationRole].[Name] = 'Admin')
+if not exists (select * from dbo.[UserRole] where [UserRole].[Name] = 'Admin')
 	begin
-		insert into dbo.[ApplicationRole]([Name], [NormalizedName])
+		insert into dbo.[UserRole]([Name] )
 		values
-			('Admin', 'admin'),
-			('Publisher', 'publisher'),
-			('Reviewer', 'reviewer')
+			('Administrator'),
+			('Publisher'),
+			('Reviewer')
 	end
 
 --populate email address types
@@ -41,14 +41,12 @@ if not exists (select * from dbo.[EmailAddressType] where [EmailAddressType].[Na
 	end
 
 --add demo user
---if not exists (select * from dbo.[ApplicationUser] where [ApplicationUser].[UserName] = 'demouser')
---	begin
---		insert into dbo.[ApplicationUser]([ApplicationRoleId], FirstName, LastName, PasswordHash)
---		values
---			(1, 'demouser', 'Demo', 'User', 'dhivebisdy'),
---			(2, 'jpgaukler', 'Justin', 'Gaukler', 'akjweohialkjdgoj'),
---			(3, 'timcorey', 'Tim', 'Corey', 'asdgsdjf98q3');
---	end
+if not exists (select * from dbo.[User] where [User].[EmailAddress] = 'jpgaukler@gmail.com')
+	begin
+		insert into dbo.[User]([UserRoleId], [FirstName], [LastName], [EmailAddress], [PasswordHash])
+		values
+			(1, 'Justin', 'Gaukler', 'jpgaukler@gmail.com', 'password');
+	end
 
 
 ----add demo account

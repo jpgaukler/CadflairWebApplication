@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,15 +21,6 @@ namespace CadflairDataAccess
             _config = configuration;
         }
 
-        public List<T> LoadData<T, U>(string sql, U parameters)
-        {
-            using (IDbConnection connection = new SqlConnection(_config.GetConnectionString(ConnectionStringName)))
-            {
-                List<T> rows = connection.Query<T>(sql, parameters).ToList();
-                return rows;
-            }
-        }
-
         public async Task<List<T>> LoadDataAsync<T, U>(string sql, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_config.GetConnectionString(ConnectionStringName)))
@@ -38,11 +30,12 @@ namespace CadflairDataAccess
             }
         }
 
-        public void SaveData<T>(string sql, T parameters)
+        public async Task<T> LoadSingleAsync<T, U>(string sql, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_config.GetConnectionString(ConnectionStringName)))
             {
-                connection.Execute(sql, parameters);
+                var row = await connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
+                return row;
             }
         }
 
@@ -53,7 +46,6 @@ namespace CadflairDataAccess
                 await connection.ExecuteAsync(sql, parameters);
             }
         }
-
 
     }
 }

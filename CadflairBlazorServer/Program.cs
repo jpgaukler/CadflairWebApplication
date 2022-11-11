@@ -1,61 +1,27 @@
-using CadflairBlazorServer.Data;
+using CadflairBlazorServer.Authentication;
 using CadflairDataAccess;
-using CadflairDataAccess.Models;
 using CadflairDataAccess.Services;
-using CadflairDataAccess.Stores;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Identity;
 using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
-
-
-// Add identity service
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-    .AddDefaultTokenProviders();
-
-// Add data access services
-builder.Services.AddSingleton<DataAccess>();
-builder.Services.AddTransient<IUserStore<ApplicationUser>, UserStore>();
-builder.Services.AddTransient<IRoleStore<ApplicationRole>, RoleStore>();
-//builder.Services.AddTransient<AccountService>();
-//builder.Services.AddTransient<UserService>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSyncfusionBlazor();
 
-//Identity configuration  
-//builder.Services.Configure<IdentityOptions>(options =>
-//{
-//    // Password settings  
-//    options.Password.RequiredLength = 8;
-//    options.Password.RequireDigit = true;
-//    options.Password.RequireNonAlphanumeric = false;
-//    options.Password.RequireUppercase = true;
-//    options.Password.RequireLowercase = true;
+// Authentication services
+builder.Services.AddScoped<AuthenticationStateProvider, CadflairAuthenticationStateProvider>();
+builder.Services.AddScoped<ProtectedSessionStorage>();
 
-//    // Lockout settings  
-//    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(60);
-//    options.Lockout.MaxFailedAccessAttempts = 10;
-//    options.Lockout.AllowedForNewUsers = true;
-
-//    // User settings  
-//    options.User.RequireUniqueEmail = true;
-//});
-
-// Cookie configuration  
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.Cookie.HttpOnly = true;
-//    options.Cookie.Expiration = TimeSpan.FromDays(30);
-//    options.LoginPath = "/Account/Login";
-//    options.LogoutPath = "/Account/Logout";
-//    options.AccessDeniedPath = "/Account/AccessDenied";
-//    options.SlidingExpiration = true;
-//});
+// Data Access services
+builder.Services.AddSingleton<DataAccess>();
+builder.Services.AddSingleton<AccountService>();
+builder.Services.AddSingleton<UserService>();
 
 var app = builder.Build();
 

@@ -9,8 +9,8 @@
     [SubscriptionExpiresOn] DATETIME       NOT NULL, 
     CONSTRAINT [PK_Account] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Account_AccountType] FOREIGN KEY ([AccountTypeId]) REFERENCES [dbo].[AccountType]([Id]),
-    CONSTRAINT [FK_Account_User1] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[ApplicationUser]([Id]),
-    CONSTRAINT [FK_Account_User2] FOREIGN KEY ([OwnerId]) REFERENCES [dbo].[ApplicationUser]([Id]),
+    CONSTRAINT [FK_Account_User1] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User]([Id]),
+    CONSTRAINT [FK_Account_User2] FOREIGN KEY ([OwnerId]) REFERENCES [dbo].[User]([Id]),
     CONSTRAINT [UC_Account_CompanyName] UNIQUE([CompanyName]),
     CONSTRAINT [UC_Account_SubDirectory] UNIQUE([SubDirectory])
 );

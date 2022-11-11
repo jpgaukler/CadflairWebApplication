@@ -1,0 +1,48 @@
+﻿@page "/login"
+@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject UserService _userService
+@inject IJSRuntime _js
+
+<h3>Login</h3>
+<label>Email Address</label>
+
+<SfTextBox Placeholder="Email address" @bind-Value="_emailAddressValue" FloatLabelType="@FloatLabelType.Auto"/>
+<label>Password</label>
+
+<SfTextBox Placeholder="Password" @bind-Value="_passwordValue" FloatLabelType="@FloatLabelType.Auto"/>
+<button @onclick="Authenticate" class="btn btn-primary">Login</button>
+
+@code {
+    private string _emailAddressValue = string.Empty;
+    private string _passwordValue = string.Empty;
+
+    private async Task Authenticate()
+    {
+        User user = await _userService.GetUserByEmailAddress(_emailAddressValue);
+
+        if (user == null || user.PasswordHash != _passwordValue)
+        {
+            await _js.InvokeVoidAsync("alert", "Invalid User Name or Password");
+            return;
+        }
+
+        UserRole userRole = await _userService.GetUserRoleById(user.UserRoleId);
+
+        UserSession userSession = new()
+        {
+            Name = user.FullName,
+            EmailAddress = user.EmailAddress,
+            Role = userRole.Name
+        };
+
+        await ((CadflairAuthenticationStateProvider)_authStateProvider).UpdateAuthenticationState(userSession);
+        _navigationManager.NavigateTo("/", true);
+    }
+
+    private async Task LogOut()
+    {
+        await ((CadflairAuthenticationStateProvider)_authStateProvider).UpdateAuthenticationState();
+        _navigationManager.NavigateTo("/", true);
+    }
+}
