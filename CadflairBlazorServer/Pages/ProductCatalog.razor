@@ -1,0 +1,43 @@
+﻿@page "/productcatalog"
+@inject IJSRuntime _js
+
+
+
+<MudDrawerContainer>
+
+    <!--Drawer-->
+    <MudDrawer @bind-Open="@_drawerOpen"
+               Variant="@DrawerVariant.Persistent"
+               Height="calc(100vh - var(--mud-appbar-height))">
+
+        <!--Drawer Header-->
+        <MudDrawerHeader>
+            <MudText>Parameters</MudText>
+        </MudDrawerHeader>
+
+        <!--Drawer Content-->
+        <div class="flex-grow-1">
+            <p>You are not authorized. INDEX Message</p>
+        </div>
+    </MudDrawer>
+
+    <!--Page Content-->
+    <div class="page d-flex"> 
+        <MudFab OnClick="@ToggleDrawer" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"/>
+        <ForgeViewer />
+    </div>
+
+</MudDrawerContainer>
+
+
+
+
+@code
+{
+    private bool _drawerOpen = true;
+
+    void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

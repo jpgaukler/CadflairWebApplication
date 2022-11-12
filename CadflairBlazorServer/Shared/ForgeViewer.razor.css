@@ -1,15 +1,17 @@
 ﻿#viewerContainer {
-    width: 50vh;
-    height: 50vh;
-    background: blue;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+/*    flex-grow: 1;
+    padding: 2em;
+    background: green;
+*/ 
+
 }
 
 
 #forgeViewer {
-    position: relative;
+    flex-grow: 1;
+    background: gray;
+/*    position: relative;
     width: 100%;
     height: 100%;
+*/
 }

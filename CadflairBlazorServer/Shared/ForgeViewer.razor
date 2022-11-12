@@ -1,34 +1,36 @@
 ﻿@inject IJSRuntime JS
 
-<div id="viewerContainer">
-    <div id="forgeViewer"></div>
+<div id="forgeViewer"></div>
+
+@*<div id="viewerContainer">
 </div>
+*@
 
 @code {
 
-    protected override async Task OnAfterRenderAsync(bool firstTime)
-    {
-        if(firstTime)
-        {
-            await ViewDocument("urn:adsk.objects:os.object:cadflair.jaysdressers.models/Justin%20Order1.zip");
-        }
-    }
+    //protected override async Task OnAfterRenderAsync(bool firstTime)
+    //{
+    //    if(firstTime)
+    //    {
+    //        await ViewDocument("urn:adsk.objects:os.object:cadflair.jaysdressers.models/Justin%20Order1.zip");
+    //    }
+    //}
 
-    private async Task ViewDocument(string forgeObjectId) 
-    {
+    //private async Task ViewDocument(string forgeObjectId) 
+    //{
 
-        //get public token for viewables
-        var token = await Forge.OAuth.GetPublicAsync();
+    //    //get public token for viewables
+    //    var token = await Forge.OAuth.GetPublicAsync();
 
-        //define input parameters as JSON
-        var parameters = new
-        {
-            Token = token.access_token,
-            Urn = Utils.Base64Encode(forgeObjectId)
-        };
+    //    //define input parameters as JSON
+    //    var parameters = new
+    //    {
+    //        Token = token.access_token,
+    //        Urn = Utils.Base64Encode(forgeObjectId)
+    //    };
 
-        //invoke the viewer
-        await JS.InvokeVoidAsync("launchViewer", parameters);
-    }
+    //    //invoke the viewer
+    //    await JS.InvokeVoidAsync("launchViewer", parameters);
+    //}
 
 }

@@ -20,35 +20,23 @@
                 <MudButton OnClick="Logout">Logout</MudButton>
             </Authorized>
             <NotAuthorized>
-                <MudLink Href="/login">Login</MudLink>
+                <MudLink Href="/login">Log In</MudLink>
+                <MudButton Link="/signup" Color="Color.Inherit">Sign Up</MudButton>
             </NotAuthorized>
         </AuthorizeView>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+
+@*        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
         <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" Label="Toggle Light/Dark Mode" />
+*@
     </MudAppBar>
-
-    <MudDrawer @bind-Open="@_drawerOpen" Anchor="Anchor.Right">
-        <MudNavMenu>
-            <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
-            <MudNavLink Href="/servers" Match="NavLinkMatch.Prefix">Servers</MudNavLink>
-            <MudNavGroup Title="Settings" Expanded="true">
-                <MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
-                <MudNavLink Href="/security" Match="NavLinkMatch.Prefix">Security</MudNavLink>
-            </MudNavGroup>
-            <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
-        </MudNavMenu>
-    </MudDrawer>
-
     <MudMainContent>
-            @Body
-@*        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
-        </MudContainer>
-*@    </MudMainContent>
+        @Body
+    </MudMainContent>
 </MudLayout>
 
 @code {
     private MudThemeProvider? _mudThemeProvider;
-    private bool _isDarkMode;
+    private bool _isDarkMode = true;
     private bool _drawerOpen;
 
     private void ToggleDrawer()
@@ -68,7 +56,7 @@
         {
             if (_mudThemeProvider != null)
             {
-                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+                //_isDarkMode = await _mudThemeProvider.GetSystemPreference();
             }
 
             StateHasChanged();

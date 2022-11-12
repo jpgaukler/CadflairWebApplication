@@ -3,6 +3,8 @@
 
 <PageTitle>Index</PageTitle>
 
+<MudLink Href="/productcatalog">Catalog</MudLink>
+
 <AuthorizeView>
     <Authorized>
         <p>Welcome, @context.User.Identity?.Name</p>
@@ -15,7 +17,6 @@
     </Authorized>
 
     <NotAuthorized>
-        <p>You are not authorized. INDEX Message</p>
     </NotAuthorized>
 </AuthorizeView>
 
