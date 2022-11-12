@@ -36,6 +36,18 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<User, dynamic>(sql, values);
         }
 
+        public Task<List<User>> GetUsersByAccountId(int accountId)
+        {
+            string sql = "select * from dbo.[User] where AccountId = @AccountId";
+
+            dynamic values = new
+            {
+                AccountId = accountId,
+            };
+
+            return _db.LoadDataAsync<User, dynamic>(sql, values);
+        }
+
         public async Task<User> GetUserByEmailAddress(string emailAddress)
         {
             string sql = "select * from dbo.[User] where EmailAddress = @EmailAddress";
@@ -69,18 +81,18 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<UserRole, dynamic>(sql, values);
         }
 
-        public Task<List<User>> GetUsersByAccountId(int accountId)
+        public Task<UserRole> GetUserRoleByName(string userRoleName)
         {
-            string sql = "select * from dbo.[User] where AccountId = @AccountId";
+            string sql = "select * from dbo.[UserRole] where Name = @Name";
 
             dynamic values = new
             {
-                AccountId = accountId,
+                Name = userRoleName,
             };
 
-            return _db.LoadDataAsync<User, dynamic>(sql, values);
-
+            return _db.LoadSingleAsync<UserRole, dynamic>(sql, values);
         }
+
 
         public Task CreateUser(User newUser)
         {
@@ -88,11 +100,13 @@ namespace CadflairDataAccess.Services
                            (UserRoleId
                            ,FirstName
                            ,LastName
+                           ,EmailAddress
                            ,PasswordHash)
                            VALUES
                            (@UserRoleId
                            ,@FirstName
                            ,@LastName
+                           ,@EmailAddress
                            ,@PasswordHash)";
 
             return _db.SaveDataAsync(sql, newUser);

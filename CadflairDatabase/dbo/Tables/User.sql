@@ -10,7 +10,7 @@
     CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_User_Account] FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Account] ([Id]),
     CONSTRAINT [FK_User_UserRole] FOREIGN KEY ([UserRoleId]) REFERENCES [dbo].[UserRole] ([Id]),
-    CONSTRAINT [UC_User_UserName] UNIQUE([EmailAddress])
+    CONSTRAINT [UC_User_EmailAddress] UNIQUE([EmailAddress])
 );
 
 

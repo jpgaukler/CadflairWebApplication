@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Autodesk.Forge" Version="1.9.7" />
     <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="5.1.0" />
-    <PackageReference Include="Syncfusion.Blazor" Version="20.3.0.52" />
+    <PackageReference Include="MudBlazor" Version="6.0.18" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,118 @@
+﻿@page "/register"
+@inject NavigationManager _navigationManager
+@inject UserService _userService
+
+<h3>Register</h3>
+
+<EditForm Model="@_model" OnValidSubmit="@RegisterUser">
+    <DataAnnotationsValidator />
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="12" sm="5">
+            <MudCard>
+                <MudCardContent>
+                    <MudTextField Label="First Name"
+                                  HelperText="Max. 25 characters"
+                                  @bind-Value="_model.FirstName"
+                                  For="@(() => _model.FirstName)" />
+                    <MudTextField Label="Last Name"
+                                  HelperText="Max. 25 characters"
+                                  @bind-Value="_model.LastName"
+                                  For="@(() => _model.LastName)" />
+                    <MudTextField Label="Email"
+                                  @bind-Value="_model.EmailAddress"
+                                  For="@(() => _model.EmailAddress)" />
+                    <MudTextField Label="Password"
+                                  @bind-Value="_model.Password"
+                                  For="@(() => _model.Password)"
+                                  InputType="@_passwordInput"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@_passwordIcon"
+                                  OnAdornmentClick="TogglePassword"
+                                  AdornmentAriaLabel="Show Password" />
+                    <MudTextField Label="Confirm Password"
+                                  @bind-Value="_model.ConfirmPassword"
+                                  For="@(() => _model.ConfirmPassword)"
+                                  InputType="@_passwordInput"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@_passwordIcon"
+                                  OnAdornmentClick="TogglePassword"
+                                  AdornmentAriaLabel="Show Password" />
+                    <MudSelect T="string"
+                               Label="User Type"
+                               @bind-Value="_model.UserRoleName"
+                               For="@(() => _model.UserRoleName)">
+                        <MudSelectItem T="string" Value="@("Administrator")" />
+                        <MudSelectItem T="string" Value="@("Publisher")" />
+                        <MudSelectItem T="string" Value="@("Reviewer")" />
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                @if (_success)
+                {
+                    <MudText Color="Color.Success">Success</MudText>
+                }
+                else
+                {
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</EditForm>
+
+@code {
+    private User user = new();
+    private RegisterForm _model = new();
+    private InputType _passwordInput = InputType.Password;
+    private string _passwordIcon = Icons.Material.Filled.VisibilityOff;
+    private bool _showPassword;
+    private bool _success;
+
+    private async Task RegisterUser()
+    {
+        PasswordHasher<User> hasher = new();
+        string passwordHash = hasher.HashPassword(new User(), _model.ConfirmPassword);
+
+        UserRole userRole = await _userService.GetUserRoleByName(_model.UserRoleName);
+
+        User newUser = new()
+            {
+                UserRoleId = userRole.Id,
+                FirstName = _model.FirstName,
+                LastName = _model.LastName,
+                EmailAddress = _model.EmailAddress,
+                PasswordHash = passwordHash
+            };
+
+        await _userService.CreateUser(newUser);
+
+        _success = true;
+        StateHasChanged();
+    }
+
+   private void TogglePassword()
+    {
+        if (_showPassword)
+        {
+            _passwordIcon = Icons.Material.Filled.VisibilityOff;
+            _passwordInput = InputType.Password;
+        }
+        else
+        {
+            _passwordIcon = Icons.Material.Filled.Visibility;
+            _passwordInput = InputType.Text;
+        }
+
+        _showPassword = !_showPassword;
+    }
+
+}

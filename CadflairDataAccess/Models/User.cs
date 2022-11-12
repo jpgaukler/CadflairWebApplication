@@ -16,4 +16,5 @@ namespace CadflairDataAccess.Models
         public string PasswordHash { get; set; }
         public DateTime CreatedOn { get; set; }
     }
+
 }

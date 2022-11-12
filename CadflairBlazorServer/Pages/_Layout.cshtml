@@ -13,14 +13,12 @@
     <link href="css/site.css" rel="stylesheet" />
     <link href="CadflairBlazorServer.styles.css" rel="stylesheet" />
 
-    <!--SyncFusion references-->
-    <link href="_content/Syncfusion.Blazor/styles/bootstrap5-dark.css" rel="stylesheet" />
-    <script  src="_content/Syncfusion.Blazor/scripts/syncfusion-blazor.min.js" type="text/javascript"></script>
+    <!-- MudBlazor styles -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 
-    <!-- Autodesk Forge Viewer references -->
+    <!-- Autodesk Forge Viewer styles -->
     <link href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" rel="stylesheet">
-    <script defer src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
-    <script defer src="js/forge_viewer.js"></script>
 
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
@@ -39,5 +37,12 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+
+    <!-- MudBlazor script -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+
+    <!-- Autodesk Forge Viewer script -->
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+    <script src="js/forge_viewer.js"></script>
 </body>
 </html>

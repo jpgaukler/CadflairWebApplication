@@ -5,14 +5,15 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
-using Syncfusion.Blazor;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSyncfusionBlazor();
+builder.Services.AddMudServices();
 
 // Authentication services
 builder.Services.AddScoped<AuthenticationStateProvider, CadflairAuthenticationStateProvider>();
@@ -24,9 +25,6 @@ builder.Services.AddSingleton<AccountService>();
 builder.Services.AddSingleton<UserService>();
 
 var app = builder.Build();
-
-//Register Syncfusion license
-Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzUxNzU1QDMyMzAyZTMzMmUzME9JZTdsYkhPcWhJbnJiSXpoVE8rZWhNYjlLQUpFQjVKSlY1TE5seWtYSDQ9");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

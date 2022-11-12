@@ -1,39 +1,100 @@
 ﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider _authStateProvider
-@inject NavigationManager navManager
+@inject NavigationManager _navManager
+
 
 <PageTitle>CadflairBlazorServer</PageTitle>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-            <AuthorizeView>
-                <Authorized>
-                    <a @onclick="Logout" href="javascript:void(0)">Logout</a>
-                </Authorized>
-                <NotAuthorized>
-                    <a href="/login">Login</a>
-                </NotAuthorized>
-            </AuthorizeView>
-        </div>
+<MudLayout>
+    <MudAppBar>
+        <MudLink Href="/">
+            <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
+        </MudLink>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudButton OnClick="Logout">Logout</MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudLink Href="/login">Login</MudLink>
+            </NotAuthorized>
+        </AuthorizeView>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" Label="Toggle Light/Dark Mode" />
+    </MudAppBar>
 
-        <article class="content px-4">
+    <MudDrawer @bind-Open="@_drawerOpen" Anchor="Anchor.Right">
+        <MudNavMenu>
+            <MudNavLink Href="/" Match="NavLinkMatch.All">Dashboard</MudNavLink>
+            <MudNavLink Href="/servers" Match="NavLinkMatch.Prefix">Servers</MudNavLink>
+            <MudNavGroup Title="Settings" Expanded="true">
+                <MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
+                <MudNavLink Href="/security" Match="NavLinkMatch.Prefix">Security</MudNavLink>
+            </MudNavGroup>
+            <MudNavLink Href="/about" Match="NavLinkMatch.Prefix">About</MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
+
+    <MudMainContent>
             @Body
-        </article>
-    </main>
-</div>
+@*        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+        </MudContainer>
+*@    </MudMainContent>
+</MudLayout>
 
 @code {
+    private MudThemeProvider? _mudThemeProvider;
+    private bool _isDarkMode;
+    private bool _drawerOpen;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
 
     private async Task Logout()
     {
         await ((CadflairAuthenticationStateProvider)_authStateProvider).UpdateAuthenticationState();
-        navManager.NavigateTo("/", true);
+        _navManager.NavigateTo("/", true);
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (_mudThemeProvider != null)
+            {
+                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+
+    //MudTheme MyCustomTheme = new MudTheme()
+    //{
+    //    Palette = new Palette()
+    //    {
+    //        Primary = Colors.Blue.Default,
+    //        Secondary = Colors.Green.Accent4,
+    //        AppbarBackground = Colors.Red.Default,
+    //    },
+
+    //    PaletteDark = new PaletteDark()
+    //    {
+    //        Primary = Colors.Blue.Lighten1
+    //    },
+
+    //    //LayoutProperties = new LayoutProperties()
+    //    //{
+    //    //    DrawerWidthLeft = "260px",
+    //    //    DrawerWidthRight = "300px"
+    //    //}
+    //};
 
 }
