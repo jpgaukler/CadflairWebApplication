@@ -1,43 +1,123 @@
 ﻿@page "/productcatalog"
 @inject IJSRuntime _js
 
-
-
 <MudDrawerContainer>
 
     <!--Drawer-->
     <MudDrawer @bind-Open="@_drawerOpen"
                Variant="@DrawerVariant.Persistent"
-               Height="calc(100vh - var(--mud-appbar-height))">
+               Height="calc(100vh - var(--mud-appbar-height))"
+               Width="25%">
 
         <!--Drawer Header-->
-        <MudDrawerHeader>
+@*        <MudDrawerHeader>
             <MudText>Parameters</MudText>
         </MudDrawerHeader>
-
+*@
         <!--Drawer Content-->
-        <div class="flex-grow-1">
-            <p>You are not authorized. INDEX Message</p>
-        </div>
+        <MudStack Spacing="1" class="flex-grow-1 pa-5">
+            <!--Overall Dims-->
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="Dresser Dimensions" IsInitiallyExpanded="true">
+                    <MudStack>
+                        <MudNumericField Label="Height:" Placeholder="Enter height" Variant="@_buttonVariant" Min="24" Max="70" />
+                        <div class="units-label">in</div>
+                        <MudNumericField Label="Width:" Placeholder="Enter width" Variant="@_buttonVariant" Min="24" Max="70" />
+                        <div class="units-label">in</div>
+                        <MudNumericField Label="Depth:" Placeholder="Enter depth" Variant="@_buttonVariant" Min="12" Max="40" />
+                        <div class="units-label">in</div>
+                        <MudNumericField Label="Leg Height:" Placeholder="Enter leg height" Variant="@_buttonVariant" Min="1" Max="12" />
+                        <div class="units-label">in</div>
+                    </MudStack>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            <!-- Drawer dims-->
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="Drawer Configuration">
+                    <MudRadioGroup @bind-SelectedOption="@_drawerRows">
+                        <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
+                        <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
+                        <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
+                        <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
+                        <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
+                    </MudRadioGroup>
+                    <MudRadioGroup @bind-SelectedOption="@_drawerColumns">
+                        <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
+                        <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
+                        <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
+                        <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
+                        <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
+                    </MudRadioGroup>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            <!-- Finish and style -->
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="Style">
+                    <MudSelect T="string" Label="Finish:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@("Light Birch")" />
+                        <MudSelectItem Value="@("Matte Gray")" />
+                        <MudSelectItem Value="@("Matte White")" />
+                        <MudSelectItem Value="@("Stained Oak")" />
+                    </MudSelect>
+                    <MudSelect T="string" Label="Handle:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@("Round Knob")" />
+                        <MudSelectItem Value="@("Bin Pull")" />
+                        <MudSelectItem Value="@("Square Handle")" />
+                    </MudSelect>
+                    <MudSelect T="string" Label="Edges:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelectItem Value="@("Rounded")" />
+                        <MudSelectItem Value="@("Square")" />
+                    </MudSelect>
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+
+            @{
+                void RenderInputs()
+                {
+                    //<MudNumericField Label="@s" Placeholder="@s" Variant="@_buttonVariant" Min="24" Max="70" />
+
+                    //if (s == "recurse this")
+                    //{
+                    //    RenderInputs();
+                    //}
+                }
+            }
+
+            <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Submit</MudButton>
+        </MudStack>
     </MudDrawer>
 
     <!--Page Content-->
-    <div class="page d-flex"> 
-        <MudFab OnClick="@ToggleDrawer" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"/>
+    <div class="content d-flex">
+        <MudStack Class="absolute z-10 ma-1">
+            <MudToggleIconButton @bind-Toggled="@_drawerOpen"
+                                 Variant="Variant.Filled"
+                                 Style="border-radius:50%"
+                                 Icon="@Icons.Filled.ChevronRight" Color="@Color.Primary" Size="Size.Large"
+                                 ToggledIcon="@Icons.Filled.ChevronLeft" ToggledColor="@Color.Primary" ToggledSize="Size.Large" />
+        </MudStack>
         <ForgeViewer />
     </div>
 
 </MudDrawerContainer>
 
 
-
-
 @code
 {
+    private Variant _buttonVariant = Variant.Outlined;
     private bool _drawerOpen = true;
 
-    void ToggleDrawer()
+    private List<string> myStrings = new()
     {
-        _drawerOpen = !_drawerOpen;
-    }
+        "test",
+        "test2",
+        "recurse this",
+        "test3"
+    };
+
+    //dresser params
+    private int _drawerRows;
+    private int _drawerColumns;
 }

@@ -1,15 +1,5 @@
-﻿
-.page {
+﻿.content {
     height: calc(100vh - var(--mud-appbar-height));
     background: yellow;
-}
-
-.child1 {
-    background: blue;
-    width: 25%;
-}
-
-.child2 {
-    background: red;
 }
 
