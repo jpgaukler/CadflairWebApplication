@@ -1,0 +1,20 @@
+﻿
+<MudText>
+    @Item.Name
+</MudText>
+
+@if(Item.Items != null)
+{
+    foreach (iLogicUiElement child in Item.Items)
+    {
+        <ProductInput Item="@child" @key="child"></ProductInput>
+    }
+}
+
+@code {
+
+    [Parameter]
+    public iLogicUiElement Item { get; set; } = new();
+
+
+}

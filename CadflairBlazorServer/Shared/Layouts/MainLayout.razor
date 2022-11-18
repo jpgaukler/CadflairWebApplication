@@ -1,0 +1,88 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider _authStateProvider
+@inject NavigationManager _navManager
+
+
+<PageTitle>CadflairBlazorServer</PageTitle>
+
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar>
+        <MudLink Href="/">
+            <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
+        </MudLink>
+        <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudButton OnClick="Logout">Logout</MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudLink Href="/login">Log In</MudLink>
+                <MudButton Link="/signup" Color="Color.Inherit">Sign Up</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" Label="Toggle Light/Dark Mode" />
+
+    </MudAppBar>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudThemeProvider? _mudThemeProvider;
+    private bool _isDarkMode = true;
+    private bool _drawerOpen;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task Logout()
+    {
+        await ((CadflairAuthenticationStateProvider)_authStateProvider).UpdateAuthenticationState();
+        _navManager.NavigateTo("/", true);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (_mudThemeProvider != null)
+            {
+                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            }
+
+            StateHasChanged();
+        }
+    }
+
+
+    //MudTheme MyCustomTheme = new MudTheme()
+    //{
+    //    Palette = new Palette()
+    //    {
+    //        Primary = Colors.Blue.Default,
+    //        Secondary = Colors.Green.Accent4,
+    //        AppbarBackground = Colors.Red.Default,
+    //    },
+
+    //    PaletteDark = new PaletteDark()
+    //    {
+    //        Primary = Colors.Blue.Lighten1
+    //    },
+
+    //    //LayoutProperties = new LayoutProperties()
+    //    //{
+    //    //    DrawerWidthLeft = "260px",
+    //    //    DrawerWidthRight = "300px"
+    //    //}
+    //};
+
+}

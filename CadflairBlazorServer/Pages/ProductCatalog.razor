@@ -1,113 +1,135 @@
-﻿@page "/productcatalog"
+﻿@layout ConfiguratorLayout
+@page "/productcatalog"
+@using System.Text.Json
 @inject IJSRuntime _js
 
-<MudDrawerContainer>
+<!--Drawer-->
+<MudDrawer @bind-Open="@_drawerOpen"
+           Variant="@DrawerVariant.Persistent"
+           ClipMode="DrawerClipMode.Always"
+           Anchor="Anchor.Left"
+           Width="30%">
 
-    <!--Drawer-->
-    <MudDrawer @bind-Open="@_drawerOpen"
-               Variant="@DrawerVariant.Persistent"
-               Height="calc(100vh - var(--mud-appbar-height))"
-               Width="25%">
+    <!--Drawer Header-->
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h5">Parameters</MudText>
+    </MudDrawerHeader>
+    
+    <!--Drawer Content-->
+    <MudStack Class="flex-grow-1 overflow-auto" Spacing="0">
 
-        <!--Drawer Header-->
-@*        <MudDrawerHeader>
-            <MudText>Parameters</MudText>
-        </MudDrawerHeader>
+        <!--Form Inputs-->
+        <MudStack Class="flex-grow-1 px-3 overflow-auto">
+
+@*            @if (_params.Items != null)
+            {
+                foreach (iLogicUiElement item in _params.Items)
+                {
+                    <ProductInput Item="@item" @key="item"></ProductInput>
+                }
+            }
 *@
-        <!--Drawer Content-->
-        <MudStack Spacing="1" class="flex-grow-1 pa-5">
-            <!--Overall Dims-->
+            @if (_params2.Items != null)
+            {
+                Debug.WriteLine(_params2.Items.Count());
+                foreach (ProductInput2 item in _params2.Items)
+                {
+                    <ProductInput2 Items="@item.Items" @key="item.Guid"></ProductInput2>
+                }
+            }
+
+            @*            <!--Overall Dims-->
             <MudExpansionPanels>
-                <MudExpansionPanel Text="Dresser Dimensions" IsInitiallyExpanded="true">
-                    <MudStack>
-                        <MudNumericField Label="Height:" Placeholder="Enter height" Variant="@_buttonVariant" Min="24" Max="70" />
-                        <div class="units-label">in</div>
-                        <MudNumericField Label="Width:" Placeholder="Enter width" Variant="@_buttonVariant" Min="24" Max="70" />
-                        <div class="units-label">in</div>
-                        <MudNumericField Label="Depth:" Placeholder="Enter depth" Variant="@_buttonVariant" Min="12" Max="40" />
-                        <div class="units-label">in</div>
-                        <MudNumericField Label="Leg Height:" Placeholder="Enter leg height" Variant="@_buttonVariant" Min="1" Max="12" />
-                        <div class="units-label">in</div>
-                    </MudStack>
-                </MudExpansionPanel>
+            <MudExpansionPanel Text="Dresser Dimensions" IsInitiallyExpanded="true">
+            <MudStack>
+            <MudNumericField Label="Height:" Placeholder="Enter height" Variant="@_buttonVariant" Min="24" Max="70" />
+            <div class="units-label">in</div>
+            <MudNumericField Label="Width:" Placeholder="Enter width" Variant="@_buttonVariant" Min="24" Max="70" />
+            <div class="units-label">in</div>
+            <MudNumericField Label="Depth:" Placeholder="Enter depth" Variant="@_buttonVariant" Min="12" Max="40" />
+            <div class="units-label">in</div>
+            <MudNumericField Label="Leg Height:" Placeholder="Enter leg height" Variant="@_buttonVariant" Min="1" Max="12" />
+            <div class="units-label">in</div>
+            </MudStack>
+            </MudExpansionPanel>
             </MudExpansionPanels>
 
             <!-- Drawer dims-->
             <MudExpansionPanels>
-                <MudExpansionPanel Text="Drawer Configuration">
-                    <MudRadioGroup @bind-SelectedOption="@_drawerRows">
-                        <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
-                        <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
-                        <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
-                        <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
-                        <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
-                    </MudRadioGroup>
-                    <MudRadioGroup @bind-SelectedOption="@_drawerColumns">
-                        <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
-                        <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
-                        <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
-                        <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
-                        <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
-                    </MudRadioGroup>
-                </MudExpansionPanel>
+            <MudExpansionPanel Text="Drawer Configuration">
+            <MudRadioGroup @bind-SelectedOption="@_drawerRows">
+            <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
+            <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
+            <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
+            <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
+            <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
+            </MudRadioGroup>
+            <MudRadioGroup @bind-SelectedOption="@_drawerColumns">
+            <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
+            <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
+            <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
+            <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
+            <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
+            </MudRadioGroup>
+            </MudExpansionPanel>
             </MudExpansionPanels>
 
             <!-- Finish and style -->
             <MudExpansionPanels>
-                <MudExpansionPanel Text="Style">
-                    <MudSelect T="string" Label="Finish:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Light Birch")" />
-                        <MudSelectItem Value="@("Matte Gray")" />
-                        <MudSelectItem Value="@("Matte White")" />
-                        <MudSelectItem Value="@("Stained Oak")" />
-                    </MudSelect>
-                    <MudSelect T="string" Label="Handle:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Round Knob")" />
-                        <MudSelectItem Value="@("Bin Pull")" />
-                        <MudSelectItem Value="@("Square Handle")" />
-                    </MudSelect>
-                    <MudSelect T="string" Label="Edges:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
-                        <MudSelectItem Value="@("Rounded")" />
-                        <MudSelectItem Value="@("Square")" />
-                    </MudSelect>
-                </MudExpansionPanel>
+            <MudExpansionPanel Text="Style">
+            <MudSelect T="string" Label="Finish:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Light Birch")" />
+            <MudSelectItem Value="@("Matte Gray")" />
+            <MudSelectItem Value="@("Matte White")" />
+            <MudSelectItem Value="@("Stained Oak")" />
+            </MudSelect>
+            <MudSelect T="string" Label="Handle:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Round Knob")" />
+            <MudSelectItem Value="@("Bin Pull")" />
+            <MudSelectItem Value="@("Square Handle")" />
+            </MudSelect>
+            <MudSelect T="string" Label="Edges:" Variant="@_buttonVariant" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Rounded")" />
+            <MudSelectItem Value="@("Square")" />
+            </MudSelect>
+            </MudExpansionPanel>
             </MudExpansionPanels>
+            *@
+        </MudStack>
 
-            @{
-                void RenderInputs()
-                {
-                    //<MudNumericField Label="@s" Placeholder="@s" Variant="@_buttonVariant" Min="24" Max="70" />
-
-                    //if (s == "recurse this")
-                    //{
-                    //    RenderInputs();
-                    //}
-                }
-            }
-
+        <!--Buttons-->
+        <MudStack Class="pa-3">
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Submit</MudButton>
+            <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Pdf</MudButton>
+            <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Step</MudButton>
         </MudStack>
-    </MudDrawer>
 
-    <!--Page Content-->
-    <div class="content d-flex">
-        <MudStack Class="absolute z-10 ma-1">
-            <MudToggleIconButton @bind-Toggled="@_drawerOpen"
-                                 Variant="Variant.Filled"
-                                 Style="border-radius:50%"
-                                 Icon="@Icons.Filled.ChevronRight" Color="@Color.Primary" Size="Size.Large"
-                                 ToggledIcon="@Icons.Filled.ChevronLeft" ToggledColor="@Color.Primary" ToggledSize="Size.Large" />
-        </MudStack>
-        <ForgeViewer />
-    </div>
+    </MudStack>
+</MudDrawer>
 
-</MudDrawerContainer>
+<!--Collapse Button-->
+<MudStack Class="d-flex flex-row absolute z-10 ma-1">
+    <MudToggleIconButton @bind-Toggled="@_drawerOpen"
+                         Variant="Variant.Filled"
+                         Style="border-radius:50%"
+                         Icon="@Icons.Filled.ChevronRight" Color="@Color.Primary" Size="Size.Large"
+                         ToggledIcon="@Icons.Filled.ChevronLeft" ToggledColor="@Color.Primary" ToggledSize="Size.Large" />
+
+</MudStack>
+
+<!--Viewer-->
+<div class="d-flex ma-0 pa-0" style="height: calc(100vh - var(--mud-appbar-height)">
+    <ForgeViewer />
+</div>
+
 
 
 @code
 {
     private Variant _buttonVariant = Variant.Outlined;
     private bool _drawerOpen = true;
+    //private iLogicUiElement _params = new();
+    private ProductInput2 _params2 = new();
 
     private List<string> myStrings = new()
     {
@@ -117,7 +139,17 @@
         "test3"
     };
 
-    //dresser params
-    private int _drawerRows;
-    private int _drawerColumns;
+    protected override void OnInitialized()
+    {
+        //string fileName = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"\wwwroot\js\Form 1.json");
+        string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files\Form 1.json";
+        string jsonText = System.IO.File.ReadAllText(fileName);
+        Debug.WriteLine(jsonText);
+
+        //_params = JsonSerializer.Deserialize<iLogicUiElement>(jsonText);
+        _params2 = JsonSerializer.Deserialize<ProductInput2>(jsonText);
+        Debug.WriteLine(_params2.Name);
+        Debug.WriteLine(_params2.Items[0].Name);
+    }
+
 }

@@ -1,17 +1,15 @@
 ﻿#viewerContainer {
-/*    flex-grow: 1;
+    flex-grow: 1;
     padding: 2em;
     background: green;
-*/ 
+    height: calc(100vh - var(--mud-appbar-height));
+ 
 
 }
 
 
 #forgeViewer {
-    flex-grow: 1;
     background: gray;
-/*    position: relative;
     width: 100%;
     height: 100%;
-*/
 }
