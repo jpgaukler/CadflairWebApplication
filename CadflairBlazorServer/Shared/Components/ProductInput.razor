@@ -1,20 +1,153 @@
 ﻿
-<MudText>
-    @Item.Name
-</MudText>
-
-@if(Item.Items != null)
+@switch(Element.UiElementSpec)
 {
-    foreach (iLogicUiElement child in Item.Items)
-    {
-        <ProductInput Item="@child" @key="child"></ProductInput>
-    }
+    case "ControlTabGroupSpec":
+
+@*        //add header for tab group
+        <MudText Typo="Typo.h6">@Element.Name</MudText>
+
+        //add caption image if it exists
+        if(!string.IsNullOrWhiteSpace(Element.Base64Image))
+        {
+            <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
+        }
+
+        //open div to contain items
+        <MudTabs>
+            <MudTabPanel Text="Tab One">
+                <MudText>Content One</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Two">
+                <MudText>Content Two</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Three">
+                <MudText>Content Three</MudText>
+            </MudTabPanel>
+            <MudTabPanel Text="Tab Disabled" Disabled="true">
+                <MudText>Content Disabled</MudText>
+            </MudTabPanel>
+        </MudTabs>
+        foreach (ILogicUiElement subItem in Element.Items)
+        {
+            <ProductInput Item="@subItem" @key="subItem"></ProductInput>
+        }
+
+        break;
+*@
+
+    case "ControlGroupSpec":
+
+        //add caption image if it exists
+        if(!string.IsNullOrWhiteSpace(Element.Base64Image))
+        {
+            <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
+        }
+
+        //add span for group name
+        <MudExpansionPanels>
+            <MudExpansionPanel Text="@Element.Name">
+                @foreach (ILogicUiElement element in Element.Items)
+                {
+                    <ProductInput Element="@element" @key="element"></ProductInput>
+                }
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+        break;
+
+    case "NumericParameterControlSpec":
+        <MudNumericField Label="@Element.Name" Min="0" Max="10" />
+        break;
+
+    case "TextParameterControlSpec":
+        <MudTextField T="string" Label="@Element.Name"></MudTextField>
+        break;
+
+    case "MultiValueNumericParameterControlSpec":
+    case "MultiValueTextParameterControlSpec":
+
+        switch (Element.EditControlType)
+        {
+            case "RadioGroup":
+                 //add radio group input
+                <MudText>@Element.Name</MudText>
+                <MudRadioGroup T="int">
+                    <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
+                    <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
+                    <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
+                    <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
+                    <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
+                </MudRadioGroup>
+
+                break;
+
+            case "ComboBox":
+                //add combo box input
+                <MudSelect T="double" Label="@Element.Name" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem T="double" Value="4.50" />
+                    <MudSelectItem T="double" Value="4.99" />
+                    <MudSelectItem T="double" Value="3.60" />
+                </MudSelect>
+                break;
+
+            case "ListBox":
+            //add list box input
+                @*RenderInputForInventorParameter(doc, writer, "listbox", parameterName, uiElementName);*@
+                break;
+        }
+
+        break;
+
+    case "BooleanParameterControlSpec":
+
+        switch (Element.EditControlType)
+        {
+            case "CheckBox":
+                <MudCheckBox T="bool" Label="@Element.Name" LabelPosition="LabelPosition.Start"/>
+                break;
+
+            case "TrueOrFalse":
+                <MudSelect T="string" Label="@Element.Name">
+                    <MudSelectItem Value="@("True")" />
+                    <MudSelectItem Value="@("False")" />
+                </MudSelect>
+                break;
+        }
+
+        break;
+
+    case "LabelSpec":
+
+        //add a label
+        <MudText>@Element.Name</MudText>
+
+        break;
+
+    case "SplitterSpec":
+
+        //add a horizontal rule
+
+        break;
+
+    case "PictureControlSpec":
+
+        //add picturebox
+
+        break;
+
+    case "TextPropertyControlSpec": //this is an iProperty
+    case "iLogicRuleControlSpec": //this is an iLogic Rule
+
+
+    default:
+        break;
+
 }
 
 @code {
 
     [Parameter]
-    public iLogicUiElement Item { get; set; } = new();
+    public ILogicUiElement Element { get; set; } = new();
 
 
 }

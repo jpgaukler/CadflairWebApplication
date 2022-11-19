@@ -85,6 +85,8 @@ namespace CadflairInventorAddin
 
         public static Inventor.Parameter GetParameter(this Document doc, string parameterName)
         {
+            if (string.IsNullOrWhiteSpace(parameterName)) return null;
+
             try
             {
                 if (doc is PartDocument)
@@ -104,20 +106,20 @@ namespace CadflairInventorAddin
             return null;
         }
 
-        /// <summary>
-        /// Removes all white space characters that are not spaces (line breaks, and tabs) from a string. 
-        /// </summary>
-        /// <param name="self"></param>
-        /// <returns></returns>
-        public static string RemoveLineBreaks(this string self)
-        {
-            // learn regular expressions here: https://regexr.com/
-            // [\S ] = find non-whitespace characters, in addition to the space character
-            // ^ = negate the set 
-            // + = match 1 or more of the preceding token
+        ///// <summary>
+        ///// Removes all white space characters that are not spaces (line breaks, and tabs) from a string. 
+        ///// </summary>
+        ///// <param name="self"></param>
+        ///// <returns></returns>
+        //public static string RemoveLineBreaks(this string self)
+        //{
+        //    // learn regular expressions here: https://regexr.com/
+        //    // [\S ] = find non-whitespace characters, in addition to the space character
+        //    // ^ = negate the set 
+        //    // + = match 1 or more of the preceding token
 
-            return Regex.Replace(self, @"[^\S ]+", "");
-        }
+        //    return Regex.Replace(self, @"[^\S ]+", "");
+        //}
     }
 
 

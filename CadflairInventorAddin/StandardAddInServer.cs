@@ -56,7 +56,7 @@ namespace CadflairInventorAddin
             _addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
             _refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             _convertiLogicFormButton.OnExecute += ConvertiLogicFormSpec.ConvertiLogicFormButton_OnExecute;
-            _uploadToCadflair.OnExecute += ConvertiLogicFormSpec.UploadToCadflairButton_OnExecute;
+            _uploadToCadflair.OnExecute += UploadFile.UploadToCadflairButton_OnExecute;
 
 
             if (firstTime)
@@ -106,7 +106,7 @@ namespace CadflairInventorAddin
             _addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
             _refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             _convertiLogicFormButton.OnExecute -= ConvertiLogicFormSpec.ConvertiLogicFormButton_OnExecute;
-            _uploadToCadflair.OnExecute -= ConvertiLogicFormSpec.UploadToCadflairButton_OnExecute;
+            _uploadToCadflair.OnExecute -= UploadFile.UploadToCadflairButton_OnExecute;
 
             // Release objects.
             Globals.InventorApplication = null;

@@ -90,6 +90,9 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
@@ -113,6 +116,7 @@
     </Compile>
     <Compile Include="ConvertiLogicFormSpec.cs" />
     <Compile Include="DrawingAttributesCommand.cs" />
+    <Compile Include="UploadFile.cs" />
     <Compile Include="UploadToCadflairDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +137,7 @@
     <None Include="Autodesk.CadflairAddin.Inventor.addin" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -168,12 +173,18 @@
   <ItemGroup>
     <None Include="Resources\LockSmall.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj">
+      <Project>{cafa1ac2-91eb-4ef2-a6c4-3c63d8e81e15}</Project>
+      <Name>CadflairDataAccess</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
     <PostBuildEvent>XCopy "$(TargetPath)" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R
 XCopy "$(ProjectDir)Autodesk.CadflairAddin.Inventor.addin" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R   
-</PostBuildEvent>
+XCopy "C:\Users\Admin\source\repos\CadflairWebApplication\CadflairDataAccess\bin\Debug\netstandard2.0\CadflairDataAccess.dll" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R</PostBuildEvent>
   </PropertyGroup>
 </Project>

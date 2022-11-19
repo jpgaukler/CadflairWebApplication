@@ -1,20 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using CadflairDataAccess.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
+using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
-using File = System.IO.File;
-using Path = System.IO.Path;
 
 namespace ParameterParsing
 {
@@ -26,24 +18,28 @@ namespace ParameterParsing
         {
             try
             {
-                string filename = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files\Form 1.xml";
+                //string filename = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files\Form 1.xml";
+                string filename = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files\Form 1.xml";
                 string xmlString = System.IO.File.ReadAllText(filename);
 
                 ////convert from spec to html
                 //string htmlString = ConvertiLogicFormSpecToHtml(Globals.InventorApplication.ActiveDocument, xmlString);
 
                 //convert from spec to json
-                string jsonString = ConvertiLogicFormSpecToJson(xmlString);
+                //string jsonString = ConvertiLogicFormSpecToJson(xmlString);
+                string jsonString = SerializeiLogicFormSpecToJson(xmlString);
 
                 //print results string to txt files
-                string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+                //string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+                string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
                 string jsonFileName = System.IO.Path.Combine(folderName,"Form 1.json");
 
                 StreamWriter jsonFile = System.IO.File.CreateText(jsonFileName);
                 jsonFile.Write(jsonString);
                 jsonFile.Close();
 
-                Process.Start(folderName);
+                Clipboard.SetText("hello");
+                //Process.Start(folderName);
             }
             catch (Exception ex)
             {
@@ -51,44 +47,30 @@ namespace ParameterParsing
             }
         }
 
-        /// <summary>
-        /// Converts xml string for an iLogic form spec to an json string.
-        /// </summary>
-        /// <param name="xmlString">XML string containing iLogic form spec data.</param>
-        /// <returns></returns>
-        private static string ConvertiLogicFormSpecToJson(string xmlString)
+        private static string SerializeiLogicFormSpecToJson(string xmlString)
         {
             //convert xml string to xdoc for parsing
             XDocument xDoc = XDocument.Parse(xmlString);
             XNamespace ns = xDoc.Root.GetNamespaceOfPrefix("xsi");
             XElement formSpecElement = xDoc.Element("FormSpecification");
-            XElement nameElement = formSpecElement.Element("Name");
-            XElement guidElement = formSpecElement.Element("Guid");
-            XElement itemsElement = formSpecElement.Element("Items");
 
-            JObject jObject = new JObject();
-            jObject.AddXElementAsProperty(nameElement);
-            jObject.AddXElementAsProperty(guidElement);
+            ILogicUiElement element = new ILogicUiElement()
+            {
+                Name = formSpecElement.Element("Name").Value,
+                Guid = formSpecElement.Element("Guid").Value,
+                Items = RecurseILogicElements(formSpecElement.Element("Items"), ns)
+            };
 
-            JArray itemsArray = ConvertiLogicFormSpecItemsToJArray(itemsElement, ns);
-            jObject.Add(new JProperty(itemsElement.Name.ToString(), itemsArray));
+            JsonSerializerSettings settings = new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
 
-            //consider adding white space removal
-            return jObject.ToString();
+            return JsonConvert.SerializeObject(element, settings);;
         }
 
-        private static void AddXElementAsProperty(this JObject jObject, XElement xElement)
-        {
-            if (xElement == null) return;
-            jObject.Add(new JProperty(xElement.Name.ToString(), xElement.Value));
-        }
-        private static void AddXAttributeAsProperty(this JObject jObject, XAttribute xAttribute)
-        {
-            if (xAttribute == null) return;
-            jObject.Add(new JProperty(xAttribute.Parent.Name.ToString(), xAttribute.Value));
-        }
 
-        private static JArray ConvertiLogicFormSpecItemsToJArray(XElement itemsElement, XNamespace ns)
+        private static ILogicUiElement[] RecurseILogicElements(XElement itemsElement, XNamespace ns)
         {
 
             //how should I handle readonly parameters?
@@ -97,366 +79,213 @@ namespace ParameterParsing
             //should I handle empty space?
             //should I handle iProperties or iLogic rules?
 
-            JArray itemsArray = new JArray();
+            if(itemsElement == null) return null;
+
+            List<ILogicUiElement> elementList = new List<ILogicUiElement>();
 
             foreach (XElement item in itemsElement.Elements())
             {
-                XAttribute uiElementSpecAttrubute = item.Attribute(ns + "type");
-                XElement nameElement = item.Element("Name");
-                XElement guidElement = item.Element("Guid");
-                XElement toolTipElement = item.Element("ToolTip");
-                XElement enablingParameterNameElement = item.Element("EnablingParameterName");
-                XElement parameterNameElement = item.Element("ParameterName");
-                XElement editControlTypeElement = item.Element("EditControlType");
-                XElement readOnlyElement = item.Element("ReadOnly");
-                XElement subItemsElement = item.Element("Items");
-                XElement imgElement = item.Element("Image");
-                XElement imgBitByteArrayElement = item.Element("Image")?.Element("BitmapByteArray");
-                XElement captionImgElement = item.Element("CaptionImage");
-                XElement captionImgBitByteArrayElement = item.Element("CaptionImage")?.Element("BitmapByteArray");
-
-                //open div for element type
-                JObject jObject = new JObject();
-                jObject.AddXAttributeAsProperty(uiElementSpecAttrubute);
-                jObject.AddXElementAsProperty(nameElement);
-                jObject.AddXElementAsProperty(guidElement);
-                jObject.AddXElementAsProperty(toolTipElement);
-                jObject.AddXElementAsProperty(enablingParameterNameElement);
-                jObject.AddXElementAsProperty(parameterNameElement);
-                jObject.AddXElementAsProperty(editControlTypeElement);
-                jObject.AddXElementAsProperty(readOnlyElement);
-
-                if (imgElement != null)
+                ILogicUiElement element = new ILogicUiElement()
                 {
-                    JObject imgObject = new JObject();
-                    imgObject.AddXElementAsProperty(imgBitByteArrayElement);
-                    jObject.Add(new JProperty(imgElement.Name.ToString(), imgObject));
-                }
+                    UiElementSpec = item.Attribute(ns + "type").Value,
+                    Name = item.Element("Name").Value,
+                    Guid = item.Element("Guid").Value,
+                    ToolTip = item.Element("ToolTip")?.Value,
+                    EnablingParameterName = item.Element("EnablingParameterName")?.Value,
+                    ParameterName = item.Element("ParameterName")?.Value,
+                    //ParameterValue = ,
+                    //ParameterMinValue = ,
+                    //ParameterMaxValue = ,
+                    EditControlType = item.Element("EditControlType")?.Value,
+                    ReadOnly = item.Element("ReadOnly")?.Value,
+                    Base64Image = item.Element("Image")?.Element("BitmapByteArray")?.Value,
+                    Base64CaptionImage = item.Element("CaptionImage")?.Element("BitmapByteArray")?.Value,
+                    Items = RecurseILogicElements(item.Element("Items"), ns)
+                };
 
-                if (subItemsElement != null)
-                {
-                    JArray subitemsArray = ConvertiLogicFormSpecItemsToJArray(subItemsElement, ns);
-                    jObject.Add(new JProperty(itemsElement.Name.ToString(), subitemsArray));
-                }
-
-                if (captionImgElement != null)
-                {
-                    JObject captionImgObject = new JObject();
-                    captionImgObject.AddXElementAsProperty(captionImgBitByteArrayElement);
-                    jObject.Add(new JProperty(captionImgElement.Name.ToString(), captionImgBitByteArrayElement));
-                }
-                
-                itemsArray.Add(jObject);
-
-
-
-                //switch (uiElementSpec)
-                //{
-
-                //    case "NumericParameterControlSpec":
-
-                //        //add input for parameter
-                //        RenderInputForInventorParameter(doc, writer, "number", parameterName, name);
-
-                //        break;
-
-                //    case "TextParameterControlSpec":
-
-                //        //add input for parameter
-                //        RenderInputForInventorParameter(doc, writer, "text", parameterName, name);
-
-                //        break;
-
-                //    case "MultiValueNumericParameterControlSpec":
-                //    case "MultiValueTextParameterControlSpec":
-
-                //        switch (editControlType)
-                //        {
-                //            case "RadioGroup":
-                //                //add radio group input
-                //                RenderInputForInventorParameter(doc, writer, "radio", parameterName, name);
-                //                break;
-
-                //            case "ComboBox":
-                //                //add combo box input
-                //                RenderInputForInventorParameter(doc, writer, "combobox", parameterName, name);
-                //                break;
-
-                //            case "ListBox":
-                //                //add combo box input
-                //                RenderInputForInventorParameter(doc, writer, "listbox", parameterName, name);
-                //                break;
-                //        }
-
-                //        break;
-
-                //    case "BooleanParameterControlSpec":
-
-                //        switch (editControlType)
-                //        {
-                //            case "CheckBox":
-                //                //add radio group input
-                //                RenderInputForInventorParameter(doc, writer, "checkbox", parameterName, name);
-                //                break;
-
-                //            case "TrueOrFalse":
-                //                //add combo box input
-                //                RenderInputForInventorParameter(doc, writer, "boolean", parameterName, name);
-                //                break;
-                //        }
-
-                //        break;
-
-
-                //    case "PictureControlSpec":
-
-                //        //add picturebox
-                //        RenderBase64Image(writer, pictureBoxImgData, name);
-
-                //        break;
-
-                //    case "TextPropertyControlSpec": //this is an iProperty
-                //    case "iLogicRuleControlSpec": //this is an iLogic Rule
-                //    default:
-                //        break;
-
-                //}
+                elementList.Add(element);
             }
 
-            return itemsArray;
+            return elementList.ToArray();
         }
 
 
         ///// <summary>
-        ///// Adds a label tag to the HtmlTextWriter that corresponds to an Inventor parameter.
+        ///// Converts xml string for an iLogic form spec to an json string.
         ///// </summary>
-        ///// <param name="writer">HtmlTextWriter to add the label to.</param>
-        ///// <param name="forParameter">Id of the element that the label will apply to.</param>
-        ///// <param name="labelText">Value of the label's text.</param>
-        //private static void RenderLabelForInventorParameter(HtmlTextWriter writer, string forParameter, string labelText)
+        ///// <param name="xmlString">XML string containing iLogic form spec data.</param>
+        ///// <returns></returns>
+        //private static string ConvertiLogicFormSpecToJson(string xmlString)
         //{
-        //    writer.AddAttribute("for", forParameter);
-        //    writer.RenderBeginTag("label");
-        //    writer.Write(labelText);
-        //    writer.RenderEndTag();
+        //    //convert xml string to xdoc for parsing
+        //    XDocument xDoc = XDocument.Parse(xmlString);
+        //    XNamespace ns = xDoc.Root.GetNamespaceOfPrefix("xsi");
+        //    XElement formSpecElement = xDoc.Element("FormSpecification");
+        //    XElement nameElement = formSpecElement.Element("Name");
+        //    XElement guidElement = formSpecElement.Element("Guid");
+        //    XElement itemsElement = formSpecElement.Element("Items");
+
+        //    JObject jObject = new JObject();
+        //    jObject.AddXElementAsProperty(nameElement);
+        //    jObject.AddXElementAsProperty(guidElement);
+
+        //    JArray itemsArray = ConvertiLogicFormSpecItemsToJArray(itemsElement, ns);
+        //    jObject.Add(new JProperty(itemsElement.Name.ToString(), itemsArray));
+
+        //    //consider adding white space removal
+        //    return jObject.ToString();
         //}
 
-        ///// <summary>
-        ///// Adds an image tag with a bmp image from a base64 string. This can be used to render images that are included in the iLogic form.
-        ///// </summary>
-        ///// <param name="writer"></param>
-        ///// <param name="base64String"></param>
-        ///// <param name="altText"></param>
-        //private static void RenderBase64Image(HtmlTextWriter writer, string base64String, string altText)
+
+
+        //private static void AddXElementAsProperty(this JObject jObject, XElement xElement)
         //{
-        //    if (!string.IsNullOrWhiteSpace(base64String))
-        //    {
-        //        writer.AddAttribute("src", $"data:image/bmp;base64,{base64String}");
-        //        writer.AddAttribute("alt", altText);
-        //        writer.RenderBeginTag("img");
-        //        writer.RenderEndTag();
-        //    }
+        //    if (xElement == null) return;
+        //    jObject.Add(new JProperty(xElement.Name.ToString(), xElement.Value));
         //}
 
-        ///// <summary>
-        ///// Add an input tag to the HtmlTextWriter for an Inventor parameter.
-        ///// </summary>
-        ///// <param name="doc">Inventor document object.</param>
-        ///// <param name="writer">HtmlTextWriter to add the input tag to.</param>
-        ///// <param name="inputType">Type of input tag to render.</param>
-        ///// <param name="parameterName">Name of the Inventor model parameter.</param>
-        ///// <param name="parameterLabel">Text value of label for parametet input.</param>
-        //private static void RenderInputForInventorParameter(Document doc, HtmlTextWriter writer, string inputType, string parameterName = null, string parameterLabel = null)
+        //private static void AddXAttributeAsProperty(this JObject jObject, XAttribute xAttribute)
         //{
-        //    //get parameter for add parameter data
-        //    Parameter param = doc.GetParameter(parameterName);
+        //    if (xAttribute == null) return;
+        //    jObject.Add(new JProperty(xAttribute.Parent.Name.ToString(), xAttribute.Value));
+        //}
 
-        //    //prefix for html id attributes 
-        //    string prefix = "InventorParam-";
+        //private static JArray ConvertiLogicFormSpecItemsToJArray(XElement itemsElement, XNamespace ns)
+        //{
 
-        //    switch (inputType)
+        //    //how should I handle readonly parameters?
+        //    //should I handle rows?
+        //    //should I handle picture folders?
+        //    //should I handle empty space?
+        //    //should I handle iProperties or iLogic rules?
+
+        //    JArray itemsArray = new JArray();
+
+        //    foreach (XElement item in itemsElement.Elements())
         //    {
-        //        case "text":
+        //        XAttribute uiElementSpecAttrubute = item.Attribute(ns + "type");
+        //        XElement nameElement = item.Element("Name");
+        //        XElement guidElement = item.Element("Guid");
+        //        XElement toolTipElement = item.Element("ToolTip");
+        //        XElement enablingParameterNameElement = item.Element("EnablingParameterName");
+        //        XElement parameterNameElement = item.Element("ParameterName");
+        //        XElement editControlTypeElement = item.Element("EditControlType");
+        //        XElement readOnlyElement = item.Element("ReadOnly");
+        //        XElement subItemsElement = item.Element("Items");
+        //        XElement imgElement = item.Element("Image");
+        //        XElement imgBitByteArrayElement = item.Element("Image")?.Element("BitmapByteArray");
+        //        XElement captionImgElement = item.Element("CaptionImage");
+        //        XElement captionImgBitByteArrayElement = item.Element("CaptionImage")?.Element("BitmapByteArray");
 
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
+        //        //open div for element type
+        //        JObject jObject = new JObject();
+        //        jObject.AddXAttributeAsProperty(uiElementSpecAttrubute);
+        //        jObject.AddXElementAsProperty(nameElement);
+        //        jObject.AddXElementAsProperty(guidElement);
+        //        jObject.AddXElementAsProperty(toolTipElement);
+        //        jObject.AddXElementAsProperty(enablingParameterNameElement);
+        //        jObject.AddXElementAsProperty(parameterNameElement);
+        //        jObject.AddXElementAsProperty(editControlTypeElement);
+        //        jObject.AddXElementAsProperty(readOnlyElement);
 
-        //            //add text box input
-        //            writer.AddAttribute("id", prefix + parameterName);
-        //            writer.AddAttribute("type", "text");
-        //            writer.AddAttribute("placeholder", $"Enter {parameterLabel.ToLower()}");
-        //            writer.RenderBeginTag("input");
-        //            writer.RenderEndTag();
+        //        if (imgElement != null)
+        //        {
+        //            JObject imgObject = new JObject();
+        //            imgObject.AddXElementAsProperty(imgBitByteArrayElement);
+        //            jObject.Add(new JProperty(imgElement.Name.ToString(), imgObject));
+        //        }
 
-        //            break;
+        //        if (subItemsElement != null)
+        //        {
+        //            JArray subitemsArray = ConvertiLogicFormSpecItemsToJArray(subItemsElement, ns);
+        //            jObject.Add(new JProperty(itemsElement.Name.ToString(), subitemsArray));
+        //        }
 
-        //        case "number":
-
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
-
-        //            //add text box input
-        //            writer.AddAttribute("id", prefix + parameterName);
-        //            writer.AddAttribute("type", "number");
-        //            writer.AddAttribute("pattern", "[0-9]*");
-        //            writer.AddAttribute("placeholder", $"Enter {parameterLabel.ToLower()} ({param.get_Units()})");
-
-        //            //NEED TO VERIFY THAT THE CORRECT UNITS ARE USED
-        //            writer.AddAttribute("data-max-value", param.Tolerance.Upper.ToString());
-        //            writer.AddAttribute("data-min-value", param.Tolerance.Lower.ToString());
-        //            writer.RenderBeginTag("input");
-        //            writer.RenderEndTag();
-
-        //            //add label for unit type
-        //            writer.AddAttribute("class", "units-label");
-        //            writer.RenderBeginTag("span");
-        //            writer.Write(param.get_Units());
-        //            writer.RenderEndTag();
-
-        //            break;
-
-        //        case "range":
-
-        //            //use range to make a slider input: https://www.w3schools.com/tags/att_input_type_range.asp
-
-        //            break;
-
-        //        case "checkbox":
-
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
-
-        //            //add checkbox input
-        //            writer.AddAttribute("id", prefix + parameterName);
-        //            writer.AddAttribute("type", "checkbox");
-        //            writer.RenderBeginTag("input");
-        //            writer.RenderEndTag();
-
-        //            break;
-
-        //        case "boolean":
-
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
-
-        //            //open select tag for combo box 
-        //            writer.AddAttribute("id", prefix + parameterName);
-        //            writer.AddAttribute("class", "combobox-options");
-        //            writer.RenderBeginTag("select");
-
-        //            //add true/false combobox
-        //            foreach (string val in new string[] { "True", "False" })
-        //            {
-        //                //add input for option
-        //                writer.AddAttribute("value", val);
-        //                writer.RenderBeginTag("option");
-        //                writer.Write(val);
-        //                writer.RenderEndTag();
-        //            }
-
-        //            //close options select tag
-        //            writer.RenderEndTag();
-
-        //            break;
+        //        if (captionImgElement != null)
+        //        {
+        //            JObject captionImgObject = new JObject();
+        //            captionImgObject.AddXElementAsProperty(captionImgBitByteArrayElement);
+        //            jObject.Add(new JProperty(captionImgElement.Name.ToString(), captionImgBitByteArrayElement));
+        //        }
+                
+        //        itemsArray.Add(jObject);
 
 
-        //        case "radio":
 
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
+        //        //switch (uiElementSpec)
+        //        //{
 
-        //            //open div for radio options
-        //            writer.AddAttribute("class", "radio-options");
-        //            writer.RenderBeginTag("div");
+        //        //    case "NumericParameterControlSpec":
 
-        //            //add input options
-        //            for (int i = 1; i <= param.ExpressionList.Count; i++)
-        //            {
-        //                string expression = param.ExpressionList[i].Replace("\"", "");
+        //        //        //add input for parameter
+        //        //        RenderInputForInventorParameter(doc, writer, "number", parameterName, name);
 
-        //                //add label for option
-        //                RenderLabelForInventorParameter(writer, prefix + parameterName + expression, expression);
+        //        //        break;
 
-        //                //add input for option
-        //                writer.AddAttribute("id", prefix + parameterName + expression);
-        //                writer.AddAttribute("type", "radio");
-        //                writer.AddAttribute("name", prefix + parameterName);
-        //                writer.AddAttribute("value", expression);
-        //                writer.RenderBeginTag("input");
-        //                writer.RenderEndTag();
-        //            }
+        //        //    case "TextParameterControlSpec":
 
-        //            //close options div
-        //            writer.RenderEndTag();
+        //        //        //add input for parameter
+        //        //        RenderInputForInventorParameter(doc, writer, "text", parameterName, name);
 
-        //            break;
+        //        //        break;
 
-        //        case "combobox":
+        //        //    case "MultiValueNumericParameterControlSpec":
+        //        //    case "MultiValueTextParameterControlSpec":
 
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
+        //        //        switch (editControlType)
+        //        //        {
+        //        //            case "RadioGroup":
+        //        //                //add radio group input
+        //        //                RenderInputForInventorParameter(doc, writer, "radio", parameterName, name);
+        //        //                break;
 
-        //            //open select tag for radio options
-        //            writer.AddAttribute("id", prefix + parameterName);
-        //            writer.AddAttribute("class", "combobox-options");
-        //            writer.RenderBeginTag("select");
+        //        //            case "ComboBox":
+        //        //                //add combo box input
+        //        //                RenderInputForInventorParameter(doc, writer, "combobox", parameterName, name);
+        //        //                break;
 
-        //            //add input options
-        //            for (int i = 1; i <= param.ExpressionList.Count; i++)
-        //            {
-        //                string expression = param.ExpressionList[i].Replace("\"", "");
+        //        //            case "ListBox":
+        //        //                //add combo box input
+        //        //                RenderInputForInventorParameter(doc, writer, "listbox", parameterName, name);
+        //        //                break;
+        //        //        }
 
-        //                //add input for option
-        //                writer.AddAttribute("value", expression);
-        //                writer.RenderBeginTag("option");
-        //                writer.Write(expression);
-        //                writer.RenderEndTag();
-        //            }
+        //        //        break;
 
-        //            //close options select tag
-        //            writer.RenderEndTag();
+        //        //    case "BooleanParameterControlSpec":
 
-        //            break;
+        //        //        switch (editControlType)
+        //        //        {
+        //        //            case "CheckBox":
+        //        //                //add radio group input
+        //        //                RenderInputForInventorParameter(doc, writer, "checkbox", parameterName, name);
+        //        //                break;
 
-        //        case "listbox":
+        //        //            case "TrueOrFalse":
+        //        //                //add combo box input
+        //        //                RenderInputForInventorParameter(doc, writer, "boolean", parameterName, name);
+        //        //                break;
+        //        //        }
 
-        //            //add label
-        //            RenderLabelForInventorParameter(writer, prefix + parameterName, parameterLabel);
-
-        //            //open select tag for radio options
-        //            writer.AddAttribute("id", prefix + parameterName);
-        //            writer.AddAttribute("class", "listbox-options");
-        //            writer.AddAttribute("size", param.Expression.Count().ToString());
-        //            writer.RenderBeginTag("select");
-
-        //            //add input options
-        //            for (int i = 1; i <= param.ExpressionList.Count; i++)
-        //            {
-        //                string expression = param.ExpressionList[i].Replace("\"", "");
-
-        //                //add input for option
-        //                writer.AddAttribute("value", expression);
-        //                writer.RenderBeginTag("option");
-        //                writer.Write(expression);
-        //                writer.RenderEndTag();
-        //            }
-
-        //            //close options select tag
-        //            writer.RenderEndTag();
-
-        //            break;
-
-        //        case "splitter":
+        //        //        break;
 
 
-        //            break;
+        //        //    case "PictureControlSpec":
 
-        //        case "picturebox":
+        //        //        //add picturebox
+        //        //        RenderBase64Image(writer, pictureBoxImgData, name);
 
-        //            break;
+        //        //        break;
 
+        //        //    case "TextPropertyControlSpec": //this is an iProperty
+        //        //    case "iLogicRuleControlSpec": //this is an iLogic Rule
+        //        //    default:
+        //        //        break;
+
+        //        //}
         //    }
 
+        //    return itemsArray;
         //}
 
     }
