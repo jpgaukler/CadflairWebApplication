@@ -1,5 +1,8 @@
-﻿using Inventor;
+﻿using CadflairDataAccess.Models;
+using Inventor;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -17,11 +20,6 @@ namespace CadflairInventorAddin
         /// Addin ID for customizing UI.
         /// </summary>
         public static string AddInCLSIDString { get; set; }
-
-        /// <summary>
-        /// Guid attribute of the addin class.
-        /// </summary>
-        public static string AddInGuid { get; set; }
     }
 
     internal static class ExtensionMethods
@@ -104,6 +102,37 @@ namespace CadflairInventorAddin
             catch { }
 
             return null;
+        }
+
+        public static string[] ToStringArray(this ExpressionList expressionList)
+        {
+            if (expressionList == null || expressionList.Count == 0) return null;
+
+            List<string> stringList = new List<string>();
+
+            for (int i = 1; i <= expressionList.Count; i++)
+            {
+                stringList.Add(expressionList[i].Replace("\"", ""));
+            }
+
+            return stringList.ToArray();
+        }
+
+
+        /// <summary>
+        /// Convert the given ILogicUiElemnent model to a json string. Null values will be excluded from the result.
+        /// </summary>
+        /// <param name="formSpecElement"></param>
+        /// <returns></returns>
+        private static string ToJson(this ILogicUiElement formSpecElement)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore //ignore empty strings and arrays
+            };
+
+            return JsonConvert.SerializeObject(formSpecElement, settings); ;
         }
 
         ///// <summary>

@@ -1,66 +1,92 @@
-﻿
-@switch(Element.UiElementSpec)
-{
-    case "ControlTabGroupSpec":
+﻿    @switch (Element.UiElementSpec)
+    {
+        case "ControlTabGroupSpec":
 
-@*        //add header for tab group
-        <MudText Typo="Typo.h6">@Element.Name</MudText>
+        @*        //add header for tab group
+    <MudText Typo="Typo.h6">@Element.Name</MudText>
 
-        //add caption image if it exists
-        if(!string.IsNullOrWhiteSpace(Element.Base64Image))
-        {
-            <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
-        }
+    //add caption image if it exists
+    if(!string.IsNullOrWhiteSpace(Element.Base64Image))
+    {
+    <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
+    }
 
-        //open div to contain items
-        <MudTabs>
-            <MudTabPanel Text="Tab One">
-                <MudText>Content One</MudText>
-            </MudTabPanel>
-            <MudTabPanel Text="Tab Two">
-                <MudText>Content Two</MudText>
-            </MudTabPanel>
-            <MudTabPanel Text="Tab Three">
-                <MudText>Content Three</MudText>
-            </MudTabPanel>
-            <MudTabPanel Text="Tab Disabled" Disabled="true">
-                <MudText>Content Disabled</MudText>
-            </MudTabPanel>
-        </MudTabs>
-        foreach (ILogicUiElement subItem in Element.Items)
-        {
-            <ProductInput Item="@subItem" @key="subItem"></ProductInput>
-        }
+    //open div to contain items
+    <MudTabs>
+    <MudTabPanel Text="Tab One">
+    <MudText>Content One</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Tab Two">
+    <MudText>Content Two</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Tab Three">
+    <MudText>Content Three</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Tab Disabled" Disabled="true">
+    <MudText>Content Disabled</MudText>
+    </MudTabPanel>
+    </MudTabs>
+    foreach (ILogicUiElement subItem in Element.Items)
+    {
+    <ProductInput Item="@subItem" @key="subItem"></ProductInput>
+    }
 
-        break;
-*@
+    break;
+    *@
 
-    case "ControlGroupSpec":
+        case "ControlGroupSpec":
 
-        //add caption image if it exists
-        if(!string.IsNullOrWhiteSpace(Element.Base64Image))
-        {
-            <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
-        }
+            //add caption image if it exists
+            @*if(!string.IsNullOrWhiteSpace(Element.Base64Image))
+    {
+    <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
+    }*@
 
-        //add span for group name
-        <MudExpansionPanels>
-            <MudExpansionPanel Text="@Element.Name">
-                @foreach (ILogicUiElement element in Element.Items)
-                {
-                    <ProductInput Element="@element" @key="element"></ProductInput>
-                }
-            </MudExpansionPanel>
-        </MudExpansionPanels>
+            //add span for group name
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="@Element.Name">
+                    @foreach (ILogicUiElement element in Element.Items)
+                    {
+                        <ProductInput Element="@element" @key="element"></ProductInput>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
 
-        break;
+            break;
 
     case "NumericParameterControlSpec":
-        <MudNumericField Label="@Element.Name" Min="0" Max="10" />
+
+        switch (Element.EditControlType)
+        {
+            case "TextBox":
+                <MudTooltip Duration="500" Text="@Element.ToolTip">
+                    <MudNumericField Label="@Element.Name"
+                                     Min="@Element.ParameterMinValue"
+                                     Max="@Element.ParameterMaxValue"
+                                     Adornment="Adornment.End"
+                                     AdornmentText="@Element.ParameterUnits"
+                                     Validation="@(new RangeAttribute(Element.ParameterMinValue, Element.ParameterMaxValue) { ErrorMessage = $"Please enter a value between {Element.ParameterMinValue} and {Element.ParameterMaxValue}."})"/>
+                </MudTooltip>
+
+                break;
+
+            case "TrackBar":
+                <MudTooltip Duration="500" Text="@Element.ToolTip">
+                    <MudSlider T="double" 
+                               Min="@Element.ParameterMinValue" 
+                               Max="@Element.ParameterMaxValue"
+                               ValueLabel="true">@Element.Name</MudSlider>
+                </MudTooltip>
+                break;
+
+        }
         break;
 
     case "TextParameterControlSpec":
-        <MudTextField T="string" Label="@Element.Name"></MudTextField>
+        <MudTooltip Duration="500" Text="@Element.ToolTip">
+            <MudTextField Label="@Element.Name" 
+                          Value="@Element.ParameterExpression"/>
+        </MudTooltip>
         break;
 
     case "MultiValueNumericParameterControlSpec":
@@ -69,30 +95,37 @@
         switch (Element.EditControlType)
         {
             case "RadioGroup":
-                 //add radio group input
-                <MudText>@Element.Name</MudText>
-                <MudRadioGroup T="int">
-                    <MudRadio Option="@(1)" Color="Color.Primary">1</MudRadio>
-                    <MudRadio Option="@(2)" Color="Color.Primary">2</MudRadio>
-                    <MudRadio Option="@(3)" Color="Color.Primary">3</MudRadio>
-                    <MudRadio Option="@(4)" Color="Color.Primary">4</MudRadio>
-                    <MudRadio Option="@(5)" Color="Color.Primary">5</MudRadio>
-                </MudRadioGroup>
+                <MudTooltip Duration="500" Text="@Element.ToolTip">
+                    <MudText>@Element.Name</MudText>
+                    <MudRadioGroup T="string">
+                        @foreach (string expression in Element.ParameterExpressionList)
+                        {
+                            <MudRadio Option="expression" Color="Color.Primary">@expression</MudRadio>
+                        }
+                    </MudRadioGroup>
+                </MudTooltip>
 
                 break;
 
             case "ComboBox":
-                //add combo box input
-                <MudSelect T="double" Label="@Element.Name" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
-                    <MudSelectItem T="double" Value="4.50" />
-                    <MudSelectItem T="double" Value="4.99" />
-                    <MudSelectItem T="double" Value="3.60" />
-                </MudSelect>
+                <MudTooltip Duration="500" Text="@Element.ToolTip">
+                    <MudSelect T="string" Label="@Element.Name" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
+                        @foreach (string expression in Element.ParameterExpressionList)
+                        {
+                            <MudSelectItem Value="expression" />
+                        }
+                    </MudSelect>
+                </MudTooltip>
                 break;
 
             case "ListBox":
-            //add list box input
-                @*RenderInputForInventorParameter(doc, writer, "listbox", parameterName, uiElementName);*@
+                <MudList Clickable="true" Color="Color.Secondary" Dense="true">
+                    <MudListSubheader>@Element.Name</MudListSubheader>
+                    @foreach (string expression in Element.ParameterExpressionList)
+                    {
+                        <MudListItem Text="@expression" />
+                    }
+                </MudList>
                 break;
         }
 
@@ -103,7 +136,7 @@
         switch (Element.EditControlType)
         {
             case "CheckBox":
-                <MudCheckBox T="bool" Label="@Element.Name" LabelPosition="LabelPosition.Start"/>
+                <MudCheckBox T="bool" Label="@Element.Name" LabelPosition="LabelPosition.Start" />
                 break;
 
             case "TrueOrFalse":

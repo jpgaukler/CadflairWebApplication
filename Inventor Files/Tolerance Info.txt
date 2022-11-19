@@ -1,0 +1,657 @@
+Name: dresserWidth
+Type: kModelParameterObject
+Value: 177.8
+Units: in
+Expression: 70 in
+Tolerance: Yes
+Lower: -116.84
+Upper: 35.56
+
+Name: dresserDepth
+Type: kModelParameterObject
+Value: 76.2
+Units: in
+Expression: 30 in
+Tolerance: Yes
+Lower: -30.48
+Upper: 25.4
+
+Name: legDepth
+Type: kModelParameterObject
+Value: 7.62
+Units: in
+Expression: 3 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: legWidth
+Type: kModelParameterObject
+Value: 7.62
+Units: in
+Expression: 3 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: dresserHeight
+Type: kModelParameterObject
+Value: 121.92
+Units: in
+Expression: 48 in
+Tolerance: Yes
+Lower: -45.72
+Upper: 30.48
+
+Name: topThickness
+Type: kUserParameterObject
+Value: 7.62
+Units: in
+Expression: 3 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d5
+Type: kModelParameterObject
+Value: 34.29
+Units: in
+Expression: dresserDepth / 2 ul - legDepth / 2 ul
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: legExposure
+Type: kModelParameterObject
+Value: 15.24
+Units: in
+Expression: 6 in
+Tolerance: Yes
+Lower: -12.7
+Upper: 15.24
+
+Name: d7
+Type: kModelParameterObject
+Value: 7.62
+Units: in
+Expression: topThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: drawerHeight
+Type: kModelParameterObject
+Value: 22.86
+Units: in
+Expression: ( frontPanelHeight - ( drawerRows + 1 ul ) * drawerHorizontalOffset ) / drawerRows
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: drawerVerticalOffset
+Type: kModelParameterObject
+Value: 7.62
+Units: in
+Expression: 3 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: drawerWidth
+Type: kModelParameterObject
+Value: 69.85
+Units: in
+Expression: ( frontPanelWidth - ( drawerColumns + 1 ul ) * drawerVerticalOffset ) / drawerColumns
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: drawerHorizontalOffset
+Type: kModelParameterObject
+Value: 7.62
+Units: in
+Expression: 3 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: drawerRows
+Type: kUserParameterObject
+Value: 3
+Units: ul
+Expression: 3 ul
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: drawerColumns
+Type: kUserParameterObject
+Value: 2
+Units: ul
+Expression: 2 ul
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: panelThickness
+Type: kUserParameterObject
+Value: 2.54
+Units: in
+Expression: 1 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: frontPanelWidth
+Type: kReferenceParameterObject
+Value: 162.56
+Units: in
+Expression: 64.000 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: frontPanelHeight
+Type: kReferenceParameterObject
+Value: 99.06
+Units: in
+Expression: 39.000 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d14
+Type: kModelParameterObject
+Value: -34.29
+Units: in
+Expression: -dresserDepth / 2 ul + legDepth / 2 ul
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d15
+Type: kModelParameterObject
+Value: 85.09
+Units: in
+Expression: dresserWidth / 2 ul - legWidth / 2 ul
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d16
+Type: kModelParameterObject
+Value: -85.09
+Units: in
+Expression: -dresserWidth / 2 ul + legWidth / 2 ul
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d17
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: panelThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d18
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d19
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: panelThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d20
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d21
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: panelThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d22
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d23
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: panelThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d24
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d26
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d27
+Type: kModelParameterObject
+Value: 2
+Units: ul
+Expression: drawerColumns
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d29
+Type: kModelParameterObject
+Value: 77.47
+Units: in
+Expression: drawerWidth + drawerVerticalOffset
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d30
+Type: kModelParameterObject
+Value: 3
+Units: ul
+Expression: drawerRows
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d32
+Type: kModelParameterObject
+Value: 30.48
+Units: in
+Expression: drawerHeight + drawerHorizontalOffset
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d33
+Type: kModelParameterObject
+Value: 7.62
+Units: in
+Expression: topThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d34
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d36
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d37
+Type: kModelParameterObject
+Value: 2.53999999999796
+Units: in
+Expression: 1 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d38
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: panelThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: filletRadius
+Type: kModelParameterObject
+Value: 0.1905
+Units: in
+Expression: 0.075 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: edgeStyle
+Type: kUserParameterObject
+Value: Square
+Units: Text
+Expression: "Square"
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: legFilletRadius
+Type: kModelParameterObject
+Value: 0.3175
+Units: in
+Expression: 0.125 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: topFilletRadius
+Type: kModelParameterObject
+Value: 0.3175
+Units: in
+Expression: 0.125 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: finishStyle
+Type: kUserParameterObject
+Value: Matte Gray
+Units: Text
+Expression: "Matte Gray"
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d43
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: 1 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d44
+Type: kModelParameterObject
+Value: 12.7
+Units: in
+Expression: 5 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d45
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d46
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: 1 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d47
+Type: kModelParameterObject
+Value: 0.3175
+Units: in
+Expression: 0.125 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d48
+Type: kModelParameterObject
+Value: 0.3175
+Units: in
+Expression: 0.125 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d49
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d50
+Type: kModelParameterObject
+Value: 2
+Units: ul
+Expression: d27
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d52
+Type: kModelParameterObject
+Value: 77.47
+Units: in
+Expression: d29
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d53
+Type: kModelParameterObject
+Value: 3
+Units: ul
+Expression: d30
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d55
+Type: kModelParameterObject
+Value: 30.48
+Units: in
+Expression: d32
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d61
+Type: kModelParameterObject
+Value: 3.81
+Units: in
+Expression: 1.5 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d62
+Type: kModelParameterObject
+Value: 0.3175
+Units: in
+Expression: 0.125 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d63
+Type: kModelParameterObject
+Value: 2.2225
+Units: in
+Expression: 0.875 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d64
+Type: kModelParameterObject
+Value: 0.9525
+Units: in
+Expression: 0.375 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d65
+Type: kModelParameterObject
+Value: 5.08
+Units: in
+Expression: 2 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d67
+Type: kModelParameterObject
+Value: 0.0635
+Units: in
+Expression: 0.025 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d68
+Type: kModelParameterObject
+Value: 4.445
+Units: in
+Expression: 1.75 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d69
+Type: kModelParameterObject
+Value: 16.51
+Units: in
+Expression: 6.5 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d70
+Type: kModelParameterObject
+Value: 1.27
+Units: in
+Expression: 0.5 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d71
+Type: kModelParameterObject
+Value: 1.27
+Units: in
+Expression: d70
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d72
+Type: kModelParameterObject
+Value: 1.27
+Units: in
+Expression: d70
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d73
+Type: kModelParameterObject
+Value: 1.27
+Units: in
+Expression: 0.5 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d74
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: handleStyle
+Type: kUserParameterObject
+Value: Square Handle
+Units: Text
+Expression: "Square Handle"
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d75
+Type: kModelParameterObject
+Value: -2.54
+Units: in
+Expression: -1 in
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d76
+Type: kModelParameterObject
+Value: 2.54
+Units: in
+Expression: panelThickness
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: d77
+Type: kModelParameterObject
+Value: 0
+Units: deg
+Expression: 0.00 deg
+Tolerance: Yes
+Lower: 0
+Upper: 0
+
+Name: testbool
+Type: kUserParameterObject
+Value: True
+Units: Boolean
+Expression: True
+Tolerance: Yes
+Lower: 0
+Upper: 0
+

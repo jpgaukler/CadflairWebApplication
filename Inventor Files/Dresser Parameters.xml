@@ -10,7 +10,8 @@
         <UiElementSpec xsi:type="NumericParameterControlSpec">
           <Name>Width</Name>
           <Guid>ac94a756-d23b-4dc3-87b3-b756cf9c6141</Guid>
-          <ToolTip />
+          <ToolTip>Tooltip width.</ToolTip>
+          <ReadOnly>true</ReadOnly>
           <ParameterName>dresserWidth</ParameterName>
           <EditControlType>TextBox</EditControlType>
           <TrackBarProperties>
@@ -56,7 +57,7 @@
         <UiElementSpec xsi:type="NumericParameterControlSpec">
           <Name>Leg Length</Name>
           <Guid>1acdceb4-d5c3-43ad-9818-dd0553f649ee</Guid>
-          <ToolTip />
+          <ToolTip>Choose the leg length.</ToolTip>
           <ParameterName>legExposure</ParameterName>
           <EditControlType>TextBox</EditControlType>
           <TrackBarProperties>
@@ -71,10 +72,6 @@
       </CaptionImage>
       <BordersVisible>true</BordersVisible>
     </UiElementSpec>
-    <UiElementSpec xsi:type="SplitterSpec">
-      <Name>Splitter 2</Name>
-      <Guid>1ed0d65a-af32-4505-af75-71a679641221</Guid>
-    </UiElementSpec>
     <UiElementSpec xsi:type="ControlGroupSpec">
       <Name>Drawers</Name>
       <Guid>db93e307-265b-4bae-b001-e3c4d270ee58</Guid>
@@ -82,7 +79,7 @@
         <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
           <Name>Rows</Name>
           <Guid>51be999c-2be9-4643-b4df-1c92782c83db</Guid>
-          <ToolTip />
+          <ToolTip>Number of drawers for dresser.</ToolTip>
           <ParameterName>drawerRows</ParameterName>
           <EditControlType>RadioGroup</EditControlType>
           <AllowCustomValues>false</AllowCustomValues>
@@ -92,7 +89,7 @@
         <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
           <Name>Columns</Name>
           <Guid>7fd34523-f368-48b4-86a3-e7235c75e174</Guid>
-          <ToolTip />
+          <ToolTip>Number of drawers for dresser.</ToolTip>
           <ParameterName>drawerColumns</ParameterName>
           <EditControlType>RadioGroup</EditControlType>
           <AllowCustomValues>false</AllowCustomValues>
@@ -112,7 +109,7 @@
         <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
           <Name>Edge Style</Name>
           <Guid>3b2105fc-4bee-4173-945a-0be78b9cabb8</Guid>
-          <ToolTip />
+          <ToolTip>Select edge style.</ToolTip>
           <ParameterName>edgeStyle</ParameterName>
           <EditControlType>ComboBox</EditControlType>
           <AllowCustomValues>false</AllowCustomValues>

@@ -116,7 +116,7 @@
     </Compile>
     <Compile Include="ConvertiLogicFormSpec.cs" />
     <Compile Include="DrawingAttributesCommand.cs" />
-    <Compile Include="UploadFile.cs" />
+    <Compile Include="UploadToCadflair.cs" />
     <Compile Include="UploadToCadflairDialog.cs">
       <SubType>Form</SubType>
     </Compile>
