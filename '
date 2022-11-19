@@ -1,27 +1,10 @@
-﻿using CadflairDataAccess.Models;
+using CadflairDataAccess.Models;
 using Inventor;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 
-namespace CadflairInventorAddin
+namespace CadflairInventorAddin.Utilities
 {
-    internal static class Globals
-    {
-        /// <summary>
-        /// Global Inventor Application object.
-        /// </summary>
-        public static Inventor.Application InventorApplication { get; set; }
-
-        /// <summary>
-        /// Addin ID for customizing UI.
-        /// </summary>
-        public static string AddInCLSIDString { get; set; }
-    }
-
     internal static class ExtensionMethods
     {
         /// <summary>
@@ -67,7 +50,6 @@ namespace CadflairInventorAddin
             }
         }
 
-
         public static Inventor.Property GetProperty(this Document doc, string propertyName)
         {
             foreach(PropertySet propSet in doc.PropertySets)
@@ -81,6 +63,12 @@ namespace CadflairInventorAddin
             return null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="parameterName"></param>
+        /// <returns>The matching parameter, or <b>null</b> if no match is found.</returns>
         public static Inventor.Parameter GetParameter(this Document doc, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(parameterName)) return null;
@@ -118,12 +106,11 @@ namespace CadflairInventorAddin
             return stringList.ToArray();
         }
 
-
         /// <summary>
         /// Convert the given ILogicUiElemnent model to a json string. Null values will be excluded from the result.
         /// </summary>
         /// <param name="formSpecElement"></param>
-        /// <returns></returns>
+        /// <returns>A json string representing the ILogicUiElement</returns>
         private static string ToJson(this ILogicUiElement formSpecElement)
         {
             JsonSerializerSettings settings = new JsonSerializerSettings()
@@ -134,88 +121,6 @@ namespace CadflairInventorAddin
 
             return JsonConvert.SerializeObject(formSpecElement, settings); ;
         }
-
-        ///// <summary>
-        ///// Removes all white space characters that are not spaces (line breaks, and tabs) from a string. 
-        ///// </summary>
-        ///// <param name="self"></param>
-        ///// <returns></returns>
-        //public static string RemoveLineBreaks(this string self)
-        //{
-        //    // learn regular expressions here: https://regexr.com/
-        //    // [\S ] = find non-whitespace characters, in addition to the space character
-        //    // ^ = negate the set 
-        //    // + = match 1 or more of the preceding token
-
-        //    return Regex.Replace(self, @"[^\S ]+", "");
-        //}
     }
 
-
-
-    /// <summary>
-    /// Class for converting icons to IPictureDisp to be usable by Inventor API elements.
-    /// </summary>
-    public sealed class PictureDispConverter
-    {
-        [DllImport("OleAut32.dll", EntryPoint = "OleCreatePictureIndirect", ExactSpelling = true, PreserveSig = false)]
-
-        private static extern stdole.IPictureDisp OleCreatePictureIndirect([MarshalAs(UnmanagedType.AsAny)] object picdesc, ref Guid iid, [MarshalAs(UnmanagedType.Bool)] bool fOwn);
-        static Guid iPictureDispGuid = typeof(stdole.IPictureDisp).GUID;
-
-        private static class PICTDESC
-        {
-            //Picture Types
-            public const short PICTYPE_UNINITIALIZED = -1;
-            public const short PICTYPE_NONE = 0;
-            public const short PICTYPE_BITMAP = 1;
-            public const short PICTYPE_METAFILE = 2;
-            public const short PICTYPE_ICON = 3;
-            public const short PICTYPE_ENHMETAFILE = 4;
-
-            [StructLayout(LayoutKind.Sequential)]
-
-            public class Icon
-            {
-                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PICTDESC.Icon));
-                internal int picType = PICTDESC.PICTYPE_ICON;
-                internal IntPtr hicon = IntPtr.Zero;
-                internal int unused1;
-                internal int unused2;
-                internal Icon(System.Drawing.Icon icon)
-                {
-                    this.hicon = icon.ToBitmap().GetHicon();
-                }
-            }
-
-            [StructLayout(LayoutKind.Sequential)]
-            public class Bitmap
-            {
-                internal int cbSizeOfStruct = Marshal.SizeOf(typeof(PICTDESC.Bitmap));
-                internal int picType = PICTDESC.PICTYPE_BITMAP;
-                internal IntPtr hbitmap = IntPtr.Zero;
-                internal IntPtr hpal = IntPtr.Zero;
-                internal int unused;
-
-                internal Bitmap(System.Drawing.Bitmap bitmap)
-                {
-                    this.hbitmap = bitmap.GetHbitmap();
-                }
-
-            }
-
-        }
-
-        public static stdole.IPictureDisp ToIPictureDisp(System.Drawing.Icon icon)
-        {
-            PICTDESC.Icon pictIcon = new PICTDESC.Icon(icon);
-            return OleCreatePictureIndirect(pictIcon, ref iPictureDispGuid, true);
-        }
-
-        public static stdole.IPictureDisp ToIPictureDisp(System.Drawing.Bitmap bmp)
-        {
-            PICTDESC.Bitmap pictBmp = new PICTDESC.Bitmap(bmp);
-            return OleCreatePictureIndirect(pictBmp, ref iPictureDispGuid, true);
-        }
-    }
 }

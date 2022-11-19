@@ -1,8 +1,9 @@
-﻿    @switch (Element.UiElementSpec)
-    {
-        case "ControlTabGroupSpec":
+﻿
+@switch (Element.UiElementSpec)
+{
+    case "ControlTabGroupSpec":
 
-        @*        //add header for tab group
+    @*        //add header for tab group
     <MudText Typo="Typo.h6">@Element.Name</MudText>
 
     //add caption image if it exists
@@ -34,48 +35,40 @@
     break;
     *@
 
-        case "ControlGroupSpec":
+    case "ControlGroupSpec":
+        <MudExpansionPanels>
+            <MudExpansionPanel Text="@Element.Name">
+                @foreach (ILogicUiElement element in Element.Items)
+                {
+                    <ProductInput Element="@element" @key="element"></ProductInput>
+                }
+            </MudExpansionPanel>
+        </MudExpansionPanels>
 
-            //add caption image if it exists
-            @*if(!string.IsNullOrWhiteSpace(Element.Base64Image))
-    {
-    <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
-    }*@
-
-            //add span for group name
-            <MudExpansionPanels>
-                <MudExpansionPanel Text="@Element.Name">
-                    @foreach (ILogicUiElement element in Element.Items)
-                    {
-                        <ProductInput Element="@element" @key="element"></ProductInput>
-                    }
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-
-            break;
+        break;
 
     case "NumericParameterControlSpec":
-
         switch (Element.EditControlType)
         {
             case "TextBox":
                 <MudTooltip Duration="500" Text="@Element.ToolTip">
                     <MudNumericField Label="@Element.Name"
-                                     Min="@Element.ParameterMinValue"
-                                     Max="@Element.ParameterMaxValue"
-                                     Adornment="Adornment.End"
-                                     AdornmentText="@Element.ParameterUnits"
-                                     Validation="@(new RangeAttribute(Element.ParameterMinValue, Element.ParameterMaxValue) { ErrorMessage = $"Please enter a value between {Element.ParameterMinValue} and {Element.ParameterMaxValue}."})"/>
+                     T="double"
+                     Adornment="Adornment.End"
+                     AdornmentText="@Element.ParameterUnits"
+                     Validation="@(new RangeAttribute(minimum: Element.ParameterMinValue == null ? 0 : (double)Element.ParameterMinValue,
+                                                                      maximum: Element.ParameterMaxValue == null ? 0 : (double)Element.ParameterMaxValue)
+                                                       { ErrorMessage = $"Please enter a value between {Element.ParameterMinValue} and {Element.ParameterMaxValue}." })" />
                 </MudTooltip>
 
                 break;
 
             case "TrackBar":
                 <MudTooltip Duration="500" Text="@Element.ToolTip">
-                    <MudSlider T="double" 
-                               Min="@Element.ParameterMinValue" 
-                               Max="@Element.ParameterMaxValue"
-                               ValueLabel="true">@Element.Name</MudSlider>
+                    <MudSlider T="double"
+               Min="@(Element.ParameterMinValue == null ? 0 : (double)Element.ParameterMinValue)"
+               Max="@(Element.ParameterMaxValue == null ? 0 : (double)Element.ParameterMaxValue)"
+               ValueLabel="true">@Element.Name</MudSlider>
                 </MudTooltip>
                 break;
 
@@ -84,14 +77,13 @@
 
     case "TextParameterControlSpec":
         <MudTooltip Duration="500" Text="@Element.ToolTip">
-            <MudTextField Label="@Element.Name" 
-                          Value="@Element.ParameterExpression"/>
+            <MudTextField Label="@Element.Name"
+                  Value="@Element.ParameterExpression" />
         </MudTooltip>
         break;
 
     case "MultiValueNumericParameterControlSpec":
     case "MultiValueTextParameterControlSpec":
-
         switch (Element.EditControlType)
         {
             case "RadioGroup":
@@ -104,7 +96,6 @@
                         }
                     </MudRadioGroup>
                 </MudTooltip>
-
                 break;
 
             case "ComboBox":
@@ -128,11 +119,9 @@
                 </MudList>
                 break;
         }
-
         break;
 
     case "BooleanParameterControlSpec":
-
         switch (Element.EditControlType)
         {
             case "CheckBox":
@@ -146,32 +135,20 @@
                 </MudSelect>
                 break;
         }
-
         break;
 
     case "LabelSpec":
-
-        //add a label
         <MudText>@Element.Name</MudText>
-
         break;
 
     case "SplitterSpec":
-
-        //add a horizontal rule
-
         break;
 
     case "PictureControlSpec":
-
-        //add picturebox
-
         break;
 
     case "TextPropertyControlSpec": //this is an iProperty
     case "iLogicRuleControlSpec": //this is an iLogic Rule
-
-
     default:
         break;
 
@@ -181,6 +158,5 @@
 
     [Parameter]
     public ILogicUiElement Element { get; set; } = new();
-
 
 }

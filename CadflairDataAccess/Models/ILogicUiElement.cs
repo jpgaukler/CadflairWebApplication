@@ -12,8 +12,8 @@
         public string ParameterUnits { get; set; }
         public string ParameterExpression { get; set; }
         public string[] ParameterExpressionList { get; set; }
-        public double ParameterMinValue { get; set; }
-        public double ParameterMaxValue { get; set; }
+        public double? ParameterMinValue { get; set; }
+        public double? ParameterMaxValue { get; set; }
         public string EditControlType { get; set; }
         public bool ReadOnly { get; set; }
 

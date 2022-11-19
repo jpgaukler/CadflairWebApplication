@@ -1,4 +1,5 @@
 ﻿using CadflairDataAccess.Models;
+using CadflairInventorAddin.Utilities;
 using Inventor;
 using Newtonsoft.Json;
 using System;
@@ -11,7 +12,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
-namespace CadflairInventorAddin
+namespace CadflairInventorAddin.Commands
 {
     internal class UploadToCadflair
     {
@@ -95,8 +96,8 @@ namespace CadflairInventorAddin
                     ParameterUnits = parameter?.get_Units(),
                     ParameterExpression = parameter?.Expression?.Replace("\"", ""),
                     ParameterExpressionList = parameter?.ExpressionList?.ToStringArray(),
-                    //ParameterMinValue = parameter?.Tolerance.Lower,
-                    //ParameterMaxValue = doc.GetParameter(item.Element("ParameterName")?.Value).Tolerance.Upper.ToString(),
+                    ParameterMinValue = parameter?.GetMinAttributeValue(),
+                    ParameterMaxValue = parameter?.GetMaxAttributeValue(),
                     EditControlType = item.Element("EditControlType")?.Value,
                     ReadOnly = Convert.ToBoolean(item.Element("ReadOnly")?.Value),
                     //Base64Image = item.Element("Image")?.Element("BitmapByteArray")?.Value,
@@ -109,6 +110,23 @@ namespace CadflairInventorAddin
 
             return elementList.ToArray();
         }
+
+        public static void SaveILogicUIElementToJson(ILogicUiElement element)
+        {
+            string jsonString = element.ToJson();
+
+            //string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+            string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+            string jsonFileName = System.IO.Path.Combine(folderName, element.Name + ".json");
+            StreamWriter jsonFile = System.IO.File.CreateText(jsonFileName);
+
+            jsonFile.Write(jsonString);
+            jsonFile.Close();
+            Clipboard.SetText(jsonString);
+
+            //Process.Start(folderName);
+        }
+
 
         /// <summary>
         /// Create a zip folder in the temp directory for the Inventor document that is provided. 
@@ -253,66 +271,66 @@ namespace CadflairInventorAddin
 }
 
 
-        //public static string[] GetILogicFormNames(Document doc)
-        //{
-        //    List<string> formNames = new List<string>();
+//public static string[] GetILogicFormNames(Document doc)
+//{
+//    List<string> formNames = new List<string>();
 
-        //    foreach (AttributeSet set in doc.AttributeSets)
-        //    {
-        //        //ignore all attribute sets that are not iLogicUi
-        //        if (!set.Name.ToLower().Contains("ilogicinternalui")) continue;
+//    foreach (AttributeSet set in doc.AttributeSets)
+//    {
+//        //ignore all attribute sets that are not iLogicUi
+//        if (!set.Name.ToLower().Contains("ilogicinternalui")) continue;
 
-        //        //get form spec attribute
-        //        Inventor.Attribute formSpec = set["FormSpec"];
+//        //get form spec attribute
+//        Inventor.Attribute formSpec = set["FormSpec"];
 
-        //        //convert byte array to xml string
-        //        byte[] bytes = (byte[])formSpec.Value;
-        //        string xmlString = Encoding.UTF8.GetString(bytes);
+//        //convert byte array to xml string
+//        byte[] bytes = (byte[])formSpec.Value;
+//        string xmlString = Encoding.UTF8.GetString(bytes);
 
-        //        //ignore the browser control spec
-        //        string formName = GetiLogicFormName(xmlString);
-        //        if (formName.Contains("iLogicBrowserUiFormSpecification")) continue;
+//        //ignore the browser control spec
+//        string formName = GetiLogicFormName(xmlString);
+//        if (formName.Contains("iLogicBrowserUiFormSpecification")) continue;
 
-        //        formNames.Add(formName);
-        //    }
+//        formNames.Add(formName);
+//    }
 
-        //    return formNames.ToArray();
-        //}
+//    return formNames.ToArray();
+//}
 
-        //public static string GetiLogicFormName(string xmlFormSpec)
-        //{
-        //    XDocument doc = XDocument.Parse(xmlFormSpec);
-        //    return doc.Element("FormSpecification").Element("Name").Value;
-        //}
+//public static string GetiLogicFormName(string xmlFormSpec)
+//{
+//    XDocument doc = XDocument.Parse(xmlFormSpec);
+//    return doc.Element("FormSpecification").Element("Name").Value;
+//}
 
 
-        //private static string GetMaxExpression(this Parameter parameter)
-        //{
-        //    if (parameter == null) return null;
-        //    return parameter?.Tolerance?.Lower.ToString();
-        //}
+//private static string GetMaxExpression(this Parameter parameter)
+//{
+//    if (parameter == null) return null;
+//    return parameter?.Tolerance?.Lower.ToString();
+//}
 
-        //private static string SerializeiLogicFormSpecToJson(Document doc, string xmlString)
-        //{
-        //    //convert xml string to xdoc for parsing
-        //    XDocument xDoc = XDocument.Parse(xmlString);
-        //    XNamespace ns = xDoc.Root.GetNamespaceOfPrefix("xsi");
-        //    XElement formSpecElement = xDoc.Element("FormSpecification");
+//private static string SerializeiLogicFormSpecToJson(Document doc, string xmlString)
+//{
+//    //convert xml string to xdoc for parsing
+//    XDocument xDoc = XDocument.Parse(xmlString);
+//    XNamespace ns = xDoc.Root.GetNamespaceOfPrefix("xsi");
+//    XElement formSpecElement = xDoc.Element("FormSpecification");
 
-        //    ILogicUiElement element = new ILogicUiElement()
-        //    {
-        //        Name = formSpecElement.Element("Name").Value,
-        //        //Guid = formSpecElement.Element("Guid").Value,
-        //        Items = RecurseILogicElements(doc, formSpecElement.Element("Items"), ns)
-        //    };
+//    ILogicUiElement element = new ILogicUiElement()
+//    {
+//        Name = formSpecElement.Element("Name").Value,
+//        //Guid = formSpecElement.Element("Guid").Value,
+//        Items = RecurseILogicElements(doc, formSpecElement.Element("Items"), ns)
+//    };
 
-        //    JsonSerializerSettings settings = new JsonSerializerSettings()
-        //    {
-        //        NullValueHandling = NullValueHandling.Ignore,
-        //        DefaultValueHandling = DefaultValueHandling.Ignore //ignore empty strings and arrays
-        //    };
+//    JsonSerializerSettings settings = new JsonSerializerSettings()
+//    {
+//        NullValueHandling = NullValueHandling.Ignore,
+//        DefaultValueHandling = DefaultValueHandling.Ignore //ignore empty strings and arrays
+//    };
 
-        //    return JsonConvert.SerializeObject(element, settings); ;
-        //}
+//    return JsonConvert.SerializeObject(element, settings); ;
+//}
 
 

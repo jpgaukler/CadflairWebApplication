@@ -1,10 +1,11 @@
-﻿using Inventor;
+﻿using CadflairInventorAddin.Utilities;
+using Inventor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace CadflairInventorAddin
+namespace CadflairInventorAddin.Commands
 {
     internal static class DrawingAttributesCommand
     {
@@ -38,7 +39,9 @@ namespace CadflairInventorAddin
             try
             {
                 //remove any unused attribute sets
-                doc.AttributeManager.PurgeAttributeSets("*", false, out _);
+                doc.AttributeManager.PurgeAttributeSets(sheetAttributesSetName, false, out _);
+                doc.AttributeManager.PurgeAttributeSets(dimensionAttributesSetName, false, out _);
+                doc.AttributeManager.PurgeAttributeSets(viewAttributesSetName, false, out _);
 
                 foreach (Sheet sheet in doc.Sheets)
                 {
@@ -549,8 +552,8 @@ namespace CadflairInventorAddin
             }
         }
 
-
-
+    }
+}
 
 
         //public static void AddAttributes(string location, int offsetLevel, string textAlignment)
@@ -720,10 +723,6 @@ namespace CadflairInventorAddin
         //        }
         //    }
         //}
-    }
-
-}
-
 
 
 

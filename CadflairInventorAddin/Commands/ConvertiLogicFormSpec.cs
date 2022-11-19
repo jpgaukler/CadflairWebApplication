@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace CadflairInventorAddin
+namespace CadflairInventorAddin.Commands
 {
     internal static class ConvertiLogicFormSpec
     {

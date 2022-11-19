@@ -1,8 +1,9 @@
+using CadflairInventorAddin.Commands;
 using CadflairInventorAddin.Properties;
+using CadflairInventorAddin.Utilities;
 using Inventor;
 using System;
 using System.Runtime.InteropServices;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CadflairInventorAddin
 {
