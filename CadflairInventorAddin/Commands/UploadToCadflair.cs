@@ -87,19 +87,22 @@ namespace CadflairInventorAddin.Commands
 
                 ILogicUiElement element = new ILogicUiElement()
                 {
+                    //Guid = item.Element("Guid").Value,
                     UiElementSpec = item.Attribute(ns + "type").Value,
                     Name = item.Element("Name").Value,
-                    //Guid = item.Element("Guid").Value,
+                    EditControlType = item.Element("EditControlType")?.Value,
+                    ReadOnly = Convert.ToBoolean(item.Element("ReadOnly")?.Value),
                     ToolTip = item.Element("ToolTip")?.Value,
                     EnablingParameterName = item.Element("EnablingParameterName")?.Value,
+                    TrackBarMinValue = item.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(item.Element("TrackBarProperties")?.Element("MinimumValue").Value) : (double?)null,
+                    TrackBarMaxValue = item.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(item.Element("TrackBarProperties")?.Element("MaximumValue").Value) : (double?)null,
+                    TrackBarIncrement = item.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(item.Element("TrackBarProperties")?.Element("ValueIncrement").Value) : (double?)null,
                     ParameterName = parameter?.Name,
                     ParameterUnits = parameter?.get_Units(),
                     ParameterExpression = parameter?.Expression?.Replace("\"", ""),
                     ParameterExpressionList = parameter?.ExpressionList?.ToStringArray(),
                     ParameterMinValue = parameter?.GetMinAttributeValue(),
                     ParameterMaxValue = parameter?.GetMaxAttributeValue(),
-                    EditControlType = item.Element("EditControlType")?.Value,
-                    ReadOnly = Convert.ToBoolean(item.Element("ReadOnly")?.Value),
                     //Base64Image = item.Element("Image")?.Element("BitmapByteArray")?.Value,
                     //Base64CaptionImage = item.Element("CaptionImage")?.Element("BitmapByteArray")?.Value,
                     Items = RecurseILogicElements(doc, item.Element("Items"), ns)

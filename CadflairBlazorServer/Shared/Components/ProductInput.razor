@@ -1,39 +1,16 @@
-﻿
-@switch (Element.UiElementSpec)
+﻿@switch (Element.UiElementSpec)
 {
     case "ControlTabGroupSpec":
+        <MudTabs>
+            <MudTabPanel Text="@Element.Name">
+                @foreach (ILogicUiElement element in Element.Items)
+                {
+                    <ProductInput Element="@element" @key="element"></ProductInput>
+                }
+            </MudTabPanel>
+        </MudTabs>
+        break;
 
-    @*        //add header for tab group
-    <MudText Typo="Typo.h6">@Element.Name</MudText>
-
-    //add caption image if it exists
-    if(!string.IsNullOrWhiteSpace(Element.Base64Image))
-    {
-    <MudImage Src="@($"data:image/bmp;base64,{Element.Base64Image}")" Alt="@Element.Name"></MudImage>
-    }
-
-    //open div to contain items
-    <MudTabs>
-    <MudTabPanel Text="Tab One">
-    <MudText>Content One</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Tab Two">
-    <MudText>Content Two</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Tab Three">
-    <MudText>Content Three</MudText>
-    </MudTabPanel>
-    <MudTabPanel Text="Tab Disabled" Disabled="true">
-    <MudText>Content Disabled</MudText>
-    </MudTabPanel>
-    </MudTabs>
-    foreach (ILogicUiElement subItem in Element.Items)
-    {
-    <ProductInput Item="@subItem" @key="subItem"></ProductInput>
-    }
-
-    break;
-    *@
 
     case "ControlGroupSpec":
         <MudExpansionPanels>
@@ -44,7 +21,6 @@
                 }
             </MudExpansionPanel>
         </MudExpansionPanels>
-
         break;
 
     case "NumericParameterControlSpec":
@@ -52,23 +28,26 @@
         {
             case "TextBox":
                 <MudTooltip Duration="500" Text="@Element.ToolTip">
-                    <MudNumericField Label="@Element.Name"
-                     T="double"
-                     Adornment="Adornment.End"
-                     AdornmentText="@Element.ParameterUnits"
-                     Validation="@(new RangeAttribute(minimum: Element.ParameterMinValue == null ? 0 : (double)Element.ParameterMinValue,
+                    <MudNumericField @bind-Value="NumericInputValue"
+                                     T="double"
+                                     Label="@Element.Name"
+                                     Adornment="Adornment.End"
+                                     AdornmentText="@Element.ParameterUnits"
+                                     Validation="@(new RangeAttribute(minimum: Element.ParameterMinValue == null ? 0 : (double)Element.ParameterMinValue,
                                                                       maximum: Element.ParameterMaxValue == null ? 0 : (double)Element.ParameterMaxValue)
-                                                       { ErrorMessage = $"Please enter a value between {Element.ParameterMinValue} and {Element.ParameterMaxValue}." })" />
+                                                                      { ErrorMessage = $"Please enter a value between {Element.ParameterMinValue} and {Element.ParameterMaxValue}." })" />
                 </MudTooltip>
-
                 break;
 
             case "TrackBar":
                 <MudTooltip Duration="500" Text="@Element.ToolTip">
-                    <MudSlider T="double"
-               Min="@(Element.ParameterMinValue == null ? 0 : (double)Element.ParameterMinValue)"
-               Max="@(Element.ParameterMaxValue == null ? 0 : (double)Element.ParameterMaxValue)"
-               ValueLabel="true">@Element.Name</MudSlider>
+                    <MudSlider @bind-Value="NumericInputValue"
+                               T="double"
+                               Min="@(Element.TrackBarMinValue == null ? 0 : (double)Element.TrackBarMinValue)"
+                               Max="@(Element.TrackBarMaxValue == null ? 0 : (double)Element.TrackBarMaxValue)"
+                               Step="@(Element.TrackBarIncrement == null ? 0 : (double)Element.TrackBarIncrement)"
+                               TickMarks="true"
+                               ValueLabel="true">@Element.Name: @NumericInputValue.ToString()</MudSlider>
                 </MudTooltip>
                 break;
 
@@ -77,8 +56,7 @@
 
     case "TextParameterControlSpec":
         <MudTooltip Duration="500" Text="@Element.ToolTip">
-            <MudTextField Label="@Element.Name"
-                  Value="@Element.ParameterExpression" />
+            <MudTextField Label="@Element.Name" Value="@Element.ParameterExpression" />
         </MudTooltip>
         break;
 
@@ -158,5 +136,6 @@
 
     [Parameter]
     public ILogicUiElement Element { get; set; } = new();
-
+    public double NumericInputValue { get; set; } 
+    public string TextInputValue { get; set; } = string.Empty;
 }

@@ -1,6 +1,7 @@
-﻿@layout ConfiguratorLayout
+﻿@using System.Text.Json
+
+@layout ConfiguratorLayout
 @page "/productcatalog"
-@using System.Text.Json
 @inject IJSRuntime _js
 
 <!--Drawer-->
@@ -9,34 +10,28 @@
            ClipMode="DrawerClipMode.Always"
            Anchor="Anchor.Left"
            Width="30%">
-
     <!--Drawer Header-->
     <MudDrawerHeader>
         <MudText Typo="Typo.h5">Parameters</MudText>
     </MudDrawerHeader>
-    
     <!--Drawer Content-->
     <MudStack Class="flex-grow-1 overflow-auto" Spacing="0">
-
         <!--Form Inputs-->
         <MudStack Class="flex-grow-1 px-3 overflow-auto">
-
-            @if (_params.Items != null)
+            @if (_formElements.Items != null)
             {
-                foreach (ILogicUiElement element in _params.Items)
+                foreach (ILogicUiElement element in _formElements.Items)
                 {
                     <ProductInput Element="@element" @key="element"></ProductInput>
                 }
             }
         </MudStack>
-
         <!--Buttons-->
         <MudStack Class="pa-3">
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Submit</MudButton>
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Pdf</MudButton>
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Step</MudButton>
         </MudStack>
-
     </MudStack>
 </MudDrawer>
 
@@ -51,35 +46,27 @@
 </MudStack>
 
 <!--Viewer-->
-<div class="d-flex ma-0 pa-0" style="height: calc(100vh - var(--mud-appbar-height)">
+<div class="d-flex ma-0 pa-0" style="height: calc(100vh - var(--mud-appbar-height))">
     <ForgeViewer />
 </div>
-
 
 
 @code
 {
     private Variant _buttonVariant = Variant.Outlined;
     private bool _drawerOpen = true;
-    private ILogicUiElement _params = new();
-
-    private List<string> myStrings = new()
-    {
-        "test",
-        "test2",
-        "recurse this",
-        "test3"
-    };
+    private ILogicUiElement _formElements = new();
 
     protected override void OnInitialized()
     {
         //string fileName = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), @"\wwwroot\js\Form 1.json");
         //string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files\Form 1.json";
         string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files\Dresser Parameters.json";
+        //string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files\Form 2.json";
         string jsonText = System.IO.File.ReadAllText(fileName);
         Debug.WriteLine(jsonText);
 
-        _params = JsonSerializer.Deserialize<ILogicUiElement>(jsonText);
+        _formElements = JsonSerializer.Deserialize<ILogicUiElement>(jsonText);
     }
 
 }

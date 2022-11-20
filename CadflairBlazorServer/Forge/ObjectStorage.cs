@@ -214,8 +214,8 @@ namespace CadflairBlazorServer.Forge
             }
             catch (Exception ex)
             {
-                throw ex;
-                return null;
+                //throw ex;
+                return new List<ForgeObject>();
             }
         }
 

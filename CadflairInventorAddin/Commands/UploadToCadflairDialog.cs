@@ -81,7 +81,7 @@ namespace CadflairInventorAddin.Commands
             {
                 ILogicUiElement element = (ILogicUiElement)row.Cells[ILogicUIElementColumn.Index].Value;
 
-                if (element.UiElementSpec == "NumericParameterControlSpec")
+                if (element.UiElementSpec == "NumericParameterControlSpec" && element.EditControlType == "TextBox")
                 {
                     double minValue = Double.Parse(row.Cells[MinValueColumn.Index].Value.ToString());
                     double maxValue = Double.Parse(row.Cells[MaxValueColumn.Index].Value.ToString());
