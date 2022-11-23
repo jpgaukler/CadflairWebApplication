@@ -2,6 +2,7 @@
 using CadflairInventorAddin.Utilities;
 using Inventor;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -10,7 +11,7 @@ namespace CadflairInventorAddin.Commands
     public partial class UploadToCadflairDialog : Form
     {
         private Document _doc;
-        private ILogicUiElement[] _iLogicForms;
+        private List<ILogicUiElement> _iLogicForms;
 
         public UploadToCadflairDialog(Document doc)
         {
@@ -92,7 +93,8 @@ namespace CadflairInventorAddin.Commands
             }
 
             ILogicUiElement form = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
-            UploadToCadflair.SaveILogicUIElementToJson(form);
+            UploadToCadflair.SaveILogicUiElementToJson(form);
+            UploadToCadflair.SaveILogicFormSpecToXml(form.Name);
         }
     }
 }

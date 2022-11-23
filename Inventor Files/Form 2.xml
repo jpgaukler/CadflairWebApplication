@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<FormSpecification xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Form 2</Name>
+  <Guid>60f3b15a-77df-4b9c-85ae-3a20a6e3d42d</Guid>
+  <Items>
+    <UiElementSpec xsi:type="ControlGroupSpec">
+      <Name>Group 1</Name>
+      <Guid>75bab83f-fd6d-4fb8-ac65-8762e8459498</Guid>
+      <Items>
+        <UiElementSpec xsi:type="ControlTabGroupSpec">
+          <Name>Tab Group 5</Name>
+          <Guid>1d5740b8-657b-4eeb-b864-7172872c195a</Guid>
+          <Items />
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="ControlTabGroupSpec">
+          <Name>Tab Group 6</Name>
+          <Guid>f7a59899-1bf6-41d0-aeb6-7a58d0b8f72b</Guid>
+          <Items />
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+      <BordersVisible>true</BordersVisible>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Tab Group 1</Name>
+      <Guid>9499b085-f614-4363-a5b2-fcbd61cfaa99</Guid>
+      <Items>
+        <UiElementSpec xsi:type="NumericParameterControlSpec">
+          <Name>dresserWidth</Name>
+          <Guid>f417fa55-c9a6-4539-ba9c-5dd32895d468</Guid>
+          <ToolTip />
+          <ParameterName>dresserWidth</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <TrackBarProperties>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>10</MaximumValue>
+            <ValueIncrement>1</ValueIncrement>
+          </TrackBarProperties>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="NumericParameterControlSpec">
+          <Name>dresserHeight</Name>
+          <Guid>b75b3494-53cf-42be-8f4b-fa792c6c178a</Guid>
+          <ToolTip />
+          <ParameterName>dresserHeight</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <TrackBarProperties>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>10</MaximumValue>
+            <ValueIncrement>1</ValueIncrement>
+          </TrackBarProperties>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Tab Group 2</Name>
+      <Guid>6832f66a-ba61-4df0-bb6a-aa121ea6f302</Guid>
+      <Items>
+        <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+          <Name>edgeStyle</Name>
+          <Guid>b6e05880-5e2d-4a3e-bdc5-133a54688717</Guid>
+          <ToolTip />
+          <ParameterName>edgeStyle</ParameterName>
+          <EditControlType>ComboBox</EditControlType>
+          <AllowCustomValues>false</AllowCustomValues>
+          <MinimumItemsToShow>2</MinimumItemsToShow>
+          <RadioGroupColumnCount>1</RadioGroupColumnCount>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+          <Name>finishStyle</Name>
+          <Guid>1beea5a0-5fc4-48d1-9ad3-f54eeb0b1c10</Guid>
+          <ToolTip />
+          <ParameterName>finishStyle</ParameterName>
+          <EditControlType>ComboBox</EditControlType>
+          <AllowCustomValues>false</AllowCustomValues>
+          <MinimumItemsToShow>2</MinimumItemsToShow>
+          <RadioGroupColumnCount>1</RadioGroupColumnCount>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+          <Name>handleStyle</Name>
+          <Guid>043969cd-1719-452a-b593-c2bc76dc025d</Guid>
+          <ToolTip />
+          <ParameterName>handleStyle</ParameterName>
+          <EditControlType>ComboBox</EditControlType>
+          <AllowCustomValues>false</AllowCustomValues>
+          <MinimumItemsToShow>2</MinimumItemsToShow>
+          <RadioGroupColumnCount>1</RadioGroupColumnCount>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="ControlTabGroupSpec">
+          <Name>Tab Group 3</Name>
+          <Guid>77a475bd-3e44-4823-b55c-c3433d23a5b2</Guid>
+          <Items />
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="ControlTabGroupSpec">
+          <Name>Tab Group 4</Name>
+          <Guid>ab635874-fdee-43e3-a434-0bb1e13152f5</Guid>
+          <Items />
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+  </Items>
+  <StyleAndSkinName>
+    <StyleName>Default</StyleName>
+  </StyleAndSkinName>
+  <AllowCustomization>true</AllowCustomization>
+  <PredefinedButtons>Done</PredefinedButtons>
+  <Modal>false</Modal>
+</FormSpecification>

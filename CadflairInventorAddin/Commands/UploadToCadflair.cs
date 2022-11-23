@@ -29,7 +29,7 @@ namespace CadflairInventorAddin.Commands
             }
         }
 
-        public static ILogicUiElement[] GetILogicFormElements(Document doc)
+        public static List<ILogicUiElement> GetILogicFormElements(Document doc)
         {
             List<ILogicUiElement> iLogicForms = new List<ILogicUiElement>();
 
@@ -64,11 +64,11 @@ namespace CadflairInventorAddin.Commands
                 iLogicForms.Add(formElement);
             }
 
-            return iLogicForms.ToArray();
+            return iLogicForms;
 
         }
 
-        private static ILogicUiElement[] RecurseILogicElements(Document doc, XElement itemsElement, XNamespace ns)
+        private static List<ILogicUiElement> RecurseILogicElements(Document doc, XElement xItems, XNamespace ns)
         {
 
             //how should I handle readonly parameters?
@@ -77,26 +77,27 @@ namespace CadflairInventorAddin.Commands
             //should I handle empty space?
             //should I handle iProperties or iLogic rules?
 
-            if (itemsElement == null) return null;
+            if (xItems == null) return null;
 
-            List<ILogicUiElement> elementList = new List<ILogicUiElement>();
+            List<ILogicUiElement> iLogicUiElementList = new List<ILogicUiElement>();
+            ILogicUiElement tabContainerElement = null;
 
-            foreach (XElement item in itemsElement.Elements())
+            foreach (XElement xItem in xItems.Elements())
             {
-                Parameter parameter = doc.GetParameter(item.Element("ParameterName")?.Value);
+                Parameter parameter = doc.GetParameter(xItem.Element("ParameterName")?.Value);
 
-                ILogicUiElement element = new ILogicUiElement()
+                ILogicUiElement iLogicUiElement = new ILogicUiElement()
                 {
                     //Guid = item.Element("Guid").Value,
-                    UiElementSpec = item.Attribute(ns + "type").Value,
-                    Name = item.Element("Name").Value,
-                    EditControlType = item.Element("EditControlType")?.Value,
-                    ReadOnly = Convert.ToBoolean(item.Element("ReadOnly")?.Value),
-                    ToolTip = item.Element("ToolTip")?.Value,
-                    EnablingParameterName = item.Element("EnablingParameterName")?.Value,
-                    TrackBarMinValue = item.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(item.Element("TrackBarProperties")?.Element("MinimumValue").Value) : (double?)null,
-                    TrackBarMaxValue = item.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(item.Element("TrackBarProperties")?.Element("MaximumValue").Value) : (double?)null,
-                    TrackBarIncrement = item.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(item.Element("TrackBarProperties")?.Element("ValueIncrement").Value) : (double?)null,
+                    UiElementSpec = xItem.Attribute(ns + "type").Value,
+                    Name = xItem.Element("Name").Value,
+                    EditControlType = xItem.Element("EditControlType")?.Value,
+                    ReadOnly = Convert.ToBoolean(xItem.Element("ReadOnly")?.Value),
+                    ToolTip = xItem.Element("ToolTip")?.Value,
+                    EnablingParameterName = xItem.Element("EnablingParameterName")?.Value,
+                    TrackBarMinValue = xItem.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(xItem.Element("TrackBarProperties")?.Element("MinimumValue").Value) : (double?)null,
+                    TrackBarMaxValue = xItem.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(xItem.Element("TrackBarProperties")?.Element("MaximumValue").Value) : (double?)null,
+                    TrackBarIncrement = xItem.Element("EditControlType")?.Value == "TrackBar" ? double.Parse(xItem.Element("TrackBarProperties")?.Element("ValueIncrement").Value) : (double?)null,
                     ParameterName = parameter?.Name,
                     ParameterUnits = parameter?.get_Units(),
                     ParameterExpression = parameter?.Expression?.Replace("\"", ""),
@@ -105,16 +106,36 @@ namespace CadflairInventorAddin.Commands
                     ParameterMaxValue = parameter?.GetMaxAttributeValue(),
                     //Base64Image = item.Element("Image")?.Element("BitmapByteArray")?.Value,
                     //Base64CaptionImage = item.Element("CaptionImage")?.Element("BitmapByteArray")?.Value,
-                    Items = RecurseILogicElements(doc, item.Element("Items"), ns)
+                    Items = RecurseILogicElements(doc, xItem.Element("Items"), ns)
                 };
 
-                elementList.Add(element);
+                if (iLogicUiElement.UiElementSpec == "ControlTabGroupSpec")
+                {
+                    if (tabContainerElement == null)
+                    {
+                        tabContainerElement = new ILogicUiElement()
+                        {
+                            UiElementSpec = "ControlTabContainerSpec",
+                            Items = new List<ILogicUiElement>()
+                        };
+
+                        iLogicUiElementList.Add(tabContainerElement);
+                    }
+
+                    tabContainerElement.Items.Add(iLogicUiElement);
+                }
+                else
+                {
+                    iLogicUiElementList.Add(iLogicUiElement);
+                }
             }
 
-            return elementList.ToArray();
+            return iLogicUiElementList;
         }
 
-        public static void SaveILogicUIElementToJson(ILogicUiElement element)
+
+
+        public static void SaveILogicUiElementToJson(ILogicUiElement element)
         {
             string jsonString = element.ToJson();
 
@@ -128,6 +149,40 @@ namespace CadflairInventorAddin.Commands
             Clipboard.SetText(jsonString);
 
             //Process.Start(folderName);
+        }
+
+        public static void SaveILogicFormSpecToXml(string formName)
+        {
+            foreach (AttributeSet set in Globals.InventorApplication.ActiveDocument.AttributeSets)
+            {
+                //ignore all attribute sets that are not iLogicUi
+                if (!set.Name.ToLower().Contains("ilogicinternalui")) continue;
+
+                //get form spec attribute
+                Inventor.Attribute formSpec = set["FormSpec"];
+
+                //convert byte array to xml string
+                byte[] bytes = (byte[])formSpec.Value;
+                string xmlString = Encoding.UTF8.GetString(bytes);
+
+                //convert xml string to xdoc for parsing
+                XDocument xDoc = XDocument.Parse(xmlString);
+                if (xDoc.Element("FormSpecification").Element("Name").Value != formName) continue;
+
+                //print results string to txt files
+                //string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+                string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+
+                string xmlFileName = System.IO.Path.Combine(folderName, formName + ".xml");
+
+                StreamWriter xmlFile = System.IO.File.CreateText(xmlFileName);
+
+                xmlFile.Write(xmlString);
+                xmlFile.Close();
+
+                return;
+                //Process.Start(folderName);
+            }
         }
 
 

@@ -1,13 +1,16 @@
 ﻿@switch (Element.UiElementSpec)
 {
-    case "ControlTabGroupSpec":
+    case "ControlTabContainerSpec":
         <MudTabs>
-            <MudTabPanel Text="@Element.Name">
-                @foreach (ILogicUiElement element in Element.Items)
-                {
-                    <ProductInput Element="@element" @key="element"></ProductInput>
-                }
-            </MudTabPanel>
+            @foreach(ILogicUiElement tabPanel in Element.Items)
+            {
+                <MudTabPanel Text="@tabPanel.Name">
+                    @foreach (ILogicUiElement element in tabPanel.Items)
+                    {
+                        <ProductInput Element="@element" @key="element"></ProductInput>
+                    }
+                </MudTabPanel>
+            }
         </MudTabs>
         break;
 

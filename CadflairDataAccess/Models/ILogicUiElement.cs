@@ -1,4 +1,6 @@
-﻿namespace CadflairDataAccess.Models
+﻿using System.Collections.Generic;
+
+namespace CadflairDataAccess.Models
 {
     public class ILogicUiElement
     {
@@ -20,6 +22,6 @@
         public double? ParameterMaxValue { get; set; }
         //public string Base64Image { get; set; }
         //public string Base64CaptionImage { get; set; }
-        public ILogicUiElement[] Items { get; set; }
+        public List<ILogicUiElement> Items { get; set; }
     }
 }
