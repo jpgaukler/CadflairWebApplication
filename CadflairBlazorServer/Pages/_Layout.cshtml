@@ -9,23 +9,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
 
-    <!-- App stylesheets -->
-    <link href="css/site.css" rel="stylesheet" />
-    <link href="CadflairBlazorServer.styles.css" rel="stylesheet" />
+    <!-- Autodesk Forge Viewer styles -->
+    <link href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" rel="stylesheet" type="text/css">
 
     <!-- MudBlazor styles -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
 
-    <!-- MudBlazor script -->
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
-
-    <!-- Autodesk Forge Viewer styles -->
-    <link href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" rel="stylesheet" type="text/css">
-
-    <!-- Autodesk Forge Viewer script -->
-    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
-    <script src="js/forge_viewer.js"></script>
+    <!-- App stylesheets -->
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="CadflairBlazorServer.styles.css" rel="stylesheet" />
 
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
@@ -44,5 +37,12 @@
     </div>
 
     <script src="_framework/blazor.server.js"></script>
+
+    <!-- Autodesk Forge Viewer script -->
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+    <script src="js/forge_viewer.js"></script>
+
+    <!-- MudBlazor script -->
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </body>
 </html>

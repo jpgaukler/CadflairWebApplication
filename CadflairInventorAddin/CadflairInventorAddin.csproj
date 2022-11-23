@@ -187,6 +187,6 @@
     </PreBuildEvent>
     <PostBuildEvent>XCopy "$(TargetPath)" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R
 XCopy "$(ProjectDir)Autodesk.CadflairAddin.Inventor.addin" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R   
-XCopy "C:\Users\Admin\source\repos\CadflairWebApplication\CadflairDataAccess\bin\Debug\netstandard2.0\CadflairDataAccess.dll" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R</PostBuildEvent>
+XCopy "C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\CadflairDataAccess\bin\Debug\netstandard2.0\CadflairDataAccess.dll" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R</PostBuildEvent>
   </PropertyGroup>
 </Project>

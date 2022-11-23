@@ -1,0 +1,239 @@
+<?xml version="1.0"?>
+<FormSpecification xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Dresser Parameters 1</Name>
+  <Guid>29b7d982-5fb3-41e1-a464-70e82e1a3fd1</Guid>
+  <Items>
+    <UiElementSpec xsi:type="NumericParameterControlSpec">
+      <Name>Height</Name>
+      <Guid>91d6702c-3400-429b-a67f-bd5351c7807a</Guid>
+      <ToolTip>Enter the height</ToolTip>
+      <ParameterName>dresserHeight</ParameterName>
+      <EditControlType>TextBox</EditControlType>
+      <TrackBarProperties>
+        <MinimumValue>1</MinimumValue>
+        <MaximumValue>10</MaximumValue>
+        <ValueIncrement>1</ValueIncrement>
+      </TrackBarProperties>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlRowSpec">
+      <Name>Row 1</Name>
+      <Guid>bbe9f650-3172-4d83-9c16-fc11dc7f203b</Guid>
+      <Items>
+        <UiElementSpec xsi:type="NumericParameterControlSpec">
+          <Name>Width</Name>
+          <Guid>ac94a756-d23b-4dc3-87b3-b756cf9c6141</Guid>
+          <ToolTip>Tooltip width.</ToolTip>
+          <ParameterName>dresserWidth</ParameterName>
+          <EditControlType>TrackBar</EditControlType>
+          <TrackBarProperties>
+            <MinimumValue>20</MinimumValue>
+            <MaximumValue>60</MaximumValue>
+            <ValueIncrement>1</ValueIncrement>
+          </TrackBarProperties>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="NumericParameterControlSpec">
+          <Name>Depth</Name>
+          <Guid>dda499eb-1ab4-49ae-a40b-0b6278d3f468</Guid>
+          <ToolTip>Enter the depth</ToolTip>
+          <ParameterName>dresserDepth</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <TrackBarProperties>
+            <MinimumValue>1</MinimumValue>
+            <MaximumValue>10</MaximumValue>
+            <ValueIncrement>1</ValueIncrement>
+          </TrackBarProperties>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="BooleanParameterControlSpec">
+          <Name>testbool</Name>
+          <Guid>abcd808d-9538-477e-ab54-da41b3821de1</Guid>
+          <ToolTip />
+          <ParameterName>testbool</ParameterName>
+          <EditControlType>CheckBox</EditControlType>
+        </UiElementSpec>
+      </Items>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="NumericParameterControlSpec">
+      <Name>Leg Length</Name>
+      <Guid>1acdceb4-d5c3-43ad-9818-dd0553f649ee</Guid>
+      <ToolTip>Choose the leg length.</ToolTip>
+      <ParameterName>legExposure</ParameterName>
+      <EditControlType>TextBox</EditControlType>
+      <TrackBarProperties>
+        <MinimumValue>1</MinimumValue>
+        <MaximumValue>10</MaximumValue>
+        <ValueIncrement>1</ValueIncrement>
+      </TrackBarProperties>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
+      <Name>Rows</Name>
+      <Guid>51be999c-2be9-4643-b4df-1c92782c83db</Guid>
+      <ToolTip>Number of drawers for dresser.</ToolTip>
+      <ParameterName>drawerRows</ParameterName>
+      <EditControlType>RadioGroup</EditControlType>
+      <AllowCustomValues>false</AllowCustomValues>
+      <MinimumItemsToShow>2</MinimumItemsToShow>
+      <RadioGroupColumnCount>1</RadioGroupColumnCount>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
+      <Name>drawerRows</Name>
+      <Guid>7217996f-062c-4f1a-bf89-55b23fcd5daa</Guid>
+      <ToolTip />
+      <ParameterName>drawerRows</ParameterName>
+      <EditControlType>ListBox</EditControlType>
+      <AllowCustomValues>false</AllowCustomValues>
+      <MinimumItemsToShow>2</MinimumItemsToShow>
+      <RadioGroupColumnCount>1</RadioGroupColumnCount>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="MultiValueNumericParameterControlSpec">
+      <Name>Columns</Name>
+      <Guid>7fd34523-f368-48b4-86a3-e7235c75e174</Guid>
+      <ToolTip>Number of drawers for dresser.</ToolTip>
+      <ParameterName>drawerColumns</ParameterName>
+      <EditControlType>ComboBox</EditControlType>
+      <AllowCustomValues>false</AllowCustomValues>
+      <MinimumItemsToShow>2</MinimumItemsToShow>
+      <RadioGroupColumnCount>1</RadioGroupColumnCount>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="NumericParameterControlSpec">
+      <Name>unitLessNumeric</Name>
+      <Guid>6f9b6f12-30f3-4ee0-8630-780c23f2afd8</Guid>
+      <ToolTip />
+      <ParameterName>unitLessNumeric</ParameterName>
+      <EditControlType>TrackBar</EditControlType>
+      <TrackBarProperties>
+        <MinimumValue>1</MinimumValue>
+        <MaximumValue>10</MaximumValue>
+        <ValueIncrement>1</ValueIncrement>
+      </TrackBarProperties>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+      <Name>Edge Style</Name>
+      <Guid>3b2105fc-4bee-4173-945a-0be78b9cabb8</Guid>
+      <ToolTip>Select edge style.</ToolTip>
+      <ParameterName>edgeStyle</ParameterName>
+      <EditControlType>RadioGroup</EditControlType>
+      <AllowCustomValues>false</AllowCustomValues>
+      <MinimumItemsToShow>2</MinimumItemsToShow>
+      <RadioGroupColumnCount>1</RadioGroupColumnCount>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+      <Name>Finish</Name>
+      <Guid>54bf114c-36e8-4518-a384-d2a392187dad</Guid>
+      <ToolTip />
+      <ParameterName>finishStyle</ParameterName>
+      <EditControlType>ComboBox</EditControlType>
+      <AllowCustomValues>false</AllowCustomValues>
+      <MinimumItemsToShow>2</MinimumItemsToShow>
+      <RadioGroupColumnCount>1</RadioGroupColumnCount>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+      <Name>Handle Type</Name>
+      <Guid>537d793d-c34a-4886-8a11-1d96316b38f3</Guid>
+      <ToolTip>List tooltip</ToolTip>
+      <ParameterName>handleStyle</ParameterName>
+      <EditControlType>ListBox</EditControlType>
+      <AllowCustomValues>false</AllowCustomValues>
+      <MinimumItemsToShow>2</MinimumItemsToShow>
+      <RadioGroupColumnCount>1</RadioGroupColumnCount>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Tab Group 1</Name>
+      <Guid>0498c87f-8c94-4a64-8dc9-8ce208af4ebb</Guid>
+      <Items>
+        <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+          <Name>edgeStyle</Name>
+          <Guid>2ed20f17-b875-482a-b616-8fe2a85666cb</Guid>
+          <ToolTip />
+          <ParameterName>edgeStyle</ParameterName>
+          <EditControlType>ComboBox</EditControlType>
+          <AllowCustomValues>false</AllowCustomValues>
+          <MinimumItemsToShow>2</MinimumItemsToShow>
+          <RadioGroupColumnCount>1</RadioGroupColumnCount>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+          <Name>finishStyle</Name>
+          <Guid>319d12cc-49d0-4419-a2ba-3ed314103046</Guid>
+          <ToolTip />
+          <ParameterName>finishStyle</ParameterName>
+          <EditControlType>ComboBox</EditControlType>
+          <AllowCustomValues>false</AllowCustomValues>
+          <MinimumItemsToShow>2</MinimumItemsToShow>
+          <RadioGroupColumnCount>1</RadioGroupColumnCount>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+          <Name>handleStyle</Name>
+          <Guid>91a869b9-5c76-4e2e-b0cd-73ad1c5f640d</Guid>
+          <ToolTip />
+          <ParameterName>handleStyle</ParameterName>
+          <EditControlType>ComboBox</EditControlType>
+          <AllowCustomValues>false</AllowCustomValues>
+          <MinimumItemsToShow>2</MinimumItemsToShow>
+          <RadioGroupColumnCount>1</RadioGroupColumnCount>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Tab Group 2</Name>
+      <Guid>9e8976c9-45bd-46e3-8e96-99f295c5962b</Guid>
+      <Items>
+        <UiElementSpec xsi:type="ControlGroupSpec">
+          <Name>Group 1</Name>
+          <Guid>ae2339d3-036c-40f3-b1dc-14914ba43b91</Guid>
+          <Items>
+            <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+              <Name>edgeStyle</Name>
+              <Guid>02940003-5437-4bdb-8dc1-380d6a6e89e8</Guid>
+              <ToolTip />
+              <ParameterName>edgeStyle</ParameterName>
+              <EditControlType>ComboBox</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
+              <Name>finishStyle</Name>
+              <Guid>7c9e4562-d499-498f-a50c-260e00f2e30a</Guid>
+              <ToolTip />
+              <ParameterName>finishStyle</ParameterName>
+              <EditControlType>ComboBox</EditControlType>
+              <AllowCustomValues>false</AllowCustomValues>
+              <MinimumItemsToShow>2</MinimumItemsToShow>
+              <RadioGroupColumnCount>1</RadioGroupColumnCount>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="TextParameterControlSpec">
+              <Name>testText</Name>
+              <Guid>c813c1e0-4899-4bb4-82d3-4d4dd084caf6</Guid>
+              <ToolTip />
+              <ParameterName>testText</ParameterName>
+              <EditControlType>TextBox</EditControlType>
+              <MinimumLinesToShow>2</MinimumLinesToShow>
+            </UiElementSpec>
+            <UiElementSpec xsi:type="BooleanParameterControlSpec">
+              <Name>checkBoxTest</Name>
+              <Guid>f575481f-107a-45f7-a264-202d6cdf16f5</Guid>
+              <ToolTip />
+              <ParameterName>checkBoxTest</ParameterName>
+              <EditControlType>TrueOrFalse</EditControlType>
+            </UiElementSpec>
+          </Items>
+          <CaptionImage>
+            <BitmapByteArray />
+          </CaptionImage>
+          <BordersVisible>true</BordersVisible>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+  </Items>
+  <StyleAndSkinName>
+    <StyleName>Default</StyleName>
+  </StyleAndSkinName>
+  <AllowCustomization>true</AllowCustomization>
+  <PredefinedButtons>Done</PredefinedButtons>
+  <Modal>false</Modal>
+</FormSpecification>

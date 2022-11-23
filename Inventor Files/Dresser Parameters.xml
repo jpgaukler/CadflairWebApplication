@@ -6,24 +6,24 @@
     <UiElementSpec xsi:type="ControlGroupSpec">
       <Name>Size</Name>
       <Guid>e2fa3974-89d4-40f4-bf48-53dd44175fb3</Guid>
+      <ToolTip>Group tooltip</ToolTip>
       <Items>
         <UiElementSpec xsi:type="NumericParameterControlSpec">
           <Name>Width</Name>
           <Guid>ac94a756-d23b-4dc3-87b3-b756cf9c6141</Guid>
           <ToolTip>Tooltip width.</ToolTip>
-          <ReadOnly>true</ReadOnly>
           <ParameterName>dresserWidth</ParameterName>
-          <EditControlType>TextBox</EditControlType>
+          <EditControlType>TrackBar</EditControlType>
           <TrackBarProperties>
-            <MinimumValue>1</MinimumValue>
-            <MaximumValue>10</MaximumValue>
+            <MinimumValue>20</MinimumValue>
+            <MaximumValue>60</MaximumValue>
             <ValueIncrement>1</ValueIncrement>
           </TrackBarProperties>
         </UiElementSpec>
         <UiElementSpec xsi:type="NumericParameterControlSpec">
           <Name>Height</Name>
           <Guid>91d6702c-3400-429b-a67f-bd5351c7807a</Guid>
-          <ToolTip />
+          <ToolTip>Enter the height</ToolTip>
           <ParameterName>dresserHeight</ParameterName>
           <EditControlType>TextBox</EditControlType>
           <TrackBarProperties>
@@ -35,7 +35,7 @@
         <UiElementSpec xsi:type="NumericParameterControlSpec">
           <Name>Depth</Name>
           <Guid>dda499eb-1ab4-49ae-a40b-0b6278d3f468</Guid>
-          <ToolTip />
+          <ToolTip>Enter the depth</ToolTip>
           <ParameterName>dresserDepth</ParameterName>
           <EditControlType>TextBox</EditControlType>
           <TrackBarProperties>
@@ -43,6 +43,14 @@
             <MaximumValue>10</MaximumValue>
             <ValueIncrement>1</ValueIncrement>
           </TrackBarProperties>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="TextParameterControlSpec">
+          <Name>testText</Name>
+          <Guid>41b044c0-658b-4087-beb3-1c67555e6f58</Guid>
+          <ToolTip />
+          <ParameterName>testText</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <MinimumLinesToShow>2</MinimumLinesToShow>
         </UiElementSpec>
       </Items>
       <CaptionImage>
@@ -105,6 +113,7 @@
     <UiElementSpec xsi:type="ControlGroupSpec">
       <Name>Options</Name>
       <Guid>fe6e10c5-e448-4b34-8cf8-2c9fc6888950</Guid>
+      <ToolTip>Options group</ToolTip>
       <Items>
         <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
           <Name>Edge Style</Name>
@@ -129,9 +138,9 @@
         <UiElementSpec xsi:type="MultiValueTextParameterControlSpec">
           <Name>Handle Type</Name>
           <Guid>537d793d-c34a-4886-8a11-1d96316b38f3</Guid>
-          <ToolTip />
+          <ToolTip>List tooltip</ToolTip>
           <ParameterName>handleStyle</ParameterName>
-          <EditControlType>ComboBox</EditControlType>
+          <EditControlType>ListBox</EditControlType>
           <AllowCustomValues>false</AllowCustomValues>
           <MinimumItemsToShow>2</MinimumItemsToShow>
           <RadioGroupColumnCount>1</RadioGroupColumnCount>
@@ -141,6 +150,48 @@
         <BitmapByteArray />
       </CaptionImage>
       <BordersVisible>true</BordersVisible>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Tab Group 1</Name>
+      <Guid>40f162b8-1c4f-43ee-a7d4-1512fae9c743</Guid>
+      <ToolTip>Tab Tooltip 1</ToolTip>
+      <Items>
+        <UiElementSpec xsi:type="BooleanParameterControlSpec">
+          <Name>testbool</Name>
+          <Guid>a50cf45e-6b86-42ff-b408-32e52451bc85</Guid>
+          <ToolTip>Booltip</ToolTip>
+          <ParameterName>testbool</ParameterName>
+          <EditControlType>TrueOrFalse</EditControlType>
+        </UiElementSpec>
+        <UiElementSpec xsi:type="BooleanParameterControlSpec">
+          <Name>checkBoxTest</Name>
+          <Guid>f722da13-e95c-4827-9add-02fd1c9e4185</Guid>
+          <ToolTip />
+          <ParameterName>checkBoxTest</ParameterName>
+          <EditControlType>CheckBox</EditControlType>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
+    </UiElementSpec>
+    <UiElementSpec xsi:type="ControlTabGroupSpec">
+      <Name>Tab Group 3</Name>
+      <Guid>59f6ca1d-251d-4e89-9f83-1a469701a354</Guid>
+      <ToolTip>TAb group 3</ToolTip>
+      <Items>
+        <UiElementSpec xsi:type="TextParameterControlSpec">
+          <Name>testText</Name>
+          <Guid>422cd208-b65a-40fd-9495-52299d9831ef</Guid>
+          <ToolTip>text 1</ToolTip>
+          <ParameterName>testText</ParameterName>
+          <EditControlType>TextBox</EditControlType>
+          <MinimumLinesToShow>2</MinimumLinesToShow>
+        </UiElementSpec>
+      </Items>
+      <CaptionImage>
+        <BitmapByteArray />
+      </CaptionImage>
     </UiElementSpec>
   </Items>
   <StyleAndSkinName>

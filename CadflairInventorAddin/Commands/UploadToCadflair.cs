@@ -139,8 +139,13 @@ namespace CadflairInventorAddin.Commands
         {
             string jsonString = element.ToJson();
 
-            //string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
-            string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+            string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+
+            if (!Directory.Exists(folderName))
+            {
+                folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+            }
+
             string jsonFileName = System.IO.Path.Combine(folderName, element.Name + ".json");
             StreamWriter jsonFile = System.IO.File.CreateText(jsonFileName);
 
@@ -170,8 +175,12 @@ namespace CadflairInventorAddin.Commands
                 if (xDoc.Element("FormSpecification").Element("Name").Value != formName) continue;
 
                 //print results string to txt files
-                //string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
-                string folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+                string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+
+                if (!Directory.Exists(folderName))
+                {
+                    folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
+                }
 
                 string xmlFileName = System.IO.Path.Combine(folderName, formName + ".xml");
 
