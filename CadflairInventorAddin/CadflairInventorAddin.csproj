@@ -116,13 +116,13 @@
     </Compile>
     <Compile Include="Commands\ConvertiLogicFormSpec.cs" />
     <Compile Include="Commands\DrawingAttributesCommand.cs" />
-    <Compile Include="Commands\UploadToCadflair.cs" />
-    <Compile Include="Commands\UploadToCadflairDialog.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Commands\UploadToCadflair\UploadToCadflairControl.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Commands\UploadToCadflairDialog.Designer.cs">
-      <DependentUpon>UploadToCadflairDialog.cs</DependentUpon>
+    <Compile Include="Commands\UploadToCadflair\UploadToCadflairControl.Designer.cs">
+      <DependentUpon>UploadToCadflairControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Commands\UploadToCadflair\UploadToCadflair.cs" />
     <Compile Include="Utilities\ExtensionMethods.cs" />
     <Compile Include="Utilities\Globals.cs" />
     <Compile Include="Utilities\PictureDispConverter.cs" />
@@ -143,12 +143,12 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Commands\UploadToCadflair\UploadToCadflairControl.resx">
+      <DependentUpon>UploadToCadflairControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Commands\UploadToCadflairDialog.resx">
-      <DependentUpon>UploadToCadflairDialog.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

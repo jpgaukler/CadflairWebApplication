@@ -119,6 +119,15 @@ namespace CadflairInventorAddin.Utilities
         }
 
 
+        public static Inventor.Color ToInventorColor(this System.Drawing.Color color)
+        {
+            return Globals.InventorApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
+        }
+
+        public static System.Drawing.Color ToSystemColor(this Inventor.Color color)
+        {
+            return System.Drawing.Color.FromArgb(color.Red, color.Green, color.Blue);
+        }
 
 
 

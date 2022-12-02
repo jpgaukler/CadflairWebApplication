@@ -15,19 +15,55 @@ using System.Xml.Linq;
 
 namespace CadflairInventorAddin.Commands
 {
-    internal class UploadToCadflair
+    internal static class UploadToCadflair
     {
+        private static UploadToCadflairControl _uploadControl;
+        public static DockableWindow UploadWindow { get; set; }
+
         public static void UploadToCadflairButton_OnExecute(NameValueMap Context)
         {
             try
             {
-                UploadToCadflairDialog commandDialog = new UploadToCadflairDialog(Globals.InventorApplication.ActiveDocument);
-                commandDialog.ShowDialog();
+                if (_uploadControl != null) return;
+
+                _uploadControl = new UploadToCadflairControl(Globals.InventorApplication.ActiveDocument);
+                UploadWindow.AddChild(_uploadControl.Handle);
+                UploadWindow.Visible = true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        public static void UploadWindow_OnHide(DockableWindow DockableWindow, EventTimingEnum BeforeOrAfter, NameValueMap Context, out HandlingCodeEnum HandlingCode)
+        {
+            HandlingCode = HandlingCodeEnum.kEventNotHandled;
+
+            if (DockableWindow.InternalName != UploadWindow.InternalName) return;
+            if (BeforeOrAfter == EventTimingEnum.kAfter) return;
+
+            UploadWindow.Clear();
+
+            if(UploadWindow != null)
+            {
+                _uploadControl.Dispose();
+                _uploadControl = null;
+            }
+
+            HandlingCode = HandlingCodeEnum.kEventHandled;
+        }
+
+        public static void UploadWindow_OnHelp(DockableWindow DockableWindow, NameValueMap Context, out HandlingCodeEnum HandlingCode)
+        {
+            HandlingCode = HandlingCodeEnum.kEventNotHandled;
+
+            if (DockableWindow.InternalName != UploadWindow.InternalName) return;
+
+            // ADD A LINK TO CADFLAIR HELP PAGE HERE
+            Process.Start("http://www.cadflair.com/");
+
+            HandlingCode = HandlingCodeEnum.kEventHandled;
         }
 
         public static List<ILogicUiElement> GetILogicFormElements(Document doc)

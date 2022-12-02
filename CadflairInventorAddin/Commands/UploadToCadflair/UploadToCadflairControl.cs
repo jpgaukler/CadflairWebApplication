@@ -3,19 +3,28 @@ using CadflairInventorAddin.Utilities;
 using Inventor;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CadflairInventorAddin.Commands
 {
-    public partial class UploadToCadflairDialog : Form
+    public partial class UploadToCadflairControl : UserControl
     {
         private Document _doc;
         private List<ILogicUiElement> _iLogicForms;
 
-        public UploadToCadflairDialog(Document doc)
+        public UploadToCadflairControl(Document doc)
         {
             InitializeComponent();
+
+            BackColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemColor();
+            ForeColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemColor();
+            DataGridViewParameters.BackgroundColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("ApplicationFrame_BackgroundColor").ToSystemColor();
 
             _doc = doc;
             _iLogicForms = UploadToCadflair.GetILogicFormElements(doc);
