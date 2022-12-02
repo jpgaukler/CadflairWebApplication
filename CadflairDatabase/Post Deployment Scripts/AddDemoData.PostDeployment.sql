@@ -21,7 +21,7 @@ if not exists (select * from dbo.[AccountType] where [AccountType].[Name] = 'Bas
 
 
 --add user roles
-if not exists (select * from dbo.[UserRole] where [UserRole].[Name] = 'Admin')
+if not exists (select * from dbo.[UserRole] where [UserRole].[Name] = 'Administrator')
 	begin
 		insert into dbo.[UserRole]([Name] )
 		values
@@ -49,24 +49,22 @@ if not exists (select * from dbo.[User] where [User].[EmailAddress] = 'jpgaukler
 	end
 
 
-----add demo account
---if not exists (select * from dbo.[Account] where [Account].CompanyName = 'Demo Account')
---	begin
---		insert into dbo.Account(CompanyName, SubDirectory, [CreatedById], [OwnerId], [AccountTypeId], SubscriptionExpiresOn)
---		values
---			('Demo Account', 'demo', 1, 1, 1, dateadd(day,30,getdate())),
---			('Jays Dressers', 'jaysdressers', 2, 2, 1, dateadd(day,365,getdate()));
---	end
+--add demo account
+if not exists (select * from dbo.[Account] where [Account].CompanyName = 'Demo Account')
+	begin
+		insert into dbo.Account(CompanyName, SubDirectory, [CreatedById], [OwnerId], [AccountTypeId], SubscriptionExpiresOn)
+		values
+			('Demo Account', 'demo', 1, 1, 1, dateadd(day,30,getdate()))
+	end
 
 
-----add demo product family
---if not exists (select * from dbo.[ProductFamily] where [ProductFamily].[DisplayName] = 'Test')
---	begin
---		insert into dbo.ProductFamily(DisplayName, AccountId, [CreatedById])
---		values
---			 ('Test', 1, 1),
---			 ('The Hemnes Collection', 2, 2);
---	end
+--add demo product family
+if not exists (select * from dbo.[ProductFamily] where [ProductFamily].[DisplayName] = 'Test Family')
+	begin
+		insert into dbo.ProductFamily(DisplayName, AccountId, [CreatedById])
+		values
+			 ('Test Family', 1, 1)
+	end
 
 
 

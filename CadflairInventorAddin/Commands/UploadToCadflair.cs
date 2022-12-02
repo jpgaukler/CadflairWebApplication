@@ -9,6 +9,7 @@ using System.IO;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -135,7 +136,7 @@ namespace CadflairInventorAddin.Commands
 
 
 
-        public static void SaveILogicUiElementToJson(ILogicUiElement element)
+        public static string SaveILogicUiElementToJson(ILogicUiElement element)
         {
             string jsonString = element.ToJson();
 
@@ -152,6 +153,8 @@ namespace CadflairInventorAddin.Commands
             jsonFile.Write(jsonString);
             jsonFile.Close();
             Clipboard.SetText(jsonString);
+
+            return jsonString;
 
             //Process.Start(folderName);
         }
@@ -264,7 +267,7 @@ namespace CadflairInventorAddin.Commands
             }
         }
 
-        public static async void UploadModelToForge(string fullFileName, string bucketKey, string objectName)
+        public static async Task UploadModelToForge(string displayName, string parameterJson, string zipFileName)
         {
             try
             {
@@ -272,33 +275,31 @@ namespace CadflairInventorAddin.Commands
                 MultipartFormDataContent content = new MultipartFormDataContent();
 
                 //add bucket key content to the request
-                StringContent bucketKeyContent = new StringContent(bucketKey);
-                bucketKeyContent.Headers.Add("Content-Disposition", "form-data; name=\"bucketKey\"");
-                content.Add(bucketKeyContent, "bucketKey");
+                StringContent displayNameContent = new StringContent(displayName);
+                displayNameContent.Headers.Add("Content-Disposition", "form-data; name=\"DisplayName\"");
+                content.Add(displayNameContent, "DisplayName");
 
                 //add bucket key content to the request
-                StringContent objectNameContent = new StringContent(objectName);
-                objectNameContent.Headers.Add("Content-Disposition", "form-data; name=\"objectName\"");
-                content.Add(objectNameContent, "objectName");
+                StringContent parameterJsonContent = new StringContent(parameterJson);
+                parameterJsonContent.Headers.Add("Content-Disposition", "form-data; name=\"ParameterJson\"");
+                content.Add(parameterJsonContent, "ParameterJson");
 
                 //add file data to the form as a stream content
-                //byte[] bytes = System.IO.File.ReadAllBytes(fullFileName);
-                //MemoryStream stream = new MemoryStream(bytes);
-                FileStream stream = System.IO.File.Open(fullFileName, FileMode.Open);
+                //FileStream stream = System.IO.File.Open(fullFileName, FileMode.Open);
 
-                StreamContent streamContent = new StreamContent(stream);
-                streamContent.Headers.Add("Content-Type", "application/octet-stream");
-                streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"file\"; filename=\"{System.IO.Path.GetFileName(fullFileName)}\"");
-                content.Add(streamContent, "file", System.IO.Path.GetFileName(fullFileName));
+                //StreamContent streamContent = new StreamContent(stream);
+                //streamContent.Headers.Add("Content-Type", "application/octet-stream");
+                //streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
+                //content.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
 
                 HttpRequestMessage request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Post,
-                    RequestUri = new Uri($"http://www.cadflair.com/api/forge/oss/objects/upload"),
+                    RequestUri = new Uri($"https://localhost:7269/api/forge/product/upload"),
                     Content = content
                 };
 
-                //string reqTxt = await request.Content.ReadAsStringAsync(); //this will fail if the memory stream is closed before this line is called
+                string reqTxt = await request.Content.ReadAsStringAsync(); //this will fail if the memory stream is closed before this line is called
 
                 HttpResponseMessage response = await client.SendAsync(request);
 
@@ -308,9 +309,9 @@ namespace CadflairInventorAddin.Commands
                 StreamWriter txt = System.IO.File.CreateText(fileName);
                 string responseMessage = await response.Content.ReadAsStringAsync();
 
-                //txt.WriteLine("Request content:");
-                //txt.Write(reqTxt);
-                //txt.WriteLine();
+                txt.WriteLine("Request content:");
+                txt.Write(reqTxt);
+                txt.WriteLine();
 
                 txt.WriteLine("Response content:");
                 txt.Write(responseMessage);
@@ -319,10 +320,10 @@ namespace CadflairInventorAddin.Commands
 
                 //clean up
                 txt.Dispose();
-                stream.Dispose();
-                bucketKeyContent.Dispose();
-                objectNameContent.Dispose();
-                streamContent.Dispose();
+                //stream.Dispose();
+                displayNameContent.Dispose();
+                parameterJsonContent.Dispose();
+                //streamContent.Dispose();
                 content.Dispose();
                 response.Dispose();
                 request.Dispose();

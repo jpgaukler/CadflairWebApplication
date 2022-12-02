@@ -12,20 +12,26 @@
     //    }
     //}
 
-    private async Task ViewDocument(string forgeObjectId) 
-    {
-        //get public token for viewables
-        var token = await Forge.OAuth.GetPublicAsync();
+    //private async Task ViewDocument(string forgeObjectId) 
+    //{
+    //    //get public token for viewables
+    //    var token = await Forge.OAuth.GetPublicAsync();
 
-        //define input parameters as JSON
-        var parameters = new
-        {
-            Token = token.access_token,
-            Urn = Utils.Base64Encode(forgeObjectId)
-        };
+    //    //define input parameters as JSON
+    //    var parameters = new
+    //    {
+    //        Token = token.access_token,
+    //        Urn = Base64Encode(forgeObjectId)
+    //    };
 
-        //invoke the viewer
-        await JS.InvokeVoidAsync("launchViewer", parameters);
-    }
+    //    //invoke the viewer
+    //    await JS.InvokeVoidAsync("launchViewer", parameters);
+    //}
+
+    //internal static string Base64Encode(string plainText)
+    //{
+    //    var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+    //    return System.Convert.ToBase64String(plainTextBytes);
+    //}
 
 }

@@ -51,7 +51,7 @@ namespace CadflairInventorAddin.Commands
             }
         }
 
-        private void ButtonUpload_Click(object sender, EventArgs e)
+        private async void ButtonUpload_Click(object sender, EventArgs e)
         {
 
             if (string.IsNullOrWhiteSpace(TextBoxBucketKey.Text))
@@ -66,18 +66,7 @@ namespace CadflairInventorAddin.Commands
                 return;
             }
 
-            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
-            UploadToCadflair.UploadModelToForge(zipFileName, TextBoxBucketKey.Text, $"{TextBoxObjectName.Text}.zip");
-
-            System.IO.File.Delete(zipFileName);
-
-            //Process.Start(zipFileName);
-            //MessageBox.Show(zipFileName, "Success");
-
-        }
-
-        private void ButtonSaveAttributes_Click(object sender, EventArgs e)
-        {
+            // Save limits for numeric text box parameters as attributes
             foreach(DataGridViewRow row in DataGridViewParameters.Rows)
             {
                 ILogicUiElement element = (ILogicUiElement)row.Cells[ILogicUIElementColumn.Index].Value;
@@ -92,9 +81,19 @@ namespace CadflairInventorAddin.Commands
                 }
             }
 
+            // Get parameters in form of json
             ILogicUiElement form = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
-            UploadToCadflair.SaveILogicUiElementToJson(form);
+            string parametersJson = UploadToCadflair.SaveILogicUiElementToJson(form);
             UploadToCadflair.SaveILogicFormSpecToXml(form.Name);
+
+            // Upload to Cadflair
+            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
+            await UploadToCadflair.UploadModelToForge(zipFileName, TextBoxBucketKey.Text, parametersJson);
+
+            System.IO.File.Delete(zipFileName);
+
+            //Process.Start(zipFileName);
+            //MessageBox.Show(zipFileName, "Success");
         }
     }
 }

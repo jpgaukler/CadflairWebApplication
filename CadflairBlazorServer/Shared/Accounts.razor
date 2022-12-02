@@ -1,4 +1,4 @@
-﻿@inject AccountService _accountService
+﻿@inject DataServicesManager _dataServicesManager
 
 <h3>Accounts</h3>
 
@@ -44,7 +44,7 @@
     protected override async Task OnInitializedAsync()
     {
         //initialize form data
-        _accountTypes = await _accountService.GetAccountTypes();
+        _accountTypes = await _dataServicesManager.AccountService.GetAccountTypes();
 
         //initialize grid
         await RefreshDataGrid();
@@ -52,7 +52,7 @@
 
     private async Task RefreshDataGrid()
     {
-        _accounts = await _accountService.GetAccounts();
+        _accounts = await _dataServicesManager.AccountService.GetAccounts();
     }
 
     private async Task AddAccount()
@@ -67,13 +67,13 @@
             SubscriptionExpiresOn = DateTime.Now,
         };
 
-        await _accountService.CreateAccount(newAccount);
+        await _dataServicesManager.AccountService.CreateAccount(newAccount);
         await RefreshDataGrid();
     }
 
     private async Task GetAccount()
     {
-        var acc = await _accountService.GetAccountById(1);
+        var acc = await _dataServicesManager.AccountService.GetAccountById(1);
         _companyNameValue = acc.CompanyName;
     }
 

@@ -1,7 +1,10 @@
-﻿@page "/login"
+﻿@using CadflairBlazorServer.Authentication
+@using CadflairBlazorServer.FormModels
+
+@page "/login"
 @inject NavigationManager _navigationManager
 @inject AuthenticationStateProvider _authStateProvider
-@inject UserService _userService
+@inject DataServicesManager _dataServicesManager
 @inject IJSRuntime _js
 
 <h3>Login</h3>
@@ -59,7 +62,7 @@
 
     private async Task Authenticate()
     {
-        User user = await _userService.GetUserByEmailAddress(_model.EmailAddress);
+        User user = await _dataServicesManager.UserService.GetUserByEmailAddress(_model.EmailAddress);
 
         PasswordHasher<User> hasher = new();
 
@@ -69,7 +72,7 @@
             return;
         }
 
-        UserRole userRole = await _userService.GetUserRoleById(user.UserRoleId);
+        UserRole userRole = await _dataServicesManager.UserService.GetUserRoleById(user.UserRoleId);
 
         UserSession userSession = new()
             {

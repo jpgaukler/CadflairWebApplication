@@ -11,13 +11,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autodesk.Forge" Version="1.9.7" />
-    <PackageReference Include="Autodesk.Forge.DesignAutomation" Version="5.1.0" />
     <PackageReference Include="MudBlazor" Version="6.0.18" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
+    <ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4js_4form_x0020_1_1json__JsonSchema="https://docs.strmprivacy.io/jsonschema/BatchJob.json" /></VisualStudio></ProjectExtensions>

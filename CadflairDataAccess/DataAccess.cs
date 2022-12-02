@@ -10,20 +10,19 @@ using System.Threading.Tasks;
 
 namespace CadflairDataAccess
 {
-    public class DataAccess : IDataAccess
+    public class DataAccess
     {
-        private readonly IConfiguration _config;
 
-        public string ConnectionStringName { get; set; } = "Development";
+        private readonly string _connectionString;
 
-        public DataAccess(IConfiguration configuration)
+        public DataAccess(string connectionString)
         {
-            _config = configuration;
+            _connectionString = connectionString;
         }
 
         public async Task<List<T>> LoadDataAsync<T, U>(string sql, U parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.GetConnectionString(ConnectionStringName)))
+            using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 var rows = await connection.QueryAsync<T>(sql, parameters);
                 return rows.ToList();
@@ -32,7 +31,7 @@ namespace CadflairDataAccess
 
         public async Task<T> LoadSingleAsync<T, U>(string sql, U parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.GetConnectionString(ConnectionStringName)))
+            using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 var row = await connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
                 return row;
@@ -41,7 +40,7 @@ namespace CadflairDataAccess
 
         public async Task SaveDataAsync<T>(string sql, T parameters)
         {
-            using (IDbConnection connection = new SqlConnection(_config.GetConnectionString(ConnectionStringName)))
+            using (IDbConnection connection = new SqlConnection(_connectionString))
             {
                 await connection.ExecuteAsync(sql, parameters);
             }

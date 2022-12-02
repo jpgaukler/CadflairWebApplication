@@ -1,9 +1,11 @@
-﻿using Autodesk.Forge.Model;
+﻿using Autodesk.Forge.Core;
+using Autodesk.Forge.Model;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace CadflairBlazorServer
+namespace CadflairForgeAccess
 {
     internal static class Utils
     {
@@ -11,9 +13,10 @@ namespace CadflairBlazorServer
         /// <summary>
         /// Reads appsettings from web.config
         /// </summary>
-        internal static string? GetAppSetting(string settingKey)
+        internal static string GetAppSetting(string settingKey)
         {
-            return Environment.GetEnvironmentVariable(settingKey)?.Trim();
+            string? appSettingValue = Environment.GetEnvironmentVariable(settingKey)?.Trim();
+            return appSettingValue ?? string.Empty;
         }
 
         /// <summary>

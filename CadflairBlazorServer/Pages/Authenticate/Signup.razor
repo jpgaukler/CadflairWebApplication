@@ -1,6 +1,9 @@
-﻿@page "/signup"
+﻿@using CadflairBlazorServer.Authentication
+@using CadflairBlazorServer.FormModels
+
+@page "/signup"
 @inject NavigationManager _navigationManager
-@inject UserService _userService
+@inject DataServicesManager _dataServicesManager
 
 <h3>Register</h3>
 
@@ -82,7 +85,7 @@
         PasswordHasher<User> hasher = new();
         string passwordHash = hasher.HashPassword(new User(), _model.ConfirmPassword);
 
-        UserRole userRole = await _userService.GetUserRoleByName(_model.UserRoleName);
+        UserRole userRole = await _dataServicesManager.UserService.GetUserRoleByName(_model.UserRoleName);
 
         User newUser = new()
             {
@@ -93,7 +96,7 @@
                 PasswordHash = passwordHash
             };
 
-        await _userService.CreateUser(newUser);
+        await _dataServicesManager.UserService.CreateUser(newUser);
 
         _success = true;
         StateHasChanged();

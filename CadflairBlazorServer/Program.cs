@@ -1,6 +1,6 @@
 using CadflairBlazorServer.Authentication;
 using CadflairDataAccess;
-using CadflairDataAccess.Services;
+using CadflairForgeAccess;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -9,20 +9,21 @@ using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddControllers();
 builder.Services.AddMudServices();
 
 // Authentication services
 builder.Services.AddScoped<AuthenticationStateProvider, CadflairAuthenticationStateProvider>();
 builder.Services.AddScoped<ProtectedSessionStorage>();
 
-// Data Access services
-builder.Services.AddSingleton<DataAccess>();
-builder.Services.AddSingleton<AccountService>();
-builder.Services.AddSingleton<UserService>();
+// Cadflair data access services
+builder.Services.AddSingleton<DataServicesManager>();
+
+// Forge services
+builder.Services.AddSingleton<ForgeServicesManager>(x => new ForgeServicesManager(Environment.GetEnvironmentVariable("FORGE_CLIENT_ID"), Environment.GetEnvironmentVariable("FORGE_CLIENT_SECRET")));
 
 var app = builder.Build();
 
@@ -44,5 +45,6 @@ app.UseAuthorization();
 //configure map methods
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+app.MapControllers();
 
 app.Run();
