@@ -81,6 +81,9 @@
   <PropertyGroup>
     <AssemblyName>CadflairInventorAddin</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="autodesk.inventor.interop, Version=27.0.0.0, Culture=neutral, PublicKeyToken=d84147f8b4276564, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -185,8 +188,8 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>XCopy "$(TargetPath)" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R
-XCopy "$(ProjectDir)Autodesk.CadflairAddin.Inventor.addin" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R   
-XCopy "C:\Users\Admin\source\repos\CadflairWebApplication\CadflairDataAccess\bin\Debug\netstandard2.0\CadflairDataAccess.dll" "%25AllUsersProfile%25\Autodesk\Inventor 2023\Addins\$(TargetName)\" /Y /R</PostBuildEvent>
+    <PostBuildEvent>XCopy "$(TargetPath)" "%25AllUsersProfile%25\Autodesk\Inventor Addins\$(TargetName)\" /Y /R
+XCopy "$(ProjectDir)Autodesk.CadflairAddin.Inventor.addin" "%25AllUsersProfile%25\Autodesk\Inventor Addins\$(TargetName)\" /Y /R   
+XCopy "C:\Users\Admin\source\repos\CadflairWebApplication\CadflairDataAccess\bin\Debug\netstandard2.0\CadflairDataAccess.dll" "%25AllUsersProfile%25\Autodesk\Inventor Addins\$(TargetName)\" /Y /R</PostBuildEvent>
   </PropertyGroup>
 </Project>
