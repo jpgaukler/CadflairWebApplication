@@ -68,6 +68,7 @@
             this.ComboBoxILogicForms.Name = "ComboBoxILogicForms";
             this.ComboBoxILogicForms.Size = new System.Drawing.Size(171, 21);
             this.ComboBoxILogicForms.TabIndex = 19;
+            this.ComboBoxILogicForms.SelectedIndexChanged += new System.EventHandler(this.ComboBoxILogicForms_SelectedIndexChanged);
             // 
             // DataGridViewParameters
             // 
@@ -145,6 +146,7 @@
             this.ButtonUpload.TabIndex = 15;
             this.ButtonUpload.Text = "Upload";
             this.ButtonUpload.UseVisualStyleBackColor = true;
+            this.ButtonUpload.Click += new System.EventHandler(this.ButtonUpload_Click);
             // 
             // label1
             // 

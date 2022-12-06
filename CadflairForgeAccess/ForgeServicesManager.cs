@@ -15,10 +15,10 @@ namespace CadflairForgeAccess
         public DesignAutomationService DesignAutomationService { get; }
         public ModelDerivativeService ModelDerivativeService { get; }
 
-        public ForgeServicesManager(string clientId, string clientSecret)
+        public ForgeServicesManager()
         {
-            //string clientId = Utils.GetAppSetting("FORGE_CLIENT_ID");
-            //string clientSecret = Utils.GetAppSetting("FORGE_CLIENT_SECRET");
+            string clientId = Utils.GetAppSetting("FORGE_CLIENT_ID");
+            string clientSecret = Utils.GetAppSetting("FORGE_CLIENT_SECRET");
 
             AuthorizationService = new(clientId, clientSecret);
             ObjectStorageService = new(AuthorizationService);

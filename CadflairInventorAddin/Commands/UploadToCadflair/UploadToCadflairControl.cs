@@ -110,13 +110,12 @@ namespace CadflairInventorAddin.Commands
             string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
 
             // Upload to Cadflair
-            await UploadToCadflair.UploadModelToForge(newProduct, zipFileName);
+            bool uploadSuccessful = await UploadToCadflair.UploadModelToForge(newProduct, zipFileName);
 
             // clean up
             System.IO.File.Delete(zipFileName);
 
-            //Process.Start(zipFileName);
-            //MessageBox.Show(zipFileName, "Success");
+            MessageBox.Show(uploadSuccessful.ToString(), "Success?", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

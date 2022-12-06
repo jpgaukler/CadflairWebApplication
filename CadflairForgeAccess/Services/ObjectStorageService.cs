@@ -43,7 +43,7 @@ namespace CadflairForgeAccess.Services
         /// Upload a file directly to an AWS bucket on the Autodesk Forge service.
         /// </summary>
         /// <returns></returns>
-        public async Task UploadFileAsync(string bucketKey, string objectKey, string fullFileName)
+        public async Task<bool> UploadFileAsync(string bucketKey, string objectKey, string fullFileName)
         {
             // Method to report progress during the file upload
             void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
@@ -55,16 +55,12 @@ namespace CadflairForgeAccess.Services
             async Task<Bearer?> onRefreshToken()
             {
                 dynamic? token = await _authService.GetInternalAsync();
-                //TRY TO FIGURE OUT HOW TO RETURN BEARER HERE
-                return null;
+                return new Bearer(token.token_type, token.expires_in, token.access_token);
             }
 
             //set options for upload
             var uploadOptions = new Dictionary<string, object>()
             {
-                //{ "chunkSize", 3 }, // use 3Mb to make it fails, use a debug ApiClient, objectsApi.apiClient.isDebugMode = true
-                //{ "minutesExpiration", 60 }, // use 1 to stress error code 403 - Forbidden
-                //{ "Timeout", Timeout.InfiniteTimeSpan } // TimeSpan.FromSeconds (100) }
                 { "minutesExpiration", 10 },
                 { "useAcceleration", true }
             };
@@ -75,7 +71,10 @@ namespace CadflairForgeAccess.Services
             List<UploadItemDesc> uploadRes = await _objectsApi.uploadResources(bucketKey, uploadList, uploadOptions, onUploadProgress, onRefreshToken);
             UploadItemDesc result = uploadRes.First();
 
-            Debug.WriteLine($"Response: {result.completedResponse} Error: {result.Error} BucketKey: {bucketKey} ObjectKey {objectKey} ");
+            Debug.WriteLine($"Response: {result.completedResponse}");
+
+            bool success = !result.Error;
+            return success;
         }
     }
 }

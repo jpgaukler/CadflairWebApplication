@@ -24,10 +24,6 @@ namespace CadflairBlazorServer.Controllers
 
         public class ProductUploadData
         {
-            //public int UserId { get; set; } 
-            //public int ProductFamilyId { get; set; } 
-            //public string DisplayName { get; set; } = string.Empty;
-            //public string ParameterJson { get; set; } = string.Empty;
             public string ProductSpec { get; set; } = string.Empty;
             public IFormFile? ZipFile { get; set; }
         }
@@ -37,35 +33,26 @@ namespace CadflairBlazorServer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/forge/product/upload")]
+        [Route("api/product/create")]
         public async Task<IActionResult> UploadProduct([FromForm] ProductUploadData productUploadData)
         {
             try
             {
                 //validate data
-                if (string.IsNullOrWhiteSpace(productUploadData.ProductSpec)) throw new Exception("No product information provided.");
-                if (productUploadData.ZipFile == null) throw new Exception("No zip file was not provided.");
-                if (Path.GetExtension(productUploadData.ZipFile.FileName) != ".zip") throw new Exception("Invalid file type provided.");
-                //if (!_uploadFileExtensions.Any(i => i == Path.GetExtension(productUploadData.ZipFile.FileName))) throw new Exception("Invalid file type provided.");
-                if (productUploadData.ZipFile.Length == 0) throw new Exception("File does not contain any data.");
+                if (string.IsNullOrWhiteSpace(productUploadData.ProductSpec)) return ValidationProblem("No product information provided.");
+                if (productUploadData.ZipFile == null) return ValidationProblem("No zip file was not provided.");
+                if (productUploadData.ZipFile.Length == 0) return ValidationProblem("File does not contain any data.");
+                if (Path.GetExtension(productUploadData.ZipFile.FileName) != ".zip") return ValidationProblem("Invalid file type provided.");
+                //if (!_uploadFileExtensions.Any(i => i == Path.GetExtension(productUploadData.ZipFile.FileName))) return ValidationProblem("Invalid file type provided.");
 
-                //string bucketKey = fileUploadData.bucketKey.ToLower();
-                //string objectKey = fileUploadData.objectName;
+                //// Upload check if greater than 2mb!
+                //if (memoryStream.Length > 2097152)
+                //{
+                //}
+
+                // Create bucket for product
                 Guid bucketKey = Guid.NewGuid();
                 Guid objectKey = Guid.NewGuid();
-
-                //Debug.WriteLine($"BucketKey: {bucketKey} ObjectKey: {objectKey}");
-
-                //// Upload check if less than 2mb!
-                //if (memoryStream.Length < 2097152)
-                //{
-                //}
-                //else
-                //{
-                //}
-
-                // Create bucket for file (in case is does not exist) 
-                // I actaully think i will want to get the bucket key from the product family record
                 await _forgeServicesManager.ObjectStorageService.CreateBucketAsync(bucketKey.ToString());
 
                 // Temporarily save the file to server
@@ -76,30 +63,25 @@ namespace CadflairBlazorServer.Controllers
                     await productUploadData.ZipFile.CopyToAsync(stream);
                 }
 
-                // Upload file to forge oss
-                await _forgeServicesManager.ObjectStorageService.UploadFileAsync(bucketKey.ToString(), objectKey.ToString(), tempFileName);
+                // Upload file to Autodesk Forge OSS 
+                bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFileAsync(bucketKey.ToString(), objectKey.ToString(), tempFileName);
+                if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload to Autodesk Forge OSS." });
 
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
 
                 // Create new record in the database
-                Product? newProduct = JsonSerializer.Deserialize<Product>(productUploadData.ProductSpec);
-                if (newProduct == null) throw new Exception("Failed to deserialize product information.");
+                Product newProduct = JsonSerializer.Deserialize<Product>(productUploadData.ProductSpec)!;
                 newProduct.ForgeBucketKey = bucketKey;
                 newProduct.ForgeObjectKey = objectKey;
 
-                //Debug.WriteLine($"Display Name: {newProduct.DisplayName} BucketKey: {newProduct.ForgeBucketKey} ObjectKey: {newProduct.ForgeObjectKey}");
-
                 await _dataServicesManager.ProductService.CreateProduct(newProduct);
 
-                //return the result
-                //return Ok(new { BucketKey = bucketKey, ObjectName = objectKey, Error = result.Error.ToString(), Response = result.completed.ToString() });
-                //return Ok(new { Product = newProduct.DisplayName, ParameterJson = newProduct.ParameterJson });
-                return Ok(new { Result = "Upload successful"});
+                return Ok(new { Result = "Product uploaded successfully!"});
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = $"Failed to upload model to Cadflair: {ex}" });
+                return BadRequest(new { Error = $"Exception occurred: {ex}" });
             }
         }
 

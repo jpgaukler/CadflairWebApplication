@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Http.Features;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +24,7 @@ builder.Services.AddScoped<ProtectedSessionStorage>();
 builder.Services.AddSingleton<DataServicesManager>();
 
 // Forge services
-builder.Services.AddSingleton<ForgeServicesManager>(x => new ForgeServicesManager(Environment.GetEnvironmentVariable("FORGE_CLIENT_ID"), Environment.GetEnvironmentVariable("FORGE_CLIENT_SECRET")));
+builder.Services.AddSingleton<ForgeServicesManager>();
 
 var app = builder.Build();
 

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.IO;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -300,73 +301,55 @@ namespace CadflairInventorAddin.Commands
             }
         }
 
-        public static async Task UploadModelToForge(Product product, string zipFileName)
+        public static async Task<bool> UploadModelToForge(Product product, string zipFileName)
         {
+            bool uploadSuccessful = false;
+            HttpClient client = new HttpClient();
+            MultipartFormDataContent formContent = new MultipartFormDataContent();
+            HttpRequestMessage request = new HttpRequestMessage();
+            HttpResponseMessage response = new HttpResponseMessage();
+            StringContent produceSpecContent = new StringContent(JsonConvert.SerializeObject(product));
+            FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open);
+            StreamContent streamContent = new StreamContent(stream);
+
             try
             {
-                HttpClient client = new HttpClient();
-                MultipartFormDataContent content = new MultipartFormDataContent();
+                // add product spec to request
+                produceSpecContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductSpec\"");
+                formContent.Add(produceSpecContent, "ProductSpec");
 
-                //add product spec to request
-                string productSpec = JsonConvert.SerializeObject(product); 
-                StringContent displayNameContent = new StringContent(productSpec);
-                displayNameContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductSpec\"");
-                content.Add(displayNameContent, "ProductSpec");
-
-                ////add bucket key content to the request
-                //StringContent parameterJsonContent = new StringContent(parameterJson);
-                //parameterJsonContent.Headers.Add("Content-Disposition", "form-data; name=\"ParameterJson\"");
-                //content.Add(parameterJsonContent, "ParameterJson");
-
-                //add file data to the form as a stream content
-                FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open);
-
-                StreamContent streamContent = new StreamContent(stream);
+                // add file data to the form as a stream content
                 streamContent.Headers.Add("Content-Type", "application/octet-stream");
                 streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
-                content.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
+                formContent.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
 
-                HttpRequestMessage request = new HttpRequestMessage()
-                {
-                    Method = HttpMethod.Post,
-                    RequestUri = new Uri($"https://localhost:7269/api/forge/product/upload"),
-                    Content = content
-                };
+                // send request
+                request.Method = HttpMethod.Post;
+                request.RequestUri = new Uri($"https://localhost:7269/api/product/create");
+                request.Content = formContent;
+                response = await client.SendAsync(request);
+                uploadSuccessful = response.IsSuccessStatusCode;
 
-                string reqTxt = await request.Content.ReadAsStringAsync(); //this will fail if the memory stream is closed before this line is called
-
-                HttpResponseMessage response = await client.SendAsync(request);
-
-                //print to txt file
-                string fileName = @"C:\Users\Admin\source\repos\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
-                //string fileName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\CadflairInventorAddin\bin\Debug\request.txt";
-                StreamWriter txt = System.IO.File.CreateText(fileName);
                 string responseMessage = await response.Content.ReadAsStringAsync();
-
-                txt.WriteLine("Request content:");
-                txt.Write(reqTxt);
-                txt.WriteLine();
-
-                txt.WriteLine("Response content:");
-                txt.Write(responseMessage);
-                txt.Close();
-                Process.Start(fileName);
-
-                //clean up
-                txt.Dispose();
-                //stream.Dispose();
-                displayNameContent.Dispose();
-                //parameterJsonContent.Dispose();
-                //streamContent.Dispose();
-                content.Dispose();
-                response.Dispose();
-                request.Dispose();
-                client.Dispose();
+                MessageBox.Show(responseMessage, "Response", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                // clean up
+                stream.Dispose();
+                streamContent.Dispose();
+                produceSpecContent.Dispose();
+                response.Dispose();
+                request.Dispose();
+                formContent.Dispose();
+                client.Dispose();
+            }
+
+            return uploadSuccessful;
         }
 
     }
