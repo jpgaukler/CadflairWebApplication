@@ -15,9 +15,7 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CadflairDatabase", "Cadflai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairBlazorServer", "CadflairBlazorServer\CadflairBlazorServer.csproj", "{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParameterParsing", "ParameterParsing\ParameterParsing.csproj", "{C5A98FFF-773B-480C-87A1-8CB2BEB8E54C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairForgeAccess", "CadflairForgeAccess\CadflairForgeAccess.csproj", "{B0DFB3DB-8768-430C-8B82-07B1E46D5314}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairForgeAccess", "CadflairForgeAccess\CadflairForgeAccess.csproj", "{B0DFB3DB-8768-430C-8B82-07B1E46D5314}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +49,6 @@ Global
 		{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C5A98FFF-773B-480C-87A1-8CB2BEB8E54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C5A98FFF-773B-480C-87A1-8CB2BEB8E54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C5A98FFF-773B-480C-87A1-8CB2BEB8E54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C5A98FFF-773B-480C-87A1-8CB2BEB8E54C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Release|Any CPU.ActiveCfg = Release|Any CPU
