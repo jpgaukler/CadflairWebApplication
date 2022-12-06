@@ -62,16 +62,15 @@ namespace CadflairInventorAddin.Commands
 
         private async void ButtonUpload_Click(object sender, EventArgs e)
         {
-
-            if (string.IsNullOrWhiteSpace(TextBoxBucketKey.Text))
+            if (_doc.FileSaveCounter == 0)
             {
-                MessageBox.Show("Please enter a value for BucketKey", "BuckeyKey Not Provided", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Please save the file before uploading.", "File Not Saved", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(TextBoxObjectName.Text))
+            if (string.IsNullOrWhiteSpace(TextBoxDisplayName.Text))
             {
-                MessageBox.Show("Please enter a value for ObjectName", "ObjectName Not Provided", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Please enter a value for Display Name", "Display Name Not Provided", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -91,14 +90,29 @@ namespace CadflairInventorAddin.Commands
             }
 
             // Get parameters in form of json
-            ILogicUiElement form = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
-            string parametersJson = UploadToCadflair.SaveILogicUiElementToJson(form);
-            UploadToCadflair.SaveILogicFormSpecToXml(form.Name);
+            ILogicUiElement iLogicFormSpec = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
+
+            //UploadToCadflair.SaveILogicUiElementToJson(iLogicFormSpec);
+            //UploadToCadflair.SaveILogicFormSpecToXml(iLogicFormSpec.Name);
+
+            // Create new product model
+            Product newProduct = new Product()
+            {
+                CreatedById = 1,
+                ProductFamilyId = 1,
+                DisplayName = TextBoxDisplayName.Text,
+                ParameterJson = iLogicFormSpec.ToJson(),
+                IsPublic = CheckBoxIsPublic.Checked,
+                IsConfigurable = CheckBoxIsConfigurable.Checked,
+            };
+
+            // save model to zipfile
+            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
 
             // Upload to Cadflair
-            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
-            await UploadToCadflair.UploadModelToForge(zipFileName, TextBoxBucketKey.Text, parametersJson);
+            await UploadToCadflair.UploadModelToForge(newProduct, zipFileName);
 
+            // clean up
             System.IO.File.Delete(zipFileName);
 
             //Process.Start(zipFileName);

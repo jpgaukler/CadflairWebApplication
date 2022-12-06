@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Serialization;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace CadflairBlazorServer.Controllers
 {
@@ -23,10 +24,11 @@ namespace CadflairBlazorServer.Controllers
 
         public class ProductUploadData
         {
-            public int UserId { get; set; } 
-            public int ProductFamilyId { get; set; } 
-            public string DisplayName { get; set; } = string.Empty;
-            public string ParameterJson { get; set; } = string.Empty;
+            //public int UserId { get; set; } 
+            //public int ProductFamilyId { get; set; } 
+            //public string DisplayName { get; set; } = string.Empty;
+            //public string ParameterJson { get; set; } = string.Empty;
+            public string ProductSpec { get; set; } = string.Empty;
             public IFormFile? ZipFile { get; set; }
         }
 
@@ -41,6 +43,7 @@ namespace CadflairBlazorServer.Controllers
             try
             {
                 //validate data
+                if (string.IsNullOrWhiteSpace(productUploadData.ProductSpec)) throw new Exception("No product information provided.");
                 if (productUploadData.ZipFile == null) throw new Exception("No zip file was not provided.");
                 if (Path.GetExtension(productUploadData.ZipFile.FileName) != ".zip") throw new Exception("Invalid file type provided.");
                 //if (!_uploadFileExtensions.Any(i => i == Path.GetExtension(productUploadData.ZipFile.FileName))) throw new Exception("Invalid file type provided.");
@@ -48,10 +51,10 @@ namespace CadflairBlazorServer.Controllers
 
                 //string bucketKey = fileUploadData.bucketKey.ToLower();
                 //string objectKey = fileUploadData.objectName;
-                string bucketKey = Guid.NewGuid().ToString();
-                string objectKey = Guid.NewGuid().ToString();
+                Guid bucketKey = Guid.NewGuid();
+                Guid objectKey = Guid.NewGuid();
 
-                Debug.WriteLine($"BucketKey: {bucketKey} ObjectKey: {objectKey}");
+                //Debug.WriteLine($"BucketKey: {bucketKey} ObjectKey: {objectKey}");
 
                 //// Upload check if less than 2mb!
                 //if (memoryStream.Length < 2097152)
@@ -63,7 +66,7 @@ namespace CadflairBlazorServer.Controllers
 
                 // Create bucket for file (in case is does not exist) 
                 // I actaully think i will want to get the bucket key from the product family record
-                await _forgeServicesManager.ObjectStorageService.CreateBucketAsync(bucketKey);
+                await _forgeServicesManager.ObjectStorageService.CreateBucketAsync(bucketKey.ToString());
 
                 // Temporarily save the file to server
                 string tempFileName = Path.GetTempFileName();
@@ -74,25 +77,18 @@ namespace CadflairBlazorServer.Controllers
                 }
 
                 // Upload file to forge oss
-                await _forgeServicesManager.ObjectStorageService.UploadFileAsync(bucketKey, objectKey, tempFileName);
+                await _forgeServicesManager.ObjectStorageService.UploadFileAsync(bucketKey.ToString(), objectKey.ToString(), tempFileName);
 
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
 
                 // Create new record in the database
-                Product newProduct = new()
-                {
-                    ProductFamilyId = productUploadData.ProductFamilyId,
-                    DisplayName = productUploadData.DisplayName,
-                    ParameterJson = productUploadData.ParameterJson,
-                    ForgeBucketKey = Guid.NewGuid(),
-                    ForgeObjectKey = Guid.NewGuid(),
-                    CreatedById = 1,
-                    IsPublic = true,
-                    IsConfigurable = false,
-                };
+                Product? newProduct = JsonSerializer.Deserialize<Product>(productUploadData.ProductSpec);
+                if (newProduct == null) throw new Exception("Failed to deserialize product information.");
+                newProduct.ForgeBucketKey = bucketKey;
+                newProduct.ForgeObjectKey = objectKey;
 
-                Debug.WriteLine($"Display Name: {newProduct.DisplayName} BucketKey: {newProduct.ForgeBucketKey} ObjectKey: {newProduct.ForgeObjectKey}");
+                //Debug.WriteLine($"Display Name: {newProduct.DisplayName} BucketKey: {newProduct.ForgeBucketKey} ObjectKey: {newProduct.ForgeObjectKey}");
 
                 await _dataServicesManager.ProductService.CreateProduct(newProduct);
 

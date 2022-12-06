@@ -172,7 +172,7 @@ namespace CadflairInventorAddin.Commands
 
 
 
-        public static string SaveILogicUiElementToJson(ILogicUiElement element)
+        public static void SaveILogicUiElementToJson(ILogicUiElement element)
         {
             string jsonString = element.ToJson();
 
@@ -185,14 +185,11 @@ namespace CadflairInventorAddin.Commands
 
             string jsonFileName = System.IO.Path.Combine(folderName, element.Name + ".json");
             StreamWriter jsonFile = System.IO.File.CreateText(jsonFileName);
-
             jsonFile.Write(jsonString);
             jsonFile.Close();
+
             Clipboard.SetText(jsonString);
-
-            return jsonString;
-
-            //Process.Start(folderName);
+            Process.Start(folderName);
         }
 
         public static void SaveILogicFormSpecToXml(string formName)
@@ -303,30 +300,31 @@ namespace CadflairInventorAddin.Commands
             }
         }
 
-        public static async Task UploadModelToForge(string displayName, string parameterJson, string zipFileName)
+        public static async Task UploadModelToForge(Product product, string zipFileName)
         {
             try
             {
                 HttpClient client = new HttpClient();
                 MultipartFormDataContent content = new MultipartFormDataContent();
 
-                //add bucket key content to the request
-                StringContent displayNameContent = new StringContent(displayName);
-                displayNameContent.Headers.Add("Content-Disposition", "form-data; name=\"DisplayName\"");
-                content.Add(displayNameContent, "DisplayName");
+                //add product spec to request
+                string productSpec = JsonConvert.SerializeObject(product); 
+                StringContent displayNameContent = new StringContent(productSpec);
+                displayNameContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductSpec\"");
+                content.Add(displayNameContent, "ProductSpec");
 
-                //add bucket key content to the request
-                StringContent parameterJsonContent = new StringContent(parameterJson);
-                parameterJsonContent.Headers.Add("Content-Disposition", "form-data; name=\"ParameterJson\"");
-                content.Add(parameterJsonContent, "ParameterJson");
+                ////add bucket key content to the request
+                //StringContent parameterJsonContent = new StringContent(parameterJson);
+                //parameterJsonContent.Headers.Add("Content-Disposition", "form-data; name=\"ParameterJson\"");
+                //content.Add(parameterJsonContent, "ParameterJson");
 
                 //add file data to the form as a stream content
-                //FileStream stream = System.IO.File.Open(fullFileName, FileMode.Open);
+                FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open);
 
-                //StreamContent streamContent = new StreamContent(stream);
-                //streamContent.Headers.Add("Content-Type", "application/octet-stream");
-                //streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
-                //content.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
+                StreamContent streamContent = new StreamContent(stream);
+                streamContent.Headers.Add("Content-Type", "application/octet-stream");
+                streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
+                content.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
 
                 HttpRequestMessage request = new HttpRequestMessage()
                 {
@@ -358,7 +356,7 @@ namespace CadflairInventorAddin.Commands
                 txt.Dispose();
                 //stream.Dispose();
                 displayNameContent.Dispose();
-                parameterJsonContent.Dispose();
+                //parameterJsonContent.Dispose();
                 //streamContent.Dispose();
                 content.Dispose();
                 response.Dispose();

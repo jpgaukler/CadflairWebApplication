@@ -37,20 +37,24 @@
             this.UiElementSpecColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MinValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MaxValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label3 = new System.Windows.Forms.Label();
-            this.TextBoxFilename = new System.Windows.Forms.TextBox();
             this.ButtonUpload = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.TextBoxObjectName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.TextBoxBucketKey = new System.Windows.Forms.TextBox();
+            this.TextBoxDisplayName = new System.Windows.Forms.TextBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.CheckBoxIsConfigurable = new System.Windows.Forms.CheckBox();
+            this.CheckBoxIsPublic = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewParameters)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(41, 139);
+            this.label4.Location = new System.Drawing.Point(26, 82);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(69, 13);
             this.label4.TabIndex = 20;
@@ -60,7 +64,7 @@
             // 
             this.ComboBoxILogicForms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ComboBoxILogicForms.FormattingEnabled = true;
-            this.ComboBoxILogicForms.Location = new System.Drawing.Point(116, 139);
+            this.ComboBoxILogicForms.Location = new System.Drawing.Point(101, 79);
             this.ComboBoxILogicForms.Name = "ComboBoxILogicForms";
             this.ComboBoxILogicForms.Size = new System.Drawing.Size(171, 21);
             this.ComboBoxILogicForms.TabIndex = 19;
@@ -77,10 +81,12 @@
             this.UiElementSpecColumn,
             this.MinValueColumn,
             this.MaxValueColumn});
-            this.DataGridViewParameters.Location = new System.Drawing.Point(44, 203);
+            this.DataGridViewParameters.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.DataGridViewParameters.Location = new System.Drawing.Point(10, 10);
             this.DataGridViewParameters.Name = "DataGridViewParameters";
+            this.DataGridViewParameters.RowHeadersVisible = false;
             this.DataGridViewParameters.RowHeadersWidth = 82;
-            this.DataGridViewParameters.Size = new System.Drawing.Size(682, 404);
+            this.DataGridViewParameters.Size = new System.Drawing.Size(733, 611);
             this.DataGridViewParameters.TabIndex = 18;
             // 
             // ILogicUIElementColumn
@@ -130,86 +136,102 @@
             this.MaxValueColumn.Name = "MaxValueColumn";
             this.MaxValueColumn.Width = 200;
             // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(41, 92);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(50, 13);
-            this.label3.TabIndex = 17;
-            this.label3.Text = "File path:";
-            // 
-            // TextBoxFilename
-            // 
-            this.TextBoxFilename.Enabled = false;
-            this.TextBoxFilename.Location = new System.Drawing.Point(119, 89);
-            this.TextBoxFilename.Name = "TextBoxFilename";
-            this.TextBoxFilename.Size = new System.Drawing.Size(425, 20);
-            this.TextBoxFilename.TabIndex = 16;
-            this.TextBoxFilename.Text = "Test";
-            // 
             // ButtonUpload
             // 
-            this.ButtonUpload.Location = new System.Drawing.Point(618, 23);
+            this.ButtonUpload.Dock = System.Windows.Forms.DockStyle.Right;
+            this.ButtonUpload.Location = new System.Drawing.Point(668, 10);
             this.ButtonUpload.Name = "ButtonUpload";
             this.ButtonUpload.Size = new System.Drawing.Size(75, 23);
             this.ButtonUpload.TabIndex = 15;
             this.ButtonUpload.Text = "Upload";
             this.ButtonUpload.UseVisualStyleBackColor = true;
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(41, 55);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(72, 13);
-            this.label2.TabIndex = 14;
-            this.label2.Text = "Object Name:";
-            // 
-            // TextBoxObjectName
-            // 
-            this.TextBoxObjectName.Location = new System.Drawing.Point(130, 52);
-            this.TextBoxObjectName.Name = "TextBoxObjectName";
-            this.TextBoxObjectName.Size = new System.Drawing.Size(100, 20);
-            this.TextBoxObjectName.TabIndex = 13;
-            this.TextBoxObjectName.Text = "Test";
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(41, 29);
+            this.label1.Location = new System.Drawing.Point(20, 34);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 13);
+            this.label1.Size = new System.Drawing.Size(75, 13);
             this.label1.TabIndex = 12;
-            this.label1.Text = "Bucket Key:";
+            this.label1.Text = "Display Name:";
             // 
-            // TextBoxBucketKey
+            // TextBoxDisplayName
             // 
-            this.TextBoxBucketKey.Location = new System.Drawing.Point(130, 26);
-            this.TextBoxBucketKey.Name = "TextBoxBucketKey";
-            this.TextBoxBucketKey.Size = new System.Drawing.Size(100, 20);
-            this.TextBoxBucketKey.TabIndex = 11;
-            this.TextBoxBucketKey.Text = "cadflair.testbucket";
+            this.TextBoxDisplayName.Location = new System.Drawing.Point(101, 31);
+            this.TextBoxDisplayName.Name = "TextBoxDisplayName";
+            this.TextBoxDisplayName.Size = new System.Drawing.Size(100, 20);
+            this.TextBoxDisplayName.TabIndex = 11;
+            this.TextBoxDisplayName.Text = "My Product Test";
+            // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.ButtonUpload);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel1.Location = new System.Drawing.Point(0, 769);
+            this.panel1.Name = "panel1";
+            this.panel1.Padding = new System.Windows.Forms.Padding(10);
+            this.panel1.Size = new System.Drawing.Size(753, 43);
+            this.panel1.TabIndex = 21;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.DataGridViewParameters);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(0, 138);
+            this.panel2.Name = "panel2";
+            this.panel2.Padding = new System.Windows.Forms.Padding(10);
+            this.panel2.Size = new System.Drawing.Size(753, 631);
+            this.panel2.TabIndex = 22;
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.CheckBoxIsConfigurable);
+            this.panel3.Controls.Add(this.CheckBoxIsPublic);
+            this.panel3.Controls.Add(this.label1);
+            this.panel3.Controls.Add(this.TextBoxDisplayName);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.ComboBoxILogicForms);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel3.Location = new System.Drawing.Point(0, 0);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(753, 138);
+            this.panel3.TabIndex = 23;
+            // 
+            // CheckBoxIsConfigurable
+            // 
+            this.CheckBoxIsConfigurable.AutoSize = true;
+            this.CheckBoxIsConfigurable.Location = new System.Drawing.Point(351, 34);
+            this.CheckBoxIsConfigurable.Name = "CheckBoxIsConfigurable";
+            this.CheckBoxIsConfigurable.Size = new System.Drawing.Size(96, 17);
+            this.CheckBoxIsConfigurable.TabIndex = 22;
+            this.CheckBoxIsConfigurable.Text = "Is Configurable";
+            this.CheckBoxIsConfigurable.UseVisualStyleBackColor = true;
+            // 
+            // CheckBoxIsPublic
+            // 
+            this.CheckBoxIsPublic.AutoSize = true;
+            this.CheckBoxIsPublic.Location = new System.Drawing.Point(264, 34);
+            this.CheckBoxIsPublic.Name = "CheckBoxIsPublic";
+            this.CheckBoxIsPublic.Size = new System.Drawing.Size(66, 17);
+            this.CheckBoxIsPublic.TabIndex = 21;
+            this.CheckBoxIsPublic.Text = "Is Public";
+            this.CheckBoxIsPublic.UseVisualStyleBackColor = true;
             // 
             // UploadToCadflairControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.ComboBoxILogicForms);
-            this.Controls.Add(this.DataGridViewParameters);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.TextBoxFilename);
-            this.Controls.Add(this.ButtonUpload);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.TextBoxObjectName);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.TextBoxBucketKey);
+            this.Controls.Add(this.panel2);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.panel3);
             this.Name = "UploadToCadflairControl";
-            this.Size = new System.Drawing.Size(753, 663);
+            this.Size = new System.Drawing.Size(753, 812);
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewParameters)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel3.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -224,12 +246,13 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn UiElementSpecColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn MinValueColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn MaxValueColumn;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox TextBoxFilename;
         private System.Windows.Forms.Button ButtonUpload;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox TextBoxObjectName;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox TextBoxBucketKey;
+        private System.Windows.Forms.TextBox TextBoxDisplayName;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.CheckBox CheckBoxIsConfigurable;
+        private System.Windows.Forms.CheckBox CheckBoxIsPublic;
     }
 }
