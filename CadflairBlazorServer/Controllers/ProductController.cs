@@ -10,13 +10,13 @@ using System.Text.Json;
 namespace CadflairBlazorServer.Controllers
 {
     [ApiController]
-    public class UploadProductController : ControllerBase
+    public class ProductController : ControllerBase
     {
         private readonly ForgeServicesManager _forgeServicesManager;
         private readonly DataServicesManager _dataServicesManager;
         private static readonly string[] _uploadFileExtensions = { ".ipt", "iam", ".idw", ".dwg", ".zip"};
 
-        public UploadProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager)
+        public ProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager)
         {
             _forgeServicesManager = forgeServicesManager;
             _dataServicesManager = dataServicesManager;
@@ -34,7 +34,7 @@ namespace CadflairBlazorServer.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("api/product/create")]
-        public async Task<IActionResult> UploadProduct([FromForm] ProductUploadData productUploadData)
+        public async Task<IActionResult> CreateProduct([FromForm] ProductUploadData productUploadData)
         {
             try
             {
@@ -65,17 +65,26 @@ namespace CadflairBlazorServer.Controllers
 
                 // Upload file to Autodesk Forge OSS 
                 bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFileAsync(bucketKey.ToString(), objectKey.ToString(), tempFileName);
-                if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload to Autodesk Forge OSS." });
 
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
 
-                // Create new record in the database
+                if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload to Autodesk Forge OSS." });
+
+                // Create new Product record in the database
                 Product newProduct = JsonSerializer.Deserialize<Product>(productUploadData.ProductSpec)!;
                 newProduct.ForgeBucketKey = bucketKey;
-                newProduct.ForgeObjectKey = objectKey;
+                newProduct.Id = await _dataServicesManager.ProductService.CreateProduct(newProduct);
 
-                await _dataServicesManager.ProductService.CreateProduct(newProduct);
+                // Create new ProductConfiguration record in the database for master configuration
+                ProductConfiguration masterConfiguration = new()
+                {
+                    ProductId = newProduct.Id,
+                    ArgumentJson = "",
+                    ForgeObjectKey = objectKey,
+                };
+
+                masterConfiguration.Id = await _dataServicesManager.ProductService.CreateProductConfiguration(masterConfiguration);
 
                 return Ok(new { Result = "Product uploaded successfully!"});
             }

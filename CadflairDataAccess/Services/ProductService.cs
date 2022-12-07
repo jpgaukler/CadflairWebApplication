@@ -1,6 +1,7 @@
 ﻿using CadflairDataAccess.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -49,29 +50,42 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<Product, dynamic>(sql, values);
         }
 
-        public Task CreateProduct(Product newProduct)
+        public async Task<int> CreateProduct(Product newProduct)
         {
-            string sql = @"INSERT INTO [dbo].[Product]
-                           (ProductFamilyId
-                           ,DisplayName
-                           ,ParameterJson
-                           ,ForgeBucketKey
-                           ,ForgeObjectKey
-                           ,CreatedById
-                           ,IsPublic
-                           ,IsConfigurable)
-                           VALUES
-                           (@ProductFamilyId
-                           ,@DisplayName
-                           ,@ParameterJson
-                           ,@ForgeBucketKey
-                           ,@ForgeObjectKey
-                           ,@CreatedById
-                           ,@IsPublic
-                           ,@IsConfigurable)";
+            //string sql = @"INSERT INTO [dbo].[Product]
+            //                           (ProductFamilyId
+            //                           ,DisplayName
+            //                           ,ParameterJson
+            //                           ,ForgeBucketKey
+            //                           ,CreatedById
+            //                           ,IsPublic
+            //                           ,IsConfigurable)
+            //                       VALUES
+            //                           (@ProductFamilyId
+            //                           ,@DisplayName
+            //                           ,@ParameterJson
+            //                           ,@ForgeBucketKey
+            //                           ,@CreatedById
+            //                           ,@IsPublic
+            //                           ,@IsConfigurable)
+            //                       SELECT CAST(SCOPE_IDENTITY() as int)";
 
+            //int id = await _db.InsertSingleAsync(sql, newProduct);
 
-            return _db.SaveDataAsync(sql, newProduct);
+            dynamic values = new
+            {
+                newProduct.ProductFamilyId,
+                newProduct.DisplayName,
+                newProduct.ParameterJson,
+                newProduct.ForgeBucketKey,
+                newProduct.CreatedById,
+                newProduct.IsPublic,
+                newProduct.IsConfigurable
+            };
+
+            int id = await _db.InsertSingleAsync("[dbo].[spProduct_Insert]", values, CommandType.StoredProcedure);
+
+            return id;
         }
 
         public Task DeleteProduct(Product product)
@@ -180,20 +194,30 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<ProductConfiguration, dynamic>(sql, values);
         }
 
-        public Task CreateProductConfiguration(ProductConfiguration newProductConfiguration)
+        public async Task<int> CreateProductConfiguration(ProductConfiguration newProductConfiguration)
         {
-            string sql = @"INSERT INTO [dbo].[ProductConfiguration]
-                           (ProductId
-                           ,ArgumentJson
-                           ,ForgeBucketKey
-                           ,ForgeObjectKey)
-                           VALUES
-                           (@ProductId
-                           ,@ArgumentJson
-                           ,@ForgeBucketKey
-                           ,@ForgeObjectKey)";
+            //string sql = @"INSERT INTO [dbo].[ProductConfiguration]
+            //               (ProductId
+            //               ,ArgumentJson
+            //               ,ForgeObjectKey)
+            //               VALUES
+            //               (@ProductId
+            //               ,@ArgumentJson
+            //               ,@ForgeObjectKey)
+            //               SELECT CAST(SCOPE_IDENTITY() as int)";
 
-            return _db.SaveDataAsync(sql, newProductConfiguration);
+            //int id = await _db.InsertSingleAsync(sql, newProductConfiguration);
+
+            dynamic values = new
+            {
+                newProductConfiguration.ProductId,
+                newProductConfiguration.ArgumentJson,
+                newProductConfiguration.ForgeObjectKey
+            };
+
+            int id = await _db.InsertSingleAsync("[dbo].[spProductConfiguration_Insert]", values, CommandType.StoredProcedure);
+
+            return id;
         }
 
         public Task DeleteProductConfiguration(ProductConfiguration productConfiguration)

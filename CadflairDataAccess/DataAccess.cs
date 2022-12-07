@@ -46,5 +46,14 @@ namespace CadflairDataAccess
             }
         }
 
+        public async Task<int> InsertSingleAsync<T>(string sql, T parameters, CommandType? commandType = null)
+        {
+            using (IDbConnection connection = new SqlConnection(_connectionString))
+            {
+                int id = await connection.QuerySingleAsync<int>(sql, parameters, commandType: commandType);
+                return id;
+            }
+        }
+
     }
 }

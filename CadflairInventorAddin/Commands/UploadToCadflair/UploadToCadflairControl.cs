@@ -98,8 +98,8 @@ namespace CadflairInventorAddin.Commands
             // Create new product model
             Product newProduct = new Product()
             {
-                CreatedById = 1,
-                ProductFamilyId = 1,
+                CreatedById = Convert.ToInt32(TextBoxUserId.Text),
+                ProductFamilyId = Convert.ToInt32(TextBoxProductFamilyId.Text),
                 DisplayName = TextBoxDisplayName.Text,
                 ParameterJson = iLogicFormSpec.ToJson(),
                 IsPublic = CheckBoxIsPublic.Checked,

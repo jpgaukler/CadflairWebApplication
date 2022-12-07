@@ -9,8 +9,7 @@
     <ProjectGuid>{92153ca6-1de7-4b76-9ff6-210f8a4997e7}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
-    <RootPath>
-    </RootPath>
+    <RootPath />
     <RootNamespace>CadflairDatabase</RootNamespace>
     <AssemblyName>CadflairDatabase</AssemblyName>
     <ModelCollation>1033,CI</ModelCollation>
@@ -50,7 +49,6 @@
   </PropertyGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
     <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
     <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
   </PropertyGroup>
@@ -60,11 +58,11 @@
     <Folder Include="Properties" />
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
-    <Folder Include="dbo\User Defined Types\" />
     <Folder Include="Publish Scripts" />
     <Folder Include="dbo\Views" />
     <Folder Include="Compare" />
     <Folder Include="Post Deployment Scripts" />
+    <Folder Include="dbo\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\AccountType.sql" />
@@ -76,9 +74,9 @@
     <Build Include="dbo\Tables\ProductQuoteRequest.sql" />
     <Build Include="dbo\Tables\EmailAddress.sql" />
     <Build Include="dbo\Tables\EmailAddressType.sql" />
-    <Build Include="dbo\User Defined Types\TypeName.sql" />
     <Build Include="dbo\Tables\ProductFamily.sql" />
-    <Build Include="dbo\User Defined Types\DisplayName.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_Insert.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

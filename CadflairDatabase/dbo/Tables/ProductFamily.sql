@@ -3,7 +3,7 @@
     [Id]            INT              NOT NULL IDENTITY (1, 1),
     [ParentId]      INT              NULL,
     [AccountId]     INT              NOT NULL,
-    [DisplayName]   [dbo].[DisplayName]    NOT NULL,
+    [DisplayName]   varchar(25)      NOT NULL,
     [CreatedById]   INT              NOT NULL,
     [CreatedOn]     DATETIME         NOT NULL DEFAULT getdate(),
     CONSTRAINT [PK_ProductFamily] PRIMARY KEY CLUSTERED ([Id] ASC),

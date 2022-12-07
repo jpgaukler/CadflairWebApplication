@@ -9,7 +9,6 @@ namespace CadflairDataAccess.Models
         public int Id { get; set; }
         public int ProductId { get; set; }
         public string ArgumentJson { get; set; }
-        public Guid ForgeBucketKey { get; set; }
         public Guid ForgeObjectKey { get; set; }
         public DateTime CreatedOn { get; set; }
     }

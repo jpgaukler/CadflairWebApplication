@@ -45,6 +45,10 @@
             this.panel3 = new System.Windows.Forms.Panel();
             this.CheckBoxIsConfigurable = new System.Windows.Forms.CheckBox();
             this.CheckBoxIsPublic = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.TextBoxProductFamilyId = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.TextBoxUserId = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.DataGridViewParameters)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -54,7 +58,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(26, 82);
+            this.label4.Location = new System.Drawing.Point(26, 227);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(69, 13);
             this.label4.TabIndex = 20;
@@ -64,7 +68,7 @@
             // 
             this.ComboBoxILogicForms.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.ComboBoxILogicForms.FormattingEnabled = true;
-            this.ComboBoxILogicForms.Location = new System.Drawing.Point(101, 79);
+            this.ComboBoxILogicForms.Location = new System.Drawing.Point(101, 224);
             this.ComboBoxILogicForms.Name = "ComboBoxILogicForms";
             this.ComboBoxILogicForms.Size = new System.Drawing.Size(171, 21);
             this.ComboBoxILogicForms.TabIndex = 19;
@@ -87,7 +91,7 @@
             this.DataGridViewParameters.Name = "DataGridViewParameters";
             this.DataGridViewParameters.RowHeadersVisible = false;
             this.DataGridViewParameters.RowHeadersWidth = 82;
-            this.DataGridViewParameters.Size = new System.Drawing.Size(733, 611);
+            this.DataGridViewParameters.Size = new System.Drawing.Size(733, 479);
             this.DataGridViewParameters.TabIndex = 18;
             // 
             // ILogicUIElementColumn
@@ -179,14 +183,18 @@
             // 
             this.panel2.Controls.Add(this.DataGridViewParameters);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 138);
+            this.panel2.Location = new System.Drawing.Point(0, 270);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(10);
-            this.panel2.Size = new System.Drawing.Size(753, 631);
+            this.panel2.Size = new System.Drawing.Size(753, 499);
             this.panel2.TabIndex = 22;
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Controls.Add(this.TextBoxUserId);
+            this.panel3.Controls.Add(this.label2);
+            this.panel3.Controls.Add(this.TextBoxProductFamilyId);
             this.panel3.Controls.Add(this.CheckBoxIsConfigurable);
             this.panel3.Controls.Add(this.CheckBoxIsPublic);
             this.panel3.Controls.Add(this.label1);
@@ -196,7 +204,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(753, 138);
+            this.panel3.Size = new System.Drawing.Size(753, 270);
             this.panel3.TabIndex = 23;
             // 
             // CheckBoxIsConfigurable
@@ -218,6 +226,40 @@
             this.CheckBoxIsPublic.TabIndex = 21;
             this.CheckBoxIsPublic.Text = "Is Public";
             this.CheckBoxIsPublic.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(20, 96);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(91, 13);
+            this.label2.TabIndex = 24;
+            this.label2.Text = "Product Family Id:";
+            // 
+            // TextBoxProductFamilyId
+            // 
+            this.TextBoxProductFamilyId.Location = new System.Drawing.Point(117, 93);
+            this.TextBoxProductFamilyId.Name = "TextBoxProductFamilyId";
+            this.TextBoxProductFamilyId.Size = new System.Drawing.Size(100, 20);
+            this.TextBoxProductFamilyId.TabIndex = 23;
+            this.TextBoxProductFamilyId.Text = "1";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(20, 70);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(44, 13);
+            this.label3.TabIndex = 26;
+            this.label3.Text = "User Id:";
+            // 
+            // TextBoxUserId
+            // 
+            this.TextBoxUserId.Location = new System.Drawing.Point(117, 67);
+            this.TextBoxUserId.Name = "TextBoxUserId";
+            this.TextBoxUserId.Size = new System.Drawing.Size(100, 20);
+            this.TextBoxUserId.TabIndex = 25;
+            this.TextBoxUserId.Text = "1";
             // 
             // UploadToCadflairControl
             // 
@@ -256,5 +298,9 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.CheckBox CheckBoxIsConfigurable;
         private System.Windows.Forms.CheckBox CheckBoxIsPublic;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox TextBoxProductFamilyId;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox TextBoxUserId;
     }
 }

@@ -11,7 +11,6 @@ namespace CadflairDataAccess.Models
         public string DisplayName { get; set; }
         public string ParameterJson { get; set; }
         public Guid ForgeBucketKey { get; set; }
-        public Guid ForgeObjectKey { get; set; }
         public DateTime CreatedOn { get; set; }
         public int CreatedById { get; set; }
         public bool IsPublic { get; set; }

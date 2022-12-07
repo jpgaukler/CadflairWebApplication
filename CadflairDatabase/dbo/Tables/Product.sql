@@ -1,10 +1,9 @@
 ﻿CREATE TABLE [dbo].[Product] (
     [Id]                 INT                       NOT NULL IDENTITY (1, 1),
     [ProductFamilyId]    INT                       NOT NULL,
-    [DisplayName]		 [dbo].[DisplayName]       NOT NULL,
+    [DisplayName]		 NVARCHAR(50)              NOT NULL,
     [ParameterJson]		 NVARCHAR (4000)           NULL, --I am not sure if this should be MAX, might want to try and determine the actual length of this field
     [ForgeBucketKey]	 UNIQUEIDENTIFIER          NOT NULL,
-    [ForgeObjectKey]	 UNIQUEIDENTIFIER          NOT NULL,
     [CreatedOn]			 DATETIME		    	   NOT NULL DEFAULT getdate(),
     [CreatedById]        INT                       NOT NULL,
     [IsPublic]			 BIT                       NOT NULL DEFAULT 0,

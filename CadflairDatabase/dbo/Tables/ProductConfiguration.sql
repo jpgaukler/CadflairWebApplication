@@ -2,7 +2,6 @@
     [Id]              INT              NOT NULL IDENTITY (1, 1),
     [ProductId]       INT              NOT NULL,
     [ArgumentJson]    NVARCHAR (4000)  NOT NULL,
-    [ForgeBucketKey]  UNIQUEIDENTIFIER NOT NULL,
     [ForgeObjectKey]  UNIQUEIDENTIFIER NOT NULL,
     [CreatedOn]       DATETIME         NOT NULL DEFAULT getdate(),
     CONSTRAINT [PK_ProductConfigutation] PRIMARY KEY CLUSTERED ([Id] ASC),
