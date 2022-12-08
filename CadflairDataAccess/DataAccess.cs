@@ -20,37 +20,37 @@ namespace CadflairDataAccess
             _connectionString = connectionString;
         }
 
-        public async Task<List<T>> LoadDataAsync<T, U>(string sql, U parameters)
+        public async Task<List<T>> LoadDataAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                var rows = await connection.QueryAsync<T>(sql, parameters);
+                var rows = await connection.QueryAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
                 return rows.ToList();
             }
         }
 
-        public async Task<T> LoadSingleAsync<T, U>(string sql, U parameters)
+        public async Task<T> LoadSingleAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                var row = await connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
+                var row = await connection.QueryFirstOrDefaultAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
                 return row;
             }
         }
 
-        public async Task SaveDataAsync<T>(string sql, T parameters)
+        public async Task SaveDataAsync<T>(string storedProcedure, T parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                await connection.ExecuteAsync(sql, parameters);
+                await connection.ExecuteAsync(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task<int> InsertSingleAsync<T>(string sql, T parameters, CommandType? commandType = null)
+        public async Task<int> SaveSingleAsync<T>(string storedProcedure, T parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                int id = await connection.QuerySingleAsync<int>(sql, parameters, commandType: commandType);
+                int id = await connection.QuerySingleAsync<int>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
                 return id;
             }
         }

@@ -77,6 +77,16 @@
     <Build Include="dbo\Tables\ProductFamily.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_GetByProductFamilyId.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFamily_GetByAccountId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFamily_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFamily_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFamily_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetByProductId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_DeleteById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

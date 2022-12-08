@@ -17,61 +17,20 @@ namespace CadflairDataAccess.Services
             _db = db;
         }
 
-        public Task<List<Product>> GetProducts()
+        #region "Product"
+
+        public Task<Product> GetProductById(int id)
         {
-            string sql = "select * from dbo.Product";
-
-            return _db.LoadDataAsync<Product, dynamic>(sql, new { });
-        }
-
-        public async Task<Product> GetProductById(int productId)
-        {
-            string sql = "select * from dbo.Product where Id = @Id";
-
-            dynamic values = new
-            {
-                Id = productId,
-            };
-
-            List<Product> accounts = await _db.LoadDataAsync<Product, dynamic>(sql, values);
-
-            return accounts.First();
+            return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetById]", new { Id = id });
         }
 
         public Task<List<Product>> GetProductsByProductFamilyId(int productFamilyId)
         {
-            string sql = "select * from dbo.Product where ProductFamilyId = @ProductFamilyId";
-
-            dynamic values = new
-            {
-                ProductFamilyId = productFamilyId,
-            };
-
-            return _db.LoadDataAsync<Product, dynamic>(sql, values);
+            return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFamilyId]", new { ProductFamilyId = productFamilyId });
         }
 
-        public async Task<int> CreateProduct(Product newProduct)
+        public Task<int> CreateProduct(Product newProduct)
         {
-            //string sql = @"INSERT INTO [dbo].[Product]
-            //                           (ProductFamilyId
-            //                           ,DisplayName
-            //                           ,ParameterJson
-            //                           ,ForgeBucketKey
-            //                           ,CreatedById
-            //                           ,IsPublic
-            //                           ,IsConfigurable)
-            //                       VALUES
-            //                           (@ProductFamilyId
-            //                           ,@DisplayName
-            //                           ,@ParameterJson
-            //                           ,@ForgeBucketKey
-            //                           ,@CreatedById
-            //                           ,@IsPublic
-            //                           ,@IsConfigurable)
-            //                       SELECT CAST(SCOPE_IDENTITY() as int)";
-
-            //int id = await _db.InsertSingleAsync(sql, newProduct);
-
             dynamic values = new
             {
                 newProduct.ProductFamilyId,
@@ -83,131 +42,62 @@ namespace CadflairDataAccess.Services
                 newProduct.IsConfigurable
             };
 
-            int id = await _db.InsertSingleAsync("[dbo].[spProduct_Insert]", values, CommandType.StoredProcedure);
-
-            return id;
+            return _db.SaveSingleAsync("[dbo].[spProduct_Insert]", values);
         }
 
         public Task DeleteProduct(Product product)
         {
-            string sql = "DELETE FROM [dbo].[Product] WHERE Id = @Id";
-
-            dynamic values = new
-            {
-                Id = product.Id,
-            };
-
-            return _db.SaveDataAsync(sql, values);
+            return _db.SaveDataAsync("[dbo].[spProduct_DeleteById]", new { product.Id });
         }
 
-        public Task<List<ProductFamily>> GetProductFamilies()
+        #endregion
+
+        #region "ProductFamily"
+
+        public Task<ProductFamily> GetProductFamilyById(int id)
         {
-            string sql = "select * from dbo.ProductFamily";
-
-            return _db.LoadDataAsync<ProductFamily, dynamic>(sql, new { });
-        }
-
-        public async Task<ProductFamily> GetProductFamilyById(int productId)
-        {
-            string sql = "select * from dbo.ProductFamily where Id = @Id";
-
-            dynamic values = new
-            {
-                Id = productId,
-            };
-
-            List<ProductFamily> families = await _db.LoadDataAsync<ProductFamily, dynamic>(sql, values);
-
-            return families.First();
+            return _db.LoadSingleAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetById]", new { Id = id });
         }
 
         public Task<List<ProductFamily>> GetProductFamiliesByAccountId(int accountId)
         {
-            string sql = "select * from dbo.ProductFamily where AccountId = @AccountId";
-
-            dynamic values = new
-            {
-                AccountId = accountId,
-            };
-
-            return _db.LoadDataAsync<ProductFamily, dynamic>(sql, values);
+            return _db.LoadDataAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetByAccountId]", new { AccountId = accountId });
         }
 
-        public Task CreateProductFamily(ProductFamily newProductFamily)
+        public Task<int> CreateProductFamily(ProductFamily newProductFamily)
         {
-            string sql = @"INSERT INTO [dbo].[ProductFamily]
-                           (ParentId
-                           ,AccountId
-                           ,DisplayName
-                           ,CreatedById)
-                           VALUES
-                           (@ParentId
-                           ,@AccountId
-                           ,@DisplayName
-                           ,@CreatedById)";
+            dynamic values = new
+            {
+                newProductFamily.ParentId,
+                newProductFamily.AccountId,
+                newProductFamily.DisplayName,
+                newProductFamily.CreatedById,
+            };
 
-            return _db.SaveDataAsync(sql, newProductFamily);
+            return _db.SaveSingleAsync("[dbo].[spProductFamily_Insert]", values);
         }
 
         public Task DeleteProductFamily(Product productFamily)
         {
-            string sql = "DELETE FROM [dbo].[ProductFamily] WHERE Id = @Id";
-
-            dynamic values = new
-            {
-                Id = productFamily.Id,
-            };
-
-            return _db.SaveDataAsync(sql, values);
+            return _db.SaveDataAsync("[dbo].[spProductFamily_DeleteById]", new { productFamily.Id });
         }
 
-        public Task<List<ProductConfiguration>> GetProductConfigurations()
+        #endregion
+
+        #region "ProductConfiguration"
+
+        public Task<ProductConfiguration> GetProductConfigurationById(int id)
         {
-            string sql = "select * from dbo.ProductConfiguration";
-
-            return _db.LoadDataAsync<ProductConfiguration, dynamic>(sql, new { });
-        }
-
-        public async Task<ProductConfiguration> GetProductConfigurationById(int productConfigurationId)
-        {
-            string sql = "select * from dbo.ProductConfiguration where Id = @Id";
-
-            dynamic values = new
-            {
-                Id = productConfigurationId,
-            };
-
-            List<ProductConfiguration> accounts = await _db.LoadDataAsync<ProductConfiguration, dynamic>(sql, values);
-
-            return accounts.First();
+            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
         }
 
         public Task<List<ProductConfiguration>> GetProductConfigurationsByProductId(int productId)
         {
-            string sql = "select * from dbo.ProductConfiguration where ProductId = @ProductId";
-
-            dynamic values = new
-            {
-                ProductId = productId,
-            };
-
-            return _db.LoadDataAsync<ProductConfiguration, dynamic>(sql, values);
+            return _db.LoadDataAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetByProductId]", new { ProductId = productId });
         }
 
-        public async Task<int> CreateProductConfiguration(ProductConfiguration newProductConfiguration)
+        public Task<int> CreateProductConfiguration(ProductConfiguration newProductConfiguration)
         {
-            //string sql = @"INSERT INTO [dbo].[ProductConfiguration]
-            //               (ProductId
-            //               ,ArgumentJson
-            //               ,ForgeObjectKey)
-            //               VALUES
-            //               (@ProductId
-            //               ,@ArgumentJson
-            //               ,@ForgeObjectKey)
-            //               SELECT CAST(SCOPE_IDENTITY() as int)";
-
-            //int id = await _db.InsertSingleAsync(sql, newProductConfiguration);
-
             dynamic values = new
             {
                 newProductConfiguration.ProductId,
@@ -215,98 +105,15 @@ namespace CadflairDataAccess.Services
                 newProductConfiguration.ForgeObjectKey
             };
 
-            int id = await _db.InsertSingleAsync("[dbo].[spProductConfiguration_Insert]", values, CommandType.StoredProcedure);
-
-            return id;
+            return _db.SaveSingleAsync("[dbo].[spProductConfiguration_Insert]", values);
         }
 
         public Task DeleteProductConfiguration(ProductConfiguration productConfiguration)
         {
-            string sql = "DELETE FROM [dbo].[ProductConfiguration] WHERE Id = @Id";
-
-            dynamic values = new
-            {
-                Id = productConfiguration.Id,
-            };
-
-            return _db.SaveDataAsync(sql, values);
+            return _db.SaveDataAsync("[dbo].[spProductConfiguration_DeleteById]", new { productConfiguration.Id });
         }
 
-        public Task<List<ProductQuoteRequest>> GetProductQuoteRequests()
-        {
-            string sql = "select * from dbo.ProductQuoteRequest";
+        #endregion
 
-            return _db.LoadDataAsync<ProductQuoteRequest, dynamic>(sql, new { });
-        }
-
-        //public Task<List<ProductQuoteRequest>> GetProductQuoteRequestsByProductId()
-        //{
-        //    string sql = "select * from dbo.ProductQuoteRequest";
-
-        //    return _db.LoadDataAsync<ProductQuoteRequest, dynamic>(sql, new { });
-        //}
-
-        //public async Task<Product> GetProductById(int productId)
-        //{
-        //    string sql = "select * from dbo.Product where Id = @Id";
-
-        //    dynamic values = new
-        //    {
-        //        Id = productId,
-        //    };
-
-        //    List<Product> accounts = await _db.LoadDataAsync<Product, dynamic>(sql, values);
-
-        //    return accounts.First();
-        //}
-
-        //public Task<List<Product>> GetProductsByProductFamilyId(int productFamilyId)
-        //{
-        //    string sql = "select * from dbo.Product where ProductFamilyId = @ProductFamilyId";
-
-        //    dynamic values = new
-        //    {
-        //        ProductFamilyId = productFamilyId,
-        //    };
-
-        //    return _db.LoadDataAsync<Product, dynamic>(sql, values);
-        //}
-
-        //public Task CreateProduct(Product newProduct)
-        //{
-        //    string sql = @"INSERT INTO [dbo].[Product]
-        //                   (ProductFamilyId
-        //                   ,DisplayName
-        //                   ,ParameterJson
-        //                   ,ForgeBucketKey
-        //                   ,ForgeObjectKey
-        //                   ,CreatedById
-        //                   ,IsPublic
-        //                   ,IsConfigurable)
-        //                   VALUES
-        //                   (@ProductFamilyId
-        //                   ,@DisplayName
-        //                   ,@ParameterJson
-        //                   ,@ForgeBucketKey
-        //                   ,@ForgeObjectKey
-        //                   ,@CreatedById
-        //                   ,@IsPublic
-        //                   ,@IsConfigurable)";
-
-
-        //    return _db.SaveDataAsync(sql, newProduct);
-        //}
-
-        //public Task DeleteProduct(Product product)
-        //{
-        //    string sql = "DELETE FROM [dbo].[Product] WHERE Id = @Id";
-
-        //    dynamic values = new
-        //    {
-        //        Id = product.Id,
-        //    };
-
-        //    return _db.SaveDataAsync(sql, values);
-        //}
     }
 }
