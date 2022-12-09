@@ -1,7 +1,4 @@
-﻿@using CadflairBlazorServer.Authentication
-
-@inherits LayoutComponentBase
-@inject AuthenticationStateProvider _authStateProvider
+﻿@inherits LayoutComponentBase
 @inject NavigationManager _navManager
 
 
@@ -19,11 +16,12 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudButton OnClick="Logout">Logout</MudButton>
+                <MudLink Href="/MicrosoftIdentity/Account/SignOut">Log Out</MudLink>
+                <MudLink Href="/MicrosoftIdentity/Account/EditProfile">Profile</MudLink>
             </Authorized>
             <NotAuthorized>
-                <MudLink Href="/login">Log In</MudLink>
-                <MudButton Link="/signup" Color="Color.Inherit">Sign Up</MudButton>
+                <MudLink Href="/MicrosoftIdentity/Account/SignIn">Log In</MudLink>
+                <MudButton Link="/MicrosoftIdentity/Account/SignUp" Color="Color.Inherit">Sign Up</MudButton>
             </NotAuthorized>
         </AuthorizeView>
 
@@ -44,12 +42,6 @@
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
-    }
-
-    private async Task Logout()
-    {
-        await ((CadflairAuthenticationStateProvider)_authStateProvider).UpdateAuthenticationState();
-        _navManager.NavigateTo("/", true);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

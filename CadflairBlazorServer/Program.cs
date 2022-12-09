@@ -1,24 +1,36 @@
-using CadflairBlazorServer.Authentication;
 using CadflairDataAccess;
 using CadflairForgeAccess;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 builder.Services.AddControllers();
-builder.Services.AddMudServices();
 
 // Authentication services
-builder.Services.AddScoped<AuthenticationStateProvider, CadflairAuthenticationStateProvider>();
-builder.Services.AddScoped<ProtectedSessionStorage>();
+builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"));
+builder.Services.AddAuthorization(options =>
+{
+    //can add policies for specific auth rules, consider adding a customer claim attribute in the azure portal
+    options.AddPolicy("Admin", policy => policy.RequireClaim("jobTitle", "Admin"));
+    //options.AddPolicy("Admin", policy => policy.RequireClaim("role", "Editor")); 
+});
+
+
+// MudBlazor
+builder.Services.AddMudServices();
 
 // Cadflair data access services
 builder.Services.AddSingleton<DataServicesManager>();
@@ -42,6 +54,15 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRewriter(
+    new RewriteOptions().Add(context =>
+    {
+        if (context.HttpContext.Request.Path == "/MicrosoftIdentity/Account/SignedOut")
+        {
+            //this will redirect users to the home page when they sign out
+            context.HttpContext.Response.Redirect("/");
+        };
+    }));
 
 //configure map methods
 app.MapBlazorHub();

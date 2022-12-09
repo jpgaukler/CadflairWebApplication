@@ -1,6 +1,4 @@
-﻿@using CadflairBlazorServer.Authentication
-
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager _navManager
 
@@ -19,7 +17,7 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudButton OnClick="Logout">Logout</MudButton>
+                Add logout here.
             </Authorized>
             <NotAuthorized>
                 <MudLink Href="/login">Log In</MudLink>
@@ -44,12 +42,6 @@
 @code {
     private MudThemeProvider? _mudThemeProvider;
     private bool _isDarkMode = true;
-
-    private async Task Logout()
-    {
-        await ((CadflairAuthenticationStateProvider)_authStateProvider).UpdateAuthenticationState();
-        _navManager.NavigateTo("/", true);
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
