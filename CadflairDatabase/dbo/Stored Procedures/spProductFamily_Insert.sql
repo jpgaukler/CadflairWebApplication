@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[spProductFamily_Insert]
+	@SubscriptionId int,
 	@ParentId int,
-	@AccountId int,
 	@DisplayName nvarchar(50),
 	@CreatedById int
 AS
@@ -9,13 +9,13 @@ BEGIN
 	SET NOCOUNT ON;
 
 	INSERT INTO [dbo].[ProductFamily]
-			   (ParentId
-			   ,AccountId
+			   (SubscriptionId
+			   ,ParentId
 			   ,DisplayName
 			   ,CreatedById)
 		   VALUES
-			   (@ParentId
-			   ,@AccountId
+			   (@SubscriptionId
+			   ,@ParentId
 			   ,@DisplayName
 			   ,@CreatedById)
 		   SELECT CAST(SCOPE_IDENTITY() as int);

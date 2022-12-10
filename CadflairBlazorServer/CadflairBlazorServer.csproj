@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Authentication\**" />
+    <Content Remove="Authentication\**" />
+    <EmbeddedResource Remove="Authentication\**" />
+    <None Remove="Authentication\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Shared\ForgeViewer.razor.js" />
   </ItemGroup>
 
@@ -19,10 +26,6 @@
   <ItemGroup>
     <ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
     <ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Authentication\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties wwwroot_4js_4form_x0020_1_1json__JsonSchema="https://docs.strmprivacy.io/jsonschema/BatchJob.json" /></VisualStudio></ProjectExtensions>

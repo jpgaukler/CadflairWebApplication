@@ -1,15 +1,26 @@
 ﻿@page "/"
 @inject IJSRuntime _js
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject DataServicesManager _dataServicesManager
 
 <PageTitle>Index</PageTitle>
 
 <MudLink Href="/productcatalog">Catalog</MudLink>
 
+<p>Database user:</p>
+<p>Id: @loggedInUser.Id</p>
+<p>Object Identifier: @loggedInUser.ObjectIdentifier</p>
+<p>First Name: @loggedInUser.FirstName</p>
+<p>Last Name: @loggedInUser.LastName</p>
+<p>Full Name: @loggedInUser.FullName</p>
+<p>Email: @loggedInUser.EmailAddress</p>
+<p>Created: @loggedInUser.CreatedOn</p>
+
 <AuthorizeView>
     <Authorized>
         <p>Welcome, @context.User.Identity?.Name</p>
         <p>Auth Type: @context.User.Identity?.AuthenticationType</p>
-        @foreach(var claim in context.User.Claims)
+        @foreach (var claim in context.User.Claims)
         {
             <p>Claim Type: @claim.Type</p>
             <p>Claim Value: @claim.Value</p>
@@ -17,6 +28,7 @@
     </Authorized>
 
     <NotAuthorized>
+        <p>Not logged in!</p>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -25,10 +37,17 @@
     //[CascadingParameter]
     //private Task<AuthenticationState> _authenticationState { get; set; }
 
-    //private async Task DisplayGreetingAlert() 
+    //private async Task DisplayGreetingAlert()
     //{
     //    var authState = await _authenticationState;
     //    var message = $"Hello {authState.User.Identity.Name}";
     //    await _js.InvokeVoidAsync("alert", message);
     //}
+
+    private User loggedInUser = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+    }
 }

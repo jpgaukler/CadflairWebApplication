@@ -11,60 +11,50 @@ Post-Deployment Script Template
 */
 
 --add subscription types 
-if not exists (select * from dbo.[AccountType] where [AccountType].[Name] = 'Basic')
+if not exists (select * from dbo.[SubscriptionType] where [SubscriptionType].[Name] = 'Basic')
 	begin
-		insert into dbo.[AccountType]([Name])
+		insert into dbo.[SubscriptionType]([Name])
 		values
 			('Basic'),
 			('Pro');
 	end
 
 
---add user roles
-if not exists (select * from dbo.[UserRole] where [UserRole].[Name] = 'Administrator')
-	begin
-		insert into dbo.[UserRole]([Name] )
-		values
-			('Administrator'),
-			('Publisher'),
-			('Reviewer')
-	end
+----populate email address types
+--if not exists (select * from dbo.[EmailAddressType] where [EmailAddressType].[Name] = 'Primary')
+--	begin
+--		insert into dbo.EmailAddressType([Name])
+--		values('Primary');
 
---populate email address types
-if not exists (select * from dbo.[EmailAddressType] where [EmailAddressType].[Name] = 'Primary')
-	begin
-		insert into dbo.EmailAddressType([Name])
-		values('Primary');
+--		insert into dbo.EmailAddressType([Name])
+--		values('Secondary');
+--	end
 
-		insert into dbo.EmailAddressType([Name])
-		values('Secondary');
-	end
-
---add demo user
-if not exists (select * from dbo.[User] where [User].[EmailAddress] = 'jpgaukler@gmail.com')
-	begin
-		insert into dbo.[User]([UserRoleId], [FirstName], [LastName], [EmailAddress], [PasswordHash])
-		values
-			(1, 'Justin', 'Gaukler', 'jpgaukler@gmail.com', 'password');
-	end
+----add demo user
+--if not exists (select * from dbo.[User] where [User].[EmailAddress] = 'jpgaukler@gmail.com')
+--	begin
+--		insert into dbo.[User]([UserRoleId], [FirstName], [LastName], [EmailAddress], [PasswordHash])
+--		values
+--			(1, 'Justin', 'Gaukler', 'jpgaukler@gmail.com', 'password');
+--	end
 
 
---add demo account
-if not exists (select * from dbo.[Account] where [Account].CompanyName = 'Demo Account')
-	begin
-		insert into dbo.Account(CompanyName, SubDirectory, [CreatedById], [OwnerId], [AccountTypeId], SubscriptionExpiresOn)
-		values
-			('Demo Account', 'demo', 1, 1, 1, dateadd(day,30,getdate()))
-	end
+----add demo account
+--if not exists (select * from dbo.[Subscription] where [Subscription].[CompanyName] = 'Demo Account')
+--	begin
+--		insert into dbo.[Subscription]([CompanyName], [PageName], [CreatedById], [OwnerId], [SubscriptionTypeId], [ExpiresOn])
+--		values
+--			('Demo Account', 'demo', 1, 1, 1, dateadd(day,30,getdate()))
+--	end
 
 
---add demo product family
-if not exists (select * from dbo.[ProductFamily] where [ProductFamily].[DisplayName] = 'Test Family')
-	begin
-		insert into dbo.ProductFamily(DisplayName, AccountId, [CreatedById])
-		values
-			 ('Test Family', 1, 1)
-	end
+----add demo product family
+--if not exists (select * from dbo.[ProductFamily] where [ProductFamily].[DisplayName] = 'Test Family')
+--	begin
+--		insert into dbo.ProductFamily([DisplayName], [SubscriptionId], [CreatedById])
+--		values
+--			 ('Test Family', 1, 1)
+--	end
 
 
 

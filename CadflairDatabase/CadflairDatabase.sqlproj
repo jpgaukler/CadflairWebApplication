@@ -59,15 +59,13 @@
     <Folder Include="dbo\" />
     <Folder Include="dbo\Tables\" />
     <Folder Include="Publish Scripts" />
-    <Folder Include="dbo\Views" />
     <Folder Include="Compare" />
     <Folder Include="Post Deployment Scripts" />
     <Folder Include="dbo\Stored Procedures" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\AccountType.sql" />
-    <Build Include="dbo\Tables\UserRole.sql" />
-    <Build Include="dbo\Tables\Account.sql" />
+    <Build Include="dbo\Tables\SubscriptionType.sql" />
+    <Build Include="dbo\Tables\Subscription.sql" />
     <Build Include="dbo\Tables\User.sql" />
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductConfiguration.sql" />
@@ -80,13 +78,18 @@
     <Build Include="dbo\Stored Procedures\spProduct_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_GetByProductFamilyId.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_DeleteById.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFamily_GetByAccountId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFamily_GetBySubscriptionId.sql" />
     <Build Include="dbo\Stored Procedures\spProductFamily_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductFamily_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spProductFamily_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_GetByProductId.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spUser_GetByObjectIdentifier.sql" />
+    <Build Include="dbo\Stored Procedures\spUser_GetBySubscriptionId.sql" />
+    <Build Include="dbo\Stored Procedures\spUser_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spUser_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spUser_UpdateById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

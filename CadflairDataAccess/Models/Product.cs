@@ -7,6 +7,7 @@ namespace CadflairDataAccess.Models
     public class Product
     {
         public int Id { get; set; }
+        public int SubscriptionId { get; set; }
         public int ProductFamilyId { get; set; }
         public string DisplayName { get; set; }
         public string ParameterJson { get; set; }

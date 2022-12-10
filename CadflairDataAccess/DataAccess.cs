@@ -20,6 +20,14 @@ namespace CadflairDataAccess
             _connectionString = connectionString;
         }
 
+        /// <summary>
+        /// Performs a query for a multiple records.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <returns>A list of type <b>T</b> that matches the query.</returns>
         public async Task<List<T>> LoadDataAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
@@ -29,6 +37,14 @@ namespace CadflairDataAccess
             }
         }
 
+        /// <summary>
+        /// Performs a query for a single record.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="U"></typeparam>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <returns>The first record of type <b>T</b> that matches the query.</returns>
         public async Task<T> LoadSingleAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
@@ -38,6 +54,13 @@ namespace CadflairDataAccess
             }
         }
 
+        /// <summary>
+        /// Save data for one or more rows in a table. Use this method to delete records.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public async Task SaveDataAsync<T>(string storedProcedure, T parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
@@ -46,6 +69,13 @@ namespace CadflairDataAccess
             }
         }
 
+        /// <summary>
+        /// Saves data for a single row in a table. Use this method to insert a new row, or modify a single row in a table.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="storedProcedure"></param>
+        /// <param name="parameters"></param>
+        /// <returns>The <b>Id</b> of the record that was modified.</returns>
         public async Task<int> SaveSingleAsync<T>(string storedProcedure, T parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))

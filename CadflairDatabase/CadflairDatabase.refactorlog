@@ -203,4 +203,46 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[UserRole]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="9a8f0817-515c-4195-9ea0-22c8218ed52b" ChangeDateTime="12/10/2022 12:34:59">
+    <Property Name="ElementName" Value="[dbo].[Account]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[Subscription]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="73e8e3ad-27c7-40a7-b4fd-769624bf7e3f" ChangeDateTime="12/10/2022 12:36:31">
+    <Property Name="ElementName" Value="[dbo].[AccountType]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[SubscriptionType]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="1b1e5713-3346-4afe-9e71-b70534c168c1" ChangeDateTime="12/10/2022 12:38:44">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[SubscriptionExpiresOn]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ExpiresOn]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="465dc46b-8e47-40df-8d11-e7765e134028" ChangeDateTime="12/10/2022 12:41:21">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[SubDirectory]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[PageName]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="08d092d8-c85f-4501-9020-ebb61c7fbf7f" ChangeDateTime="12/10/2022 12:43:32">
+    <Property Name="ElementName" Value="[dbo].[User].[AccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[User]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SubscriptionId]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c13f8b12-e331-4bb3-9ae2-d70d9cf47b78" ChangeDateTime="12/10/2022 12:45:17">
+    <Property Name="ElementName" Value="[dbo].[ProductFamily].[AccountId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ProductFamily]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SubscriptionId]" />
+  </Operation>
 </Operations>

@@ -17,112 +17,51 @@ namespace CadflairDataAccess.Services
             _db = db;
         }
 
-        public Task<List<User>> GetUsers()
-        {
-            string sql = "select * from dbo.[User]";
+        #region "Users"
 
-            return _db.LoadDataAsync<User, dynamic>(sql, new { });
+        public Task<User> GetUserByObjectIdentifier(string objectIdentifier)
+        {
+            return _db.LoadSingleAsync<User, dynamic>("[dbo].[spUser_GetByObjectIdentifier]", new { ObjectIdentifier = objectIdentifier });
         }
 
-        public Task<User> GetUserById(int userId)
+        public Task<List<User>> GetUsersBySubscriptionId(int subscriptionId)
         {
-            string sql = "select * from dbo.[User] where Id = @Id";
+            return _db.LoadDataAsync<User, dynamic>("[dbo].[spUser_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
+        }
 
+        public Task<int> CreateUser(User newUser)
+        {
             dynamic values = new
             {
-                Id = userId,
+                newUser.ObjectIdentifier,
+                newUser.FirstName,
+                newUser.LastName,
+                newUser.EmailAddress,
             };
 
-            return _db.LoadSingleAsync<User, dynamic>(sql, values);
+            return _db.SaveSingleAsync("[dbo].[spUser_Insert]", values);
         }
 
-        public Task<List<User>> GetUsersByAccountId(int accountId)
+        public Task UpdateUser(User user)
         {
-            string sql = "select * from dbo.[User] where AccountId = @AccountId";
-
             dynamic values = new
             {
-                AccountId = accountId,
+                user.Id,
+                user.ObjectIdentifier,
+                user.FirstName,
+                user.LastName,
+                user.EmailAddress,
             };
 
-            return _db.LoadDataAsync<User, dynamic>(sql, values);
-        }
-
-        public async Task<User> GetUserByEmailAddress(string emailAddress)
-        {
-            string sql = "select * from dbo.[User] where EmailAddress = @EmailAddress";
-
-            dynamic values = new
-            {
-                EmailAddress = emailAddress,
-            };
-
-            User user = await _db.LoadSingleAsync<User, dynamic>(sql, values);
-
-            return user;
-        }
-
-        public Task<List<UserRole>> GetUserRoles()
-        {
-            string sql = "select * from dbo.[UserRole]";
-
-            return _db.LoadDataAsync<UserRole, dynamic>(sql, new { });
-        }
-
-        public Task<UserRole> GetUserRoleById(int userRoleId)
-        {
-            string sql = "select * from dbo.[UserRole] where Id = @UserRoleId";
-
-            dynamic values = new
-            {
-                UserRoleId = userRoleId,
-            };
-
-            return _db.LoadSingleAsync<UserRole, dynamic>(sql, values);
-        }
-
-        public Task<UserRole> GetUserRoleByName(string userRoleName)
-        {
-            string sql = "select * from dbo.[UserRole] where Name = @Name";
-
-            dynamic values = new
-            {
-                Name = userRoleName,
-            };
-
-            return _db.LoadSingleAsync<UserRole, dynamic>(sql, values);
-        }
-
-
-        public Task CreateUser(User newUser)
-        {
-            string sql = @"INSERT INTO [dbo].[User]
-                           (UserRoleId
-                           ,FirstName
-                           ,LastName
-                           ,EmailAddress
-                           ,PasswordHash)
-                           VALUES
-                           (@UserRoleId
-                           ,@FirstName
-                           ,@LastName
-                           ,@EmailAddress
-                           ,@PasswordHash)";
-
-            return _db.SaveDataAsync(sql, newUser);
+            return _db.SaveDataAsync("[dbo].[spUser_UpdateById]", values);
         }
 
         public Task DeleteUser(User user)
         {
-            string sql = "DELETE FROM [dbo].[User] WHERE Id = @Id";
-
-            dynamic values = new
-            {
-                Id = user.Id,
-            };
-
-            return _db.SaveDataAsync(sql, values);
+            return _db.SaveDataAsync("[dbo].[spUser_DeleteById]", new { user.Id });
         }
+
+        #endregion
 
     }
 }

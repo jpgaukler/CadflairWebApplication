@@ -1,4 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[spProduct_Insert]
+	@SubscriptionId int,
 	@ProductFamilyId int,
 	@DisplayName nvarchar(50),
 	@ParameterJson nvarchar(4000),
@@ -12,7 +13,8 @@ BEGIN
 	SET NOCOUNT ON;
 
 	INSERT INTO [dbo].[Product]
-			   (ProductFamilyId
+			   (SubscriptionId
+			   ,ProductFamilyId
 			   ,DisplayName
 			   ,ParameterJson
 			   ,ForgeBucketKey
@@ -20,7 +22,8 @@ BEGIN
 			   ,IsPublic
 			   ,IsConfigurable)
 		   VALUES
-			   (@ProductFamilyId
+			   (@SubscriptionId
+			   ,@ProductFamilyId
 			   ,@DisplayName
 			   ,@ParameterJson
 			   ,@ForgeBucketKey

@@ -33,6 +33,7 @@ namespace CadflairDataAccess.Services
         {
             dynamic values = new
             {
+                newProduct.SubscriptionId,
                 newProduct.ProductFamilyId,
                 newProduct.DisplayName,
                 newProduct.ParameterJson,
@@ -59,17 +60,17 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetById]", new { Id = id });
         }
 
-        public Task<List<ProductFamily>> GetProductFamiliesByAccountId(int accountId)
+        public Task<List<ProductFamily>> GetProductFamiliesBySubscriptionId(int subscriptionId)
         {
-            return _db.LoadDataAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetByAccountId]", new { AccountId = accountId });
+            return _db.LoadDataAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
         }
 
         public Task<int> CreateProductFamily(ProductFamily newProductFamily)
         {
             dynamic values = new
             {
+                newProductFamily.SubscriptionId,
                 newProductFamily.ParentId,
-                newProductFamily.AccountId,
                 newProductFamily.DisplayName,
                 newProductFamily.CreatedById,
             };
