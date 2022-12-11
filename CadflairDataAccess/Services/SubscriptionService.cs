@@ -17,47 +17,29 @@ namespace CadflairDataAccess.Services
             _db = db;
         }
 
-        //public Task<List<Subscription>> GetSubscriptions()
-        //{
-        //    string sql = "select * from dbo.Subscription";
-
-        //    return _db.LoadDataAsync<Subscription, dynamic>(sql, new { });
-        //}
-
-        //public Task<List<SubscriptionType>> GetSubscriptionTypes()
-        //{
-        //    string sql = "select * from dbo.SubscriptionType";
-
-        //    return _db.LoadDataAsync<SubscriptionType, dynamic>(sql, new { });
-        //}
-
-        public async Task<Subscription> GetSubscriptionById(int subscriptionId)
+        public Task<List<SubscriptionType>> GetSubscriptionTypes()
         {
-            string sql = "select * from dbo.Subscription where Id = @Id";
-
-            dynamic values = new
-            {
-                Id = subscriptionId,
-            };
-
-            List<Subscription> accounts = await _db.LoadDataAsync<Subscription, dynamic>(sql, values);
-
-            return accounts.First();
+            return _db.LoadDataAsync<SubscriptionType, dynamic>("[dbo].[spSubscriptionType_GetAll]", new { });
         }
 
-        public async Task<Subscription> GetSubscriptionByPageName(string pageName)
+        public Task<Subscription> GetSubscriptionById(int id)
         {
-            string sql = "select * from dbo.Subscription where PageName = @PageName";
-
-            dynamic values = new
-            {
-                PageName = pageName,
-            };
-
-            List<Subscription> accounts = await _db.LoadDataAsync<Subscription, dynamic>(sql, values);
-
-            return accounts.First();
+            return _db.LoadSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_GetById]", new { Id = id });
         }
+
+        //public async Task<Subscription> GetSubscriptionByPageName(string pageName)
+        //{
+        //    string sql = "select * from dbo.Subscription where PageName = @PageName";
+
+        //    dynamic values = new
+        //    {
+        //        PageName = pageName,
+        //    };
+
+        //    List<Subscription> accounts = await _db.LoadDataAsync<Subscription, dynamic>(sql, values);
+
+        //    return accounts.First();
+        //}
 
         //public Task CreateAccount(Subscription newAccount)
         //{
@@ -81,8 +63,7 @@ namespace CadflairDataAccess.Services
 
         public Task DeleteSubscription(Subscription subscription)
         {
-            string sql = "DELETE FROM [dbo].[Subscription] WHERE Id = @Id";
-            return _db.SaveDataAsync(sql, new { subscription.Id });
+            return _db.SaveDataAsync("[dbo].[spSubscription_DeleteById]", new { subscription.Id });
         }
     }
 }

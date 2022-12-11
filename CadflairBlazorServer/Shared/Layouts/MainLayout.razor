@@ -4,7 +4,7 @@
 
 <PageTitle>CadflairBlazorServer</PageTitle>
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_customTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -16,18 +16,22 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <MudLink Href="/MicrosoftIdentity/Account/SignOut">Log Out</MudLink>
-                <MudLink Href="/MicrosoftIdentity/Account/EditProfile">Profile</MudLink>
+@*                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+                <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" Label="Toggle Light/Dark Mode" />
+*@
+                <MudButton Link="/MicrosoftIdentity/Account/SignOut" Color="Color.Inherit" Class="px-3 py-5">Log Out</MudButton>
+                <MudButton Link="/MicrosoftIdentity/Account/EditProfile" Color="Color.Primary" Class="px-3 py-5">Edit Profile</MudButton>
             </Authorized>
             <NotAuthorized>
-                <MudLink Href="/MicrosoftIdentity/Account/SignIn">Log In</MudLink>
-                <MudButton Link="/MicrosoftIdentity/Account/SignUp" Color="Color.Inherit">Sign Up</MudButton>
+                <MudStack Row="true" Spacing="0">
+                    <MudButton Link="/" Color="Color.Inherit" Class="px-3 py-5">Demo</MudButton>
+                    <MudButton Link="/" Color="Color.Inherit" Class="px-3 py-5">Pricing</MudButton>
+                    <MudButton Link="/" Color="Color.Inherit" Class="px-3 py-5">Contact Us</MudButton>
+                    <MudButton Link="/MicrosoftIdentity/Account/SignIn" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>
+                    <MudButton Link="/MicrosoftIdentity/Account/SignUp" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>
+                </MudStack>
             </NotAuthorized>
         </AuthorizeView>
-
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" Label="Toggle Light/Dark Mode" />
-
     </MudAppBar>
     <MudMainContent>
         @Body
@@ -36,8 +40,22 @@
 
 @code {
     private MudThemeProvider? _mudThemeProvider;
-    private bool _isDarkMode = true;
+    private bool _isDarkMode = false;
     private bool _drawerOpen;
+
+    private MudTheme _customTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            //Primary = Colors.Blue.Default,
+            Primary = "#50C0FF",
+            AppbarBackground = Colors.Grey.Darken4,
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Primary = Colors.Blue.Lighten1
+        },
+    };
 
     private void ToggleDrawer()
     {
@@ -46,15 +64,15 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            if (_mudThemeProvider != null)
-            {
-                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-            }
+        //if (firstRender)
+        //{
+        //    if (_mudThemeProvider != null)
+        //    {
+        //        _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+        //    }
 
-            StateHasChanged();
-        }
+        //    StateHasChanged();
+        //}
     }
 
 

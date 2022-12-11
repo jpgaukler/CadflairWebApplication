@@ -1,0 +1,45 @@
+﻿@page "/dashboard"
+@attribute [Authorize]
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject DataServicesManager _dataServicesManager
+
+<PageTitle>Cadflair</PageTitle>
+
+<MudPaper Elevation="25">
+    <MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Edit" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Color="Color.Inherit" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Settings" Color="Color.Inherit" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
+        <MudIconButton Icon="@Icons.Material.Outlined.PushPin" />
+        <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt" />
+        <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" />
+    </MudToolBar>
+</MudPaper>
+
+<MudText>Hello @_loggedInUser.FullName</MudText>
+
+
+
+<h3>Dashboard</h3>
+
+@code {
+
+    private User _loggedInUser = new();
+    private Subscription _subscription = new();
+    private List<ProductFamily> _productFamilies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+        _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionById(_loggedInUser.SubscriptionId);
+        _productFamilies = await _dataServicesManager.ProductService.GetProductFamiliesBySubscriptionId(_subscription.Id);
+    }
+
+
+
+
+}

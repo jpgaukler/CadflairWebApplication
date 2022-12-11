@@ -17,11 +17,12 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                Add logout here.
+                <MudLink Href="/MicrosoftIdentity/Account/SignOut">Log Out</MudLink>
+                <MudLink Href="/MicrosoftIdentity/Account/EditProfile">Profile</MudLink>
             </Authorized>
             <NotAuthorized>
-                <MudLink Href="/login">Log In</MudLink>
-                <MudButton Link="/signup" Color="Color.Inherit">Sign Up</MudButton>
+                <MudLink Href="/MicrosoftIdentity/Account/SignIn">Log In</MudLink>
+                <MudButton Link="/MicrosoftIdentity/Account/SignUp" Color="Color.Inherit">Sign Up</MudButton>
             </NotAuthorized>
         </AuthorizeView>
 
