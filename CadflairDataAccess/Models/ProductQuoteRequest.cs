@@ -20,6 +20,6 @@ namespace CadflairDataAccess.Models
 
 
 
-        public DateTime CreatedOn { get; set; } 
+        public DateTimeOffset CreatedOn { get; set; } 
     }
 }

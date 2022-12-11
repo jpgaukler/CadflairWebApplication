@@ -11,6 +11,6 @@ namespace CadflairDataAccess.Models
         public int ParentId { get; set; } 
         public string DisplayName { get; set; } 
         public int CreatedById { get; set; } 
-        public DateTime CreatedOn { get; set; } 
+        public DateTimeOffset CreatedOn { get; set; } 
     }
 }

@@ -5,7 +5,7 @@
     [FirstName]           NVARCHAR(25)       NOT NULL,
     [LastName]            NVARCHAR(25)       NOT NULL,
     [EmailAddress]        NVARCHAR(100)      NOT NULL,
-    [CreatedOn]           DATETIME           NOT NULL DEFAULT getdate(),
+    [CreatedOn]           DATETIMEOFFSET(7)  NOT NULL DEFAULT sysdatetimeoffset(),
     CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_User_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([Id]),
     --CONSTRAINT [UC_User_EmailAddress] UNIQUE([EmailAddress])

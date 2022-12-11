@@ -5,7 +5,7 @@
     [DisplayName]		 NVARCHAR(50)              NOT NULL,
     [ParameterJson]		 NVARCHAR (4000)           NULL, --I am not sure if this should be MAX, might want to try and determine the actual length of this field
     [ForgeBucketKey]	 UNIQUEIDENTIFIER          NOT NULL,
-    [CreatedOn]			 DATETIME		    	   NOT NULL DEFAULT getdate(),
+    [CreatedOn]			 DATETIMEOFFSET(7)    	   NOT NULL DEFAULT sysdatetimeoffset(),
     [CreatedById]        INT                       NOT NULL,
     [IsPublic]			 BIT                       NOT NULL DEFAULT 0,
     [IsConfigurable]     BIT                       NOT NULL DEFAULT 0,

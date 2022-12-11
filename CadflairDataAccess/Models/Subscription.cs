@@ -13,7 +13,7 @@ namespace CadflairDataAccess.Models
         public int CreatedById { get; set; }
         public DateTime CreatedOn { get; set; }
         public int OwnerId { get; set; }
-        public DateTime ExpiresOn { get; set; }
+        public DateTimeOffset ExpiresOn { get; set; }
 
     }
 }

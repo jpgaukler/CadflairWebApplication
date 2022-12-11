@@ -13,7 +13,7 @@ namespace CadflairDataAccess.Models
         public string LastName { get; set; }
         public string FullName => $"{FirstName} {LastName}";
         public string EmailAddress { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public DateTimeOffset CreatedOn { get; set; }
     }
 
 }
