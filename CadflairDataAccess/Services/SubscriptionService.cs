@@ -41,25 +41,19 @@ namespace CadflairDataAccess.Services
         //    return accounts.First();
         //}
 
-        //public Task CreateAccount(Subscription newAccount)
-        //{
-        //    string sql = @"INSERT INTO [dbo].[Account]
-        //                   (CompanyName
-        //                   ,SubDirectory
-        //                   ,CreatedById
-        //                   ,OwnerId
-        //                   ,AccountTypeId
-        //                   ,SubscriptionExpiresOn)
-        //                   VALUES
-        //                   (@CompanyName
-        //                   ,@SubDirectory
-        //                   ,@CreatedById
-        //                   ,@OwnerId
-        //                   ,@AccountTypeId
-        //                   ,@SubscriptionExpiresOn)";
+        public Task<int> CreateSubscription(Subscription newSubscription)
+        {
+            dynamic values = new
+            {
+                newSubscription.SubscriptionTypeId,
+                newSubscription.CompanyName,
+                newSubscription.PageName,
+                newSubscription.OwnerId,
+                newSubscription.CreatedById,
+            };
 
-        //    return _db.SaveDataAsync(sql, newAccount);
-        //}
+            return _db.SaveSingleAsync("[dbo].[spSubscription_Insert]", values);
+        }
 
         public Task DeleteSubscription(Subscription subscription)
         {

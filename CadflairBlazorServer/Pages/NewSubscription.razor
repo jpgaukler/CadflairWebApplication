@@ -1,0 +1,67 @@
+﻿@page "/subscription/new"
+@attribute [Authorize]
+@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject DataServicesManager _dataServicesManager
+
+<div class="d-flex justify-center">
+    <MudPaper Class="rounded-lg mud-theme-primary pa-5 ma-5" Elevation="3">
+        <MudForm @bind-IsValid="_validInputs">
+            <MudTextField @bind-Value="_companyName" Label="Company Name" Required="true" RequiredError="Company Name is required!" />
+            <MudTextField @bind-Value="_pageName" Label="Page Name" Required="true" RequiredError="Page Name is required!" />
+
+            <MudSelect T="SubscriptionType"
+                       ToStringFunc="@(i => i?.Name)"
+                       @bind-Value="_subscriptionType"
+                       Label="Subscription Type"
+                       Placeholder="Select subscription type">
+                @foreach (SubscriptionType type in _subscriptionTypes)
+                {
+                    <MudSelectItem Value="type">@type.Name</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudButton OnClick="Submit_OnClick" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+        </MudForm>
+    </MudPaper>
+</div>
+
+@code {
+
+    private User _loggedInUser = new();
+
+    private bool _validInputs;
+    private string _companyName = string.Empty;
+    private string _pageName = string.Empty;
+    private SubscriptionType _subscriptionType = new();
+    private List<SubscriptionType> _subscriptionTypes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+        _subscriptionTypes = await _dataServicesManager.SubscriptionService.GetSubscriptionTypes();
+    }
+
+
+    private async Task Submit_OnClick()
+    {
+        if (!_validInputs) return;
+
+        Subscription newSubscription = new()
+        {
+            SubscriptionTypeId = (int)SubScriptionTypeEnum.Pro,
+            CompanyName = _companyName,
+            PageName = _pageName,
+            OwnerId = _loggedInUser.Id,
+            CreatedById = _loggedInUser.Id,
+        };
+
+        _loggedInUser.SubscriptionId = await _dataServicesManager.SubscriptionService.CreateSubscription(newSubscription);
+        await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
+
+        _navigationManager.NavigateTo("/dashboard");
+    }
+
+
+
+}

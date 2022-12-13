@@ -48,6 +48,7 @@ namespace CadflairDataAccess.Services
             {
                 user.Id,
                 user.ObjectIdentifier,
+                user.SubscriptionId,
                 user.FirstName,
                 user.LastName,
                 user.EmailAddress,

@@ -11,7 +11,7 @@ namespace CadflairDataAccess.Models
         public string CompanyName { get; set; }
         public string PageName { get; set; }
         public int CreatedById { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public DateTimeOffset CreatedOn { get; set; }
         public int OwnerId { get; set; }
         public DateTimeOffset ExpiresOn { get; set; }
 

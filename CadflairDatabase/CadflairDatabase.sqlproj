@@ -93,6 +93,7 @@
     <Build Include="dbo\Stored Procedures\spSubscription_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spSubscriptionType_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spSubscription_Insert.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />
