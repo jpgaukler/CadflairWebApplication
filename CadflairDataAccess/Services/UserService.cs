@@ -29,17 +29,17 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<User, dynamic>("[dbo].[spUser_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
         }
 
-        public Task<int> CreateUser(User newUser)
+        public Task<User> CreateUser(Guid objectIdentifier, string firstName, string lastName, string emailAddress)
         {
             dynamic values = new
             {
-                newUser.ObjectIdentifier,
-                newUser.FirstName,
-                newUser.LastName,
-                newUser.EmailAddress,
+                ObjectIdentifier = objectIdentifier,
+                FirstName = firstName,
+                LastName = lastName,
+                EmailAddress = emailAddress,
             };
 
-            return _db.SaveSingleAsync("[dbo].[spUser_Insert]", values);
+            return _db.SaveSingleAsync<User, dynamic>("[dbo].[spUser_Insert]", values);
         }
 
         public Task UpdateUser(User user)

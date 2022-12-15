@@ -14,7 +14,6 @@ namespace CadflairBlazorServer.Controllers
     {
         private readonly ForgeServicesManager _forgeServicesManager;
         private readonly DataServicesManager _dataServicesManager;
-        private static readonly string[] _uploadFileExtensions = { ".ipt", "iam", ".idw", ".dwg", ".zip"};
 
         public ProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager)
         {
@@ -22,9 +21,16 @@ namespace CadflairBlazorServer.Controllers
             _dataServicesManager = dataServicesManager;
         }
 
-        public class ProductUploadData
+        public class ProductUploadForm
         {
-            public string ProductSpec { get; set; } = string.Empty;
+            public int? UserId { get; set; } 
+            public int? SubscriptionId { get; set; } 
+            public int? ProductFamilyId { get; set; }
+            public string? DisplayName { get; set; }
+            public string? ParameterJson { get; set; }
+            public string? ArgumentJson { get; set; }
+            public bool? IsPublic { get; set; } 
+            public bool? IsConfigurable { get; set; } 
             public IFormFile? ZipFile { get; set; }
         }
 
@@ -34,16 +40,21 @@ namespace CadflairBlazorServer.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("api/product/create")]
-        public async Task<IActionResult> CreateProduct([FromForm] ProductUploadData productUploadData)
+        public async Task<IActionResult> CreateProduct([FromForm] ProductUploadForm form)
         {
             try
             {
                 //validate data
-                if (string.IsNullOrWhiteSpace(productUploadData.ProductSpec)) return ValidationProblem("No product information provided.");
-                if (productUploadData.ZipFile == null) return ValidationProblem("No zip file was not provided.");
-                if (productUploadData.ZipFile.Length == 0) return ValidationProblem("File does not contain any data.");
-                if (Path.GetExtension(productUploadData.ZipFile.FileName) != ".zip") return ValidationProblem("Invalid file type provided.");
-                //if (!_uploadFileExtensions.Any(i => i == Path.GetExtension(productUploadData.ZipFile.FileName))) return ValidationProblem("Invalid file type provided.");
+                if (form.SubscriptionId == null) return ValidationProblem("Parameter 'SubscriptionId' was not provided!");
+                if (form.ProductFamilyId == null) return ValidationProblem("Parameter 'ProductFamilyId' was not provided!");
+                if (form.UserId == null) return ValidationProblem("Parameter 'UserId' was not provided!");
+                if (string.IsNullOrWhiteSpace(form.DisplayName)) return ValidationProblem("Parameter 'DisplayName' was not provided!");
+                if (string.IsNullOrWhiteSpace(form.ParameterJson)) return ValidationProblem("Parameter 'ParameterJson' was not provided!");
+                if (string.IsNullOrWhiteSpace(form.ArgumentJson)) return ValidationProblem("Parameter 'ArgumentJson' was not provided!");
+                if (form.IsPublic == null) return ValidationProblem("Parameter 'IsPublic' was not provided!");
+                if (form.IsConfigurable == null) return ValidationProblem("Parameter 'IsConfigurable' was not provided!");
+                if (form.ZipFile == null || form.ZipFile.Length == 0) return ValidationProblem("No zip file was provided!");
+                if (Path.GetExtension(form.ZipFile.FileName) != ".zip") return ValidationProblem("Invalid file type!");
 
                 //// Upload check if greater than 2mb!
                 //if (memoryStream.Length > 2097152)
@@ -60,7 +71,7 @@ namespace CadflairBlazorServer.Controllers
 
                 using (FileStream stream = System.IO.File.Create(tempFileName))
                 {
-                    await productUploadData.ZipFile.CopyToAsync(stream);
+                    await form.ZipFile.CopyToAsync(stream);
                 }
 
                 // Upload file to Autodesk Forge OSS 
@@ -72,21 +83,22 @@ namespace CadflairBlazorServer.Controllers
                 if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload to Autodesk Forge OSS." });
 
                 // Create new Product record in the database
-                Product newProduct = JsonSerializer.Deserialize<Product>(productUploadData.ProductSpec)!;
-                newProduct.ForgeBucketKey = bucketKey;
-                newProduct.Id = await _dataServicesManager.ProductService.CreateProduct(newProduct);
+                Product newProduct = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: (int)form.SubscriptionId,
+                                                                                             productFamilyId: (int)form.ProductFamilyId,
+                                                                                             displayName: form.DisplayName,
+                                                                                             parameterJson: form.ParameterJson,
+                                                                                             forgeBucketKey: bucketKey,
+                                                                                             createdById: (int)form.UserId,
+                                                                                             isPublic: (bool)form.IsPublic,
+                                                                                             isConfigurable: (bool)form.IsConfigurable);
 
                 // Create new ProductConfiguration record in the database for master configuration
-                ProductConfiguration masterConfiguration = new()
-                {
-                    ProductId = newProduct.Id,
-                    ArgumentJson = "",
-                    ForgeObjectKey = objectKey,
-                };
+                ProductConfiguration masterConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productId: newProduct.Id,
+                                                                                                                                argumentJson: form.ArgumentJson,
+                                                                                                                                forgeZipKey: objectKey,
+                                                                                                                                isDefault: true);
 
-                masterConfiguration.Id = await _dataServicesManager.ProductService.CreateProductConfiguration(masterConfiguration);
-
-                return Ok(new { Result = "Product uploaded successfully!"});
+                return Ok(new { Result = "Product uploaded successfully!" });
             }
             catch (Exception ex)
             {

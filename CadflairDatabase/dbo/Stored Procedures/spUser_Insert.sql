@@ -18,7 +18,7 @@ BEGIN
 			   ,@FirstName
 			   ,@LastName
 			   ,@EmailAddress)
-		   SELECT CAST(SCOPE_IDENTITY() as int);
+		   SELECT * FROM [dbo].[User] WHERE Id = SCOPE_IDENTITY();
 
 END
 

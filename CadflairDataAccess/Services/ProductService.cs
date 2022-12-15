@@ -29,21 +29,21 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFamilyId]", new { ProductFamilyId = productFamilyId });
         }
 
-        public Task<int> CreateProduct(Product newProduct)
+        public Task<Product> CreateProduct(int subscriptionId, int productFamilyId, string displayName, string parameterJson, Guid forgeBucketKey, int createdById, bool isPublic, bool isConfigurable)
         {
             dynamic values = new
             {
-                newProduct.SubscriptionId,
-                newProduct.ProductFamilyId,
-                newProduct.DisplayName,
-                newProduct.ParameterJson,
-                newProduct.ForgeBucketKey,
-                newProduct.CreatedById,
-                newProduct.IsPublic,
-                newProduct.IsConfigurable
+                SubscriptionId = subscriptionId,
+                ProductFamilyId = productFamilyId,
+                DisplayName = displayName,
+                ParameterJson = parameterJson,
+                ForgeBucketKey = forgeBucketKey,
+                CreatedById = createdById,
+                IsPublic = isPublic,
+                IsConfigurable = isConfigurable
             };
 
-            return _db.SaveSingleAsync("[dbo].[spProduct_Insert]", values);
+            return _db.SaveSingleAsync<Product, dynamic>("[dbo].[spProduct_Insert]", values);
         }
 
         public Task DeleteProduct(Product product)
@@ -65,17 +65,17 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
         }
 
-        public Task<int> CreateProductFamily(ProductFamily newProductFamily)
+        public Task<ProductFamily> CreateProductFamily(int subscriptionId, int parentId, string displayName, int createdById)
         {
             dynamic values = new
             {
-                newProductFamily.SubscriptionId,
-                newProductFamily.ParentId,
-                newProductFamily.DisplayName,
-                newProductFamily.CreatedById,
+                SubscriptionId = subscriptionId,
+                ParentId = parentId,
+                DisplayName = displayName,
+                CreatedById = createdById,
             };
 
-            return _db.SaveSingleAsync("[dbo].[spProductFamily_Insert]", values);
+            return _db.SaveSingleAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_Insert]", values);
         }
 
         public Task DeleteProductFamily(Product productFamily)
@@ -97,16 +97,17 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetByProductId]", new { ProductId = productId });
         }
 
-        public Task<int> CreateProductConfiguration(ProductConfiguration newProductConfiguration)
+        public Task<ProductConfiguration> CreateProductConfiguration(int productId, string argumentJson, Guid forgeZipKey, bool isDefault)
         {
             dynamic values = new
             {
-                newProductConfiguration.ProductId,
-                newProductConfiguration.ArgumentJson,
-                newProductConfiguration.ForgeObjectKey
+                ProductId = productId,
+                ArgumentJson = argumentJson,
+                ForgeObjectKey = forgeZipKey,
+                IsDefault = isDefault,
             };
 
-            return _db.SaveSingleAsync("[dbo].[spProductConfiguration_Insert]", values);
+            return _db.SaveSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_Insert]", values);
         }
 
         public Task DeleteProductConfiguration(ProductConfiguration productConfiguration)

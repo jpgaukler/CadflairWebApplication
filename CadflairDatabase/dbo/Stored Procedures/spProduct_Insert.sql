@@ -30,7 +30,7 @@ BEGIN
 			   ,@CreatedById
 			   ,@IsPublic
 			   ,@IsConfigurable)
-		   SELECT CAST(SCOPE_IDENTITY() as int);
+		   SELECT * FROM [dbo].[Product] WHERE Id = SCOPE_IDENTITY();
 
 END
 

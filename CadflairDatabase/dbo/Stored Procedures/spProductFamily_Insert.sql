@@ -18,7 +18,7 @@ BEGIN
 			   ,@ParentId
 			   ,@DisplayName
 			   ,@CreatedById)
-		   SELECT CAST(SCOPE_IDENTITY() as int);
+		   SELECT * FROM [dbo].[ProductFamily] WHERE Id = SCOPE_IDENTITY();
 
 END
 

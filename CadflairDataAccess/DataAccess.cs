@@ -49,8 +49,8 @@ namespace CadflairDataAccess
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                var row = await connection.QueryFirstOrDefaultAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-                return row;
+                var record = await connection.QueryFirstOrDefaultAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+                return record;
             }
         }
 
@@ -76,12 +76,12 @@ namespace CadflairDataAccess
         /// <param name="storedProcedure"></param>
         /// <param name="parameters"></param>
         /// <returns>The <b>Id</b> of the record that was modified.</returns>
-        public async Task<int> SaveSingleAsync<T>(string storedProcedure, T parameters)
+        public async Task<T> SaveSingleAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
-                int id = await connection.QuerySingleAsync<int>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
-                return id;
+                var result = await connection.QuerySingleAsync<T>(storedProcedure, parameters, commandType: CommandType.StoredProcedure);
+                return result;
             }
         }
 

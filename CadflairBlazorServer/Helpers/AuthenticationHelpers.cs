@@ -13,7 +13,7 @@ namespace CadflairBlazorServer.Helpers
             string objectId = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("objectidentifier"))?.Value ?? string.Empty;
             string firstName = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("givenname"))?.Value ?? string.Empty;
             string lastName = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("surname"))?.Value ?? string.Empty;
-            string email = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))?.Value ?? string.Empty;
+            string emailAddress = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))?.Value ?? string.Empty;
 
             // return empty user if not logged in
             if (string.IsNullOrWhiteSpace(objectId)) return new User();
@@ -21,7 +21,14 @@ namespace CadflairBlazorServer.Helpers
             // get user from db
             User user = await userService.GetUserByObjectIdentifier(objectId) ?? new();
 
-            // compare claim values with user values in db
+            //create new user if no match is found
+            if (user.Id == 0)
+            {
+                User newUser = await userService.CreateUser(Guid.Parse(objectId), firstName, lastName, emailAddress);
+                return newUser;
+            }
+
+            // if match is found, compare claim values with user values in db and update record if needed
             bool isDirty = false;
 
             if (!objectId.Equals(user.ObjectIdentifier.ToString()))
@@ -42,22 +49,15 @@ namespace CadflairBlazorServer.Helpers
                 user.LastName = lastName;
             }
 
-            if (!email.Equals(user.EmailAddress))
+            if (!emailAddress.Equals(user.EmailAddress))
             {
                 isDirty = true;
-                user.EmailAddress = email;
+                user.EmailAddress = emailAddress;
             }
 
             if (isDirty)
             {
-                if (user.Id == 0)
-                {
-                    user.Id = await userService.CreateUser(user);
-                }
-                else
-                {
-                    await userService.UpdateUser(user);
-                }
+                await userService.UpdateUser(user);
             }
 
             return user;

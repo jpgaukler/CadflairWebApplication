@@ -5,23 +5,25 @@
 @inject DataServicesManager _dataServicesManager
 
 <div class="d-flex justify-center">
-    <MudPaper Class="rounded-lg mud-theme-primary pa-5 ma-5" Elevation="3">
+    <MudPaper Class="rounded-lg pa-5 ma-5" Elevation="3">
         <MudForm @bind-IsValid="_validInputs">
-            <MudTextField @bind-Value="_companyName" Label="Company Name" Required="true" RequiredError="Company Name is required!" />
-            <MudTextField @bind-Value="_pageName" Label="Page Name" Required="true" RequiredError="Page Name is required!" />
+            <MudStack>
+                <MudTextField @bind-Value="_companyName" Label="Company Name" Required="true" RequiredError="Company Name is required!" />
+                <MudTextField @bind-Value="_pageName" Label="Page Name" Required="true" RequiredError="Page Name is required!" />
 
-            <MudSelect T="SubscriptionType"
-                       ToStringFunc="@(i => i?.Name)"
-                       @bind-Value="_subscriptionType"
-                       Label="Subscription Type"
-                       Placeholder="Select subscription type">
-                @foreach (SubscriptionType type in _subscriptionTypes)
-                {
-                    <MudSelectItem Value="type">@type.Name</MudSelectItem>
-                }
-            </MudSelect>
+                <MudSelect T="SubscriptionType"
+                           ToStringFunc="@(subscriptionType => subscriptionType?.Name)"
+                           @bind-Value="_subscriptionType"
+                           Label="Subscription Type"
+                           Placeholder="Select subscription type">
+                    @foreach (SubscriptionType type in _subscriptionTypes)
+                    {
+                        <MudSelectItem Value="type">@type.Name</MudSelectItem>
+                    }
+                </MudSelect>
 
-            <MudButton OnClick="Submit_OnClick" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+                <MudButton OnClick="Submit_OnClick" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+            </MudStack>
         </MudForm>
     </MudPaper>
 </div>
@@ -29,7 +31,6 @@
 @code {
 
     private User _loggedInUser = new();
-
     private bool _validInputs;
     private string _companyName = string.Empty;
     private string _pageName = string.Empty;
@@ -47,16 +48,15 @@
     {
         if (!_validInputs) return;
 
-        Subscription newSubscription = new()
-        {
-            SubscriptionTypeId = (int)SubScriptionTypeEnum.Pro,
-            CompanyName = _companyName,
-            PageName = _pageName,
-            OwnerId = _loggedInUser.Id,
-            CreatedById = _loggedInUser.Id,
-        };
+        //create new subscription record
+        Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: (int)SubscriptionTypeEnum.Pro,
+                                                                                                         companyName: _companyName,
+                                                                                                         pageName: _pageName,
+                                                                                                         ownerId: _loggedInUser.Id,
+                                                                                                         createdById: _loggedInUser.Id);
 
-        _loggedInUser.SubscriptionId = await _dataServicesManager.SubscriptionService.CreateSubscription(newSubscription);
+        //update the user
+        _loggedInUser.SubscriptionId = newSubscription.Id;
         await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
 
         _navigationManager.NavigateTo("/dashboard");

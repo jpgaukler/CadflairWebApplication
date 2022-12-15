@@ -5,45 +5,43 @@
 
 <PageTitle>Cadflair</PageTitle>
 
-@if (_subscription.Id == 0)
+<!--this is flashing quickly. gotta figure out how to hide it-->
+@if (_showGetStarted)
 {
-    <!--this is flashing quickly. gotta figure out how to hide it-->
-    <div class="d-flex justify-center" hidden="@(_subscription.Id == 0)">
-        <MudPaper Class="rounded-lg mud-theme-primary pa-5 ma-5" Elevation="-10">
+    <div class="d-flex justify-center">
+        <MudPaper Class="rounded-lg pa-5 ma-5" Elevation="5" MaxWidth="400px">
             <MudStack AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.h4">Welcome to Cadflair</MudText>
                 <MudText Typo="Typo.body1">Start your <b>30 day free trial</b> to begin!</MudText>
-                <MudButton Link="/subscription/new" StartIcon="@Icons.Filled.Add" Variant="Variant.Filled" Color="Color.Secondary">Get Started</MudButton>
+                <MudButton Link="/subscription/new" Variant="Variant.Filled" Color="Color.Primary">Get Started</MudButton>
             </MudStack>
         </MudPaper>
     </div>
 }
-else
-{
-    <MudText>Hello @_loggedInUser.FullName</MudText>
-    <h3>Dashboard</h3>
-    <MudText Typo="Typo.h4">@_subscription.CompanyName</MudText>
-    <MudPaper Elevation="25">
-        <MudToolBar>
-            <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Add" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Edit" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Remove" Color="Color.Inherit" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Settings" Color="Color.Inherit" />
-            <MudSpacer />
-            <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
-            <MudIconButton Icon="@Icons.Material.Outlined.PushPin" />
-            <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt" />
-            <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" />
-        </MudToolBar>
-    </MudPaper>
-}
 
+<h3>Dashboard</h3>
+<MudText>Hello @_loggedInUser.FullName</MudText>
+<MudText Typo="Typo.h4">Company: @_subscription.CompanyName</MudText>
+<MudPaper Elevation="25">
+    <MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Class="mr-5" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Edit" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Color="Color.Inherit" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Settings" Color="Color.Inherit" />
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Outlined.Notifications" />
+        <MudIconButton Icon="@Icons.Material.Outlined.PushPin" />
+        <MudIconButton Icon="@Icons.Material.Outlined.PeopleAlt" />
+        <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" />
+    </MudToolBar>
+</MudPaper>
 
 
 
 @code {
 
+    private bool _showGetStarted = false;
     private User _loggedInUser = new();
     private Subscription _subscription = new();
     private List<ProductFamily> _productFamilies = new();
@@ -53,6 +51,11 @@ else
         _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
         _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionById(_loggedInUser.SubscriptionId) ?? new();
         _productFamilies = await _dataServicesManager.ProductService.GetProductFamiliesBySubscriptionId(_subscription.Id) ?? new();
+
+        if (_subscription.Id == 0)
+        {
+            _showGetStarted = true;
+        }
     }
 
 

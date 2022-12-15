@@ -2,6 +2,9 @@
 
 namespace CadflairDataAccess.Models
 {
+    /// <summary>
+    /// Class used to store data related to an iLogic form. This is converted to Json to be stored in the Cadflair database.
+    /// </summary>
     public class ILogicUiElement
     {
         //public string Guid { get; set; } 

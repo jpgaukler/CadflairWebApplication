@@ -23,7 +23,7 @@ BEGIN
 			   ,DATEADD(DAY,30,SYSDATETIMEOFFSET()) --ExpiresOn
 			   ,@OwnerId
 			   ,@CreatedById)
-		   SELECT CAST(SCOPE_IDENTITY() as int);
+		   SELECT * FROM [dbo].[Subscription] WHERE Id = SCOPE_IDENTITY();
 
 END
 

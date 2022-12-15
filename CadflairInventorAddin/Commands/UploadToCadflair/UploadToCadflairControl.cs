@@ -109,6 +109,10 @@ namespace CadflairInventorAddin.Commands
             // save model to zipfile
             string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
 
+
+
+            // NEED TO UPDATE THIS METHOD TO REFLECT CHANGES TO THE PRODUCTCONTROLLER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
             // Upload to Cadflair
             bool uploadSuccessful = await UploadToCadflair.UploadModelToForge(newProduct, zipFileName);
 
