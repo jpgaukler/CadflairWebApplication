@@ -49,9 +49,9 @@ if not exists (select * from dbo.[SubscriptionType] where [SubscriptionType].[Na
 
 
 ----add demo product family
---if not exists (select * from dbo.[ProductFamily] where [ProductFamily].[DisplayName] = 'Test Family')
+--if not exists (select * from dbo.[ProductFolder] where [ProductFolder].[DisplayName] = 'Test Family')
 --	begin
---		insert into dbo.ProductFamily([DisplayName], [SubscriptionId], [CreatedById])
+--		insert into dbo.ProductFolder([DisplayName], [SubscriptionId], [CreatedById])
 --		values
 --			 ('Test Family', 1, 1)
 --	end

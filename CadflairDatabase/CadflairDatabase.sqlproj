@@ -70,18 +70,16 @@
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductConfiguration.sql" />
     <Build Include="dbo\Tables\ProductQuoteRequest.sql" />
-    <Build Include="dbo\Tables\EmailAddress.sql" />
-    <Build Include="dbo\Tables\EmailAddressType.sql" />
-    <Build Include="dbo\Tables\ProductFamily.sql" />
+    <Build Include="dbo\Tables\ProductFolder.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_GetById.sql" />
-    <Build Include="dbo\Stored Procedures\spProduct_GetByProductFamilyId.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_GetByProductFolderId.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_DeleteById.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFamily_GetBySubscriptionId.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFamily_Insert.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFamily_GetById.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFamily_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFolder_GetBySubscriptionId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFolder_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFolder_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFolder_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_GetByProductId.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_DeleteById.sql" />
@@ -94,6 +92,7 @@
     <Build Include="dbo\Stored Procedures\spSubscriptionType_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductFolder_GetBySubscriptionIdAndParentId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

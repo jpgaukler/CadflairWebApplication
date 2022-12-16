@@ -25,7 +25,7 @@ namespace CadflairBlazorServer.Controllers
         {
             public int? UserId { get; set; } 
             public int? SubscriptionId { get; set; } 
-            public int? ProductFamilyId { get; set; }
+            public int? ProductFolderId { get; set; }
             public string? DisplayName { get; set; }
             public string? ParameterJson { get; set; }
             public string? ArgumentJson { get; set; }
@@ -46,7 +46,7 @@ namespace CadflairBlazorServer.Controllers
             {
                 //validate data
                 if (form.SubscriptionId == null) return ValidationProblem("Parameter 'SubscriptionId' was not provided!");
-                if (form.ProductFamilyId == null) return ValidationProblem("Parameter 'ProductFamilyId' was not provided!");
+                if (form.ProductFolderId == null) return ValidationProblem("Parameter 'ProductFolderId' was not provided!");
                 if (form.UserId == null) return ValidationProblem("Parameter 'UserId' was not provided!");
                 if (string.IsNullOrWhiteSpace(form.DisplayName)) return ValidationProblem("Parameter 'DisplayName' was not provided!");
                 if (string.IsNullOrWhiteSpace(form.ParameterJson)) return ValidationProblem("Parameter 'ParameterJson' was not provided!");
@@ -84,7 +84,7 @@ namespace CadflairBlazorServer.Controllers
 
                 // Create new Product record in the database
                 Product newProduct = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: (int)form.SubscriptionId,
-                                                                                             productFamilyId: (int)form.ProductFamilyId,
+                                                                                             productFolderId: (int)form.ProductFolderId,
                                                                                              displayName: form.DisplayName,
                                                                                              parameterJson: form.ParameterJson,
                                                                                              forgeBucketKey: bucketKey,

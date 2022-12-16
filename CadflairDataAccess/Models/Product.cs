@@ -17,9 +17,9 @@ namespace CadflairDataAccess.Models
         public int SubscriptionId { get; set; }
 
         /// <summary>
-        /// Foreign key to <b>ProductFamily</b> table. Represents the ProductFamily (folder) that the Product belongs to.
+        /// Foreign key to <b>ProductFolder</b> table. Represents the ProductFolder that the Product belongs to.
         /// </summary>
-        public int ProductFamilyId { get; set; }
+        public int ProductFolderId { get; set; }
 
         /// <summary>
         /// Name that is used in the UI.

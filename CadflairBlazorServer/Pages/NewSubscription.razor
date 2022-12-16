@@ -41,6 +41,11 @@
     {
         _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
         _subscriptionTypes = await _dataServicesManager.SubscriptionService.GetSubscriptionTypes();
+
+        if(_loggedInUser.SubscriptionId != null)
+        {
+            _navigationManager.NavigateTo("/dashboard");
+        }
     }
 
 

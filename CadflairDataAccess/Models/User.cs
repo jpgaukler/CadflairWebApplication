@@ -19,7 +19,7 @@ namespace CadflairDataAccess.Models
         /// <summary>
         /// Foreign key to <b>Subscription</b> table. Represents the Subscription that the user is a member of. 
         /// </summary>
-        public int SubscriptionId { get; set; }
+        public int? SubscriptionId { get; set; }
 
         /// <summary>
         /// First name of the user.

@@ -24,17 +24,17 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetById]", new { Id = id });
         }
 
-        public Task<List<Product>> GetProductsByProductFamilyId(int productFamilyId)
+        public Task<List<Product>> GetProductsByProductFolderId(int productFolderId)
         {
-            return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFamilyId]", new { ProductFamilyId = productFamilyId });
+            return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFolderId]", new { ProductFolderId = productFolderId });
         }
 
-        public Task<Product> CreateProduct(int subscriptionId, int productFamilyId, string displayName, string parameterJson, Guid forgeBucketKey, int createdById, bool isPublic, bool isConfigurable)
+        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, string parameterJson, Guid forgeBucketKey, int createdById, bool isPublic, bool isConfigurable)
         {
             dynamic values = new
             {
                 SubscriptionId = subscriptionId,
-                ProductFamilyId = productFamilyId,
+                ProductFolderId = productFolderId,
                 DisplayName = displayName,
                 ParameterJson = parameterJson,
                 ForgeBucketKey = forgeBucketKey,
@@ -53,19 +53,30 @@ namespace CadflairDataAccess.Services
 
         #endregion
 
-        #region "ProductFamily"
+        #region "ProductFolder"
 
-        public Task<ProductFamily> GetProductFamilyById(int id)
+        public Task<ProductFolder> GetProductFolderById(int id)
         {
-            return _db.LoadSingleAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetById]", new { Id = id });
+            return _db.LoadSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetById]", new { Id = id });
         }
 
-        public Task<List<ProductFamily>> GetProductFamiliesBySubscriptionId(int subscriptionId)
+        public Task<List<ProductFolder>> GetProductFoldersBySubscriptionId(int subscriptionId)
         {
-            return _db.LoadDataAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
+            return _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
         }
 
-        public Task<ProductFamily> CreateProductFamily(int subscriptionId, int parentId, string displayName, int createdById)
+        public Task<List<ProductFolder>> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
+        {
+            dynamic values = new
+            {
+                SubscriptionId = subscriptionId,
+                ParentId = parentId,
+            };
+
+            return _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionIdAndParentId]", values);
+        }
+
+        public Task<ProductFolder> CreateProductFolder(int subscriptionId, int? parentId, string displayName, int createdById)
         {
             dynamic values = new
             {
@@ -75,12 +86,12 @@ namespace CadflairDataAccess.Services
                 CreatedById = createdById,
             };
 
-            return _db.SaveSingleAsync<ProductFamily, dynamic>("[dbo].[spProductFamily_Insert]", values);
+            return _db.SaveSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_Insert]", values);
         }
 
-        public Task DeleteProductFamily(Product productFamily)
+        public Task DeleteProductFolder(Product productFolder)
         {
-            return _db.SaveDataAsync("[dbo].[spProductFamily_DeleteById]", new { productFamily.Id });
+            return _db.SaveDataAsync("[dbo].[spProductFolder_DeleteById]", new { productFolder.Id });
         }
 
         #endregion

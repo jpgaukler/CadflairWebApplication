@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[spProduct_Insert]
 	@SubscriptionId int,
-	@ProductFamilyId int,
+	@ProductFolderId int,
 	@DisplayName nvarchar(50),
 	@ParameterJson nvarchar(4000),
 	@ForgeBucketKey uniqueidentifier,
@@ -14,7 +14,7 @@ BEGIN
 
 	INSERT INTO [dbo].[Product]
 			   (SubscriptionId
-			   ,ProductFamilyId
+			   ,ProductFolderId
 			   ,DisplayName
 			   ,ParameterJson
 			   ,ForgeBucketKey
@@ -23,7 +23,7 @@ BEGIN
 			   ,IsConfigurable)
 		   VALUES
 			   (@SubscriptionId
-			   ,@ProductFamilyId
+			   ,@ProductFolderId
 			   ,@DisplayName
 			   ,@ParameterJson
 			   ,@ForgeBucketKey
