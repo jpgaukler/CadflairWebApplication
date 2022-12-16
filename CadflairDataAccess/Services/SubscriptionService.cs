@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CadflairDataAccess.Services
@@ -27,27 +28,13 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_GetById]", new { Id = id });
         }
 
-        //public async Task<Subscription> GetSubscriptionByPageName(string pageName)
-        //{
-        //    string sql = "select * from dbo.Subscription where PageName = @PageName";
-
-        //    dynamic values = new
-        //    {
-        //        PageName = pageName,
-        //    };
-
-        //    List<Subscription> accounts = await _db.LoadDataAsync<Subscription, dynamic>(sql, values);
-
-        //    return accounts.First();
-        //}
-
-        public Task<Subscription> CreateSubscription(int subscriptionTypeId, string companyName, string pageName, int ownerId, int createdById)
+        public Task<Subscription> CreateSubscription(int subscriptionTypeId, string companyName, int ownerId, int createdById)
         {
             dynamic values = new
             {
                 SubscriptionTypeId = subscriptionTypeId,
                 CompanyName = companyName,
-                PageName = pageName,
+                SubdirectoryName =  Regex.Replace(companyName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
                 OwnerId = ownerId,
                 CreatedById = createdById,
             };

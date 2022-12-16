@@ -24,7 +24,7 @@ namespace CadflairDataAccess.Models
         /// <summary>
         /// Name that will be used in the URL for the company's product pages.
         /// </summary>
-        public string PageName { get; set; }
+        public string SubdirectoryName { get; set; }
 
         /// <summary>
         /// Foreign key to <b>User</b> table. Represents the id of the User that created the Subscription.

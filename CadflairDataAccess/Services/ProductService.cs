@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CadflairDataAccess.Services
@@ -36,6 +37,7 @@ namespace CadflairDataAccess.Services
                 SubscriptionId = subscriptionId,
                 ProductFolderId = productFolderId,
                 DisplayName = displayName,
+                SubdirectoryName =  Regex.Replace(displayName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
                 ParameterJson = parameterJson,
                 ForgeBucketKey = forgeBucketKey,
                 CreatedById = createdById,

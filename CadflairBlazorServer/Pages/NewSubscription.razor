@@ -1,4 +1,5 @@
 ﻿@page "/subscription/new"
+@using System.Text.RegularExpressions;
 @attribute [Authorize]
 @inject NavigationManager _navigationManager
 @inject AuthenticationStateProvider _authenticationStateProvider
@@ -9,7 +10,6 @@
         <MudForm @bind-IsValid="_validInputs">
             <MudStack>
                 <MudTextField @bind-Value="_companyName" Label="Company Name" Required="true" RequiredError="Company Name is required!" />
-                <MudTextField @bind-Value="_pageName" Label="Page Name" Required="true" RequiredError="Page Name is required!" />
 
                 <MudSelect T="SubscriptionType"
                            ToStringFunc="@(subscriptionType => subscriptionType?.Name)"
@@ -33,7 +33,6 @@
     private User _loggedInUser = new();
     private bool _validInputs;
     private string _companyName = string.Empty;
-    private string _pageName = string.Empty;
     private SubscriptionType _subscriptionType = new();
     private List<SubscriptionType> _subscriptionTypes = new();
 
@@ -56,7 +55,6 @@
         //create new subscription record
         Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: (int)SubscriptionTypeEnum.Pro,
                                                                                                          companyName: _companyName,
-                                                                                                         pageName: _pageName,
                                                                                                          ownerId: _loggedInUser.Id,
                                                                                                          createdById: _loggedInUser.Id);
 

@@ -2,6 +2,7 @@
 	@SubscriptionId int,
 	@ProductFolderId int,
 	@DisplayName nvarchar(50),
+	@SubdirectoryName varchar(50),
 	@ParameterJson nvarchar(4000),
 	@ForgeBucketKey uniqueidentifier,
 	@CreatedById int,
@@ -16,6 +17,7 @@ BEGIN
 			   (SubscriptionId
 			   ,ProductFolderId
 			   ,DisplayName
+			   ,SubdirectoryName
 			   ,ParameterJson
 			   ,ForgeBucketKey
 			   ,CreatedById
@@ -25,6 +27,7 @@ BEGIN
 			   (@SubscriptionId
 			   ,@ProductFolderId
 			   ,@DisplayName
+			   ,@SubdirectoryName
 			   ,@ParameterJson
 			   ,@ForgeBucketKey
 			   ,@CreatedById

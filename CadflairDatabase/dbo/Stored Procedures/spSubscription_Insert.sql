@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[spSubscription_Insert]
 	@SubscriptionTypeId int,
-	@CompanyName nvarchar(100),
-	@PageName varchar(50),
+	@CompanyName nvarchar(50),
+	@SubdirectoryName varchar(50),
 	@OwnerId int,
 	@CreatedById int
 AS
@@ -12,14 +12,14 @@ BEGIN
 	INSERT INTO [dbo].[Subscription]
 			   (SubscriptionTypeId
 			   ,CompanyName
-			   ,PageName
+			   ,[SubdirectoryName]
 			   ,ExpiresOn
 			   ,OwnerId
 			   ,CreatedById)
 		   VALUES
 			   (@SubscriptionTypeId
 			   ,@CompanyName
-			   ,@PageName
+			   ,@SubdirectoryName
 			   ,DATEADD(DAY,30,SYSDATETIMEOFFSET()) --ExpiresOn
 			   ,@OwnerId
 			   ,@CreatedById)

@@ -252,4 +252,11 @@
     <Property Name="ParentElementType" Value="SqlSchema" />
     <Property Name="NewName" Value="[ProductFolder]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="27136648-479c-4465-b2c7-4b1392b5c77b" ChangeDateTime="12/16/2022 20:33:38">
+    <Property Name="ElementName" Value="[dbo].[Subscription].[PageName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Subscription]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SubdirectoryName]" />
+  </Operation>
 </Operations>

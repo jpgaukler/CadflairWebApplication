@@ -3,6 +3,7 @@
     [SubscriptionId]     INT                       NOT NULL,
     [ProductFolderId]    INT                       NOT NULL,
     [DisplayName]		 NVARCHAR(50)              NOT NULL,
+    [SubdirectoryName]   VARCHAR(50)               NOT NULL,
     [ParameterJson]		 NVARCHAR (4000)           NULL, --I am not sure if this should be MAX, might want to try and determine the actual length of this field
     [ForgeBucketKey]	 UNIQUEIDENTIFIER          NOT NULL,
     [CreatedOn]			 DATETIMEOFFSET(7)    	   NOT NULL DEFAULT sysdatetimeoffset(),

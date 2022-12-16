@@ -27,6 +27,11 @@ namespace CadflairDataAccess.Models
         public string DisplayName { get; set; }
 
         /// <summary>
+        /// Name that will be used in the URL for product's page.
+        /// </summary>
+        public string SubdirectoryName { get; set; }
+
+        /// <summary>
         /// Json object that contains the form definition for the Product. This is derived from the iLogic form in the Inventor model.
         /// </summary>
         public string ParameterJson { get; set; }

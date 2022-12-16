@@ -42,7 +42,7 @@ if not exists (select * from dbo.[SubscriptionType] where [SubscriptionType].[Na
 ----add demo account
 --if not exists (select * from dbo.[Subscription] where [Subscription].[CompanyName] = 'Demo Account')
 --	begin
---		insert into dbo.[Subscription]([CompanyName], [PageName], [CreatedById], [OwnerId], [SubscriptionTypeId], [ExpiresOn])
+--		insert into dbo.[Subscription]([CompanyName], [SubdirectoryName], [CreatedById], [OwnerId], [SubscriptionTypeId], [ExpiresOn])
 --		values
 --			('Demo Account', 'demo', 1, 1, 1, dateadd(day,30,getdate()))
 --	end
