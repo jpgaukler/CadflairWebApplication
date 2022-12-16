@@ -1,0 +1,78 @@
+﻿@attribute [Authorize]
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject DataServicesManager _dataServicesManager
+@inject IDialogService _dialogService
+
+
+<MudPaper Class="pa-3">
+    <MudStack>
+        <MudText Typo="Typo.h6">Manage Product Families</MudText>
+        <MudButton OnClick="NewProductFolder_OnClick" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.CreateNewFolder">New Folder</MudButton>
+        <MudPaper Elevation="0">
+            <MudTreeView Items="_productFolderTreeItems"
+                         @bind-SelectedValue="_selectedProductFolderTreeItem"
+                         Hover="true"
+                         ExpandOnDoubleClick="true">
+                <ItemTemplate>
+                    <MudTreeViewItem Value="@context"
+                                     Items="@context.ChildItems"
+                                     Text="@context.ProductFolder.DisplayName"
+                                     Icon="@Icons.Custom.Uncategorized.Folder" />
+                </ItemTemplate>
+            </MudTreeView>
+        </MudPaper>
+    </MudStack>
+</MudPaper>
+
+
+
+@code {
+
+    private User _loggedInUser = new();
+
+    private class ProductFolderTreeItem
+    {
+        public ProductFolder ProductFolder { get; set; } = new();
+        public HashSet<ProductFolderTreeItem> ChildItems { get; set; } = new();
+    }
+
+    private HashSet<ProductFolderTreeItem> _productFolderTreeItems { get; set; } = new();
+    private ProductFolderTreeItem? _selectedProductFolderTreeItem; 
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+        if (_loggedInUser.SubscriptionId == null) return;
+
+        // load the root level product folders
+        await LoadProductFoldersRecursive(null, _productFolderTreeItems);
+    }
+
+    private async Task LoadProductFoldersRecursive(int? parentId, HashSet<ProductFolderTreeItem> treeItems)
+    {
+        List<ProductFolder> productFamilies = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId((int)_loggedInUser.SubscriptionId!, parentId);
+
+        foreach (ProductFolder family in productFamilies)
+        {
+            var treeItem = new ProductFolderTreeItem() { ProductFolder = family };
+            treeItems.Add(treeItem);
+            await LoadProductFoldersRecursive(family.Id, treeItem.ChildItems);
+        }
+    }
+
+    private async Task NewProductFolder_OnClick()
+    {
+        DialogParameters parameters = new();
+        parameters.Add("ParentId", _selectedProductFolderTreeItem == null ? null : _selectedProductFolderTreeItem.ProductFolder.Id);
+        parameters.Add("UserId", _loggedInUser.Id);
+        parameters.Add("SubscriptionId", _loggedInUser.SubscriptionId);
+        var result = await _dialogService.Show<ProductFolderDialog>("New Folder", parameters).Result;
+
+        if (!result.Cancelled)
+        {
+            _productFolderTreeItems = new();
+            await LoadProductFoldersRecursive(null, _productFolderTreeItems);
+        }
+    }
+
+}

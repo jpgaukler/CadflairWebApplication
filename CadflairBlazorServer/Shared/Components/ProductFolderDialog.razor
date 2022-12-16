@@ -1,0 +1,40 @@
+﻿@attribute [Authorize]
+@inject DataServicesManager _dataServicesManager
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField Label="Folder Name" @bind-Value="_newProductFolderName" Variant="Variant.Filled" Immediate="true"/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok_OnClick" Disabled="@(string.IsNullOrWhiteSpace(_newProductFolderName))">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    [CascadingParameter] public MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public int UserId { get; set; }
+    [Parameter] public int SubscriptionId { get; set; }
+    [Parameter] public int? ParentId { get; set; }
+
+    private string _newProductFolderName = string.Empty;
+
+    private async Task Ok_OnClick()
+    {
+        if (string.IsNullOrWhiteSpace(_newProductFolderName)) return;
+
+        //need to make sure folder with this name does not already exist
+
+        ProductFolder productFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: SubscriptionId,
+                                                                                                    parentId: ParentId,
+                                                                                                    displayName: _newProductFolderName,
+                                                                                                    createdById: UserId);
+
+        MudDialog?.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel_OnClick() => MudDialog?.Cancel();
+
+}
