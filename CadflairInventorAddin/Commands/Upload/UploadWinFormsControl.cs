@@ -1,5 +1,5 @@
 ﻿using CadflairDataAccess.Models;
-using CadflairInventorAddin.Utilities;
+using CadflairInventorAddin.Helpers;
 using Inventor;
 using System;
 using System.Collections.Generic;
@@ -11,20 +11,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CadflairInventorAddin.Commands
+namespace CadflairInventorAddin.Commands.Upload
 {
-    public partial class UploadToCadflairControl : UserControl
+    public partial class UploadWinFormsControl : UserControl
     {
         private Document _doc;
         private List<ILogicUiElement> _iLogicForms;
 
-        public UploadToCadflairControl(Document doc)
+        public UploadWinFormsControl(Document doc)
         {
             InitializeComponent();
 
-            BackColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemColor();
-            ForeColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemColor();
-            DataGridViewParameters.BackgroundColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("ApplicationFrame_BackgroundColor").ToSystemColor();
+            BackColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemDrawingColor();
+            ForeColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemDrawingColor();
+            DataGridViewParameters.BackgroundColor = Globals.InventorApplication.ThemeManager.GetComponentThemeColor("ApplicationFrame_BackgroundColor").ToSystemDrawingColor();
 
             _doc = doc;
             _iLogicForms = UploadToCadflair.GetILogicFormElements(doc);
@@ -99,7 +99,7 @@ namespace CadflairInventorAddin.Commands
             Product newProduct = new Product()
             {
                 CreatedById = Convert.ToInt32(TextBoxUserId.Text),
-                ProductFamilyId = Convert.ToInt32(TextBoxProductFamilyId.Text),
+                //ProductFamilyId = Convert.ToInt32(TextBoxProductFamilyId.Text),
                 DisplayName = TextBoxDisplayName.Text,
                 ParameterJson = iLogicFormSpec.ToJson(),
                 IsPublic = CheckBoxIsPublic.Checked,

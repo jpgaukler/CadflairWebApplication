@@ -1,5 +1,5 @@
 ﻿
-namespace CadflairInventorAddin.Utilities
+namespace CadflairInventorAddin.Helpers
 {
     internal static class Globals
     {

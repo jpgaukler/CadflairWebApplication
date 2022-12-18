@@ -1,6 +1,7 @@
 using CadflairInventorAddin.Commands;
+using CadflairInventorAddin.Commands.Upload;
 using CadflairInventorAddin.Properties;
-using CadflairInventorAddin.Utilities;
+using CadflairInventorAddin.Helpers;
 using Inventor;
 using System;
 using System.Runtime.InteropServices;
@@ -52,20 +53,10 @@ namespace CadflairInventorAddin
             _refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
             _uploadToCadflair = controlDefs.AddButtonDefinition("Upload to Cadflair", "Upload to Cadflair Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Upload the active model to Cadflair.", "Upload the active model to Cadflair.");
 
-            // create dockable window to uploading files
-            UploadToCadflair.UploadWindow = _userInterfaceManager.DockableWindows.Add(Globals.AddInCLSIDString, "Cadflair.UploadWindow", "Upload to Cadflair");
-            UploadToCadflair.UploadWindow.SetMinimumSize(400, 550);
-            UploadToCadflair.UploadWindow.ShowVisibilityCheckBox = false;
-            UploadToCadflair.UploadWindow.ShowTitleBar = true;
-
             // add button handlers
             _addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
             _refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             _uploadToCadflair.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
-
-            // add event handlers
-            _userInterfaceManager.DockableWindows.Events.OnHide += UploadToCadflair.UploadWindow_OnHide;
-            _userInterfaceManager.DockableWindows.Events.OnHelp += UploadToCadflair.UploadWindow_OnHelp;
 
             if (firstTime)
             {
@@ -114,8 +105,6 @@ namespace CadflairInventorAddin
             _addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
             _refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             _uploadToCadflair.OnExecute -= UploadToCadflair.UploadToCadflairButton_OnExecute;
-            _userInterfaceManager.DockableWindows.Events.OnHide -= UploadToCadflair.UploadWindow_OnHide; 
-            _userInterfaceManager.DockableWindows.Events.OnHelp -= UploadToCadflair.UploadWindow_OnHelp;
 
             // Release objects.
             Globals.InventorApplication = null;
@@ -125,11 +114,6 @@ namespace CadflairInventorAddin
             _addDimensionAttributesButton = null;
             _refreshDimensionsButton = null;
             _uploadToCadflair = null;
-
-            // dockable windows
-            UploadToCadflair.UploadWindow.Delete();
-            UploadToCadflair.UploadWindow = null;
-
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

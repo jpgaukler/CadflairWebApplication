@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CadflairInventorAddin.Utilities
+namespace CadflairInventorAddin.Helpers
 {
     /// <summary>
     /// Class for converting icons to IPictureDisp to be usable by Inventor API elements.

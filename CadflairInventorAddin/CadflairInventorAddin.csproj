@@ -96,6 +96,8 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="stdole, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
@@ -111,25 +113,37 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands\ConvertiLogicFormSpec.cs" />
     <Compile Include="Commands\DrawingAttributesCommand.cs" />
-    <Compile Include="Commands\UploadToCadflair\UploadToCadflairControl.cs">
+    <Compile Include="Commands\Upload\UploadWinFormsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Commands\UploadToCadflair\UploadToCadflairControl.Designer.cs">
-      <DependentUpon>UploadToCadflairControl.cs</DependentUpon>
+    <Compile Include="Commands\Upload\UploadWinFormsControl.Designer.cs">
+      <DependentUpon>UploadWinFormsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Commands\UploadToCadflair\UploadToCadflair.cs" />
-    <Compile Include="Utilities\ExtensionMethods.cs" />
-    <Compile Include="Utilities\Globals.cs" />
-    <Compile Include="Utilities\PictureDispConverter.cs" />
+    <Compile Include="Commands\Upload\UploadToCadflair.cs" />
+    <Compile Include="Commands\Upload\UploadWpfControl.xaml.cs">
+      <DependentUpon>UploadWpfControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ExtensionMethods.cs" />
+    <Compile Include="Helpers\Globals.cs" />
+    <Compile Include="Helpers\PictureDispConverter.cs" />
+    <Compile Include="Helpers\WpfHostForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Helpers\WpfHostForm.Designer.cs">
+      <DependentUpon>WpfHostForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -147,8 +161,11 @@
     <None Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Commands\UploadToCadflair\UploadToCadflairControl.resx">
-      <DependentUpon>UploadToCadflairControl.cs</DependentUpon>
+    <EmbeddedResource Include="Commands\Upload\UploadWinFormsControl.resx">
+      <DependentUpon>UploadWinFormsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Helpers\WpfHostForm.resx">
+      <DependentUpon>WpfHostForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -184,6 +201,12 @@
       <Project>{cafa1ac2-91eb-4ef2-a6c4-3c63d8e81e15}</Project>
       <Name>CadflairDataAccess</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Commands\Upload\UploadWpfControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

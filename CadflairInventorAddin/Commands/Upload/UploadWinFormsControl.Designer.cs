@@ -1,6 +1,6 @@
-﻿namespace CadflairInventorAddin.Commands
+﻿namespace CadflairInventorAddin.Commands.Upload
 {
-    partial class UploadToCadflairControl
+    partial class UploadWinFormsControl
     {
         /// <summary> 
         /// Required designer variable.

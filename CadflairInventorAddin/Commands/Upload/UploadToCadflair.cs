@@ -1,5 +1,5 @@
 ﻿using CadflairDataAccess.Models;
-using CadflairInventorAddin.Utilities;
+using CadflairInventorAddin.Helpers;
 using Inventor;
 using Newtonsoft.Json;
 using System;
@@ -12,59 +12,31 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Interop;
 using System.Xml.Linq;
 
-namespace CadflairInventorAddin.Commands
+namespace CadflairInventorAddin.Commands.Upload
 {
     internal static class UploadToCadflair
     {
-        private static UploadToCadflairControl _uploadControl;
-        public static DockableWindow UploadWindow { get; set; }
+        private static WpfHostForm _uploadForm;
 
         public static void UploadToCadflairButton_OnExecute(NameValueMap Context)
         {
             try
             {
-                if (_uploadControl != null) return;
+                //if (_uploadControl != null) return;
+                if (_uploadForm != null && _uploadForm.IsOpen) return;
 
-                _uploadControl = new UploadToCadflairControl(Globals.InventorApplication.ActiveDocument);
-                UploadWindow.AddChild(_uploadControl.Handle);
-                UploadWindow.Visible = true;
+                // wpf control
+                UploadWpfControl uiElement = new UploadWpfControl(Globals.InventorApplication.ActiveDocument);
+                _uploadForm = new WpfHostForm(uiElement, "Cadflair.UploadWindow", "Upload to Cadflair");
+                _uploadForm.Show();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-        }
-
-        public static void UploadWindow_OnHide(DockableWindow DockableWindow, EventTimingEnum BeforeOrAfter, NameValueMap Context, out HandlingCodeEnum HandlingCode)
-        {
-            HandlingCode = HandlingCodeEnum.kEventNotHandled;
-
-            if (DockableWindow.InternalName != UploadWindow.InternalName) return;
-            if (BeforeOrAfter == EventTimingEnum.kAfter) return;
-
-            UploadWindow.Clear();
-
-            if(UploadWindow != null)
-            {
-                _uploadControl.Dispose();
-                _uploadControl = null;
-            }
-
-            HandlingCode = HandlingCodeEnum.kEventHandled;
-        }
-
-        public static void UploadWindow_OnHelp(DockableWindow DockableWindow, NameValueMap Context, out HandlingCodeEnum HandlingCode)
-        {
-            HandlingCode = HandlingCodeEnum.kEventNotHandled;
-
-            if (DockableWindow.InternalName != UploadWindow.InternalName) return;
-
-            // ADD A LINK TO CADFLAIR HELP PAGE HERE
-            Process.Start("http://www.cadflair.com/");
-
-            HandlingCode = HandlingCodeEnum.kEventHandled;
         }
 
         public static List<ILogicUiElement> GetILogicFormElements(Document doc)
@@ -171,12 +143,9 @@ namespace CadflairInventorAddin.Commands
             return iLogicUiElementList;
         }
 
-
-
         public static void SaveILogicUiElementToJson(ILogicUiElement element)
         {
             string jsonString = element.ToJson();
-
             string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
 
             if (!Directory.Exists(folderName))
@@ -193,15 +162,15 @@ namespace CadflairInventorAddin.Commands
             Process.Start(folderName);
         }
 
-        public static void SaveILogicFormSpecToXml(string formName)
+        public static void SaveILogicFormSpecToXml(Document doc, string formName)
         {
-            foreach (AttributeSet set in Globals.InventorApplication.ActiveDocument.AttributeSets)
+            foreach (AttributeSet attSet in doc.AttributeSets)
             {
                 //ignore all attribute sets that are not iLogicUi
-                if (!set.Name.ToLower().Contains("ilogicinternalui")) continue;
+                if (!attSet.Name.ToLower().Contains("ilogicinternalui")) continue;
 
                 //get form spec attribute
-                Inventor.Attribute formSpec = set["FormSpec"];
+                Inventor.Attribute formSpec = attSet["FormSpec"];
 
                 //convert byte array to xml string
                 byte[] bytes = (byte[])formSpec.Value;
@@ -220,13 +189,10 @@ namespace CadflairInventorAddin.Commands
                 }
 
                 string xmlFileName = System.IO.Path.Combine(folderName, formName + ".xml");
-
                 StreamWriter xmlFile = System.IO.File.CreateText(xmlFileName);
-
                 xmlFile.Write(xmlString);
                 xmlFile.Close();
 
-                return;
                 //Process.Start(folderName);
             }
         }
@@ -353,6 +319,7 @@ namespace CadflairInventorAddin.Commands
         }
 
     }
+
 }
 
 

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 
-namespace CadflairInventorAddin.Utilities
+namespace CadflairInventorAddin.Helpers
 {
     internal static class ExtensionMethods
     {
@@ -124,9 +124,14 @@ namespace CadflairInventorAddin.Utilities
             return Globals.InventorApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
         }
 
-        public static System.Drawing.Color ToSystemColor(this Inventor.Color color)
+        public static System.Drawing.Color ToSystemDrawingColor(this Inventor.Color color)
         {
             return System.Drawing.Color.FromArgb(color.Red, color.Green, color.Blue);
+        }
+
+        public static System.Windows.Media.Color ToSystemMediaColor(this Inventor.Color color)
+        {
+            return System.Windows.Media.Color.FromRgb(color.Red, color.Green, color.Blue);
         }
 
 
