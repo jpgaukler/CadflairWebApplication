@@ -34,7 +34,7 @@ namespace CadflairDataAccess.Services
             {
                 SubscriptionTypeId = subscriptionTypeId,
                 CompanyName = companyName,
-                SubdirectoryName =  Regex.Replace(companyName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
+                SubdirectoryName = Regex.Replace(companyName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
                 OwnerId = ownerId,
                 CreatedById = createdById,
             };

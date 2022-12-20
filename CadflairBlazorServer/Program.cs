@@ -1,11 +1,7 @@
 using CadflairDataAccess;
 using CadflairForgeAccess;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -24,9 +20,15 @@ builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"));
 builder.Services.AddAuthorization(options =>
 {
-    //can add policies for specific auth rules, consider adding a customer claim attribute in the azure portal
-    options.AddPolicy("Admin", policy => policy.RequireClaim("jobTitle", "Admin"));
-    //options.AddPolicy("Admin", policy => policy.RequireClaim("role", "Editor")); 
+    ////can add policies for specific auth rules, consider adding a customer claim attribute in the azure portal
+    //options.AddPolicy("Admin", policy => policy.RequireClaim("jobTitle", "Admin"));
+    ////options.AddPolicy("Admin", policy => policy.RequireClaim("role", "Editor")); 
+});
+
+// Signal R configuration
+builder.Services.AddResponseCompression(options =>
+{
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 });
 
 
@@ -43,7 +45,7 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
-// Cadflair data access services
+// Cadflair data access 
 builder.Services.AddSingleton<DataServicesManager>();
 
 // Forge services

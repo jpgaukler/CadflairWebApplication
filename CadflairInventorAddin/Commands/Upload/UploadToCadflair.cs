@@ -5,33 +5,28 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.IO;
 using System.Net.Http;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Interop;
 using System.Xml.Linq;
 
 namespace CadflairInventorAddin.Commands.Upload
 {
     internal static class UploadToCadflair
     {
-        private static WpfHostForm _uploadForm;
+        private static DockableWindowHelper _dockableWindowHelper;
 
         public static void UploadToCadflairButton_OnExecute(NameValueMap Context)
         {
             try
             {
-                //if (_uploadControl != null) return;
-                if (_uploadForm != null && _uploadForm.IsOpen) return;
+                if (_dockableWindowHelper != null && _dockableWindowHelper.IsOpen) return;
 
-                // wpf control
-                UploadWpfControl uiElement = new UploadWpfControl(Globals.InventorApplication.ActiveDocument);
-                _uploadForm = new WpfHostForm(uiElement, "Cadflair.UploadWindow", "Upload to Cadflair");
-                _uploadForm.Show();
+                UploadWpfWindow window = new UploadWpfWindow(Globals.InventorApplication.ActiveDocument);
+                _dockableWindowHelper = new DockableWindowHelper(window, "Cadflair.UploadWindow", "Upload to Cadflair");
+                _dockableWindowHelper.Show();
             }
             catch (Exception ex)
             {
@@ -267,60 +262,71 @@ namespace CadflairInventorAddin.Commands.Upload
             }
         }
 
-        public static async Task<bool> UploadModelToForge(Product product, string zipFileName)
+        public static async Task<string> UploadProductToCadflair(int userId, int subscriptionId, int productFolderId, string displayName, string parameterJson, string argumentJson, bool isPublic, bool isConfigurable, string zipFileName)
         {
             bool uploadSuccessful = false;
-            HttpClient client = new HttpClient();
-            MultipartFormDataContent formContent = new MultipartFormDataContent();
-            HttpRequestMessage request = new HttpRequestMessage();
-            HttpResponseMessage response = new HttpResponseMessage();
-            StringContent produceSpecContent = new StringContent(JsonConvert.SerializeObject(product));
-            FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open);
-            StreamContent streamContent = new StreamContent(stream);
+            string result = string.Empty;
+            dynamic productData = new
+            {
+                UserId = userId,
+                SubscriptionId = subscriptionId,
+                ProductFolderId = productFolderId,
+                DisplayName = displayName,
+                ParameterJson = parameterJson,
+                ArgumentJson = argumentJson,
+                IsPublic = isPublic,
+                IsConfigurable = isConfigurable,
+            };
 
             try
             {
-                // add product spec to request
-                produceSpecContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductSpec\"");
-                formContent.Add(produceSpecContent, "ProductSpec");
+                using (HttpClient client = new HttpClient())
+                using (HttpRequestMessage request = new HttpRequestMessage())
+                using (MultipartFormDataContent formContent = new MultipartFormDataContent())
+                using (StringContent productDataContent = new StringContent(JsonConvert.SerializeObject(productData)))
+                using (FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open))
+                using (StreamContent streamContent = new StreamContent(stream))
+                {
+                    request.Method = HttpMethod.Post;
+                    request.RequestUri = new Uri($"https://localhost:7269/api/product/create");
 
-                // add file data to the form as a stream content
-                streamContent.Headers.Add("Content-Type", "application/octet-stream");
-                streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
-                formContent.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
+                    // add product data to request
+                    productDataContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductData\"");
+                    formContent.Add(productDataContent, "ProductData");
 
-                // send request
-                request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri($"https://localhost:7269/api/product/create");
-                request.Content = formContent;
-                response = await client.SendAsync(request);
-                uploadSuccessful = response.IsSuccessStatusCode;
+                    // add file the form as a stream content
+                    streamContent.Headers.Add("Content-Type", "application/octet-stream");
+                    streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
+                    formContent.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
 
-                string responseMessage = await response.Content.ReadAsStringAsync();
-                MessageBox.Show(responseMessage, "Response", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    request.Content = formContent;
+
+                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    {
+                        uploadSuccessful = response.IsSuccessStatusCode;
+                        result = await response.Content.ReadAsStringAsync();
+                    }
+                }
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                // clean up
-                stream.Dispose();
-                streamContent.Dispose();
-                produceSpecContent.Dispose();
-                response.Dispose();
-                request.Dispose();
-                formContent.Dispose();
-                client.Dispose();
+                result = $"Error: {ex}";
             }
 
-            return uploadSuccessful;
+            //return uploadSuccessful;
+            return result;
         }
 
     }
 
 }
+
+
+
+//C:\Program Files(x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\WindowsFormsIntegration.dll
+//C:\Program Files(x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\WindowsBase.dll
+//C:\Program Files(x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\UIAutomationProvider.dll
 
 
 //public static string[] GetILogicFormNames(Document doc)

@@ -113,13 +113,13 @@ namespace CadflairInventorAddin.Commands.Upload
 
             // NEED TO UPDATE THIS METHOD TO REFLECT CHANGES TO THE PRODUCTCONTROLLER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-            // Upload to Cadflair
-            bool uploadSuccessful = await UploadToCadflair.UploadModelToForge(newProduct, zipFileName);
+            //// Upload to Cadflair
+            //bool uploadSuccessful = await UploadToCadflair.UploadModelToForge(newProduct, zipFileName);
 
-            // clean up
-            System.IO.File.Delete(zipFileName);
+            //// clean up
+            //System.IO.File.Delete(zipFileName);
 
-            MessageBox.Show(uploadSuccessful.ToString(), "Success?", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //MessageBox.Show(uploadSuccessful.ToString(), "Success?", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

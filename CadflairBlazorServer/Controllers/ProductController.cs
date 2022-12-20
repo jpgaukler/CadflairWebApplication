@@ -3,9 +3,8 @@ using CadflairDataAccess.Models;
 using CadflairForgeAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace CadflairBlazorServer.Controllers
 {
@@ -47,14 +46,7 @@ namespace CadflairBlazorServer.Controllers
 
         public class ProductUploadForm
         {
-            public int? UserId { get; set; } 
-            public int? SubscriptionId { get; set; } 
-            public int? ProductFolderId { get; set; }
-            public string? DisplayName { get; set; }
-            public string? ParameterJson { get; set; }
-            public string? ArgumentJson { get; set; }
-            public bool? IsPublic { get; set; } 
-            public bool? IsConfigurable { get; set; } 
+            public string? ProductData { get; set; }
             public IFormFile? ZipFile { get; set; }
         }
 
@@ -69,14 +61,7 @@ namespace CadflairBlazorServer.Controllers
             try
             {
                 //validate data
-                if (form.SubscriptionId == null) return ValidationProblem("Parameter 'SubscriptionId' was not provided!");
-                if (form.ProductFolderId == null) return ValidationProblem("Parameter 'ProductFolderId' was not provided!");
-                if (form.UserId == null) return ValidationProblem("Parameter 'UserId' was not provided!");
-                if (string.IsNullOrWhiteSpace(form.DisplayName)) return ValidationProblem("Parameter 'DisplayName' was not provided!");
-                if (string.IsNullOrWhiteSpace(form.ParameterJson)) return ValidationProblem("Parameter 'ParameterJson' was not provided!");
-                if (string.IsNullOrWhiteSpace(form.ArgumentJson)) return ValidationProblem("Parameter 'ArgumentJson' was not provided!");
-                if (form.IsPublic == null) return ValidationProblem("Parameter 'IsPublic' was not provided!");
-                if (form.IsConfigurable == null) return ValidationProblem("Parameter 'IsConfigurable' was not provided!");
+                if (string.IsNullOrWhiteSpace(form.ProductData)) return ValidationProblem("Parameter 'ArgumentJson' was not provided!");
                 if (form.ZipFile == null || form.ZipFile.Length == 0) return ValidationProblem("No zip file was provided!");
                 if (Path.GetExtension(form.ZipFile.FileName) != ".zip") return ValidationProblem("Invalid file type!");
 
@@ -107,18 +92,29 @@ namespace CadflairBlazorServer.Controllers
                 if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload to Autodesk Forge OSS." });
 
                 // Create new Product record in the database
-                Product newProduct = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: (int)form.SubscriptionId,
-                                                                                             productFolderId: (int)form.ProductFolderId,
-                                                                                             displayName: form.DisplayName,
-                                                                                             parameterJson: form.ParameterJson,
+                dynamic productData = JsonConvert.DeserializeObject<dynamic>(form.ProductData)!;
+
+                Debug.WriteLine($@"UserId: {productData.UserId}");
+                Debug.WriteLine($@"SubscriptionId: {productData.SubscriptionId}");
+                Debug.WriteLine($@"ProductFolderId: {productData.ProductFolderId}");
+                Debug.WriteLine($@"DisplayName: {productData.DisplayName}");
+                Debug.WriteLine($@"ParameterJson: {productData.ParameterJson}");
+                Debug.WriteLine($@"ArgumentJson: {productData.ArgumentJson}");
+                Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
+                Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
+
+                Product newProduct = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: (int)productData.SubscriptionId,
+                                                                                             productFolderId: (int)productData.ProductFolderId,
+                                                                                             displayName: (string)productData.DisplayName,
+                                                                                             parameterJson: (string)productData.ParameterJson,
                                                                                              forgeBucketKey: bucketKey,
-                                                                                             createdById: (int)form.UserId,
-                                                                                             isPublic: (bool)form.IsPublic,
-                                                                                             isConfigurable: (bool)form.IsConfigurable);
+                                                                                             createdById: (int)productData.UserId,
+                                                                                             isPublic: (bool)productData.IsPublic,
+                                                                                             isConfigurable: (bool)productData.IsConfigurable);
 
                 // Create new ProductConfiguration record in the database for master configuration
                 ProductConfiguration masterConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productId: newProduct.Id,
-                                                                                                                                argumentJson: form.ArgumentJson,
+                                                                                                                                argumentJson: (string)productData.ArgumentJson,
                                                                                                                                 forgeZipKey: objectKey,
                                                                                                                                 isDefault: true);
 

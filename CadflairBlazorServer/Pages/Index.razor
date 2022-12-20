@@ -2,6 +2,8 @@
 @inject IJSRuntime _js
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DataServicesManager _dataServicesManager
+@inject NavigationManager _navigationManager
+
 
 <PageTitle>Cadflair</PageTitle>
 
@@ -51,4 +53,6 @@
     {
         loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
     }
+
+
 }

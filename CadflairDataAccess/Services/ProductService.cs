@@ -115,9 +115,9 @@ namespace CadflairDataAccess.Services
             dynamic values = new
             {
                 ProductId = productId,
-                ArgumentJson = argumentJson,
-                ForgeObjectKey = forgeZipKey,
                 IsDefault = isDefault,
+                ArgumentJson = argumentJson,
+                ForgeZipKey = forgeZipKey,
             };
 
             return _db.SaveSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_Insert]", values);

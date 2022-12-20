@@ -1,18 +1,18 @@
-﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CadflairInventorAddin.Commands.Upload"
              xmlns:Models="clr-namespace:CadflairDataAccess.Models;assembly=CadflairDataAccess" 
-             x:Class="CadflairInventorAddin.Commands.Upload.UploadWpfControl"
+             x:Class="CadflairInventorAddin.Commands.Upload.UploadWpfWindow"
              mc:Ignorable="d" d:Background="#FFFFFFFF" Width="397" Height="633">
 
-    <UserControl.Resources>
+    <Window.Resources>
         <SolidColorBrush x:Key="BrowserPaneTextBrush">#f5f5f5</SolidColorBrush>
         <SolidColorBrush x:Key="BrowserPaneBrush">#3b4453</SolidColorBrush>
         <SolidColorBrush x:Key="BrowserPaneAccentBrush">#4b5463</SolidColorBrush>
         <SolidColorBrush x:Key="AppBackgroundBrush">#222933</SolidColorBrush>
-    </UserControl.Resources>
+    </Window.Resources>
 
     <DockPanel Background="{StaticResource BrowserPaneBrush}">
         <Label DockPanel.Dock="Top" FontSize="20" FontWeight="Bold" Content="Cadflair"/>
@@ -38,9 +38,9 @@
                     <Label Content="Product Folder Id:"/>
                     <TextBox x:Name="ProductFolderIdTextBox" Width="200"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="5,5" DockPanel.Dock="Top">
+                <!--<StackPanel Orientation="Horizontal" Margin="5,5" DockPanel.Dock="Top">
                     <TreeView Width="100"/>
-                </StackPanel>
+                </StackPanel>-->
             </StackPanel>
         </Expander>
 
@@ -69,13 +69,24 @@
             </StackPanel>
         </Expander>
 
+        <Expander Header="HTTP Response" 
+                  DockPanel.Dock="Top" 
+                  IsExpanded="true"
+                  Background="{StaticResource BrowserPaneAccentBrush}">
+            <StackPanel Background="{StaticResource BrowserPaneBrush}">
+                <RichTextBox x:Name="ConnectionRichTextBox" Margin="5,5" Height="200"/>
+            </StackPanel>
+        </Expander>
+
 
         <StackPanel Orientation="Horizontal" 
                     Margin="5,5"
                     VerticalAlignment="Bottom" 
                     HorizontalAlignment="Left"
                     DockPanel.Dock="Bottom">
-            <Button Content="OK" 
+            <Button x:Name="UploadButton"
+                    Click="UploadButton_Click"
+                    Content="OK" 
                     MinWidth="100" 
                     Margin="0,0,5,0"
                     Background="Transparent" 
@@ -87,4 +98,4 @@
         </StackPanel>
     </DockPanel>
 
-</UserControl>
+</Window>

@@ -1,37 +1,36 @@
 ﻿using Inventor;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Interop;
 
 namespace CadflairInventorAddin.Helpers
 {
     /// <summary>
-    /// This is a WinForm that creates an Inventor Dockable window and embeds itself inside of it. The form displays an ElementHost which embeds a WPF user control inside of it.
+    /// This class creates a dockable window and embeds a WPF window inside of it. 
     /// </summary>
-    public partial class WpfHostForm : Form
+    internal class DockableWindowHelper
     {
+        private readonly Window _wpfWindow;
         private readonly DockableWindow _dockableWindow;
         private readonly UserInterfaceManager _userInterfaceManager;
+
         public bool IsOpen { get; set; }
 
-        public WpfHostForm(UIElement wpfControl, string dockableWindowInternalName, string dockableWindowTitle)
+        public DockableWindowHelper(Window wpfWindow, string dockableWindowInternalName, string dockableWindowTitle)
         {
-            InitializeComponent();
-
-            // embed the wpf control in the form
-            elementHost1.Child = wpfControl;
-
-            // create the dockable window
             _userInterfaceManager = Globals.InventorApplication.UserInterfaceManager;
 
+            // capture reference to window
+            _wpfWindow = wpfWindow;
+            _wpfWindow.WindowStyle = System.Windows.WindowStyle.None;
+            _wpfWindow.ResizeMode = System.Windows.ResizeMode.NoResize;
+
+            // create the dockable window
             try
             {
                 _dockableWindow = _userInterfaceManager.DockableWindows[dockableWindowInternalName];
@@ -45,15 +44,23 @@ namespace CadflairInventorAddin.Helpers
             _dockableWindow.SetMinimumSize(400, 550);
             _dockableWindow.ShowVisibilityCheckBox = false;
             _dockableWindow.ShowTitleBar = true;
-            _dockableWindow.AddChild(Handle);
+
+            // attache wpf Window to DockableWindow
+            WindowInteropHelper helper = new WindowInteropHelper(wpfWindow);
+            helper.EnsureHandle();
+            _dockableWindow.AddChild(helper.Handle);
+
+            // Set key hook.
+            HwndSource.FromHwnd(helper.Handle).AddHook(WndProc);
 
             // add event handlers for the dockable window
             _userInterfaceManager.DockableWindows.Events.OnHide += DockableWindow_OnHide;
             _userInterfaceManager.DockableWindows.Events.OnHelp += DockableWindow_OnHelp;
         }
 
-        private void WpfHostForm_Shown(object sender, EventArgs e)
+        public void Show()
         {
+            _wpfWindow.Show();
             _dockableWindow.Visible = true;
             IsOpen = true;
         }
@@ -72,7 +79,7 @@ namespace CadflairInventorAddin.Helpers
             _userInterfaceManager.DockableWindows.Events.OnHelp -= DockableWindow_OnHelp;
             IsOpen = false;
 
-            Close();
+            _wpfWindow.Close();
         }
 
         private void DockableWindow_OnHelp(DockableWindow DockableWindow, NameValueMap Context, out HandlingCodeEnum HandlingCode)
@@ -87,5 +94,34 @@ namespace CadflairInventorAddin.Helpers
             HandlingCode = HandlingCodeEnum.kEventHandled;
         }
 
+
+
+
+        private const UInt32 DLGC_WANTARROWS = 0x0001;
+        private const UInt32 DLGC_WANTTAB = 0x0002;
+        private const UInt32 DLGC_WANTALLKEYS = 0x0004;
+        private const UInt32 DLGC_HASSETSEL = 0x0008;
+        private const UInt32 DLGC_WANTCHARS = 0x0080;
+        private const UInt32 WM_GETDLGCODE = 0x0087;
+
+        /// <summary>
+        /// This is a helper for adding a wpf window to a dockable control. This was pulled from an Autodesk forum.<br></br>
+        /// See https://forums.autodesk.com/t5/inventor-forum/dockable-window-with-wpf-controls-don-t-receive-keyboard-input/td-p/9115997 for more info.
+        /// </summary>
+        /// <param name="hwnd"></param>
+        /// <param name="msg"></param>
+        /// <param name="wParam"></param>
+        /// <param name="lParam"></param>
+        /// <param name="handled"></param>
+        /// <returns></returns>
+        public static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_GETDLGCODE)
+            {
+                handled = true;
+                return new IntPtr(DLGC_WANTCHARS | DLGC_WANTARROWS | DLGC_HASSETSEL | DLGC_WANTTAB | DLGC_WANTALLKEYS);
+            }
+            return IntPtr.Zero;
+        }
     }
 }
