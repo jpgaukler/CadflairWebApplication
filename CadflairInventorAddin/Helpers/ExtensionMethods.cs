@@ -197,27 +197,7 @@ namespace CadflairInventorAddin.Helpers
             return (double?)attSet[_maxAttributeName].Value;
         }
 
-        /// <summary>
-        /// Convert the given ILogicUiElemnent model to a json string. Null values will be excluded from the result.
-        /// </summary>
-        /// <param name="formSpecElement"></param>
-        /// <returns>A json string representing the ILogicUiElement</returns>
-        public static string ToJson(this ILogicUiElement formSpecElement)
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore //ignore empty strings and arrays
-            };
-
-            return JsonConvert.SerializeObject(formSpecElement, settings); ;
-        }
-
         #endregion
-
-
-
-
     }
 
 }

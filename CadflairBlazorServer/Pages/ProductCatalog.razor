@@ -1,8 +1,9 @@
-﻿@using System.Text.Json
+﻿@using Newtonsoft.Json;
 
-@page "/product Catalog"
+@page "/productcatalog/{ProductId:int}"
 @layout ConfiguratorLayout
 @inject IJSRuntime _js
+@inject DataServicesManager _dataServicesManager
 @inject ForgeServicesManager _forgeServicesManager
 
 <!--Drawer-->
@@ -13,16 +14,16 @@
            Width="30%">
     <!--Drawer Header-->
     <MudDrawerHeader>
-        <MudText Typo="Typo.h5"><b>@_formElements.Name</b></MudText>
+        <MudText Typo="Typo.h5"><b>@_iLogicFormData.Name</b></MudText>
     </MudDrawerHeader>
     <!--Drawer Content-->
     <MudStack Class="flex-grow-1 overflow-auto" Spacing="0">
         <!--Form Inputs-->
         <MudForm @bind-IsValid="_validInputs" Class="flex-grow-1 overflow-auto">
             <MudStack Class="flex-grow-1 px-3 overflow-auto">
-                @if (_formElements.Items != null)
+                @if (_iLogicFormData.Items != null)
                 {
-                    @foreach (ILogicUiElement element in _formElements.Items)
+                    @foreach (ILogicFormElement element in _iLogicFormData.Items)
                     {
                         <ProductInput Element="@element" @key="element"></ProductInput>
                     }
@@ -57,29 +58,24 @@
 
 @code
 {
+    [Parameter] public int ProductId { get; set; }
     private Variant _buttonVariant = Variant.Outlined;
     private bool _drawerOpen = true;
-    private ILogicUiElement _formElements = new();
+    private Product _product = new();
+    private ILogicFormElement _iLogicFormData = new();
     private bool _validInputs;
 
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
-
         //look at the url to find the corresponding product, then read the data from the database
+        _product = await _dataServicesManager.ProductService.GetProductById(ProductId);
 
+        _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_product.ParameterJson)!;
 
-        string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
+        var defaultConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(1003);
+        _iLogicFormData.SetParameterExpressions(defaultConfiguration.ArgumentJson);
 
-        if (!Directory.Exists(folderName))
-        {
-            folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
-        }
-
-        string fileName = Path.Combine(folderName, "Dresser Parameters 1.json");
-        string jsonText = System.IO.File.ReadAllText(fileName);
-        Debug.WriteLine(jsonText);
-
-        _formElements = JsonSerializer.Deserialize<ILogicUiElement>(jsonText);
+        Debug.WriteLine(_product.ParameterJson);
     }
 
     //private async Task CreateBucket()
@@ -89,38 +85,26 @@
 
     private async Task PrintInputValues()
     {
-        var values = GetInputValues(_formElements.Items);
+        Debug.WriteLine(_iLogicFormData.GetArgumentJson());
+
+        //var values = GetInputValues(_iLogicFormData.Items);
 
         //foreach(var val in values)
         //{
         //    Debug.WriteLine($"{val.Key}: {val.Value}");
         //}
 
-        string jsonValues = JsonSerializer.Serialize(values);
-        Debug.WriteLine(jsonValues);
+        //string jsonValues = JsonSerializer.Serialize(values);
 
 
         //submit the request to design automation. I just want to make the model and convert it to svf here. Do not produce any inputs yet
-        await _forgeServicesManager.DesignAutomationService.GenerateProductConfiguration("cadflair.dresserbasemodel", "Dresser.zip", "Dresser Configurator.ipt", jsonValues);
+        //await _forgeServicesManager.DesignAutomationService.GenerateProductConfiguration("cadflair.dresserbasemodel", "Dresser.zip", "Dresser Configurator.ipt", _iLogicFormData.ParameterValues().ToJson());
 
         //need to remember to create the output bucket before submitting the request. The workitem will fail if the output bucket does not exist
 
         //somehow get the callback when the workitem is done, then create a new row in the database table so this can be looked up later
 
         //show buttons for generating outputs if the user likes what they see (pdf, dwg, dwf, stp)
-    }
-
-    private Dictionary<string, string> GetInputValues(List<ILogicUiElement> items, Dictionary<string, string>? values = null)
-    {
-        if (values == null) values = new();
-
-        foreach(ILogicUiElement item in items)
-        {
-            if (item.ParameterName != null && !values.ContainsKey(item.ParameterName)) values.Add(item.ParameterName, item.ParameterExpression);
-            if (item.Items != null) GetInputValues(item.Items, values);
-        }
-
-        return values;
     }
 
 }

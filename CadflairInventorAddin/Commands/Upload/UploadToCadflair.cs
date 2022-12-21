@@ -34,9 +34,9 @@ namespace CadflairInventorAddin.Commands.Upload
             }
         }
 
-        public static List<ILogicUiElement> GetILogicFormElements(Document doc)
+        public static List<ILogicFormElement> GetILogicFormElements(Document doc)
         {
-            List<ILogicUiElement> iLogicForms = new List<ILogicUiElement>();
+            List<ILogicFormElement> iLogicForms = new List<ILogicFormElement>();
 
             foreach (AttributeSet set in doc.AttributeSets)
             {
@@ -58,7 +58,7 @@ namespace CadflairInventorAddin.Commands.Upload
                 if (formName.Contains("iLogicBrowserUiFormSpecification")) continue;
 
                 //consruct ILogicUIElement object
-                ILogicUiElement formElement = new ILogicUiElement()
+                ILogicFormElement formElement = new ILogicFormElement()
                 {
                     Name = xDoc.Element("FormSpecification").Element("Name").Value,
                     Items = RecurseILogicElements(doc, xDoc.Element("FormSpecification").Element("Items"), xDoc.Root.GetNamespaceOfPrefix("xsi"))
@@ -73,7 +73,7 @@ namespace CadflairInventorAddin.Commands.Upload
 
         }
 
-        private static List<ILogicUiElement> RecurseILogicElements(Document doc, XElement xItems, XNamespace ns)
+        private static List<ILogicFormElement> RecurseILogicElements(Document doc, XElement xItems, XNamespace ns)
         {
 
             //how should I handle readonly parameters?
@@ -84,14 +84,14 @@ namespace CadflairInventorAddin.Commands.Upload
 
             if (xItems == null) return null;
 
-            List<ILogicUiElement> iLogicUiElementList = new List<ILogicUiElement>();
-            ILogicUiElement tabContainerElement = null;
+            List<ILogicFormElement> iLogicUiElementList = new List<ILogicFormElement>();
+            ILogicFormElement tabContainerElement = null;
 
             foreach (XElement xItem in xItems.Elements())
             {
                 Parameter parameter = doc.GetParameter(xItem.Element("ParameterName")?.Value);
 
-                ILogicUiElement iLogicUiElement = new ILogicUiElement()
+                ILogicFormElement iLogicUiElement = new ILogicFormElement()
                 {
                     //Guid = item.Element("Guid").Value,
                     UiElementSpec = xItem.Attribute(ns + "type").Value,
@@ -118,10 +118,10 @@ namespace CadflairInventorAddin.Commands.Upload
                 {
                     if (tabContainerElement == null)
                     {
-                        tabContainerElement = new ILogicUiElement()
+                        tabContainerElement = new ILogicFormElement()
                         {
                             UiElementSpec = "ControlTabContainerSpec",
-                            Items = new List<ILogicUiElement>()
+                            Items = new List<ILogicFormElement>()
                         };
 
                         iLogicUiElementList.Add(tabContainerElement);
@@ -138,9 +138,9 @@ namespace CadflairInventorAddin.Commands.Upload
             return iLogicUiElementList;
         }
 
-        public static void SaveILogicUiElementToJson(ILogicUiElement element)
+        public static void SaveILogicFormSpecToJson(ILogicFormElement form)
         {
-            string jsonString = element.ToJson();
+            string jsonString = form.GetFormJson();
             string folderName = @"C:\Users\jpgau\source\repos\jpgaukler\CadflairWebApplication\Inventor Files";
 
             if (!Directory.Exists(folderName))
@@ -148,7 +148,7 @@ namespace CadflairInventorAddin.Commands.Upload
                 folderName = @"C:\Users\Admin\source\repos\CadflairWebApplication\Inventor Files";
             }
 
-            string jsonFileName = System.IO.Path.Combine(folderName, element.Name + ".json");
+            string jsonFileName = System.IO.Path.Combine(folderName, form.Name + ".json");
             StreamWriter jsonFile = System.IO.File.CreateText(jsonFileName);
             jsonFile.Write(jsonString);
             jsonFile.Close();

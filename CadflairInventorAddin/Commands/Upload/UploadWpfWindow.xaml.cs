@@ -25,7 +25,7 @@ namespace CadflairInventorAddin.Commands.Upload
     public partial class UploadWpfWindow : Window
     {
         private Document _doc;
-        private List<ILogicUiElement> _iLogicForms;
+        private List<ILogicFormElement> _iLogicForms;
 
 
         public UploadWpfWindow(Inventor.Document doc)
@@ -43,7 +43,7 @@ namespace CadflairInventorAddin.Commands.Upload
 
             _doc = doc;
             _iLogicForms = UploadToCadflair.GetILogicFormElements(doc);
-            foreach (ILogicUiElement form in _iLogicForms) ILogicFormsComboBox.Items.Add(form.Name);
+            foreach (ILogicFormElement form in _iLogicForms) ILogicFormsComboBox.Items.Add(form.Name);
             ILogicFormsComboBox.SelectedIndex = 0;
 
         }
@@ -51,13 +51,13 @@ namespace CadflairInventorAddin.Commands.Upload
         private void ILogicFormsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ParametersDataGrid.Items.Clear();
-            ILogicUiElement iLogicForm = _iLogicForms.FirstOrDefault(i => i.Name == ILogicFormsComboBox.SelectedItem.ToString());
+            ILogicFormElement iLogicForm = _iLogicForms.FirstOrDefault(i => i.Name == ILogicFormsComboBox.SelectedItem.ToString());
             PopulateParametersGrid(iLogicForm);
         }
 
-        private void PopulateParametersGrid(ILogicUiElement iLogicForm)
+        private void PopulateParametersGrid(ILogicFormElement iLogicForm)
         {
-            foreach (ILogicUiElement item in iLogicForm.Items)
+            foreach (ILogicFormElement item in iLogicForm.Items)
             {
                 if (item.ParameterName != null) ParametersDataGrid.Items.Add(item);
                 if (item.Items != null) PopulateParametersGrid(item);
@@ -95,7 +95,7 @@ namespace CadflairInventorAddin.Commands.Upload
             //}
 
             // Get parameters in form of json
-            ILogicUiElement iLogicFormSpec = _iLogicForms.FirstOrDefault(i => i.Name == ILogicFormsComboBox.SelectedItem.ToString());
+            ILogicFormElement iLogicFormSpec = _iLogicForms.FirstOrDefault(i => i.Name == ILogicFormsComboBox.SelectedItem.ToString());
 
             //UploadToCadflair.SaveILogicUiElementToJson(iLogicFormSpec);
             //UploadToCadflair.SaveILogicFormSpecToXml(iLogicFormSpec.Name);
@@ -111,8 +111,8 @@ namespace CadflairInventorAddin.Commands.Upload
                                                                                  subscriptionId: 1,
                                                                                  productFolderId: 1,
                                                                                  displayName: DisplayNameTextBox.Text,
-                                                                                 parameterJson: iLogicFormSpec.ToJson(),
-                                                                                 argumentJson: "nothing",
+                                                                                 parameterJson: iLogicFormSpec.GetFormJson(),
+                                                                                 argumentJson: iLogicFormSpec.GetArgumentJson(),
                                                                                  isPublic: true,
                                                                                  isConfigurable: true,
                                                                                  zipFileName: zipFileName);

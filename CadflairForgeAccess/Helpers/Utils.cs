@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace CadflairForgeAccess
+namespace CadflairForgeAccess.Helpers
 {
     internal static class Utils
     {
@@ -25,7 +25,7 @@ namespace CadflairForgeAccess
         internal static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
+            return Convert.ToBase64String(plainTextBytes);
         }
 
         /// <summary>

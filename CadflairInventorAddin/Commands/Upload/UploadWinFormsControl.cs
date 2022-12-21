@@ -16,7 +16,7 @@ namespace CadflairInventorAddin.Commands.Upload
     public partial class UploadWinFormsControl : UserControl
     {
         private Document _doc;
-        private List<ILogicUiElement> _iLogicForms;
+        private List<ILogicFormElement> _iLogicForms;
 
         public UploadWinFormsControl(Document doc)
         {
@@ -29,7 +29,7 @@ namespace CadflairInventorAddin.Commands.Upload
             _doc = doc;
             _iLogicForms = UploadToCadflair.GetILogicFormElements(doc);
 
-            foreach(ILogicUiElement form in _iLogicForms)
+            foreach(ILogicFormElement form in _iLogicForms)
             {
                 ComboBoxILogicForms.Items.Add(form.Name);
             }
@@ -40,13 +40,13 @@ namespace CadflairInventorAddin.Commands.Upload
         private void ComboBoxILogicForms_SelectedIndexChanged(object sender, EventArgs e)
         {
             DataGridViewParameters.Rows.Clear();
-            ILogicUiElement form = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
+            ILogicFormElement form = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
             PopulateParametersGrid(form);
         }
 
-        private void PopulateParametersGrid(ILogicUiElement element)
+        private void PopulateParametersGrid(ILogicFormElement element)
         {
-            foreach(ILogicUiElement item in element.Items)
+            foreach(ILogicFormElement item in element.Items)
             {
                 if(item.ParameterName != null)
                 {
@@ -77,7 +77,7 @@ namespace CadflairInventorAddin.Commands.Upload
             // Save limits for numeric text box parameters as attributes
             foreach(DataGridViewRow row in DataGridViewParameters.Rows)
             {
-                ILogicUiElement element = (ILogicUiElement)row.Cells[ILogicUIElementColumn.Index].Value;
+                ILogicFormElement element = (ILogicFormElement)row.Cells[ILogicUIElementColumn.Index].Value;
 
                 if (element.UiElementSpec == "NumericParameterControlSpec" && element.EditControlType == "TextBox")
                 {
@@ -90,24 +90,24 @@ namespace CadflairInventorAddin.Commands.Upload
             }
 
             // Get parameters in form of json
-            ILogicUiElement iLogicFormSpec = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
+            ILogicFormElement iLogicFormSpec = _iLogicForms.FirstOrDefault(i => i.Name == ComboBoxILogicForms.SelectedItem.ToString());
 
             //UploadToCadflair.SaveILogicUiElementToJson(iLogicFormSpec);
             //UploadToCadflair.SaveILogicFormSpecToXml(iLogicFormSpec.Name);
 
-            // Create new product model
-            Product newProduct = new Product()
-            {
-                CreatedById = Convert.ToInt32(TextBoxUserId.Text),
-                //ProductFamilyId = Convert.ToInt32(TextBoxProductFamilyId.Text),
-                DisplayName = TextBoxDisplayName.Text,
-                ParameterJson = iLogicFormSpec.ToJson(),
-                IsPublic = CheckBoxIsPublic.Checked,
-                IsConfigurable = CheckBoxIsConfigurable.Checked,
-            };
+            //// Create new product model
+            //Product newProduct = new Product()
+            //{
+            //    CreatedById = Convert.ToInt32(TextBoxUserId.Text),
+            //    //ProductFamilyId = Convert.ToInt32(TextBoxProductFamilyId.Text),
+            //    DisplayName = TextBoxDisplayName.Text,
+            //    ParameterJson = iLogicFormSpec.ToJson(),
+            //    IsPublic = CheckBoxIsPublic.Checked,
+            //    IsConfigurable = CheckBoxIsConfigurable.Checked,
+            //};
 
-            // save model to zipfile
-            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
+            //// save model to zipfile
+            //string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
 
 
 

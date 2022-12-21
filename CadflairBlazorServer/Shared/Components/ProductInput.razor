@@ -2,11 +2,11 @@
 {
     case "ControlTabContainerSpec":
         <MudTabs ApplyEffectsToContainer="true" Outlined="true" Rounded="true" PanelClass="pa-3">
-            @foreach(ILogicUiElement tabPanel in Element.Items)
+            @foreach(ILogicFormElement tabPanel in Element.Items)
             {
                 <MudTabPanel Text="@tabPanel.Name" ToolTip="@tabPanel.ToolTip">
                     <MudStack>
-                        @foreach (ILogicUiElement element in tabPanel.Items)
+                        @foreach (ILogicFormElement element in tabPanel.Items)
                         {
                             <ProductInput Element="@element" @key="element"></ProductInput>
                         }
@@ -25,7 +25,7 @@
                 </TitleContent>
                 <ChildContent>
                     <MudStack>
-                        @foreach (ILogicUiElement element in Element.Items)
+                        @foreach (ILogicFormElement element in Element.Items)
                         {
                             <ProductInput Element="@element" @key="element"></ProductInput>
                         }
@@ -37,7 +37,7 @@
 
     case "ControlRowSpec":
         <MudStack Row="true" AlignItems="AlignItems.Center">
-            @foreach (ILogicUiElement element in Element.Items)
+            @foreach (ILogicFormElement element in Element.Items)
             {
                 <ProductInput Element="@element" @key="element"></ProductInput>
             }
@@ -49,8 +49,8 @@
         {
             case "TextBox":
                 <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
-                    <MudNumericField T="double"
-                                     Value="Double.Parse(Element.ParameterExpression.Replace(Element.ParameterUnits, string.Empty))"
+                    <MudNumericField T="double?"
+                                     Value="string.IsNullOrEmpty(Element.ParameterExpression) ? null : Double.Parse(Element.ParameterExpression.Replace(Element.ParameterUnits, string.Empty))"
                                      ValueChanged="@((val) => Element.ParameterExpression = $"{val.ToString()} {Element.ParameterUnits}")"
                                      Label="@Element.Name"
                                      HideSpinButtons="true"
@@ -65,8 +65,8 @@
 
             case "TrackBar":
                 <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
-                    <MudSlider T="double"
-                               Value="Double.Parse(Element.ParameterExpression.Replace(Element.ParameterUnits, string.Empty))"
+                    <MudSlider T="double?"
+                               Value="string.IsNullOrEmpty(Element.ParameterExpression) ? null : Double.Parse(Element.ParameterExpression.Replace(Element.ParameterUnits, string.Empty))"
                                ValueChanged="@((val) => Element.ParameterExpression = $"{val.ToString()} {Element.ParameterUnits}")"
                                Min="@(Element.TrackBarMinValue == null ? default(double) : (double)Element.TrackBarMinValue)"
                                Max="@(Element.TrackBarMaxValue == null ? default(double) : (double)Element.TrackBarMaxValue)"
@@ -225,7 +225,7 @@
 @code {
 
     [Parameter]
-    public ILogicUiElement Element { get; set; } = new();
+    public ILogicFormElement Element { get; set; } = new();
 
     private Variant _variant = Variant.Outlined;
 }
