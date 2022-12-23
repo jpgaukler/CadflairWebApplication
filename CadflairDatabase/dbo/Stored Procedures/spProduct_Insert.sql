@@ -3,7 +3,7 @@
 	@ProductFolderId int,
 	@DisplayName nvarchar(50),
 	@SubdirectoryName varchar(50),
-	@ParameterJson nvarchar(4000),
+	@ILogicFormJson nvarchar(4000),
 	@ForgeBucketKey uniqueidentifier,
 	@CreatedById int,
 	@IsPublic bit,
@@ -18,7 +18,7 @@ BEGIN
 			   ,ProductFolderId
 			   ,DisplayName
 			   ,SubdirectoryName
-			   ,ParameterJson
+			   ,ILogicFormJson
 			   ,ForgeBucketKey
 			   ,CreatedById
 			   ,IsPublic
@@ -28,7 +28,7 @@ BEGIN
 			   ,@ProductFolderId
 			   ,@DisplayName
 			   ,@SubdirectoryName
-			   ,@ParameterJson
+			   ,@ILogicFormJson
 			   ,@ForgeBucketKey
 			   ,@CreatedById
 			   ,@IsPublic

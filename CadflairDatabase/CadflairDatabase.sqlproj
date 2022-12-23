@@ -93,6 +93,9 @@
     <Build Include="dbo\Stored Procedures\spSubscription_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductFolder_GetBySubscriptionIdAndParentId.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_GetBySubscriptionIdAndSubdirectoryName.sql" />
+    <Build Include="dbo\Stored Procedures\spSubscription_GetBySubdirectoryName.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetDefaultByProductId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

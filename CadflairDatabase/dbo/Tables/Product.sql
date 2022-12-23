@@ -4,7 +4,7 @@
     [ProductFolderId]    INT                       NOT NULL,
     [DisplayName]		 NVARCHAR(50)              NOT NULL,
     [SubdirectoryName]   VARCHAR(50)               NOT NULL,
-    [ParameterJson]		 NVARCHAR (4000)           NULL, --I am not sure if this should be MAX, might want to try and determine the actual length of this field
+    [ILogicFormJson]	 NVARCHAR (MAX)            NULL, 
     [ForgeBucketKey]	 UNIQUEIDENTIFIER          NOT NULL,
     [CreatedOn]			 DATETIMEOFFSET(7)    	   NOT NULL DEFAULT sysdatetimeoffset(),
     [CreatedById]        INT                       NOT NULL,
@@ -14,6 +14,7 @@
     CONSTRAINT [FK_Product_ProductFolder] FOREIGN KEY ([ProductFolderId]) REFERENCES [dbo].[ProductFolder] ([Id]),
     CONSTRAINT [FK_Product_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[ProductFolder] ([Id]),
     CONSTRAINT [FK_Product_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
-    CONSTRAINT [UC_SubscriptionId_DisplayName] UNIQUE([SubscriptionId],[DisplayName])
+    CONSTRAINT [UC_SubscriptionId_DisplayName] UNIQUE([SubscriptionId],[DisplayName]),
+    CONSTRAINT [UC_SubscriptionId_SubdirectoryName] UNIQUE([SubscriptionId],[SubdirectoryName])
 );
 

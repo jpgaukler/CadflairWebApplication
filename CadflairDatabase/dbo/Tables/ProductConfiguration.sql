@@ -2,7 +2,7 @@
     [Id]                    INT                  NOT NULL IDENTITY (1, 1),
     [ProductId]             INT                  NOT NULL,
     [IsDefault]             BIT                  NOT NULL,
-    [ArgumentJson]          NVARCHAR (4000)      NOT NULL,
+    [ArgumentJson]          NVARCHAR (4000)      NOT NULL, --should this be NVARCHAR (MAX)? need to see how long these strings typically are
     [ForgeZipKey]           UNIQUEIDENTIFIER     NOT NULL,
     [ForgeStpKey]           UNIQUEIDENTIFIER     NULL,
     [ForgePdfKey]           UNIQUEIDENTIFIER     NULL,

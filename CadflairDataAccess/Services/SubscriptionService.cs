@@ -28,6 +28,11 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_GetById]", new { Id = id });
         }
 
+        public Task<Subscription> GetSubscriptionBySubdirectoryName(string subdirectoryName)
+        {
+            return _db.LoadSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_GetBySubdirectoryName]", new { SubdirectoryName = subdirectoryName });
+        }
+
         public Task<Subscription> CreateSubscription(int subscriptionTypeId, string companyName, int ownerId, int createdById)
         {
             dynamic values = new

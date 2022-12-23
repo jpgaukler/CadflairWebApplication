@@ -106,7 +106,7 @@ namespace CadflairBlazorServer.Controllers
                 Product newProduct = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: (int)productData.SubscriptionId,
                                                                                              productFolderId: (int)productData.ProductFolderId,
                                                                                              displayName: (string)productData.DisplayName,
-                                                                                             parameterJson: (string)productData.ParameterJson,
+                                                                                             iLogicFormJson: (string)productData.ILogicFormJson,
                                                                                              forgeBucketKey: bucketKey,
                                                                                              createdById: (int)productData.UserId,
                                                                                              isPublic: (bool)productData.IsPublic,

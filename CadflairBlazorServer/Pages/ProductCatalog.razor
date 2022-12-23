@@ -1,37 +1,38 @@
-﻿@using Newtonsoft.Json;
+﻿@page "/{CompanyName}/products/{ProductName}"
 
-@page "/productcatalog/{ProductId:int}"
 @layout ConfiguratorLayout
 @inject IJSRuntime _js
 @inject DataServicesManager _dataServicesManager
 @inject ForgeServicesManager _forgeServicesManager
 
-<!--Drawer-->
 <MudDrawer @bind-Open="@_drawerOpen"
            Variant="@DrawerVariant.Persistent"
            ClipMode="DrawerClipMode.Always"
            Anchor="Anchor.Left"
            Width="30%">
-    <!--Drawer Header-->
     <MudDrawerHeader>
-        <MudText Typo="Typo.h5"><b>@_iLogicFormData.Name</b></MudText>
+        <MudText Typo="Typo.h5"><b>@_product?.DisplayName</b></MudText>
     </MudDrawerHeader>
-    <!--Drawer Content-->
     <MudStack Class="flex-grow-1 overflow-auto" Spacing="0">
-        <!--Form Inputs-->
-        <MudForm @bind-IsValid="_validInputs" Class="flex-grow-1 overflow-auto">
-            <MudStack Class="flex-grow-1 px-3 overflow-auto">
-                @if (_iLogicFormData.Items != null)
-                {
+        <!--Product Inputs-->
+        @if (_iLogicFormData.Items == null)
+        {
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
+            </MudStack>
+        }
+        else
+        {
+            <MudForm @bind-IsValid="_validInputs" Class="flex-grow-1 overflow-auto">
+                <MudStack Class="flex-grow-1 px-3 overflow-auto">
                     @foreach (ILogicFormElement element in _iLogicFormData.Items)
                     {
                         <ProductInput Element="@element" @key="element"></ProductInput>
                     }
-                }
-            </MudStack>
-        </MudForm>
-
-        <!--Buttons-->
+                </MudStack>
+            </MudForm>
+        }
+        <!--Action Buttons-->
         <MudStack Class="pa-3">
             <MudButton OnClick="PrintInputValues" Disabled="@(!_validInputs)" Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Submit</MudButton>
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Pdf</MudButton>
@@ -50,7 +51,7 @@
 
 </MudStack>
 
-<!--Viewer-->
+<!--Forge Viewer-->
 <div class="d-flex ma-0 pa-0" style="height: calc(100vh - var(--mud-appbar-height))">
     <ForgeViewer />
 </div>
@@ -58,24 +59,30 @@
 
 @code
 {
-    [Parameter] public int ProductId { get; set; }
-    private Variant _buttonVariant = Variant.Outlined;
-    private bool _drawerOpen = true;
+    [Parameter] public string ProductName { get; set; } = string.Empty;
+    [Parameter] public string CompanyName { get; set; } = string.Empty;
+
+    private Subscription _subscription = new();
     private Product _product = new();
+    private ProductConfiguration _defaultConfiguration = new();
     private ILogicFormElement _iLogicFormData = new();
     private bool _validInputs;
 
+    private Variant _buttonVariant = Variant.Outlined;
+    private bool _drawerOpen = true;
+
     protected override async void OnInitialized()
     {
-        //look at the url to find the corresponding product, then read the data from the database
-        _product = await _dataServicesManager.ProductService.GetProductById(ProductId);
+        // get data
+        _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
+        _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
+        _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductId(_product.Id);
 
-        _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_product.ParameterJson)!;
+        // construct UI
+        _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_product.ILogicFormJson)!;
+        _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
 
-        var defaultConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(1003);
-        _iLogicFormData.SetParameterExpressions(defaultConfiguration.ArgumentJson);
-
-        Debug.WriteLine(_product.ParameterJson);
+        Debug.WriteLine(_product.ILogicFormJson);
     }
 
     //private async Task CreateBucket()

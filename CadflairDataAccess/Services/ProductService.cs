@@ -25,12 +25,23 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetById]", new { Id = id });
         }
 
+        public Task<Product> GetProductBySubscriptionIdAndSubdirectoryName(int subscriptionId, string subdirectoryName)
+        {
+            dynamic values = new
+            {
+                SubscriptionId = subscriptionId,
+                SubdirectoryName = subdirectoryName,
+            };
+
+            return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetBySubscriptionIdAndSubdirectoryName]", values);
+        }
+
         public Task<List<Product>> GetProductsByProductFolderId(int productFolderId)
         {
             return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFolderId]", new { ProductFolderId = productFolderId });
         }
 
-        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, string parameterJson, Guid forgeBucketKey, int createdById, bool isPublic, bool isConfigurable)
+        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, string iLogicFormJson, Guid forgeBucketKey, int createdById, bool isPublic, bool isConfigurable)
         {
             dynamic values = new
             {
@@ -38,7 +49,7 @@ namespace CadflairDataAccess.Services
                 ProductFolderId = productFolderId,
                 DisplayName = displayName,
                 SubdirectoryName =  Regex.Replace(displayName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
-                ParameterJson = parameterJson,
+                ILogicFormJson = iLogicFormJson,
                 ForgeBucketKey = forgeBucketKey,
                 CreatedById = createdById,
                 IsPublic = isPublic,
@@ -103,6 +114,11 @@ namespace CadflairDataAccess.Services
         public Task<ProductConfiguration> GetProductConfigurationById(int id)
         {
             return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
+        }
+
+        public Task<ProductConfiguration> GetDefaultProductConfigurationByProductId(int productId)
+        {
+            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetDefaultByProductId]", new { ProductId = productId });
         }
 
         public Task<List<ProductConfiguration>> GetProductConfigurationsByProductId(int productId)

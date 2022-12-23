@@ -111,7 +111,7 @@ namespace CadflairInventorAddin.Commands.Upload
                                                                                  subscriptionId: 1,
                                                                                  productFolderId: 1,
                                                                                  displayName: DisplayNameTextBox.Text,
-                                                                                 parameterJson: iLogicFormSpec.GetFormJson(),
+                                                                                 iLogicFormJson: iLogicFormSpec.GetFormJson(),
                                                                                  argumentJson: iLogicFormSpec.GetArgumentJson(),
                                                                                  isPublic: true,
                                                                                  isConfigurable: true,

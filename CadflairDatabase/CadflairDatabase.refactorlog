@@ -259,4 +259,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[SubdirectoryName]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="a5ef2d8b-bba8-4627-8212-f505b492aecb" ChangeDateTime="12/23/2022 00:07:57">
+    <Property Name="ElementName" Value="[dbo].[Product].[ParameterJson]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Product]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ILogicFormJson]" />
+  </Operation>
 </Operations>

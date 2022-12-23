@@ -34,7 +34,7 @@ namespace CadflairDataAccess.Models
         /// <summary>
         /// Json object that contains the form definition for the Product. This is derived from the iLogic form in the Inventor model.
         /// </summary>
-        public string ParameterJson { get; set; }
+        public string ILogicFormJson { get; set; }
 
         /// <summary>
         /// Bucket key for this Product in Autodesk Forge OSS. This bucket is used to stored all configuration objects and their related files.
