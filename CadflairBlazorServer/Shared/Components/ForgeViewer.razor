@@ -1,37 +1,35 @@
-﻿@inject IJSRuntime JS
+﻿@inject IJSRuntime _js
+@inject ForgeServicesManager _forgeServicesManager
 
 <div id="forgeViewer" style="background:gray; position: relative; width:100%; height:100%"></div>
 
 @code {
 
-    //protected override async Task OnAfterRenderAsync(bool firstTime)
-    //{
-    //    if(firstTime)
-    //    {
-    //        await ViewDocument("urn:adsk.objects:os.object:cadflair.jaysdressers.models/Justin%20Order1.zip");
-    //    }
-    //}
+    public async Task ViewDocument(string bucketKey, string objectKey) 
+    {
+        //get public token for viewables
+        var token = await _forgeServicesManager.AuthorizationService.GetPublic();
 
-    //private async Task ViewDocument(string forgeObjectId) 
-    //{
-    //    //get public token for viewables
-    //    var token = await Forge.OAuth.GetPublicAsync();
+        //get forge object id
+        var forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
 
-    //    //define input parameters as JSON
-    //    var parameters = new
-    //    {
-    //        Token = token.access_token,
-    //        Urn = Base64Encode(forgeObjectId)
-    //    };
+        if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
+        {
+            //define input parameters as JSON
+            var parameters = new
+            {
+                Token = token.access_token,
+                Urn = forgeObject.encoded_urn
+            };
 
-    //    //invoke the viewer
-    //    await JS.InvokeVoidAsync("launchViewer", parameters);
-    //}
-
-    //internal static string Base64Encode(string plainText)
-    //{
-    //    var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-    //    return System.Convert.ToBase64String(plainTextBytes);
-    //}
+            //invoke the viewer
+            await _js.InvokeVoidAsync("launchViewer", parameters);
+        }
+        else
+        {
+            //need to translate object
+            await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
+        }
+    }
 
 }

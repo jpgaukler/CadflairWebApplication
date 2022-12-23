@@ -24,7 +24,7 @@ namespace CadflairForgeAccess
             AuthorizationService = new(clientId, clientSecret);
             ObjectStorageService = new(AuthorizationService);
             DesignAutomationService = new(AuthorizationService);
-            ModelDerivativeService = new();
+            ModelDerivativeService = new(AuthorizationService);
         }
 
 

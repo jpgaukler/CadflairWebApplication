@@ -27,7 +27,7 @@ namespace CadflairForgeAccess.Services
         /// <summary>
         /// Get access token with public (viewables:read) scope
         /// </summary>
-        public dynamic GetPublic()
+        public async Task<dynamic> GetPublic()
         {
             if (_publicToken == null || _publicToken?.ExpiresAt < DateTime.UtcNow)
             {
@@ -36,7 +36,7 @@ namespace CadflairForgeAccess.Services
                     Scope.ViewablesRead
                 };
 
-                _publicToken = Get2LeggedToken(scopes);
+                _publicToken = await Get2LeggedToken(scopes);
                 _publicToken.ExpiresAt = DateTime.UtcNow.AddSeconds(_publicToken.expires_in);
             }
 
@@ -45,60 +45,10 @@ namespace CadflairForgeAccess.Services
             return _publicToken;
         }
 
-
-        /// <summary>
-        /// Get access token with public (viewables:read) scope
-        /// </summary>
-        public async Task<dynamic> GetPublicAsync()
-        {
-            if (_publicToken == null || _publicToken?.ExpiresAt < DateTime.UtcNow)
-            {
-                Scope[] scopes = new Scope[]
-                {
-                    Scope.ViewablesRead
-                };
-
-                _publicToken = await Get2LeggedTokenAsync(scopes);
-                _publicToken.ExpiresAt = DateTime.UtcNow.AddSeconds(_publicToken.expires_in);
-            }
-
-            if (_publicToken == null) return new { Error = "Unable to acquire Public Forge token!" };
-
-            return _publicToken;
-        }
-
-
         /// <summary>
         /// Get access token with internal (write) scope
         /// </summary>
-        public dynamic GetInternal()
-        {
-            if (_internalToken == null || _internalToken?.ExpiresAt < DateTime.UtcNow)
-            {
-                Scope[] scopes = new Scope[]
-                {
-                    Scope.BucketCreate,
-                    Scope.BucketRead,
-                    Scope.BucketDelete,
-                    Scope.DataRead,
-                    Scope.DataWrite,
-                    Scope.DataCreate,
-                    Scope.CodeAll
-                };
-
-                _internalToken = Get2LeggedToken(scopes);
-                _internalToken.ExpiresAt = DateTime.UtcNow.AddSeconds(_internalToken.expires_in);
-            }
-
-            if (_internalToken == null) throw new Exception("Unable to acquire Internal Forge token!");
-
-            return _internalToken;
-        }
-
-        /// <summary>
-        /// Get access token with internal (write) scope
-        /// </summary>
-        public async Task<dynamic> GetInternalAsync()
+        public async Task<dynamic> GetInternal()
         {
             if (_internalToken == null || _internalToken?.ExpiresAt < DateTime.UtcNow)
             {
@@ -114,7 +64,7 @@ namespace CadflairForgeAccess.Services
                     Scope.CodeAll
                 };
 
-                _internalToken = await Get2LeggedTokenAsync(scopes);
+                _internalToken = await Get2LeggedToken(scopes);
                 _internalToken.ExpiresAt = DateTime.UtcNow.AddSeconds(_internalToken.expires_in);
             }
 
@@ -126,21 +76,7 @@ namespace CadflairForgeAccess.Services
         /// <summary>
         /// Get the access token from Autodesk
         /// </summary>
-        private dynamic Get2LeggedToken(Scope[] scopes)
-        {
-            TwoLeggedApi oauth = new();
-            dynamic bearer = oauth.Authenticate(clientId: ClientId,
-                                                clientSecret: ClientSecret,
-                                                grantType: "client_credentials",
-                                                scope: scopes);
-
-            return bearer;
-        }
-
-        /// <summary>
-        /// Get the access token from Autodesk
-        /// </summary>
-        private async Task<dynamic> Get2LeggedTokenAsync(Scope[] scopes)
+        private async Task<dynamic> Get2LeggedToken(Scope[] scopes)
         {
             TwoLeggedApi oauth = new();
             dynamic bearer = await oauth.AuthenticateAsync(clientId: ClientId,

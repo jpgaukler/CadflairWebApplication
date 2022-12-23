@@ -42,7 +42,7 @@ namespace CadflairForgeAccess.Services
             {
                 Debug.WriteLine($"Generating product configuration...");
 
-                dynamic token = await _authService.GetInternalAsync();
+                dynamic token = await _authService.GetInternal();
 
                 Debug.WriteLine($"token: {token.access_token}");
 

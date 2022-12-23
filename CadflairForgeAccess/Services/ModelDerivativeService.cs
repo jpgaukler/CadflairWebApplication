@@ -13,24 +13,65 @@ namespace CadflairForgeAccess.Services
     public class ModelDerivativeService
     {
 
+        private readonly AuthorizationService _authService;
         private readonly DerivativesApi _derivativesApi = new();
         private readonly HttpClient _httpClient = new();
 
-        public ModelDerivativeService()
+        public ModelDerivativeService(AuthorizationService authService)
         {
-
+            _authService = authService;
         }
 
-        //internal DerivativesApi DerivativesApi
-        //{
-        //    get
-        //    {
-        //        dynamic oauth = ForgeAuthorizationService.GetInternal();
-        //        _derivativesApi.Configuration.AccessToken = oauth.access_token;
+        private async Task<DerivativesApi> GetDerivativesApi()
+        {
+            DerivativesApi derivative = new();
+            dynamic token = await _authService.GetInternal();
+            derivative.Configuration.AccessToken = token.access_token;
+            return derivative;
+        }
 
-        //        return _derivativesApi;
-        //    }
-        //}
+
+        public async Task<dynamic> TranslateObject(string encodedObjectUrn, string rootFileName)
+        {
+            // prepare the payload
+            List<JobPayloadItem.ViewsEnum> views = new()
+            {
+                JobPayloadItem.ViewsEnum._2d,
+                JobPayloadItem.ViewsEnum._3d
+            };
+
+            List<JobPayloadItem> payloadList = new()
+            {
+                new(JobPayloadItem.TypeEnum.Svf, views)
+            };
+
+            JobPayload job = new()
+            {
+                Input = new JobPayloadInput(encodedObjectUrn, true, rootFileName),
+                Output = new JobPayloadOutput(payloadList),
+                Misc = new JobPayloadMisc("translateObjectWorkflow")
+            };
+
+            // start the translation
+            DerivativesApi derivative = await GetDerivativesApi();
+            dynamic jobPosted = await derivative.TranslateAsync(job);
+
+            return jobPosted;
+        }
+
+        public async Task<bool> TranslationExists(string encodedObjectUrn)
+        {
+            try
+            {
+                DerivativesApi derivative = await GetDerivativesApi();
+                dynamic manifest = await derivative.GetManifestAsync(encodedObjectUrn);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
 
         ///// <summary>
@@ -43,6 +84,7 @@ namespace CadflairForgeAccess.Services
         ///// <returns></returns>
         //public async Task<HttpResponseMessage> TranslateObject(string _connectionId, string bucketKey, string objectKey, string? rootFileName = null)
         //{
+
         //    dynamic oauth = ForgeAuthorizationService.GetInternal();
         //    string? objectUrn = await ObjectStorageService.GetEncodedUrnAsync(bucketKey, objectKey);
 
@@ -119,6 +161,8 @@ namespace CadflairForgeAccess.Services
 
         //    return response;
         //}
+
+
 
         ///// <summary>
         ///// Get the thumbnail for a model in Forge OSS storage

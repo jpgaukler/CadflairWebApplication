@@ -73,7 +73,7 @@ namespace CadflairBlazorServer.Controllers
                 // Create bucket for product
                 Guid bucketKey = Guid.NewGuid();
                 Guid objectKey = Guid.NewGuid();
-                await _forgeServicesManager.ObjectStorageService.CreateBucketAsync(bucketKey.ToString());
+                await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey.ToString());
 
                 // Temporarily save the file to server
                 string tempFileName = Path.GetTempFileName();
@@ -84,7 +84,7 @@ namespace CadflairBlazorServer.Controllers
                 }
 
                 // Upload file to Autodesk Forge OSS 
-                bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFileAsync(bucketKey.ToString(), objectKey.ToString(), tempFileName);
+                bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey.ToString(), objectKey.ToString(), tempFileName);
 
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);

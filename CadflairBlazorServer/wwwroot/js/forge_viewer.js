@@ -6,14 +6,16 @@ async function launchViewer(params) {
         accessToken: params.token
     };
 
-    console.log(params);
-    console.log('token: ');
-    console.log(params.token);
-    console.log('urn: ' + params.urn);
+    //console.log(params);
+    //console.log('token: ');
+    //console.log(params.token);
+    //console.log('urn: ' + params.urn);
 
     Autodesk.Viewing.Initializer(options, () => {
         viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['Autodesk.DocumentBrowser'] });
         viewer.start();
+
+        // urn must be Base64 encoded
         var documentId = 'urn:' + params.urn;
         Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
     });

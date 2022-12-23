@@ -53,7 +53,7 @@
 
 <!--Forge Viewer-->
 <div class="d-flex ma-0 pa-0" style="height: calc(100vh - var(--mud-appbar-height))">
-    <ForgeViewer />
+    <ForgeViewer @ref="_forgeViewer"/>
 </div>
 
 
@@ -68,6 +68,7 @@
     private ILogicFormElement _iLogicFormData = new();
     private bool _validInputs;
 
+    private ForgeViewer? _forgeViewer;
     private Variant _buttonVariant = Variant.Outlined;
     private bool _drawerOpen = true;
 
@@ -78,11 +79,15 @@
         _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
         _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductId(_product.Id);
 
+        Debug.WriteLine(_product.ILogicFormJson);
+
         // construct UI
         _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_product.ILogicFormJson)!;
         _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
 
-        Debug.WriteLine(_product.ILogicFormJson);
+        await _forgeViewer!.ViewDocument(_product.ForgeBucketKey.ToString(), _defaultConfiguration.ForgeZipKey.ToString());
+
+        Debug.WriteLine("Done");
     }
 
     //private async Task CreateBucket()

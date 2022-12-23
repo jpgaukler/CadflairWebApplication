@@ -9,52 +9,76 @@ namespace CadflairForgeAccess.Services
     {
 
         private readonly AuthorizationService _authService;
-        private static readonly ObjectsApi _objectsApi = new();
-        private static readonly BucketsApi _bucketsApi = new();
-        private static readonly string[] _uploadFileExtensions = { ".ipt", "iam", ".idw", ".dwg", ".zip" };
+        //private static readonly string[] _uploadFileExtensions = { ".ipt", "iam", ".idw", ".dwg", ".zip" };
 
         public ObjectStorageService(AuthorizationService authService)
         {
             _authService = authService;
         }
 
-        public async Task<dynamic?> CreateBucketAsync(string bucketKey)
+        private async Task<BucketsApi> GetBucketsApi()
         {
-            dynamic token = await _authService.GetInternalAsync();
-            _bucketsApi.Configuration.AccessToken = token.access_token;
+            BucketsApi buckets = new();
+            dynamic token = await _authService.GetInternal();
+            buckets.Configuration.AccessToken = token.access_token;
+            return buckets;
+        }
 
+        private async Task<ObjectsApi> GetObjectsApi()
+        {
+            ObjectsApi objects = new();
+            dynamic token = await _authService.GetInternal();
+            objects.Configuration.AccessToken = token.access_token;
+            return objects;
+        }
+
+        public async Task<dynamic> CreateBucket(string bucketKey)
+        {
+            BucketsApi buckets = await GetBucketsApi();
             PostBucketsPayload bucketPayload = new(bucketKey, null, PostBucketsPayload.PolicyKeyEnum.Persistent);
-            dynamic bucket = await _bucketsApi.CreateBucketAsync(bucketPayload, "US");
+            dynamic bucket = await buckets.CreateBucketAsync(bucketPayload, "US");
 
             return bucket;
         }
 
-        public async Task<dynamic?> GetBucketDetailsAsync(string bucketKey)
+        public async Task<dynamic> GetBucketDetails(string bucketKey)
         {
-            dynamic token = await _authService.GetInternalAsync();
-            _bucketsApi.Configuration.AccessToken = token.access_token;
-
-            dynamic bucket = await _bucketsApi.GetBucketDetailsAsync(bucketKey);
+            BucketsApi buckets = await GetBucketsApi();
+            dynamic bucket = await buckets.GetBucketDetailsAsync(bucketKey);
 
             return bucket;
+        }
+
+        public async Task<dynamic> GetObjectDetails(string bucketKey, string objectName)
+        {
+            ObjectsApi objects = await GetObjectsApi();
+            dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
+
+            //add the encoded urn to the object
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes((string)objectDetails.objectId);
+            objectDetails.encoded_urn = System.Convert.ToBase64String(plainTextBytes);
+
+            return objectDetails;
         }
 
         /// <summary>
         /// Upload a file directly to an AWS bucket on the Autodesk Forge service.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> UploadFileAsync(string bucketKey, string objectKey, string fullFileName)
+        public async Task<bool> UploadFile(string bucketKey, string objectKey, string fullFileName)
         {
+            ObjectsApi objects = await GetObjectsApi();
+
             // Method to report progress during the file upload
             void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
             {
-                Debug.WriteLine($"Progress: {progress} Elapsed: {elapsed} Objects: {string.Join(", ", objects)}");
+                Debug.WriteLine($"File Upload Progress: {progress} Elapsed: {elapsed} Objects: {string.Join(", ", objects)}");
             }
 
             // Method to refresh the token if it expires during upload
             async Task<Bearer?> onRefreshToken()
             {
-                dynamic? token = await _authService.GetInternalAsync();
+                dynamic? token = await _authService.GetInternal();
                 return new Bearer(token.token_type, token.expires_in, token.access_token);
             }
 
@@ -68,10 +92,10 @@ namespace CadflairForgeAccess.Services
             // Upload to aws using direct to S3 approach
             using StreamReader reader = new(fullFileName);
             List<UploadItemDesc> uploadList = new() { new UploadItemDesc(objectKey, reader.BaseStream) };
-            List<UploadItemDesc> uploadRes = await _objectsApi.uploadResources(bucketKey, uploadList, uploadOptions, onUploadProgress, onRefreshToken);
+            List<UploadItemDesc> uploadRes = await objects.uploadResources(bucketKey, uploadList, uploadOptions, onUploadProgress, onRefreshToken);
             UploadItemDesc result = uploadRes.First();
 
-            Debug.WriteLine($"Response: {result.completedResponse}");
+            Debug.WriteLine($"File upload complete: {result.completedResponse}");
 
             bool success = !result.Error;
             return success;
