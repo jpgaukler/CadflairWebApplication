@@ -18,6 +18,20 @@ namespace CadflairDataAccess.Services
             _db = db;
         }
 
+        public Task<Subscription> CreateSubscription(int subscriptionTypeId, string companyName, int ownerId, int createdById)
+        {
+            dynamic values = new
+            {
+                SubscriptionTypeId = subscriptionTypeId,
+                CompanyName = companyName,
+                SubdirectoryName = Regex.Replace(companyName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
+                OwnerId = ownerId,
+                CreatedById = createdById,
+            };
+
+            return _db.SaveSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_Insert]", values);
+        }
+
         public Task<List<SubscriptionType>> GetSubscriptionTypes()
         {
             return _db.LoadDataAsync<SubscriptionType, dynamic>("[dbo].[spSubscriptionType_GetAll]", new { });
@@ -31,20 +45,6 @@ namespace CadflairDataAccess.Services
         public Task<Subscription> GetSubscriptionBySubdirectoryName(string subdirectoryName)
         {
             return _db.LoadSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_GetBySubdirectoryName]", new { SubdirectoryName = subdirectoryName });
-        }
-
-        public Task<Subscription> CreateSubscription(int subscriptionTypeId, string companyName, int ownerId, int createdById)
-        {
-            dynamic values = new
-            {
-                SubscriptionTypeId = subscriptionTypeId,
-                CompanyName = companyName,
-                SubdirectoryName = Regex.Replace(companyName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
-                OwnerId = ownerId,
-                CreatedById = createdById,
-            };
-
-            return _db.SaveSingleAsync<Subscription, dynamic>("[dbo].[spSubscription_Insert]", values);
         }
 
         public Task DeleteSubscription(Subscription subscription)

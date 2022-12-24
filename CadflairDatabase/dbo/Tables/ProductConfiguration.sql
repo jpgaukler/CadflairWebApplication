@@ -1,15 +1,15 @@
 ﻿CREATE TABLE [dbo].[ProductConfiguration] (
     [Id]                    INT                  NOT NULL IDENTITY (1, 1),
-    [ProductId]             INT                  NOT NULL,
+    [ProductVersionId]      INT                  NOT NULL,
     [IsDefault]             BIT                  NOT NULL,
-    [ArgumentJson]          NVARCHAR (4000)      NOT NULL, --should this be NVARCHAR (MAX)? need to see how long these strings typically are
+    [ArgumentJson]          NVARCHAR (MAX)       NOT NULL, 
     [ForgeZipKey]           UNIQUEIDENTIFIER     NOT NULL,
     [ForgeStpKey]           UNIQUEIDENTIFIER     NULL,
     [ForgePdfKey]           UNIQUEIDENTIFIER     NULL,
     [ForgeDwgKey]           UNIQUEIDENTIFIER     NULL,
     [CreatedOn]             DATETIMEOFFSET(7)    NOT NULL DEFAULT sysdatetimeoffset(),
     CONSTRAINT [PK_ProductConfigutation] PRIMARY KEY CLUSTERED ([Id] ASC),
-    CONSTRAINT [FK_Configuration_Product] FOREIGN KEY ([ProductId]) REFERENCES [dbo].[Product] ([Id]),
+    CONSTRAINT [FK_ProductConfiguration_ProductVersion] FOREIGN KEY ([ProductVersionId]) REFERENCES [dbo].[ProductVersion] ([Id]),
     --CONSTRAINT [UC_ProductConfiguration_ArgumentJson] UNIQUE([ArgumentJson])
 );
 

@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[spProductConfiguration_Insert]
-	@ProductId int, 
+	@ProductVersionId int, 
 	@IsDefault bit,
-	@ArgumentJson nvarchar(4000),
+	@ArgumentJson nvarchar(MAX),
 	@ForgeZipKey uniqueidentifier
 AS
 
@@ -9,12 +9,12 @@ BEGIN
 	SET NOCOUNT ON;
 
 	INSERT INTO [dbo].[ProductConfiguration]
-                (ProductId
+                ([ProductVersionId]
 				,IsDefault
                 ,ArgumentJson
                 ,ForgeZipKey)
            VALUES
-			    (@ProductId
+			    (@ProductVersionId
 				,@IsDefault
 		   	    ,@ArgumentJson
 			    ,@ForgeZipKey)

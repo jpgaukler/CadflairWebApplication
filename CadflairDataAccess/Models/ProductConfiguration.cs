@@ -12,9 +12,9 @@ namespace CadflairDataAccess.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Foreign key to <b>Product</b> table. Represents the Product that the ProductConfiguration belongs to.
+        /// Foreign key to <b>ProductVersion</b> table. Represents the ProductVersion that the ProductConfiguration belongs to.
         /// </summary>
-        public int ProductId { get; set; }
+        public int ProductVersionId { get; set; }
 
         /// <summary>
         /// Boolean indicating if this ProductConfiguration is the default configuration that will appear on the webpage for the product.

@@ -3,11 +3,9 @@
 	@ProductFolderId int,
 	@DisplayName nvarchar(50),
 	@SubdirectoryName varchar(50),
-	@ILogicFormJson nvarchar(4000),
 	@ForgeBucketKey uniqueidentifier,
-	@CreatedById int,
 	@IsPublic bit,
-	@IsConfigurable bit
+	@CreatedById int
 AS
 
 BEGIN
@@ -18,21 +16,17 @@ BEGIN
 			   ,ProductFolderId
 			   ,DisplayName
 			   ,SubdirectoryName
-			   ,ILogicFormJson
 			   ,ForgeBucketKey
-			   ,CreatedById
 			   ,IsPublic
-			   ,IsConfigurable)
+			   ,CreatedById)
 		   VALUES
 			   (@SubscriptionId
 			   ,@ProductFolderId
 			   ,@DisplayName
 			   ,@SubdirectoryName
-			   ,@ILogicFormJson
 			   ,@ForgeBucketKey
-			   ,@CreatedById
 			   ,@IsPublic
-			   ,@IsConfigurable)
+			   ,@CreatedById)
 		   SELECT * FROM [dbo].[Product] WHERE Id = SCOPE_IDENTITY();
 
 END

@@ -18,17 +18,6 @@ namespace CadflairDataAccess.Services
         }
 
         #region "Users"
-
-        public Task<User> GetUserByObjectIdentifier(string objectIdentifier)
-        {
-            return _db.LoadSingleAsync<User, dynamic>("[dbo].[spUser_GetByObjectIdentifier]", new { ObjectIdentifier = objectIdentifier });
-        }
-
-        public Task<List<User>> GetUsersBySubscriptionId(int subscriptionId)
-        {
-            return _db.LoadDataAsync<User, dynamic>("[dbo].[spUser_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
-        }
-
         public Task<User> CreateUser(Guid objectIdentifier, string firstName, string lastName, string emailAddress)
         {
             dynamic values = new
@@ -40,6 +29,16 @@ namespace CadflairDataAccess.Services
             };
 
             return _db.SaveSingleAsync<User, dynamic>("[dbo].[spUser_Insert]", values);
+        }
+
+        public Task<User> GetUserByObjectIdentifier(string objectIdentifier)
+        {
+            return _db.LoadSingleAsync<User, dynamic>("[dbo].[spUser_GetByObjectIdentifier]", new { ObjectIdentifier = objectIdentifier });
+        }
+
+        public Task<List<User>> GetUsersBySubscriptionId(int subscriptionId)
+        {
+            return _db.LoadDataAsync<User, dynamic>("[dbo].[spUser_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
         }
 
         public Task UpdateUser(User user)

@@ -61,9 +61,31 @@ namespace CadflairBlazorServer.Controllers
             try
             {
                 //validate data
-                if (string.IsNullOrWhiteSpace(form.ProductData)) return ValidationProblem("Parameter 'ArgumentJson' was not provided!");
+                if (string.IsNullOrWhiteSpace(form.ProductData)) return ValidationProblem("Parameter 'ProductData' was not provided!");
                 if (form.ZipFile == null || form.ZipFile.Length == 0) return ValidationProblem("No zip file was provided!");
                 if (Path.GetExtension(form.ZipFile.FileName) != ".zip") return ValidationProblem("Invalid file type!");
+
+
+                // NEED TO VALIDATE INPUTS!!!!!!!!!!!!!!!
+                dynamic productData = JsonConvert.DeserializeObject<dynamic>(form.ProductData)!;
+                int userId = (int)productData.UserId;
+                int subscriptionId = (int)productData.SubscriptionId;
+                int productFolderId = (int)productData.ProductFolderId;
+                string displayName = (string)productData.DisplayName;
+                string iLogicFormJson = (string)productData.ILogicFormJson;
+                string argumentJson = (string)productData.ArgumentJson;
+                string rootFileName = (string)productData.RootFileName;
+                bool isPublic = (bool)productData.IsPublic;
+                bool isConfigurable = (bool)productData.IsConfigurable;
+
+                Debug.WriteLine($@"UserId: {productData.UserId}");
+                Debug.WriteLine($@"SubscriptionId: {productData.SubscriptionId}");
+                Debug.WriteLine($@"ProductFolderId: {productData.ProductFolderId}");
+                Debug.WriteLine($@"DisplayName: {productData.DisplayName}");
+                Debug.WriteLine($@"ArgumentJson: {productData.ArgumentJson}");
+                Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
+                Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
+
 
                 //// Upload check if greater than 2mb!
                 //if (memoryStream.Length > 2097152)
@@ -89,34 +111,25 @@ namespace CadflairBlazorServer.Controllers
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
 
-                if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload to Autodesk Forge OSS." });
+                if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload files to Autodesk Forge OSS." });
 
-                // Create new Product record in the database
-                dynamic productData = JsonConvert.DeserializeObject<dynamic>(form.ProductData)!;
+                // check to see if product already exists, create a new product if no match is found
+                Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
 
-                Debug.WriteLine($@"UserId: {productData.UserId}");
-                Debug.WriteLine($@"SubscriptionId: {productData.SubscriptionId}");
-                Debug.WriteLine($@"ProductFolderId: {productData.ProductFolderId}");
-                Debug.WriteLine($@"DisplayName: {productData.DisplayName}");
-                Debug.WriteLine($@"ParameterJson: {productData.ParameterJson}");
-                Debug.WriteLine($@"ArgumentJson: {productData.ArgumentJson}");
-                Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
-                Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
+                if(product == null)
+                {
+                    // Create new Product
+                    product = await _dataServicesManager.ProductService.CreateProduct(subscriptionId, productFolderId, displayName, forgeBucketKey: bucketKey, isPublic, createdById: userId);
+                    Debug.WriteLine($@"Created new product: {product.DisplayName}");
+                }
 
-                Product newProduct = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: (int)productData.SubscriptionId,
-                                                                                             productFolderId: (int)productData.ProductFolderId,
-                                                                                             displayName: (string)productData.DisplayName,
-                                                                                             iLogicFormJson: (string)productData.ILogicFormJson,
-                                                                                             forgeBucketKey: bucketKey,
-                                                                                             createdById: (int)productData.UserId,
-                                                                                             isPublic: (bool)productData.IsPublic,
-                                                                                             isConfigurable: (bool)productData.IsConfigurable);
+                // Create new ProductVersion
+                ProductVersion productVersion = await _dataServicesManager.ProductService.CreateProductVersion(productId: product.Id, rootFileName, iLogicFormJson, isConfigurable, createdById: userId);
+                Debug.WriteLine($@"Created new product version: {product.DisplayName} Version: {productVersion.VersionNumber}");
 
-                // Create new ProductConfiguration record in the database for master configuration
-                ProductConfiguration masterConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productId: newProduct.Id,
-                                                                                                                                argumentJson: (string)productData.ArgumentJson,
-                                                                                                                                forgeZipKey: objectKey,
-                                                                                                                                isDefault: true);
+                // Create default ProductConfiguration 
+                ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id, argumentJson, forgeZipKey: objectKey, isDefault: true);
+                Debug.WriteLine($@"Created new product configuration: {productConfiguration.Id}");
 
                 return Ok(new { Result = "Product uploaded successfully!" });
             }

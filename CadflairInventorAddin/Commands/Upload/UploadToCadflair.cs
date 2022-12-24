@@ -262,7 +262,7 @@ namespace CadflairInventorAddin.Commands.Upload
             }
         }
 
-        public static async Task<string> UploadProductToCadflair(int userId, int subscriptionId, int productFolderId, string displayName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string zipFileName)
+        public static async Task<string> UploadProductToCadflair(int userId, int subscriptionId, int productFolderId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string zipFileName)
         {
             bool uploadSuccessful = false;
             string result = string.Empty;
@@ -272,6 +272,7 @@ namespace CadflairInventorAddin.Commands.Upload
                 SubscriptionId = subscriptionId,
                 ProductFolderId = productFolderId,
                 DisplayName = displayName,
+                RootFileName = rootFileName,
                 ILogicFormJson = iLogicFormJson,
                 ArgumentJson = argumentJson,
                 IsPublic = isPublic,

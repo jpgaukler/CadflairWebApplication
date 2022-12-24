@@ -64,6 +64,7 @@
 
     private Subscription _subscription = new();
     private Product _product = new();
+    private ProductVersion _productVersion = new();
     private ProductConfiguration _defaultConfiguration = new();
     private ILogicFormElement _iLogicFormData = new();
     private bool _validInputs;
@@ -77,15 +78,17 @@
         // get data
         _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
         _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
-        _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductId(_product.Id);
+        _productVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(_product.Id);
+        _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(_productVersion.Id);
 
-        Debug.WriteLine(_product.ILogicFormJson);
+        Debug.WriteLine(_productVersion.ILogicFormJson);
+        Debug.WriteLine($"Found product: {_product.DisplayName}, Version: { _productVersion.VersionNumber}");
 
         // construct UI
-        _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_product.ILogicFormJson)!;
+        _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_productVersion.ILogicFormJson)!;
         _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
 
-        await _forgeViewer!.ViewDocument(_product.ForgeBucketKey.ToString(), _defaultConfiguration.ForgeZipKey.ToString());
+        //await _forgeViewer!.ViewDocument(_product.ForgeBucketKey.ToString(), _defaultConfiguration.ForgeZipKey.ToString());
 
         Debug.WriteLine("Done");
     }

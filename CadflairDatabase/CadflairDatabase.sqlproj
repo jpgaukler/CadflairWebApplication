@@ -73,29 +73,27 @@
     <Build Include="dbo\Tables\ProductFolder.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_Insert.sql" />
-    <Build Include="dbo\Stored Procedures\spProduct_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_GetByProductFolderId.sql" />
-    <Build Include="dbo\Stored Procedures\spProduct_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spProductFolder_GetBySubscriptionId.sql" />
     <Build Include="dbo\Stored Procedures\spProductFolder_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductFolder_GetById.sql" />
     <Build Include="dbo\Stored Procedures\spProductFolder_DeleteById.sql" />
-    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetById.sql" />
-    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetByProductId.sql" />
-    <Build Include="dbo\Stored Procedures\spProductConfiguration_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spUser_GetByObjectIdentifier.sql" />
     <Build Include="dbo\Stored Procedures\spUser_GetBySubscriptionId.sql" />
     <Build Include="dbo\Stored Procedures\spUser_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spUser_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spUser_UpdateById.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_GetById.sql" />
-    <Build Include="dbo\Stored Procedures\spSubscriptionType_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductFolder_GetBySubscriptionIdAndParentId.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_GetBySubscriptionIdAndSubdirectoryName.sql" />
     <Build Include="dbo\Stored Procedures\spSubscription_GetBySubdirectoryName.sql" />
-    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetDefaultByProductId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetDefaultByProductVersionId.sql" />
+    <Build Include="dbo\Tables\ProductVersion.sql" />
+    <Build Include="dbo\Stored Procedures\spProductVersion_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductVersion_GetLatestByProductId.sql" />
+    <Build Include="dbo\Stored Procedures\spProduct_GetBySubscriptionIdAndDisplayName.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

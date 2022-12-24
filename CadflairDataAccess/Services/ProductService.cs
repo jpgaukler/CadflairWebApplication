@@ -20,9 +20,20 @@ namespace CadflairDataAccess.Services
 
         #region "Product"
 
-        public Task<Product> GetProductById(int id)
+        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, Guid forgeBucketKey, bool isPublic, int createdById)
         {
-            return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetById]", new { Id = id });
+            dynamic values = new
+            {
+                SubscriptionId = subscriptionId,
+                ProductFolderId = productFolderId,
+                DisplayName = displayName,
+                SubdirectoryName =  Regex.Replace(displayName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
+                ForgeBucketKey = forgeBucketKey,
+                IsPublic = isPublic,
+                CreatedById = createdById,
+            };
+
+            return _db.SaveSingleAsync<Product, dynamic>("[dbo].[spProduct_Insert]", values);
         }
 
         public Task<Product> GetProductBySubscriptionIdAndSubdirectoryName(int subscriptionId, string subdirectoryName)
@@ -36,32 +47,44 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetBySubscriptionIdAndSubdirectoryName]", values);
         }
 
+        public Task<Product> GetProductBySubscriptionIdAndDisplayName(int subscriptionId, string displayName)
+        {
+            dynamic values = new
+            {
+                SubscriptionId = subscriptionId,
+                DisplayName = displayName,
+            };
+
+            return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetBySubscriptionIdAndDisplayName]", values);
+        }
+
         public Task<List<Product>> GetProductsByProductFolderId(int productFolderId)
         {
             return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFolderId]", new { ProductFolderId = productFolderId });
         }
 
-        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, string iLogicFormJson, Guid forgeBucketKey, int createdById, bool isPublic, bool isConfigurable)
+
+        #endregion
+
+        #region "ProductVersion"
+        
+        public Task<ProductVersion> CreateProductVersion(int productId, string rootFileName, string iLogicFormJson, bool isConfigurable, int createdById)
         {
             dynamic values = new
             {
-                SubscriptionId = subscriptionId,
-                ProductFolderId = productFolderId,
-                DisplayName = displayName,
-                SubdirectoryName =  Regex.Replace(displayName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
+                ProductId = productId,
+                RootFileName = rootFileName,
                 ILogicFormJson = iLogicFormJson,
-                ForgeBucketKey = forgeBucketKey,
+                IsConfigurable = isConfigurable,
                 CreatedById = createdById,
-                IsPublic = isPublic,
-                IsConfigurable = isConfigurable
             };
 
-            return _db.SaveSingleAsync<Product, dynamic>("[dbo].[spProduct_Insert]", values);
+            return _db.SaveSingleAsync<ProductVersion, dynamic>("[dbo].[spProductVersion_Insert]", values);
         }
-
-        public Task DeleteProduct(Product product)
+        
+        public Task<ProductVersion> GetLatestProductVersionByProductId(int productId)
         {
-            return _db.SaveDataAsync("[dbo].[spProduct_DeleteById]", new { product.Id });
+            return _db.LoadSingleAsync<ProductVersion, dynamic>("[dbo].[spProductVersion_GetLatestByProductId]", new { ProductId = productId });
         }
 
         #endregion
@@ -111,26 +134,11 @@ namespace CadflairDataAccess.Services
 
         #region "ProductConfiguration"
 
-        public Task<ProductConfiguration> GetProductConfigurationById(int id)
-        {
-            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
-        }
-
-        public Task<ProductConfiguration> GetDefaultProductConfigurationByProductId(int productId)
-        {
-            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetDefaultByProductId]", new { ProductId = productId });
-        }
-
-        public Task<List<ProductConfiguration>> GetProductConfigurationsByProductId(int productId)
-        {
-            return _db.LoadDataAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetByProductId]", new { ProductId = productId });
-        }
-
-        public Task<ProductConfiguration> CreateProductConfiguration(int productId, string argumentJson, Guid forgeZipKey, bool isDefault)
+        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, Guid forgeZipKey, bool isDefault)
         {
             dynamic values = new
             {
-                ProductId = productId,
+                ProductVersionId = productVersionId,
                 IsDefault = isDefault,
                 ArgumentJson = argumentJson,
                 ForgeZipKey = forgeZipKey,
@@ -139,12 +147,17 @@ namespace CadflairDataAccess.Services
             return _db.SaveSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_Insert]", values);
         }
 
-        public Task DeleteProductConfiguration(ProductConfiguration productConfiguration)
+
+        public Task<ProductConfiguration> GetDefaultProductConfigurationByProductVersionId(int productVersionId)
         {
-            return _db.SaveDataAsync("[dbo].[spProductConfiguration_DeleteById]", new { productConfiguration.Id });
+            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetDefaultByProductVersionId]", new { ProductVersionId = productVersionId });
         }
 
         #endregion
 
     }
 }
+
+
+// GetProductByDisplayNameAndSubscriptionId
+// GetLatestProductVersionByProductId
