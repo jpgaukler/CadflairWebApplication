@@ -14,8 +14,7 @@ namespace CadflairForgeAccess.Services
     {
 
         private readonly AuthorizationService _authService;
-        private readonly DerivativesApi _derivativesApi = new();
-        private readonly HttpClient _httpClient = new();
+        //private readonly HttpClient _httpClient = new();
 
         public ModelDerivativeService(AuthorizationService authService)
         {

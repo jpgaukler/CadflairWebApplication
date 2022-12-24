@@ -49,10 +49,10 @@ namespace CadflairForgeAccess.Services
             return bucket;
         }
 
-        public async Task<dynamic> GetObjectDetails(string bucketKey, string objectName)
+        public async Task<dynamic> GetObjectDetails(string bucketKey, string objectKey)
         {
             ObjectsApi objects = await GetObjectsApi();
-            dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectName);
+            dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectKey);
 
             //add the encoded urn to the object
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes((string)objectDetails.objectId);

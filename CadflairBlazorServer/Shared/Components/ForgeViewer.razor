@@ -15,6 +15,7 @@
 
         if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
         {
+            Debug.WriteLine($"Found derivative");
             //define input parameters as JSON
             var parameters = new
             {
@@ -27,8 +28,9 @@
         }
         else
         {
+            Debug.WriteLine($"No derivative");
             //need to translate object
-            await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
+            //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
         }
     }
 

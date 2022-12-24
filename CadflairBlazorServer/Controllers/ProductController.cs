@@ -113,6 +113,14 @@ namespace CadflairBlazorServer.Controllers
 
                 if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload files to Autodesk Forge OSS." });
 
+                // start the Model Derivative translation so the default configuration is viewable in the browser
+                var forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey.ToString(), objectKey.ToString());
+                var tranlationJob = _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, rootFileName);
+                Debug.WriteLine($@"Model derivative translation started:");
+                Debug.WriteLine($@"{tranlationJob}");
+
+                //need to check the status of the job that was posted
+
                 // check to see if product already exists, create a new product if no match is found
                 Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
 

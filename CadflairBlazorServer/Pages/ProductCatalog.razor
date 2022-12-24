@@ -88,9 +88,10 @@
         _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_productVersion.ILogicFormJson)!;
         _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
 
-        //await _forgeViewer!.ViewDocument(_product.ForgeBucketKey.ToString(), _defaultConfiguration.ForgeZipKey.ToString());
+        Debug.WriteLine("Parameter values set");
 
-        Debug.WriteLine("Done");
+        await _forgeViewer!.ViewDocument(_product.ForgeBucketKey.ToString(), _defaultConfiguration.ForgeZipKey.ToString());
+
     }
 
     //private async Task CreateBucket()
