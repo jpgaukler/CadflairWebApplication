@@ -34,7 +34,7 @@
         }
         <!--Action Buttons-->
         <MudStack Class="pa-3">
-            <MudButton OnClick="PrintInputValues" Disabled="@(!_validInputs)" Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Submit</MudButton>
+            <MudButton OnClick="SubmitWorkitem" Disabled="@(!_validInputs)" Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Submit</MudButton>
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Pdf</MudButton>
             <MudButton Variant="@_buttonVariant" Color="Color.Primary" FullWidth="true">Download Step</MudButton>
         </MudStack>
@@ -88,10 +88,10 @@
         _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_productVersion.ILogicFormJson)!;
         _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
 
+        StateHasChanged();
         Debug.WriteLine("Parameter values set");
 
         await _forgeViewer!.ViewDocument(_product.ForgeBucketKey.ToString(), _defaultConfiguration.ForgeZipKey.ToString());
-
     }
 
     //private async Task CreateBucket()
@@ -99,7 +99,7 @@
     //    await _objectStorageService.CreateBucketAsync(Guid.NewGuid().ToString());
     //}
 
-    private async Task PrintInputValues()
+    private async Task SubmitWorkitem()
     {
         Debug.WriteLine(_iLogicFormData.GetArgumentJson());
 
@@ -114,7 +114,10 @@
 
 
         //submit the request to design automation. I just want to make the model and convert it to svf here. Do not produce any inputs yet
-        //await _forgeServicesManager.DesignAutomationService.GenerateProductConfiguration("cadflair.dresserbasemodel", "Dresser.zip", "Dresser Configurator.ipt", _iLogicFormData.ParameterValues().ToJson());
+        await _forgeServicesManager.DesignAutomationService.CreateProductConfiguration(productBucketKey: _product.ForgeBucketKey.ToString(),
+                                                                                       productObjectKey: _defaultConfiguration.ForgeZipKey.ToString(), 
+                                                                                       productPathInZip: _productVersion.RootFileName, 
+                                                                                       inventorParamsJson: _iLogicFormData.GetArgumentJson());
 
         //need to remember to create the output bucket before submitting the request. The workitem will fail if the output bucket does not exist
 

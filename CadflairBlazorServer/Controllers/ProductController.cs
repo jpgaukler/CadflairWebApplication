@@ -127,16 +127,30 @@ namespace CadflairBlazorServer.Controllers
                 if(product == null)
                 {
                     // Create new Product
-                    product = await _dataServicesManager.ProductService.CreateProduct(subscriptionId, productFolderId, displayName, forgeBucketKey: bucketKey, isPublic, createdById: userId);
+                    product = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: subscriptionId,
+                                                                                      productFolderId: productFolderId, 
+                                                                                      displayName: displayName, 
+                                                                                      forgeBucketKey: bucketKey, 
+                                                                                      isPublic: isPublic, 
+                                                                                      createdById: userId);
+
                     Debug.WriteLine($@"Created new product: {product.DisplayName}");
                 }
 
                 // Create new ProductVersion
-                ProductVersion productVersion = await _dataServicesManager.ProductService.CreateProductVersion(productId: product.Id, rootFileName, iLogicFormJson, isConfigurable, createdById: userId);
+                ProductVersion productVersion = await _dataServicesManager.ProductService.CreateProductVersion(productId: product.Id, 
+                                                                                                               rootFileName: rootFileName, 
+                                                                                                               iLogicFormJson: iLogicFormJson, 
+                                                                                                               isConfigurable: isConfigurable, 
+                                                                                                               createdById: userId);
+
                 Debug.WriteLine($@"Created new product version: {product.DisplayName} Version: {productVersion.VersionNumber}");
 
                 // Create default ProductConfiguration 
-                ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id, argumentJson, forgeZipKey: objectKey, isDefault: true);
+                ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id, 
+                                                                                                                                 argumentJson: argumentJson, 
+                                                                                                                                 forgeZipKey: objectKey, 
+                                                                                                                                 isDefault: true);
                 Debug.WriteLine($@"Created new product configuration: {productConfiguration.Id}");
 
                 return Ok(new { Result = "Product uploaded successfully!" });
