@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity name="CadflairInventorPlugin" version="1.0.0.0"></assemblyIdentity>
-  <clrClass clsid="{9d41134c-f6e2-4b5a-baea-468758059a53}" progid="CadflairInventorPlugin.PluginServer" threadingModel="Both" name="CadflairInventorPlugin.PluginServer"></clrClass>
-  <file name="CadflairInventorPlugin.dll" hashalg="SHA1"></file>
-</assembly>

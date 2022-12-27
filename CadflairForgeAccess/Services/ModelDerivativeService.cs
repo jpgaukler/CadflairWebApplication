@@ -3,6 +3,7 @@ using Autodesk.Forge.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -14,11 +15,14 @@ namespace CadflairForgeAccess.Services
     {
 
         private readonly AuthorizationService _authService;
+        private readonly ObjectStorageService _objectStorageService;
+
         //private readonly HttpClient _httpClient = new();
 
-        public ModelDerivativeService(AuthorizationService authService)
+        public ModelDerivativeService(AuthorizationService authService, ObjectStorageService objectStorageService)
         {
             _authService = authService;
+            _objectStorageService = objectStorageService;
         }
 
         private async Task<DerivativesApi> GetDerivativesApi()
@@ -30,8 +34,10 @@ namespace CadflairForgeAccess.Services
         }
 
 
-        public async Task<dynamic> TranslateObject(string encodedObjectUrn, string rootFileName)
+        public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, string rootFileName)
         {
+            var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey.ToString(), objectKey.ToString());
+
             // prepare the payload
             List<JobPayloadItem.ViewsEnum> views = new()
             {
@@ -46,7 +52,7 @@ namespace CadflairForgeAccess.Services
 
             JobPayload job = new()
             {
-                Input = new JobPayloadInput(encodedObjectUrn, true, rootFileName),
+                Input = new JobPayloadInput(objectDetails.encoded_urn, true, rootFileName),
                 Output = new JobPayloadOutput(payloadList),
                 Misc = new JobPayloadMisc("translateObjectWorkflow")
             };
@@ -55,15 +61,16 @@ namespace CadflairForgeAccess.Services
             DerivativesApi derivative = await GetDerivativesApi();
             dynamic jobPosted = await derivative.TranslateAsync(job);
 
+            Debug.WriteLine($@"Translation started: {jobPosted}");
             return jobPosted;
         }
 
-        public async Task<bool> TranslationExists(string encodedObjectUrn)
+        public async Task<bool> TranslationExists(string encodedUrn)
         {
             try
             {
                 DerivativesApi derivative = await GetDerivativesApi();
-                dynamic manifest = await derivative.GetManifestAsync(encodedObjectUrn);
+                dynamic manifest = await derivative.GetManifestAsync(encodedUrn);
                 return true;
             }
             catch

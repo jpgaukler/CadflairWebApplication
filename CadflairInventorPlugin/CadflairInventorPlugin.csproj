@@ -63,7 +63,6 @@
     <Compile Include="CadflairAutomation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CadflairInventorPlugin.X.manifest" />
     <Content Include="PackageContents.xml" />
     <Content Include="CadflairInventorPlugin.Inventor.addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

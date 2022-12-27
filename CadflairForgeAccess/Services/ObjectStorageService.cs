@@ -51,6 +51,9 @@ namespace CadflairForgeAccess.Services
 
         public async Task<dynamic> GetObjectDetails(string bucketKey, string objectKey)
         {
+            Debug.WriteLine($"BucketKey: {bucketKey}");
+            Debug.WriteLine($"ObjectKey: {objectKey}");
+
             ObjectsApi objects = await GetObjectsApi();
             dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectKey);
 
@@ -100,5 +103,21 @@ namespace CadflairForgeAccess.Services
             bool success = !result.Error;
             return success;
         }
+
+        public async Task<string> GetSignedDownloadUrl(string bucketKey, string objectKey)
+        {
+            ObjectsApi objects = await GetObjectsApi();
+            dynamic result = await objects.getS3DownloadURLAsync(bucketKey, objectKey);
+            return result.url;
+        }
+
+        public async Task<string> GetSignedUploadUrl(string bucketKey, string objectKey)
+        {
+            ObjectsApi objects = await GetObjectsApi();
+            dynamic result = await objects.getS3UploadURLAsync(bucketKey, objectKey);
+            Debug.WriteLine($"{result}");
+            return result.urls[0];
+        }
+
     }
 }

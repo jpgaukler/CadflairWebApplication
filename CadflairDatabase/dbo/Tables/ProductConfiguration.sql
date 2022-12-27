@@ -3,7 +3,7 @@
     [ProductVersionId]      INT                  NOT NULL,
     [IsDefault]             BIT                  NOT NULL,
     [ArgumentJson]          NVARCHAR (MAX)       NOT NULL, 
-    [ForgeZipKey]           UNIQUEIDENTIFIER     NOT NULL,
+    [ForgeZipKey]           UNIQUEIDENTIFIER     NULL,
     [ForgeStpKey]           UNIQUEIDENTIFIER     NULL,
     [ForgePdfKey]           UNIQUEIDENTIFIER     NULL,
     [ForgeDwgKey]           UNIQUEIDENTIFIER     NULL,

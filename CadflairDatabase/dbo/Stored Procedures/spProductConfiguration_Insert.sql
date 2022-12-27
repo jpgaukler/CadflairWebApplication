@@ -2,7 +2,7 @@
 	@ProductVersionId int, 
 	@IsDefault bit,
 	@ArgumentJson nvarchar(MAX),
-	@ForgeZipKey uniqueidentifier
+	@ForgeZipKey uniqueidentifier 
 AS
 
 BEGIN

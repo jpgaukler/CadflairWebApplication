@@ -94,6 +94,9 @@
     <Build Include="dbo\Stored Procedures\spProductVersion_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductVersion_GetLatestByProductId.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_GetBySubscriptionIdAndDisplayName.sql" />
+    <Build Include="dbo\Stored Procedures\spSubscriptionType_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductConfiguration_UpdateById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

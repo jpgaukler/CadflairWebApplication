@@ -11,21 +11,9 @@ namespace CadflairInventorPlugin
 {
     static class ModelAutomation
     {
-        public static void GenerateModel(Document doc, NameValueMap map)
+        public static void UpdateParameters(Document doc, NameValueMap map)
         {
-            Trace.TraceInformation("Generating model: " + System.IO.Path.GetFileName(doc.FullFileName));
-
-            //write parameters to log for debugging purposes
-            Trace.WriteLine("Mapped parameters:");
-            for (int i = 1; i <= map.Count; i++)
-            {
-                string name = map.Name[i];
-                string value = Convert.ToString(map.Value[name]);
-                Trace.WriteLine($"Parameter: {name} = {value}");
-            }
-
-            //update parameters
-            Trace.WriteLine("Updating document parameters...");
+            Globals.ReportProgress("Updating model parameters");
             foreach (Parameter p in ((dynamic)doc).ComponentDefinition.Parameters)
             {
                 if (map.HasKey(p.Name))
@@ -33,9 +21,8 @@ namespace CadflairInventorPlugin
                     try
                     {
                         Trace.WriteLine("Setting " + p.Name + " = " + (string)map.Value[p.Name]);
-                        Trace.WriteLine(p.Name + " units = " + p.get_Units());
 
-                        if(p.get_Units() == "Text")
+                        if (p.get_Units() == "Text")
                         {
                             p.Value = (string)map.Value[p.Name];
 
@@ -45,34 +32,29 @@ namespace CadflairInventorPlugin
                             p.Expression = (string)map.Value[p.Name];
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Trace.WriteLine("Failed to set paraemeter value");
+                        Trace.TraceError($"Failed to set parameter {p.Name} - {ex}");
                     }
                 }
             }
+        }
 
-            //update iProperties
-            if (map.HasKey("partNumber"))
-            {
-                Trace.WriteLine("Updating part number...");
-                doc.PropertySets["Design Tracking Properties"]["Part Number"].Value = map.Value["partNumber"];
-            }
-
-            //update and save doc
-            doc.Update();
-            doc.Save();
-            Trace.WriteLine("Document saved:" + doc.FullFileName);
-
-            //export stp
-            ExportStp(doc, (string)map.Value["outputObjectKey"]);
+        public static void UpdateIProperties(Document doc, NameValueMap map)
+        {
+            ////update iProperties
+            //if (map.HasKey("partNumber"))
+            //{
+            //    Trace.WriteLine("Updating part number...");
+            //    doc.PropertySets["Design Tracking Properties"]["Part Number"].Value = map.Value["partNumber"];
+            //}
         }
 
         private static void ExportStp(Document doc, string filename)
         {
             try
             {
-                Trace.TraceInformation("Exporting stp for: " + System.IO.Path.GetFileName(doc.FullFileName));
+                Globals.ReportProgress("Exporting stp file");
 
                 // Get the STEP translator Add-In.
                 TranslatorAddIn oSTPAddin = (TranslatorAddIn)Globals.InventorApplication.ApplicationAddIns.ItemById["{90AF7F40-0C01-11D5-8E83-0010B541CD80}"];
@@ -93,13 +75,10 @@ namespace CadflairInventorPlugin
 
                 // Publish document.
                 oSTPAddin.SaveCopyAs(doc, oContext, oOptions, oDataMedium);
-
-                Trace.WriteLine("Stp exported successfully: " + stpName);
-
             }
             catch (Exception ex)
             {
-                Trace.TraceError("Could not export stp - " + ex.ToString());
+                Trace.TraceError("Falied to export stp - " + ex.ToString());
             }
         }
     }

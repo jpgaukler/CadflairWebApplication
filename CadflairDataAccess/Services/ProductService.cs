@@ -134,7 +134,12 @@ namespace CadflairDataAccess.Services
 
         #region "ProductConfiguration"
 
-        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, Guid forgeZipKey, bool isDefault)
+        public Task<ProductConfiguration> GetProductConfigurationById(int id)
+        {
+            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
+        }
+
+        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, Guid? forgeZipKey, bool isDefault)
         {
             dynamic values = new
             {
@@ -153,11 +158,26 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetDefaultByProductVersionId]", new { ProductVersionId = productVersionId });
         }
 
+        public Task UpdateProductConfiguration(ProductConfiguration productConfiguration)
+        {
+            dynamic values = new
+            {
+                productConfiguration.Id,
+                productConfiguration.ProductVersionId,
+                productConfiguration.IsDefault,
+                productConfiguration.ArgumentJson,
+                productConfiguration.ForgeZipKey,
+                productConfiguration.ForgePdfKey,
+                productConfiguration.ForgeDwgKey,
+                productConfiguration.ForgeStpKey,
+            };
+
+            return _db.SaveDataAsync("[dbo].[spProductConfiguration_UpdateById]", values);
+        }
+
+
         #endregion
 
     }
 }
 
-
-// GetProductByDisplayNameAndSubscriptionId
-// GetLatestProductVersionByProductId

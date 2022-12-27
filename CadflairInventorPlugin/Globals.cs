@@ -1,10 +1,24 @@
-﻿namespace CadflairInventorPlugin
+﻿using Newtonsoft.Json;
+using System.Diagnostics;
+
+namespace CadflairInventorPlugin
 {
     internal static class Globals
     {
         /// <summary>
         /// Global Inventor Application object.
         /// </summary>
-        public static Inventor.InventorServer InventorApplication;
+        internal static Inventor.InventorServer InventorApplication;
+
+        internal static void ReportProgress(string message)
+        {
+            dynamic progress = new
+            {
+                message,
+            };
+
+            string progressJson = JsonConvert.SerializeObject(progress);
+            Trace.TraceInformation("!ACESAPI:acesHttpOperation({0},\"\",\"\",{1},null)", "onProgress", progressJson);
+        }
     }
 }

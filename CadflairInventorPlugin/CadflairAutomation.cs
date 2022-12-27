@@ -37,19 +37,19 @@ namespace CadflairInventorPlugin
 
         public void Run(Document doc)
         {
-            Trace.TraceInformation("Run called with {0}", doc.DisplayName);
+            Trace.TraceInformation($"Run called on {System.IO.Path.GetFileName(doc.FullFileName)}");
         }
 
         public void RunWithArguments(Document doc, NameValueMap map)
         {
+            Trace.TraceInformation($"RunWithArguments called on {System.IO.Path.GetFileName(doc.FullFileName)}");
+
             try
             {
-
-                //start HeartBeat to ensure process does not get force closed
+                // start HeartBeat to ensure process does not get force closed
                 using (new HeartBeat())
                 {
                     //get parameters from json file
-                    Trace.WriteLine("Converting json to NameValueMap");
                     string jsonFileName = Convert.ToString(map.Value[map.Name[1]]);
                     string jsonValues = System.IO.File.ReadAllText(jsonFileName);
 
@@ -59,18 +59,29 @@ namespace CadflairInventorPlugin
                         map.Add(entry.Key, entry.Value);
                     }
 
-                    //create model and export stp
-                    ModelAutomation.GenerateModel(doc, map);
+                    // update parameters
+                    ModelAutomation.UpdateParameters(doc, map);
 
-                    //update drawing and export pdf
-                    DrawingAutomation.GenerateDrawing(doc, map);
+                    // update and save doc
+                    Globals.ReportProgress("Saving document");
+
+                    doc.Update();
+                    doc.Save();
+
+                    // export stp
+                    //ExportStp(doc, (string)map.Value["outputObjectKey"]);
+
+                    // update drawing and export pdf
+                    //DrawingAutomation.GenerateDrawing(doc, map);
+
+                    Globals.ReportProgress("Uploading results to Forge OSS");
 
                     doc.Close(SkipSave: true);
                 }
             }
             catch (Exception ex)
             {
-                Trace.TraceError("RunWithArguments failed - " + ex.ToString());
+                Trace.TraceError($"RunWithArguments failed - {ex}");
             }
         }
 

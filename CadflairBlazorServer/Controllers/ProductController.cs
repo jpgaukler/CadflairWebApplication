@@ -78,24 +78,35 @@ namespace CadflairBlazorServer.Controllers
                 bool isPublic = (bool)productData.IsPublic;
                 bool isConfigurable = (bool)productData.IsConfigurable;
 
-                Debug.WriteLine($@"UserId: {productData.UserId}");
-                Debug.WriteLine($@"SubscriptionId: {productData.SubscriptionId}");
-                Debug.WriteLine($@"ProductFolderId: {productData.ProductFolderId}");
-                Debug.WriteLine($@"DisplayName: {productData.DisplayName}");
-                Debug.WriteLine($@"ArgumentJson: {productData.ArgumentJson}");
-                Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
-                Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
-
+                //Debug.WriteLine($@"UserId: {productData.UserId}");
+                //Debug.WriteLine($@"SubscriptionId: {productData.SubscriptionId}");
+                //Debug.WriteLine($@"ProductFolderId: {productData.ProductFolderId}");
+                //Debug.WriteLine($@"DisplayName: {productData.DisplayName}");
+                //Debug.WriteLine($@"ArgumentJson: {productData.ArgumentJson}");
+                //Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
+                //Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
 
                 //// Upload check if greater than 2mb!
                 //if (memoryStream.Length > 2097152)
                 //{
                 //}
 
-                // Create bucket for product
-                Guid bucketKey = Guid.NewGuid();
-                Guid objectKey = Guid.NewGuid();
-                await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey.ToString());
+                // check to see if product already exists
+                Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
+
+                // setup bucket for upload
+                Guid bucketKey;
+                if (product == null)
+                {
+                    // Create bucket for product new product
+                    bucketKey = Guid.NewGuid();
+                    await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey.ToString());
+                }
+                else
+                {
+                    // use existing bucket for upload
+                    bucketKey = product.ForgeBucketKey;
+                }
 
                 // Temporarily save the file to server
                 string tempFileName = Path.GetTempFileName();
@@ -106,6 +117,7 @@ namespace CadflairBlazorServer.Controllers
                 }
 
                 // Upload file to Autodesk Forge OSS 
+                Guid objectKey = Guid.NewGuid();
                 bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey.ToString(), objectKey.ToString(), tempFileName);
 
                 // Delete the temp file from the server
@@ -114,50 +126,43 @@ namespace CadflairBlazorServer.Controllers
                 if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload files to Autodesk Forge OSS." });
 
                 // start the Model Derivative translation so the default configuration is viewable in the browser
-                var forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey.ToString(), objectKey.ToString());
-                var tranlationJob = _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, rootFileName);
-                Debug.WriteLine($@"Model derivative translation started:");
-                Debug.WriteLine($@"{tranlationJob}");
+                var tranlationJob = await _forgeServicesManager.ModelDerivativeService.TranslateObject(bucketKey.ToString(), objectKey.ToString(), rootFileName);
+                Debug.WriteLine($@"Model derivative translation started.");
 
-                //need to check the status of the job that was posted
-
-                // check to see if product already exists, create a new product if no match is found
-                Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
-
-                if(product == null)
+                if (product == null)
                 {
                     // Create new Product
                     product = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: subscriptionId,
-                                                                                      productFolderId: productFolderId, 
-                                                                                      displayName: displayName, 
-                                                                                      forgeBucketKey: bucketKey, 
-                                                                                      isPublic: isPublic, 
+                                                                                      productFolderId: productFolderId,
+                                                                                      displayName: displayName,
+                                                                                      forgeBucketKey: bucketKey,
+                                                                                      isPublic: isPublic,
                                                                                       createdById: userId);
 
                     Debug.WriteLine($@"Created new product: {product.DisplayName}");
                 }
 
                 // Create new ProductVersion
-                ProductVersion productVersion = await _dataServicesManager.ProductService.CreateProductVersion(productId: product.Id, 
-                                                                                                               rootFileName: rootFileName, 
-                                                                                                               iLogicFormJson: iLogicFormJson, 
-                                                                                                               isConfigurable: isConfigurable, 
+                ProductVersion productVersion = await _dataServicesManager.ProductService.CreateProductVersion(productId: product.Id,
+                                                                                                               rootFileName: rootFileName,
+                                                                                                               iLogicFormJson: iLogicFormJson,
+                                                                                                               isConfigurable: isConfigurable,
                                                                                                                createdById: userId);
 
                 Debug.WriteLine($@"Created new product version: {product.DisplayName} Version: {productVersion.VersionNumber}");
 
                 // Create default ProductConfiguration 
-                ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id, 
-                                                                                                                                 argumentJson: argumentJson, 
-                                                                                                                                 forgeZipKey: objectKey, 
+                ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id,
+                                                                                                                                 argumentJson: argumentJson,
+                                                                                                                                 forgeZipKey: objectKey,
                                                                                                                                  isDefault: true);
                 Debug.WriteLine($@"Created new product configuration: {productConfiguration.Id}");
 
-                return Ok(new { Result = "Product uploaded successfully!" });
+                return Ok(new { Result = "Product created successfully!" });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = $"Exception occurred: {ex}" });
+                return BadRequest(new { Error = $"Product creation failed: {ex}" });
             }
         }
 

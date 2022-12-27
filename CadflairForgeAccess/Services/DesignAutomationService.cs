@@ -13,10 +13,12 @@ namespace CadflairForgeAccess.Services
     {
         private readonly DesignAutomationClient _designAutomationClient;
         private readonly AuthorizationService _authService;
+        private readonly ObjectStorageService _objectStorageService;
 
-        public DesignAutomationService(AuthorizationService authService)
+        public DesignAutomationService(AuthorizationService authService, ObjectStorageService objectStorageService)
         {
             _authService = authService;
+            _objectStorageService = objectStorageService;
 
             // Create a new ForgeService to be used with the design automation client
             ForgeConfiguration forgeConfiguration = new()
@@ -36,72 +38,51 @@ namespace CadflairForgeAccess.Services
             _designAutomationClient = new(forgeService);
         }
 
-        public async Task<string> CreateProductConfiguration(string productBucketKey, string productObjectKey, string productPathInZip, string inventorParamsJson)
+        public async Task<string> CreateProductConfigurationModel(int productConfigurationId, string inputBucketKey, string inputObjectKey, string inputPathInZip, string inventorParamsJson)
         {
             try
             {
-                Debug.WriteLine($"Generating product configuration...");
-
                 dynamic token = await _authService.GetInternal();
 
-                //--------------------------------------------------------------- input file ---------------------------------------------------------------------
-                
+                // input file 
                 XrefTreeArgument inputModelArgument = new()
                 {
-                    Url = $"https://developer.api.autodesk.com/oss/v2/buckets/{productBucketKey}/objects/{productObjectKey}",
-                    Verb = Verb.Get,
-                    PathInZip = productPathInZip,
-                    Headers = new Dictionary<string, string>()
-                    {
-                        { "Authorization", "Bearer " + token.access_token }
-                    }
+                    Url = await _objectStorageService.GetSignedDownloadUrl(inputBucketKey, inputObjectKey),
+                    PathInZip = inputPathInZip,
                 };
 
-                //--------------------------------------------------------------- inventor params ---------------------------------------------------------------------
-
-                //quotes are getting replaced with single quotes, does this matter?
-
-                //XrefTreeArgument inventorParamsArgument = new()
-                //{
-                //    Url = $"data:application/json,{paramsJson.ToString(Formatting.None).Replace("\"", "'")}",
-                //    LocalName = "params.json"
-                //};
-
+                // inventor params 
                 XrefTreeArgument inventorParamsArgument = new()
                 {
                     Url = $"data:application/json,{inventorParamsJson}",
                     LocalName = "params.json"
                 };
 
-                Debug.WriteLine($"inventorParamsUrl: {inventorParamsArgument.Url}");
-
-                //--------------------------------------------------------------- output files ---------------------------------------------------------------------
-
-                //output zip of models pdf
-                //string outputModelName = inputs.outputObjectKey + ".zip";
-                string outputModelName = Guid.NewGuid().ToString();
+                string outputObjectKey = Guid.NewGuid().ToString();
 
                 XrefTreeArgument outputModelArgument = new()
                 {
-                    Url = $"https://developer.api.autodesk.com/oss/v2/buckets/{productBucketKey}/objects/{outputModelName}",
-                    Verb = Verb.Post,
-                    Headers = new Dictionary<string, string>()
-                    {
-                        {"Authorization", "Bearer " + token.access_token }
-                    }
+                    Url = await _objectStorageService.GetSignedUploadUrl(inputBucketKey, outputObjectKey),
+                    Verb = Verb.Put,
                 };
 
-                //--------------------------------------------------------------- callback url ---------------------------------------------------------------------
-                //XrefTreeArgument callbackUrlArgument = new()
-                //{
-                //    Verb = Verb.Post,
-                //    //Url = $"{Utils.GetAppSetting("FORGE_CALLBACK_URL")}/api/forge/designautomation/workitems/configuremodel/callback?connectionId={inputs.connectionId}&modelBucketKey={inputs.modelBucketKey}&modelObjectKey={outputModelName}&pathInZip={inputs.pathInZip}"
-                //    Url = $"/api/forge/designautomation/workitems/configuremodel/callback?connectionId"
-                //};
+                // callback urls 
+                string callbackUrl = "https://f972-216-164-179-107.ngrok.io";
+                string connectionId = " 1234";
 
+                XrefTreeArgument onCompleteCallback = new()
+                {
+                    Verb = Verb.Post,
+                    Url = $"{callbackUrl}/api/forge/designautomation/productconfiguration/create/oncomplete?connectionId={connectionId}&productConfigurationId={productConfigurationId}&outputBucketKey={inputBucketKey}&outputObjectKey={outputObjectKey}&rootFileName={inputPathInZip}"
+                };
 
+                XrefTreeArgument onProgressCallback = new()
+                {
+                    Verb = Verb.Post,
+                    Url = $"{callbackUrl}/api/forge/designautomation/productconfiguration/create/onprogress?connectionId={connectionId}"
+                };
 
-                //--------------------------------------------------------------- submit workitem ---------------------------------------------------------------------
+                // submit workitem 
                 WorkItem workItemSpec = new()
                 {
                     ActivityId = "cadflair.CreateProductConfiguration+v1",
@@ -110,14 +91,14 @@ namespace CadflairForgeAccess.Services
                         { "inputProduct", inputModelArgument },
                         { "inventorParams", inventorParamsArgument },
                         { "outputProduct", outputModelArgument },
-                        //{ "onComplete", callbackUrlArgument },
-                        //{ "onProgress", callbackUrlArgument }
+                        { "onComplete", onCompleteCallback },
+                        { "onProgress", onProgressCallback }
                     }
                 };
 
                 WorkItemStatus workItemStatus = await _designAutomationClient.CreateWorkItemAsync(workItemSpec);
 
-                Debug.WriteLine($"id: {workItemStatus.Id} status: {workItemStatus.Status}");
+                Debug.WriteLine($"Creating product configuration -  Workitem Id: {workItemStatus.Id}, Status: {workItemStatus.Status}");
 
                 return workItemStatus.Status.ToString();
             }
@@ -127,46 +108,6 @@ namespace CadflairForgeAccess.Services
                 return $"Error submitting workitem: {ex}";
             }
         }
-
-
-        ///// <summary>
-        ///// Callback from Design Automation Workitem (onComplete) 
-        ///// </summary>
-        //[HttpPost]
-        //[Route("api/forge/designautomation/workitems/configuremodel/callback")]
-        //public async Task<IActionResult> Workitem_OnCallback(string connectionId, string modelBucketKey, string modelObjectKey, string pathInZip, [FromBody] dynamic body)
-        //{
-        //    try
-        //    {
-        //        //parse json data
-        //        JObject workItem = JObject.Parse((string)body.ToString());
-        //        string status = workItem["status"].Value<string>();
-        //        string reportUrl = workItem["reportUrl"].Value<string>();
-
-        //        //download workitem report
-        //        RestClient client = new RestClient(reportUrl);
-        //        RestRequest request = new RestRequest(string.Empty);
-        //        string reportTxt = Encoding.Default.GetString(client.DownloadData(request));
-
-        //        await _hubContext.Clients.Client(connectionId).SendAsync("workItemComplete", workItem.ToString());
-        //        await _hubContext.Clients.Client(connectionId).SendAsync("onProgress", reportTxt);
-
-        //        if (status == "success")
-        //        {
-        //            //start translation if job was successful
-        //            HttpResponseMessage requestTranslation = await ModelDerivativeService.TranslateObject(connectionId, modelBucketKey, modelObjectKey, pathInZip);
-        //            await _hubContext.Clients.Client(connectionId).SendAsync("translationRequested", "Translation requested: " + requestTranslation.ToString());
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //    }
-
-        //    //ALWAYS RETURN OK TO THE FORGE API
-        //    return Ok();
-        //}
-
-
 
     }
 
