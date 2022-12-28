@@ -20,6 +20,8 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using CadflairInventorPlugin.Automation;
+using CadflairInventorPlugin.Helpers;
 using Inventor;
 
 namespace CadflairInventorPlugin

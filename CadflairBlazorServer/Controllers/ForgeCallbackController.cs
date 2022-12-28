@@ -39,7 +39,7 @@ namespace CadflairBlazorServer.Controllers
 
         [HttpPost]
         [Route("api/forge/designautomation/productconfiguration/create/oncomplete")]
-        public async Task<IActionResult> CreateProductConfiguration_OnComplete(string connectionId, int productConfigurationId, string outputBucketKey, string outputObjectKey, string rootFileName, [FromBody] dynamic body)
+        public async Task<IActionResult> CreateProductConfigurationModel_OnComplete(string connectionId, int productConfigurationId, string outputBucketKey, string outputObjectKey, string rootFileName, string outputStpKey, [FromBody] dynamic body)
         {
             try
             {
@@ -56,10 +56,11 @@ namespace CadflairBlazorServer.Controllers
                     // update database record
                     ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
                     productConfiguration.ForgeZipKey = outputObjectKey;
+                    productConfiguration.ForgeStpKey = outputStpKey;
                     await _dataServicesManager.ProductService.UpdateProductConfiguration(productConfiguration);
 
                     // send message to client
-                    await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfiguration_OnComplete", productConfigurationId);
+                    await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfigurationModel_OnComplete", productConfigurationId);
                 }
                 else
                 {
@@ -82,7 +83,7 @@ namespace CadflairBlazorServer.Controllers
 
         [HttpPost]
         [Route("api/forge/designautomation/productconfiguration/create/onprogress")]
-        public async Task<IActionResult> CreateProductConfiguration_OnProgress(string connectionId, [FromBody] dynamic body)
+        public async Task<IActionResult> CreateProductConfigurationModel_OnProgress(string connectionId, [FromBody] dynamic body)
         {
             try
             {
@@ -94,7 +95,7 @@ namespace CadflairBlazorServer.Controllers
                     string message = progress["message"]?.Value<string>()!;
 
                     // send message to client
-                    await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfiguration_OnProgress", message);
+                    await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfigurationModel_OnProgress", message);
                 }
             }
             catch (Exception ex)

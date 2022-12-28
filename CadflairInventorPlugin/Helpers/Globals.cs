@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Diagnostics;
 
-namespace CadflairInventorPlugin
+namespace CadflairInventorPlugin.Helpers
 {
     internal static class Globals
     {

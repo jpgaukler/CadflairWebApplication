@@ -42,14 +42,14 @@ namespace CadflairDataAccess.Models
         public bool IsPublic { get; set; }
 
         /// <summary>
-        /// Date and time that the record was created.
-        /// </summary>
-        public DateTimeOffset CreatedOn { get; set; }
-
-        /// <summary>
         /// Foreign key to <b>User</b> table. Represents the id of the User that created the Product.
         /// </summary>
         public int CreatedById { get; set; }
+
+        /// <summary>
+        /// Date and time that the record was created.
+        /// </summary>
+        public DateTimeOffset CreatedOn { get; set; }
 
 
     }

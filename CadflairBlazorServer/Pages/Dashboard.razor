@@ -2,6 +2,7 @@
 @attribute [Authorize]
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DataServicesManager _dataServicesManager
+@inject NavigationManager _navigationManager
 
 <PageTitle>Cadflair</PageTitle>
 
@@ -20,18 +21,62 @@
 
 
 <MudText Typo="Typo.h2">Dashboard</MudText>
-<MudText>Hello @_loggedInUser.FullName</MudText>
 <MudText Typo="Typo.h4">Company: @_subscription.CompanyName</MudText>
 
-<ProductFolderTree/>
+<MudStack Row="true">
+    <ProductFolderTree SelectedFolderChanged="SelectedProductFolderChanged"/>
 
-<MudLink Href="/productcatalog">Catalog</MudLink>
+    <MudDataGrid T="Product"
+                 Items="_products"
+                 SelectedItemChanged="SelectedProductChanged"
+                 Hover="true">
+        <Columns>
+            <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
+            <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Subdirectory Name" />
+            <Column T="Product" Field="@nameof(Product.IsPublic)" Title="Is Public">
+                <CellTemplate>
+                    <MudCheckBox Checked="@context.Item.IsPublic" ReadOnly="true"></MudCheckBox>
+                </CellTemplate>
+            </Column> 
+            <Column T="Product" Field="@nameof(Product.CreatedOn)" Title="Created On">
+                <CellTemplate>
+                    <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Filled.CalendarToday"/>
+                        <MudText>@context.Item.CreatedOn.DateTime.ToShortDateString()</MudText>
+                    </MudStack>
+                </CellTemplate>
+            </Column>
+        </Columns>
+    </MudDataGrid>
+</MudStack>
+
+
+<MudDataGrid T="ProductConfiguration"
+             Items="_productConfigurations"
+             Hover="true">
+    <Columns>
+        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.IsDefault)" Title="Is Default" >
+            <CellTemplate>
+                <MudCheckBox Checked="@context.Item.IsDefault" ReadOnly="true"></MudCheckBox>
+            </CellTemplate>
+        </Column>
+        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.Id)" Title="Id" />
+        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.ArgumentJson)" Title="Arguments" />
+        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.CreatedOn)" Title="Created On" />
+    </Columns>
+</MudDataGrid>
+
+
 
 @code {
 
     private bool _showGetStarted = false;
     private User _loggedInUser = new();
     private Subscription _subscription = new();
+    private List<Product> _products = new();
+    private ProductFolder? _selectedProductFolder;
+    private Product? _selectedProduct;
+    private List<ProductConfiguration> _productConfigurations = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -46,4 +91,19 @@
         _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionById((int)_loggedInUser.SubscriptionId!) ?? new();
     }
 
+    private async Task SelectedProductChanged(Product? product)
+    {
+        if (product == null) return;
+
+        //_navigationManager.NavigateTo($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}");
+
+        var latestVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(product.Id);
+        _productConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(latestVersion.Id);
+    }
+
+    private async Task SelectedProductFolderChanged(ProductFolder? productFolder)
+    {
+        if (productFolder == null) return;
+        _products = await _dataServicesManager.ProductService.GetProductsByProductFolderId(productFolder.Id);
+    }
 }

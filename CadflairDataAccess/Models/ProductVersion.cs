@@ -37,13 +37,13 @@ namespace CadflairDataAccess.Models
         public bool IsConfigurable { get; set; }
 
         /// <summary>
-        /// Date and time that the record was created.
-        /// </summary>
-        public DateTimeOffset CreatedOn { get; set; }
-
-        /// <summary>
         /// Foreign key to <b>User</b> table. Represents the id of the User that created the ProductVersion.
         /// </summary>
         public int CreatedById { get; set; }
+
+        /// <summary>
+        /// Date and time that the record was created.
+        /// </summary>
+        public DateTimeOffset CreatedOn { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Inventor;
+﻿using CadflairInventorPlugin.Helpers;
+using Inventor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CadflairInventorPlugin
+namespace CadflairInventorPlugin.Automation
 {
     static class DrawingAutomation
     {
@@ -362,7 +363,7 @@ namespace CadflairInventorPlugin
             }
         }
 
-        private static void ExportPdf(DrawingDocument doc, string filename)
+        public static void ExportPdf(DrawingDocument doc, string filename)
         {
             try
             {

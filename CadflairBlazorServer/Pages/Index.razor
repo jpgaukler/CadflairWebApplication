@@ -3,6 +3,7 @@
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DataServicesManager _dataServicesManager
 @inject NavigationManager _navigationManager
+@inject IDialogService _dialogService
 
 
 <PageTitle>Cadflair</PageTitle>
@@ -56,6 +57,5 @@
     {
         loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
     }
-
 
 }

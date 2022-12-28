@@ -1,0 +1,86 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inject DataServicesManager _dataServicesManager
+@inject ISnackbar _snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @bind-IsValid="_validInputs">
+            <MudStack Row="true">
+                <MudTextField @bind-Value="_firstName"
+                              Label="First Name"
+                              Required="true"
+                              Variant="Variant.Filled"
+                              Immediate="true" />
+                <MudTextField @bind-Value="_lastName"
+                              Label="Last Name"
+                              Required="true"
+                              Variant="Variant.Filled"
+                              Immediate="true" />
+            </MudStack>
+
+            <MudTextField @bind-Value="_emailAddress"
+                          Label="Email Address"
+                          Required="true"
+                          Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address." })"
+                          Variant="Variant.Filled"
+                          Immediate="true" />
+
+            <MudStack Row="true">
+                <MudTextField @bind-Value="_phoneNumber"
+                              Label="Phone Number"
+                              Validation="@(new PhoneAttribute() { ErrorMessage = "Please enter a valid phone number." })"
+                              Variant="Variant.Filled"
+                              Immediate="true" />
+                <MudTextField @bind-Value="_phoneExtension"
+                              Label="Phone Extension"
+                              Variant="Variant.Filled"
+                              Immediate="true" />
+            </MudStack>
+
+            <MudTextField @bind-Value="_messageText"
+                          Label="Message"
+                          Variant="Variant.Filled"
+                          Immediate="true"
+                          Lines="8" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+        <MudButton OnClick="Submit_OnClick" Color="Color.Primary" Disabled="!_validInputs">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+    [CascadingParameter] public MudDialogInstance? MudDialog { get; set; }
+    [Parameter] public int ProductConfigurationId { get; set; }
+
+    private bool _validInputs;
+    private string _firstName = string.Empty;
+    private string _lastName = string.Empty;
+    private string _emailAddress = string.Empty;
+    private string _phoneNumber = string.Empty;
+    private string _phoneExtension = string.Empty;
+    private string _messageText = string.Empty;
+
+    private async Task Submit_OnClick()
+    {
+        if (!_validInputs) return;
+
+        await _dataServicesManager.ProductService.CreateProductQuoteRequest(productConfigurationId: ProductConfigurationId,
+                                                                            firstName: _firstName,
+                                                                            lastName: _lastName,
+                                                                            emailAddress: _emailAddress,
+                                                                            phoneNumber: _phoneNumber,
+                                                                            phoneExtension: _phoneExtension,
+                                                                            messageText: _messageText);
+
+
+        _snackbar.Add("Request submitted!", Severity.Success);
+        MudDialog?.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel_OnClick() => MudDialog?.Cancel();
+
+}

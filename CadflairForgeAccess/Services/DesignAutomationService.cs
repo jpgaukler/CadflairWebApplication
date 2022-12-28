@@ -36,7 +36,7 @@ namespace CadflairForgeAccess.Services
             _designAutomationClient = new(forgeService);
         }
 
-        public async Task<string> CreateProductConfigurationModel(string connectionId, int productConfigurationId, string inputBucketKey, string inputObjectKey, string inputPathInZip, string inventorParamsJson)
+        public async Task CreateProductConfigurationModel(string connectionId, int productConfigurationId, string inputBucketKey, string inputObjectKey, string inputPathInZip, string inventorParamsJson)
         {
             try
             {
@@ -56,21 +56,28 @@ namespace CadflairForgeAccess.Services
                     LocalName = "params.json"
                 };
 
+                // output files
                 string outputObjectKey = Guid.NewGuid().ToString() + ".zip";
-
                 XrefTreeArgument outputModelArgument = new()
                 {
                     Url = await _objectStorageService.GetSignedUploadUrl(inputBucketKey, outputObjectKey),
                     Verb = Verb.Put,
                 };
 
+                string outputStpKey = outputObjectKey.Replace(".zip", ".stp");
+                XrefTreeArgument outputStpArgument = new()
+                {
+                    Url = await _objectStorageService.GetSignedUploadUrl(inputBucketKey, outputStpKey),
+                    Verb = Verb.Put,
+                };
+
                 // callback urls 
-                string callbackUrl = "https://970f-216-164-179-107.ngrok.io";
+                string callbackUrl = "https://eff4-216-164-179-107.ngrok.io";
 
                 XrefTreeArgument onCompleteCallback = new()
                 {
                     Verb = Verb.Post,
-                    Url = $"{callbackUrl}/api/forge/designautomation/productconfiguration/create/oncomplete?connectionId={connectionId}&productConfigurationId={productConfigurationId}&outputBucketKey={inputBucketKey}&outputObjectKey={outputObjectKey}&rootFileName={inputPathInZip}"
+                    Url = $"{callbackUrl}/api/forge/designautomation/productconfiguration/create/oncomplete?connectionId={connectionId}&productConfigurationId={productConfigurationId}&outputBucketKey={inputBucketKey}&outputObjectKey={outputObjectKey}&rootFileName={inputPathInZip}&outputStpKey={outputStpKey}"
                 };
 
                 XrefTreeArgument onProgressCallback = new()
@@ -88,21 +95,20 @@ namespace CadflairForgeAccess.Services
                         { "inputProduct", inputModelArgument },
                         { "inventorParams", inventorParamsArgument },
                         { "outputProduct", outputModelArgument },
+                        { "outputStp", outputStpArgument },
                         { "onComplete", onCompleteCallback },
                         { "onProgress", onProgressCallback }
                     }
                 };
 
-                WorkItemStatus workItemStatus = await _designAutomationClient.CreateWorkItemAsync(workItemSpec);
+                await _designAutomationClient.CreateWorkItemAsync(workItemSpec);
 
-                Debug.WriteLine($"Creating product configuration -  Workitem Id: {workItemStatus.Id}, Status: {workItemStatus.Status}");
-
-                return workItemStatus.Status.ToString();
+                return;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error submitting workitem: {ex}");
-                return $"Error submitting workitem: {ex}";
+                Debug.WriteLine(ex.ToString());
+                return;
             }
         }
 

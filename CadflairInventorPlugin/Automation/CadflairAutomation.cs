@@ -20,20 +20,17 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
-using Autodesk.Forge.DesignAutomation.Inventor.Utils.Helpers;
 using Newtonsoft.Json;
+using CadflairInventorPlugin.Helpers;
 
-namespace CadflairInventorPlugin
+namespace CadflairInventorPlugin.Automation
 {
     [ComVisible(true)]
     public class CadflairAutomation
     {
-
         public CadflairAutomation() { }
-        
 
         public void Run(Document doc)
         {
@@ -60,16 +57,17 @@ namespace CadflairInventorPlugin
                     }
 
                     // update parameters
+                    Globals.ReportProgress("Updating model parameters");
                     ModelAutomation.UpdateParameters(doc, map);
 
                     // update and save doc
                     Globals.ReportProgress("Saving document");
-
                     doc.Update();
                     doc.Save();
 
-                    // export stp
-                    //ExportStp(doc, (string)map.Value["outputObjectKey"]);
+                    //export stp
+                    Globals.ReportProgress("Exporting stp file");
+                    ModelAutomation.ExportStp(doc);
 
                     // update drawing and export pdf
                     //DrawingAutomation.GenerateDrawing(doc, map);

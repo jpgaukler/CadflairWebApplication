@@ -6,14 +6,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CadflairInventorPlugin.Helpers;
 
-namespace CadflairInventorPlugin
+namespace CadflairInventorPlugin.Automation
 {
     static class ModelAutomation
     {
         public static void UpdateParameters(Document doc, NameValueMap map)
         {
-            Globals.ReportProgress("Updating model parameters");
             foreach (Parameter p in ((dynamic)doc).ComponentDefinition.Parameters)
             {
                 if (map.HasKey(p.Name))
@@ -50,12 +50,10 @@ namespace CadflairInventorPlugin
             //}
         }
 
-        private static void ExportStp(Document doc, string filename)
+        public static void ExportStp(Document doc)
         {
             try
             {
-                Globals.ReportProgress("Exporting stp file");
-
                 // Get the STEP translator Add-In.
                 TranslatorAddIn oSTPAddin = (TranslatorAddIn)Globals.InventorApplication.ApplicationAddIns.ItemById["{90AF7F40-0C01-11D5-8E83-0010B541CD80}"];
                 TranslationContext oContext = Globals.InventorApplication.TransientObjects.CreateTranslationContext();
@@ -69,8 +67,7 @@ namespace CadflairInventorPlugin
                 DataMedium oDataMedium = Globals.InventorApplication.TransientObjects.CreateDataMedium();
 
                 // Set the destination file name
-                //string stpName = System.IO.Path.GetFileNameWithoutExtension(doc.FullFileName) + ".stp";
-                string stpName = filename + ".stp";
+                string stpName = "Result.stp";
                 oDataMedium.FileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), stpName);
 
                 // Publish document.

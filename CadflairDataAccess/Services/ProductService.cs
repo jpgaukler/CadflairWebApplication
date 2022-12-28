@@ -90,6 +90,18 @@ namespace CadflairDataAccess.Services
         #endregion
 
         #region "ProductFolder"
+        public Task<ProductFolder> CreateProductFolder(int subscriptionId, int? parentId, string displayName, int createdById)
+        {
+            dynamic values = new
+            {
+                SubscriptionId = subscriptionId,
+                ParentId = parentId,
+                DisplayName = displayName,
+                CreatedById = createdById,
+            };
+
+            return _db.SaveSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_Insert]", values);
+        }
 
         public Task<ProductFolder> GetProductFolderById(int id)
         {
@@ -112,20 +124,7 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionIdAndParentId]", values);
         }
 
-        public Task<ProductFolder> CreateProductFolder(int subscriptionId, int? parentId, string displayName, int createdById)
-        {
-            dynamic values = new
-            {
-                SubscriptionId = subscriptionId,
-                ParentId = parentId,
-                DisplayName = displayName,
-                CreatedById = createdById,
-            };
-
-            return _db.SaveSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_Insert]", values);
-        }
-
-        public Task DeleteProductFolder(Product productFolder)
+        public Task DeleteProductFolder(ProductFolder productFolder)
         {
             return _db.SaveDataAsync("[dbo].[spProductFolder_DeleteById]", new { productFolder.Id });
         }
@@ -133,11 +132,6 @@ namespace CadflairDataAccess.Services
         #endregion
 
         #region "ProductConfiguration"
-
-        public Task<ProductConfiguration> GetProductConfigurationById(int id)
-        {
-            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
-        }
 
         public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, string forgeZipKey, bool isDefault)
         {
@@ -152,6 +146,15 @@ namespace CadflairDataAccess.Services
             return _db.SaveSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_Insert]", values);
         }
 
+        public Task<ProductConfiguration> GetProductConfigurationById(int id)
+        {
+            return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
+        }
+
+        public Task<List<ProductConfiguration>> GetProductsConfigurationsByProductVersionId(int productVersionId)
+        {
+            return _db.LoadDataAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetByProductVersionId]", new { ProductVersionId = productVersionId });
+        }
 
         public Task<ProductConfiguration> GetDefaultProductConfigurationByProductVersionId(int productVersionId)
         {
@@ -173,6 +176,27 @@ namespace CadflairDataAccess.Services
             };
 
             return _db.SaveDataAsync("[dbo].[spProductConfiguration_UpdateById]", values);
+        }
+
+
+        #endregion
+
+        #region "ProductQuoteRequest"
+
+        public Task<ProductQuoteRequest> CreateProductQuoteRequest(int productConfigurationId, string firstName, string lastName, string emailAddress, string phoneNumber, string phoneExtension, string messageText)
+        {
+            dynamic values = new
+            {
+                ProductConfigurationId = productConfigurationId,
+                FirstName = firstName,
+                LastName = lastName,
+                EmailAddress = emailAddress,
+                PhoneNumber = phoneNumber,
+                PhoneExtension = phoneExtension,
+                MessageText = messageText
+            };
+
+            return _db.SaveSingleAsync<ProductQuoteRequest, dynamic>("[dbo].[spProductQuoteRequest_Insert]", values);
         }
 
 

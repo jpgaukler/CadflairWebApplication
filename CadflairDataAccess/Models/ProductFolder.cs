@@ -30,6 +30,10 @@ namespace CadflairDataAccess.Models
         /// Foreign key to <b>User</b> table. Represents the id of the User that created the ProductFolder.
         /// </summary>
         public int CreatedById { get; set; } 
+
+        /// <summary>
+        /// Date and time that the record was created.
+        /// </summary>
         public DateTimeOffset CreatedOn { get; set; } 
     }
 }
