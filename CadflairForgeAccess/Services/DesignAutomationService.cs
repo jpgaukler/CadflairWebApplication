@@ -67,7 +67,7 @@ namespace CadflairForgeAccess.Services
                 };
 
                 // callback urls 
-                string callbackUrl = "https://f972-216-164-179-107.ngrok.io";
+                string callbackUrl = "https://65e0-216-164-179-107.ngrok.io";
                 string connectionId = " 1234";
 
                 XrefTreeArgument onCompleteCallback = new()

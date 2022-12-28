@@ -107,16 +107,15 @@ namespace CadflairForgeAccess.Services
         public async Task<string> GetSignedDownloadUrl(string bucketKey, string objectKey)
         {
             ObjectsApi objects = await GetObjectsApi();
-            dynamic result = await objects.getS3DownloadURLAsync(bucketKey, objectKey);
-            return result.url;
+            dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(60, true), "read");
+            return result.signedUrl;
         }
 
         public async Task<string> GetSignedUploadUrl(string bucketKey, string objectKey)
         {
             ObjectsApi objects = await GetObjectsApi();
-            dynamic result = await objects.getS3UploadURLAsync(bucketKey, objectKey);
-            Debug.WriteLine($"{result}");
-            return result.urls[0];
+            dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(60, true), "write");
+            return result.signedUrl;
         }
 
     }
