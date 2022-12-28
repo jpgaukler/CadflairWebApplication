@@ -5,22 +5,18 @@
 
 @code {
 
-    public async Task ViewDocument(string bucketKey, string objectKey) 
+    public async Task ViewDocument(string encodedUrn) 
     {
         //get public token for viewables
         var token = await _forgeServicesManager.AuthorizationService.GetPublic();
 
-        //get forge object id
-        var forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
-
-        if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
+        if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(encodedUrn))
         {
-            Debug.WriteLine($"Found derivative");
             //define input parameters as JSON
             var parameters = new
             {
                 Token = token.access_token,
-                Urn = forgeObject.encoded_urn
+                Urn = encodedUrn
             };
 
             //invoke the viewer
@@ -32,6 +28,16 @@
             //need to translate object
             //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
         }
+    }
+
+    public async Task ViewDocument(string bucketKey, string objectKey) 
+    {
+        //get public token for viewables
+        var token = await _forgeServicesManager.AuthorizationService.GetPublic();
+
+        //get forge object id
+        var forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
+        ViewDocument(forgeObject.encoded_urn);
     }
 
 }

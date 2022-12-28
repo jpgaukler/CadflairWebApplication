@@ -34,7 +34,7 @@ namespace CadflairDataAccess.Models
         /// <summary>
         /// Bucket key for this Product in Autodesk Forge OSS. This bucket is used to stored all configuration objects and their related files.
         /// </summary>
-        public Guid ForgeBucketKey { get; set; }
+        public string ForgeBucketKey { get; set; }
 
         /// <summary>
         /// Boolean indicating if this Product should appear on a public web page.

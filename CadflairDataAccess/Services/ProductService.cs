@@ -20,7 +20,7 @@ namespace CadflairDataAccess.Services
 
         #region "Product"
 
-        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, Guid forgeBucketKey, bool isPublic, int createdById)
+        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, string forgeBucketKey, bool isPublic, int createdById)
         {
             dynamic values = new
             {
@@ -139,7 +139,7 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_GetById]", new { Id = id });
         }
 
-        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, Guid? forgeZipKey, bool isDefault)
+        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, string forgeZipKey, bool isDefault)
         {
             dynamic values = new
             {

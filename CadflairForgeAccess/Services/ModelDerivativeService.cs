@@ -34,7 +34,7 @@ namespace CadflairForgeAccess.Services
         }
 
 
-        public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, string rootFileName)
+        public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, string rootFileName, string? connectionId = null)
         {
             var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey.ToString(), objectKey.ToString());
 
@@ -50,11 +50,23 @@ namespace CadflairForgeAccess.Services
                 new(JobPayloadItem.TypeEnum.Svf, views)
             };
 
+            JobPayloadMisc? misc = null;
+            if (connectionId != null)
+            {
+                // set up attributes for webhook (to provide a callback when the translation is complete)
+                dynamic workflowAttributes = new
+                {
+                    connectionId,
+                };
+
+                misc = new JobPayloadMisc("ProductConfigurationWorkflow", workflowAttributes);
+            }
+
             JobPayload job = new()
             {
                 Input = new JobPayloadInput(objectDetails.encoded_urn, true, rootFileName),
                 Output = new JobPayloadOutput(payloadList),
-                Misc = new JobPayloadMisc("translateObjectWorkflow")
+                Misc = misc
             };
 
             // start the translation

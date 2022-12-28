@@ -3,10 +3,10 @@
 	@ProductVersionId int, 
 	@IsDefault bit,
 	@ArgumentJson nvarchar(MAX),
-	@ForgeZipKey uniqueidentifier,
-	@ForgeStpKey uniqueidentifier,
-	@ForgePdfKey uniqueidentifier,
-	@ForgeDwgKey uniqueidentifier 
+	@ForgeZipKey varchar(50),
+	@ForgeStpKey varchar(50),
+	@ForgePdfKey varchar(50),
+	@ForgeDwgKey varchar(50) 
 AS
 
 BEGIN

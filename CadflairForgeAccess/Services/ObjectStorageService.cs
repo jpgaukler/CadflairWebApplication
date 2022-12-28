@@ -51,9 +51,6 @@ namespace CadflairForgeAccess.Services
 
         public async Task<dynamic> GetObjectDetails(string bucketKey, string objectKey)
         {
-            Debug.WriteLine($"BucketKey: {bucketKey}");
-            Debug.WriteLine($"ObjectKey: {objectKey}");
-
             ObjectsApi objects = await GetObjectsApi();
             dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectKey);
 

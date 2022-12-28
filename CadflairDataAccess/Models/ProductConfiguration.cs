@@ -29,22 +29,22 @@ namespace CadflairDataAccess.Models
         /// <summary>
         /// Object key (Autodesk Forge OSS) for the zip file containing the Inventor model. The bucket key for the object is stored in the Product table.
         /// </summary>
-        public Guid? ForgeZipKey { get; set; }
+        public string ForgeZipKey { get; set; }
 
         /// <summary>
         /// Object key (Autodesk Forge OSS) for the stp file that is exported from this configuration. The bucket key for the object is stored in the Product table.
         /// </summary>
-        public Guid? ForgeStpKey { get; set; }
+        public string ForgeStpKey { get; set; }
 
         /// <summary>
         /// Object key (Autodesk Forge OSS) for the pdf file that is exported from the drawing for this configuration. The bucket key for the object is stored in the Product table.
         /// </summary>
-        public Guid? ForgePdfKey { get; set; }
+        public string ForgePdfKey { get; set; }
 
         /// <summary>
         /// Object key (Autodesk Forge OSS) for the AutoCAD dwg file that is exported from the drawing for this configuration. The bucket key for the object is stored in the Product table.
         /// </summary>
-        public Guid? ForgeDwgKey { get; set; }
+        public string ForgeDwgKey { get; set; }
 
         /// <summary>
         /// Date and time that the record was created.

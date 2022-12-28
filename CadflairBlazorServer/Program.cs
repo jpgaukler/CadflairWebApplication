@@ -1,3 +1,4 @@
+using CadflairBlazorServer.Controllers;
 using CadflairDataAccess;
 using CadflairForgeAccess;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -79,6 +80,7 @@ app.UseRewriter(
 
 //configure map methods
 app.MapBlazorHub();
+app.MapHub<ForgeCallbackHub>("/forgecallbackhub");
 app.MapFallbackToPage("/_Host");
 app.MapControllers();
 

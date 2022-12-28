@@ -3,7 +3,7 @@
 	@ProductFolderId int,
 	@DisplayName nvarchar(50),
 	@SubdirectoryName varchar(50),
-	@ForgeBucketKey uniqueidentifier,
+	@ForgeBucketKey varchar(50),
 	@IsPublic bit,
 	@CreatedById int
 AS

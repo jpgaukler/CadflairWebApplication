@@ -95,12 +95,12 @@ namespace CadflairBlazorServer.Controllers
                 Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
 
                 // setup bucket for upload
-                Guid bucketKey;
+                string bucketKey;
                 if (product == null)
                 {
                     // Create bucket for product new product
-                    bucketKey = Guid.NewGuid();
-                    await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey.ToString());
+                    bucketKey = Guid.NewGuid().ToString();
+                    await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey);
                 }
                 else
                 {
@@ -117,8 +117,8 @@ namespace CadflairBlazorServer.Controllers
                 }
 
                 // Upload file to Autodesk Forge OSS 
-                Guid objectKey = Guid.NewGuid();
-                bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey.ToString(), objectKey.ToString(), tempFileName);
+                string objectKey = Guid.NewGuid().ToString() + ".zip";
+                bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey, objectKey, tempFileName);
 
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
@@ -126,7 +126,7 @@ namespace CadflairBlazorServer.Controllers
                 if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload files to Autodesk Forge OSS." });
 
                 // start the Model Derivative translation so the default configuration is viewable in the browser
-                var tranlationJob = await _forgeServicesManager.ModelDerivativeService.TranslateObject(bucketKey.ToString(), objectKey.ToString(), rootFileName);
+                var tranlationJob = await _forgeServicesManager.ModelDerivativeService.TranslateObject(bucketKey, objectKey, rootFileName);
                 Debug.WriteLine($@"Model derivative translation started.");
 
                 if (product == null)

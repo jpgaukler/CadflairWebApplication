@@ -2,8 +2,6 @@
 using Autodesk.Forge.DesignAutomation;
 using Autodesk.Forge.DesignAutomation.Model;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 
 
@@ -38,7 +36,7 @@ namespace CadflairForgeAccess.Services
             _designAutomationClient = new(forgeService);
         }
 
-        public async Task<string> CreateProductConfigurationModel(int productConfigurationId, string inputBucketKey, string inputObjectKey, string inputPathInZip, string inventorParamsJson)
+        public async Task<string> CreateProductConfigurationModel(string connectionId, int productConfigurationId, string inputBucketKey, string inputObjectKey, string inputPathInZip, string inventorParamsJson)
         {
             try
             {
@@ -58,7 +56,7 @@ namespace CadflairForgeAccess.Services
                     LocalName = "params.json"
                 };
 
-                string outputObjectKey = Guid.NewGuid().ToString();
+                string outputObjectKey = Guid.NewGuid().ToString() + ".zip";
 
                 XrefTreeArgument outputModelArgument = new()
                 {
@@ -67,8 +65,7 @@ namespace CadflairForgeAccess.Services
                 };
 
                 // callback urls 
-                string callbackUrl = "https://65e0-216-164-179-107.ngrok.io";
-                string connectionId = " 1234";
+                string callbackUrl = "https://970f-216-164-179-107.ngrok.io";
 
                 XrefTreeArgument onCompleteCallback = new()
                 {
