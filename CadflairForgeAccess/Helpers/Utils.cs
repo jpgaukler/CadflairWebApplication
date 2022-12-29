@@ -22,26 +22,10 @@ namespace CadflairForgeAccess.Helpers
         /// <summary>
         /// Base64 encode a string
         /// </summary>
-        internal static string Base64Encode(string plainText)
+        internal static string ToBase64(this string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
-        }
-
-        /// <summary>
-        /// Create a list of UploadItemDesc for a single file. This can be used with the Objects.API.uploadResources() method for uploading files directly to Amazon S3.
-        /// </summary>
-        /// <param name="objectKey"></param>
-        /// <param name="stream"></param>
-        /// <returns></returns>
-        internal static List<UploadItemDesc> CreateSingleUploadList(string objectKey, Stream stream)
-        {
-            var uploadList = new List<UploadItemDesc>
-            {
-                new UploadItemDesc (objectKey, stream)
-            };
-
-            return uploadList;
         }
 
     }

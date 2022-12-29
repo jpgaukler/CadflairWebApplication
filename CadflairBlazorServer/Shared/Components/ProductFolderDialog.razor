@@ -32,9 +32,9 @@
         }
 
         ProductFolder productFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: SubscriptionId,
-                                                                                                    parentId: ParentId,
+                                                                                                    createdById: UserId,
                                                                                                     displayName: _newProductFolderName,
-                                                                                                    createdById: UserId);
+                                                                                                    parentId: ParentId);
 
         _snackbar.Add("New folder created.", Severity.Success);
         MudDialog?.Close(DialogResult.Ok(true));

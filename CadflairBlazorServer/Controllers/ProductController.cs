@@ -1,6 +1,7 @@
 ﻿using CadflairDataAccess;
 using CadflairDataAccess.Models;
 using CadflairForgeAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -20,29 +21,7 @@ namespace CadflairBlazorServer.Controllers
             _dataServicesManager = dataServicesManager;
         }
 
-        //[HttpPost]
-        //[Route("api/productfolder/create")]
-        //public async Task<IActionResult> CreateProductFolder(int subscriptionId, int parentId, string displayName, int createdById)
-        //{
-        //    try
-        //    {
-        //        //validate data
-        //        if (subscriptionId == null) return ValidationProblem("Parameter 'SubscriptionId' was not provided!");
-        //        if (parentId == null) return ValidationProblem("Parameter 'ProductFolderId' was not provided!");
-        //        if (createdById == null) return ValidationProblem("Parameter 'UserId' was not provided!");
-        //        if (string.IsNullOrWhiteSpace(displayName)) return ValidationProblem("Parameter 'DisplayName' was not provided!");
-
-        //        // Create new Product record in the database
-        //        ProductFolder newProductFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId, parentId, displayName, createdById);
-
-        //        return Ok(new { Result = "ProductFolder created successfully!" });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { Error = $"Exception occurred: {ex}" });
-        //    }
-        //}
-
+        #region "Product"
 
         public class ProductUploadForm
         {
@@ -158,7 +137,7 @@ namespace CadflairBlazorServer.Controllers
                                                                                                                                  isDefault: true);
                 Debug.WriteLine($@"Created new product configuration: {productConfiguration.Id}");
 
-                return Ok(new { Result = "Product created successfully!" });
+                return Ok("Product created successfully!");
             }
             catch (Exception ex)
             {
@@ -166,6 +145,45 @@ namespace CadflairBlazorServer.Controllers
             }
         }
 
+        #endregion
+
+
+
+        #region "ProductFolder"
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/productfolder/create/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
+        public async Task<IActionResult> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
+        {
+            try
+            {
+                ProductFolder folder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId, createdById, displayName, parentId);
+                return Ok(folder);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = $"Exception occurred: {ex}" });
+            }
+        }
+
+
+        [HttpGet]
+        [Route("api/productfolder/get/{subscriptionId:int}/{parentId:int?}")]
+        public async Task<IActionResult> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
+        {
+            try
+            {
+                List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId(subscriptionId, parentId);
+                return Ok(folders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = $"Exception occurred: {ex}" });
+            }
+        }
+
+        #endregion
 
     }
 }

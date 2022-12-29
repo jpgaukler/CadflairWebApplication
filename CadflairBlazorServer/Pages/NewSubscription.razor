@@ -1,5 +1,4 @@
 ﻿@page "/subscription/new"
-@using System.Text.RegularExpressions;
 @attribute [Authorize]
 @inject NavigationManager _navigationManager
 @inject AuthenticationStateProvider _authenticationStateProvider
@@ -52,15 +51,22 @@
     {
         if (!_validInputs) return;
 
-        //create new subscription record
+        // create new subscription record
         Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: (int)SubscriptionTypeEnum.Pro,
                                                                                                          companyName: _companyName,
                                                                                                          ownerId: _loggedInUser.Id,
                                                                                                          createdById: _loggedInUser.Id);
 
-        //update the user
+        // update the user
         _loggedInUser.SubscriptionId = newSubscription.Id;
         await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
+
+        // create products folder to act as the root directory
+        ProductFolder productFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: newSubscription.Id,
+                                                                                                    createdById: _loggedInUser.Id,
+                                                                                                    displayName: "Products",
+                                                                                                    parentId: null);
+
 
         _navigationManager.NavigateTo("/dashboard");
     }

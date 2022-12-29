@@ -74,13 +74,13 @@
 
     private async Task LoadProductFoldersRecursive(int? parentId, HashSet<ProductFolderTreeItem> treeItems)
     {
-        List<ProductFolder> productFamilies = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId((int)_loggedInUser.SubscriptionId!, parentId);
+        List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId((int)_loggedInUser.SubscriptionId!, parentId);
 
-        foreach (ProductFolder family in productFamilies)
+        foreach (ProductFolder folder in folders)
         {
-            var treeItem = new ProductFolderTreeItem() { ProductFolder = family };
+            var treeItem = new ProductFolderTreeItem() { ProductFolder = folder };
             treeItems.Add(treeItem);
-            await LoadProductFoldersRecursive(family.Id, treeItem.ChildItems);
+            await LoadProductFoldersRecursive(folder.Id, treeItem.ChildItems);
         }
     }
 

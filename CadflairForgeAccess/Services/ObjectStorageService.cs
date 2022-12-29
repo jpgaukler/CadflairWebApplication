@@ -1,5 +1,6 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
+using CadflairForgeAccess.Helpers;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -55,8 +56,8 @@ namespace CadflairForgeAccess.Services
             dynamic objectDetails = await objects.GetObjectDetailsAsync(bucketKey, objectKey);
 
             //add the encoded urn to the object
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes((string)objectDetails.objectId);
-            objectDetails.encoded_urn = System.Convert.ToBase64String(plainTextBytes);
+            string objectId = (string)objectDetails.objectId;
+            objectDetails.encoded_urn = objectId.ToBase64();
 
             return objectDetails;
         }

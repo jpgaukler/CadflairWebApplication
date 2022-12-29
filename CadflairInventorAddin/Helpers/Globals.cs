@@ -1,4 +1,6 @@
-﻿
+﻿using System.IO;
+using System.Reflection;
+
 namespace CadflairInventorAddin.Helpers
 {
     internal static class Globals
@@ -8,11 +10,8 @@ namespace CadflairInventorAddin.Helpers
         /// </summary>
         public static Inventor.Application InventorApplication { get; set; }
 
-        /// <summary>
-        /// Addin ID for customizing UI.
-        /// </summary>
         public static string AddInCLSIDString { get; set; }
-
-
+        public static string AddInDirectory { get => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); }
+        public static string OutputLogPath { get => Path.Combine(AddInDirectory, "output.log"); }
     }
 }

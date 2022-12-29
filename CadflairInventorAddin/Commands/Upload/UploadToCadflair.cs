@@ -7,9 +7,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows;
 using System.Xml.Linq;
 
 namespace CadflairInventorAddin.Commands.Upload
@@ -22,6 +23,12 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             try
             {
+                if (!AzureB2CHelper.SignedIn)
+                {
+                    MessageBox.Show($"Please sign in to Cadflair to use this command.", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
                 if (_dockableWindowHelper != null && _dockableWindowHelper.IsOpen) return;
 
                 UploadWpfWindow window = new UploadWpfWindow(Globals.InventorApplication.ActiveDocument);
@@ -30,9 +37,11 @@ namespace CadflairInventorAddin.Commands.Upload
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                Trace.TraceError($"UploadToCadflairButton_OnExecute failed: \n{ex}\n");
             }
         }
+
+        #region "iLogic form handling"
 
         public static List<ILogicFormElement> GetILogicFormElements(Document doc)
         {
@@ -192,6 +201,9 @@ namespace CadflairInventorAddin.Commands.Upload
             }
         }
 
+        #endregion
+
+        #region "Zip file handling"
 
         /// <summary>
         /// Create a zip folder in the temp directory for the Inventor document that is provided. 
@@ -262,35 +274,36 @@ namespace CadflairInventorAddin.Commands.Upload
             }
         }
 
+        #endregion
+
+        #region "Cadflair API"
+
         public static async Task<string> UploadProductToCadflair(int userId, int subscriptionId, int productFolderId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string zipFileName)
         {
             bool uploadSuccessful = false;
             string result = string.Empty;
-            dynamic productData = new
-            {
-                UserId = userId,
-                SubscriptionId = subscriptionId,
-                ProductFolderId = productFolderId,
-                DisplayName = displayName,
-                RootFileName = rootFileName,
-                ILogicFormJson = iLogicFormJson,
-                ArgumentJson = argumentJson,
-                IsPublic = isPublic,
-                IsConfigurable = isConfigurable,
-            };
 
             try
             {
+                dynamic productData = new
+                {
+                    UserId = userId,
+                    SubscriptionId = subscriptionId,
+                    ProductFolderId = productFolderId,
+                    DisplayName = displayName,
+                    RootFileName = rootFileName,
+                    ILogicFormJson = iLogicFormJson,
+                    ArgumentJson = argumentJson,
+                    IsPublic = isPublic,
+                    IsConfigurable = isConfigurable,
+                };
+
                 using (HttpClient client = new HttpClient())
-                using (HttpRequestMessage request = new HttpRequestMessage())
                 using (MultipartFormDataContent formContent = new MultipartFormDataContent())
                 using (StringContent productDataContent = new StringContent(JsonConvert.SerializeObject(productData)))
                 using (FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open))
                 using (StreamContent streamContent = new StreamContent(stream))
                 {
-                    request.Method = HttpMethod.Post;
-                    request.RequestUri = new Uri($"https://localhost:7269/api/product/create");
-
                     // add product data to request
                     productDataContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductData\"");
                     formContent.Add(productDataContent, "ProductData");
@@ -300,25 +313,73 @@ namespace CadflairInventorAddin.Commands.Upload
                     streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
                     formContent.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
 
-                    request.Content = formContent;
-
-                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    using (HttpResponseMessage response = await client.PostAsync($"https://localhost:7269/api/product/create", formContent))
                     {
-                        uploadSuccessful = response.IsSuccessStatusCode;
+                        response.EnsureSuccessStatusCode();
                         result = await response.Content.ReadAsStringAsync();
                     }
                 }
-
             }
             catch (Exception ex)
             {
-                result = $"Error: {ex}";
+                Trace.TraceError($"UploadProductToCadflair failed: \n{ex}\n");
             }
 
             //return uploadSuccessful;
             return result;
         }
 
+        public static async Task<List<ProductFolder>> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
+        {
+            List<ProductFolder> folders = new List<ProductFolder>();
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                using (HttpResponseMessage response = await client.GetAsync($"https://localhost:7269/api/productfolder/get/{subscriptionId}/{parentId}"))
+                {
+                    response.EnsureSuccessStatusCode();
+                    folders = JsonConvert.DeserializeObject<List<ProductFolder>>(await response.Content.ReadAsStringAsync());
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"GetProductFoldersBySubscriptionIdAndParentId failed: \n{ex}\n");
+            }
+
+            return folders;
+        }
+
+        public static async Task<ProductFolder> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
+        {
+            string uri = $"https://localhost:7269/api/productfolder/create/{subscriptionId}/{createdById}/{displayName}/{parentId}";
+            ProductFolder folder = new ProductFolder();
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                using(HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri))
+                {
+                    string token = await AzureB2CHelper.GetAccessToken();
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                    using (HttpResponseMessage response = await client.SendAsync(request))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        folder = JsonConvert.DeserializeObject<ProductFolder>(await response.Content.ReadAsStringAsync());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"CreateProductFolder failed: \n{ex}\n");
+            }
+
+            return folder;
+        }
+
+
+        #endregion
     }
 
 }

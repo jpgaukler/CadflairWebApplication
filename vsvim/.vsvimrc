@@ -1,0 +1,5 @@
+"move down one paragraph
+:map <J> <S-}>
+
+"move up one paragraph
+:map <K> <S-{>

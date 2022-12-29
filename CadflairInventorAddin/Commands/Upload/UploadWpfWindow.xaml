@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:CadflairInventorAddin.Commands.Upload"
              xmlns:Models="clr-namespace:CadflairDataAccess.Models;assembly=CadflairDataAccess" 
              x:Class="CadflairInventorAddin.Commands.Upload.UploadWpfWindow"
-             mc:Ignorable="d" d:Background="#FFFFFFFF" Width="397" Height="633">
+             mc:Ignorable="d" d:Background="#FFFFFFFF" Width="397" Height="914" Loaded="Window_Loaded">
 
     <Window.Resources>
         <SolidColorBrush x:Key="BrowserPaneTextBrush">#f5f5f5</SolidColorBrush>
@@ -15,7 +15,6 @@
     </Window.Resources>
 
     <DockPanel Background="{StaticResource BrowserPaneBrush}">
-        <Label DockPanel.Dock="Top" FontSize="20" FontWeight="Bold" Content="Cadflair"/>
 
         <Expander Header="Product Information" 
                   DockPanel.Dock="Top" 
@@ -34,13 +33,23 @@
                     <Label Content="User Id:"/>
                     <TextBox x:Name="UserIdTextBox" Width="200"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="5,5" DockPanel.Dock="Top">
-                    <Label Content="Product Folder Id:"/>
-                    <TextBox x:Name="ProductFolderIdTextBox" Width="200"/>
+                <StackPanel  Margin="5,5" DockPanel.Dock="Top">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Destination Folder:"/>
+                        <Button x:Name="CreateProductFolderButton"
+                                Click="CreateProductFolderButton_Click"
+                                Content="New Folder" 
+                                MinWidth="80" 
+                                Background="Transparent" 
+                                Foreground="{StaticResource BrowserPaneTextBrush}" />
+                    </StackPanel>
+                    <TreeView x:Name="ProductFolderTreeView"
+                                  HorizontalAlignment="Left" 
+                                  VerticalAlignment="Top" 
+                                  Width="194" 
+                                  Height="200">
+                    </TreeView>
                 </StackPanel>
-                <!--<StackPanel Orientation="Horizontal" Margin="5,5" DockPanel.Dock="Top">
-                    <TreeView Width="100"/>
-                </StackPanel>-->
             </StackPanel>
         </Expander>
 

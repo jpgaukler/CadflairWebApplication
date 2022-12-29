@@ -5,6 +5,8 @@ using CadflairInventorAddin.Helpers;
 using Inventor;
 using System;
 using System.Runtime.InteropServices;
+using System.Windows.Navigation;
+using System.Diagnostics;
 
 namespace CadflairInventorAddin
 {
@@ -16,8 +18,6 @@ namespace CadflairInventorAddin
     [GuidAttribute("DCC57B37-B24B-4A47-BB10-68BF826C9488")]
     public class StandardAddInServer : Inventor.ApplicationAddInServer
     {
-
-
         public StandardAddInServer()
         {
         }
@@ -25,11 +25,14 @@ namespace CadflairInventorAddin
         #region ApplicationAddInServer Members
 
         private UserInterfaceManager _userInterfaceManager;
-        private ButtonDefinition _addDimensionAttributesButton;
-        private ButtonDefinition _refreshDimensionsButton;
         private ButtonDefinition _uploadToCadflair;
+        //private ButtonDefinition _addDimensionAttributesButton;
+        //private ButtonDefinition _refreshDimensionsButton;
 
 
+        /// <summary>
+        /// This method is called by Inventor when the AddIn is loaded.
+        /// </summary>
         public void Activate(Inventor.ApplicationAddInSite addInSiteObject, bool firstTime)
         {
             // This method is called by Inventor when it loads the addin.
@@ -43,20 +46,31 @@ namespace CadflairInventorAddin
             GuidAttribute addInCLSID = (GuidAttribute)GuidAttribute.GetCustomAttribute(typeof(StandardAddInServer), typeof(GuidAttribute));
             Globals.AddInCLSIDString = "{" + addInCLSID.Value + "}";
 
+            // set up azure b2c authentication provider
+            AzureB2CHelper.InitializeAzureB2C();
+
+            // add trace listener for logging errors
+            Trace.Listeners.Add(new TextWriterTraceListener(Globals.OutputLogPath));
+            Trace.AutoFlush = true;
+
             // add user interface manager
             _userInterfaceManager = Globals.InventorApplication.UserInterfaceManager;
             _userInterfaceManager.UserInterfaceEvents.OnResetRibbonInterface += UserInterfaceEvents_OnResetRibbonInterface;
 
             // setup button definitions
             ControlDefinitions controlDefs = Globals.InventorApplication.CommandManager.ControlDefinitions;
-            _addDimensionAttributesButton = controlDefs.AddButtonDefinition("Add Automation\nAttributes", "Add Automation Attributes Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Add AttributeSets to automate drawing elements.", "Save drawing data to AttributeSets for drawing automation.", PictureDispConverter.ToIPictureDisp(Resources.LockSmall), PictureDispConverter.ToIPictureDisp(Resources.LockLarge));
-            _refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
-            _uploadToCadflair = controlDefs.AddButtonDefinition("Upload to Cadflair", "Upload to Cadflair Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Upload the active model to Cadflair.", "Upload the active model to Cadflair.");
+            _uploadToCadflair = controlDefs.AddButtonDefinition("Upload to Cadflair", "Cadflair Upload Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Upload the active model to Cadflair.", "Upload the active model to Cadflair.");
+            AzureB2CHelper.SignInButton = controlDefs.AddButtonDefinition("Sign In", "Cadflair SignIn Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Sign in to Cadflair.", "Sign in to Cadflair.");
+            AzureB2CHelper.SignOutButton = controlDefs.AddButtonDefinition("Sign Out", "Cadflair SignOut Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Sign out of Cadflair.", "Sign out of Cadflair.");
+            //_addDimensionAttributesButton = controlDefs.AddButtonDefinition("Add Automation\nAttributes", "Add Automation Attributes Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Add AttributeSets to automate drawing elements.", "Save drawing data to AttributeSets for drawing automation.", PictureDispConverter.ToIPictureDisp(Resources.LockSmall), PictureDispConverter.ToIPictureDisp(Resources.LockLarge));
+            //_refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
 
             // add button handlers
-            _addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
-            _refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             _uploadToCadflair.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
+            AzureB2CHelper.SignInButton.OnExecute += AzureB2CHelper.SignInButton_OnExecute;
+            AzureB2CHelper.SignOutButton.OnExecute += AzureB2CHelper.SignOutButton_OnExecute;
+            //_addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
+            //_refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
 
             if (firstTime)
             {
@@ -84,36 +98,50 @@ namespace CadflairInventorAddin
 
             //add components assembly ribbon 
             assemblyPanel.CommandControls.AddButton(_uploadToCadflair, true);
+            assemblyPanel.CommandControls.AddButton(AzureB2CHelper.SignInButton, true);
+            assemblyPanel.CommandControls.AddButton(AzureB2CHelper.SignOutButton, true);
 
             //add components part ribbon 
             partPanel.CommandControls.AddButton(_uploadToCadflair, true);
+            partPanel.CommandControls.AddButton(AzureB2CHelper.SignInButton, true);
+            partPanel.CommandControls.AddButton(AzureB2CHelper.SignOutButton, true);
 
             //add components drawing ribbon 
-            drawingPanel.CommandControls.AddButton(_addDimensionAttributesButton, true);
-            drawingPanel.CommandControls.AddButton(_refreshDimensionsButton, true);
+            //drawingPanel.CommandControls.AddButton(_addDimensionAttributesButton, true);
+            //drawingPanel.CommandControls.AddButton(_refreshDimensionsButton, true);
 
         }
 
+        /// <summary>
+        /// This method is called by Inventor when the AddIn is unloaded.
+        /// The AddIn will be unloaded either manually by the user or
+        /// when the Inventor session is terminated
+        /// </summary>
         public void Deactivate()
         {
-            // This method is called by Inventor when the AddIn is unloaded.
-            // The AddIn will be unloaded either manually by the user or
-            // when the Inventor session is terminated
 
-            // disconnected events
+            // clear trace listener for logging errors
+            Trace.Listeners.Clear();
+            Trace.AutoFlush = false;
+
+            // disconnect events
             _userInterfaceManager.UserInterfaceEvents.OnResetRibbonInterface -= UserInterfaceEvents_OnResetRibbonInterface;
-            _addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
-            _refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             _uploadToCadflair.OnExecute -= UploadToCadflair.UploadToCadflairButton_OnExecute;
+            AzureB2CHelper.SignInButton.OnExecute -= AzureB2CHelper.SignInButton_OnExecute;
+            AzureB2CHelper.SignOutButton.OnExecute -= AzureB2CHelper.SignOutButton_OnExecute;
+            //_addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
+            //_refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
 
             // Release objects.
             Globals.InventorApplication = null;
             _userInterfaceManager = null;
 
             //buttons 
-            _addDimensionAttributesButton = null;
-            _refreshDimensionsButton = null;
             _uploadToCadflair = null;
+            AzureB2CHelper.SignInButton = null;
+            AzureB2CHelper.SignOutButton = null;
+            //_addDimensionAttributesButton = null;
+            //_refreshDimensionsButton = null;
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -125,13 +153,14 @@ namespace CadflairInventorAddin
             // ControlDefinition functionality for implementing commands.
         }
 
+        /// <summary>
+        /// This property is provided to allow the AddIn to expose an API 
+        /// of its own to other programs. Typically, this  would be done by
+        /// implementing the AddIn's API interface in a class and returning 
+        /// that class object through this property.
+        /// </summary>
         public object Automation
         {
-            // This property is provided to allow the AddIn to expose an API 
-            // of its own to other programs. Typically, this  would be done by
-            // implementing the AddIn's API interface in a class and returning 
-            // that class object through this property.
-
             get
             {
                 // TODO: Add ApplicationAddInServer.Automation getter implementation

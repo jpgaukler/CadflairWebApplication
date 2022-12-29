@@ -1,21 +1,17 @@
 ﻿using CadflairDataAccess.Models;
 using CadflairInventorAddin.Helpers;
 using Inventor;
+using Microsoft.Identity.Client;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CadflairInventorAddin.Commands.Upload
 {
@@ -32,6 +28,8 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             InitializeComponent();
 
+            _doc = doc;
+
             // set colors of window
             SolidColorBrush backgroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemMediaColor());
             SolidColorBrush foregroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemMediaColor());
@@ -40,12 +38,20 @@ namespace CadflairInventorAddin.Commands.Upload
             this.Background = backgroundBrush;
             this.Foreground = foregroundBrush;
             //DataGridViewParameters.BackgroundColor = appFrameBrush;
+        }
 
-            _doc = doc;
-            _iLogicForms = UploadToCadflair.GetILogicFormElements(doc);
-            foreach (ILogicFormElement form in _iLogicForms) ILogicFormsComboBox.Items.Add(form.Name);
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _iLogicForms = UploadToCadflair.GetILogicFormElements(_doc);
+
+            foreach (ILogicFormElement form in _iLogicForms)
+            {
+                ILogicFormsComboBox.Items.Add(form.Name);
+            }
+
             ILogicFormsComboBox.SelectedIndex = 0;
 
+            await LoadProductFoldersRecursive(null, ProductFolderTreeView.Items);
         }
 
         private void ILogicFormsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -64,6 +70,50 @@ namespace CadflairInventorAddin.Commands.Upload
             }
         }
 
+        private async Task LoadProductFoldersRecursive(int? parentId, ItemCollection treeViewItems)
+        {
+            List<ProductFolder> folders = await UploadToCadflair.GetProductFoldersBySubscriptionIdAndParentId(1, parentId);
+
+            foreach (ProductFolder folder in folders)
+            {
+                TreeViewItem treeViewItem = new TreeViewItem
+                {
+                    DataContext = folder,
+                    Header = folder.DisplayName,
+                };
+
+                treeViewItems.Add(treeViewItem);
+                await LoadProductFoldersRecursive(folder.Id, treeViewItem.Items);
+            }
+        }
+
+        private async void CreateProductFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            int? parentId = null;
+            ItemCollection treeViewItems;
+
+            if (ProductFolderTreeView.SelectedItem == null)
+            {
+                treeViewItems = ProductFolderTreeView.Items;
+            }
+            else
+            {
+                TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
+                treeViewItems = selectedItem.Items;
+                parentId = ((ProductFolder)selectedItem.DataContext).Id; 
+            }
+
+            ProductFolder folder = await UploadToCadflair.CreateProductFolder(1, 1, "New folder", parentId);
+
+            TreeViewItem treeViewItem = new TreeViewItem
+            {
+                DataContext = folder,
+                Header = folder.DisplayName,
+            };
+
+            treeViewItems.Add(treeViewItem);
+        }
+
         private async void UploadButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -75,9 +125,16 @@ namespace CadflairInventorAddin.Commands.Upload
 
             if (string.IsNullOrWhiteSpace(DisplayNameTextBox.Text))
             {
-                MessageBox.Show("Please enter a value for Display Name", "Display Name Not Provided", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please enter a Display Name", "Display Name Not Provided", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            if (ProductFolderTreeView.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a destination folder.", "No Folder Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
 
             // Save limits for numeric text box parameters as attributes
             //foreach (DataGridViewRow row in DataGridViewParameters.Rows)
@@ -106,10 +163,13 @@ namespace CadflairInventorAddin.Commands.Upload
 
             // NEED TO ADD CHECK FOR DUPLICATE DISPLAY NAME AND OTHER DATA VALIDATION!!!!
 
+            TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
+            int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
+
             // Upload to Cadflair
             string uploadResult = await UploadToCadflair.UploadProductToCadflair(userId: 1,
                                                                                  subscriptionId: 1,
-                                                                                 productFolderId: 1,
+                                                                                 productFolderId: productFolderId,
                                                                                  displayName: DisplayNameTextBox.Text,
                                                                                  rootFileName: System.IO.Path.GetFileName(_doc.FullFileName),
                                                                                  iLogicFormJson: iLogicFormSpec.GetFormJson(),
@@ -123,6 +183,5 @@ namespace CadflairInventorAddin.Commands.Upload
 
             ConnectionRichTextBox.AppendText(uploadResult);
         }
-
     }
 }
