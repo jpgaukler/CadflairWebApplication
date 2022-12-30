@@ -4,11 +4,14 @@ using CadflairForgeAccess;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Web.Resource;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace CadflairBlazorServer.Controllers
 {
+    [Authorize]
+    [RequiredScope("User.InventorAddin")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -137,7 +140,7 @@ namespace CadflairBlazorServer.Controllers
                                                                                                                                  isDefault: true);
                 Debug.WriteLine($@"Created new product configuration: {productConfiguration.Id}");
 
-                return Ok("Product created successfully!");
+                return Ok(product);
             }
             catch (Exception ex)
             {
@@ -151,7 +154,6 @@ namespace CadflairBlazorServer.Controllers
 
         #region "ProductFolder"
 
-        [Authorize]
         [HttpPost]
         [Route("api/productfolder/create/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
         public async Task<IActionResult> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
@@ -166,7 +168,6 @@ namespace CadflairBlazorServer.Controllers
                 return BadRequest(new { Error = $"Exception occurred: {ex}" });
             }
         }
-
 
         [HttpGet]
         [Route("api/productfolder/get/{subscriptionId:int}/{parentId:int?}")]

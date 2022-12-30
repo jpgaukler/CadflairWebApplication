@@ -1,38 +1,31 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using CadflairInventorAddin.Helpers;
 using Inventor;
 using Microsoft.Identity.Client;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
-namespace CadflairInventorAddin.Helpers
+namespace CadflairInventorAddin.Api
 {
-    internal class AzureB2CHelper
+    internal class AuthenticationApi
     {
         private static readonly string TenantName = "cadflair";
         private static readonly string Tenant = $"{TenantName}.onmicrosoft.com";
         private static readonly string AzureAdB2CHostname = $"{TenantName}.b2clogin.com";
         private static readonly string ClientId = "7f344a2b-d9ed-4ed7-af25-0f3b381f855c";
         private static readonly string RedirectUri = $"https://{TenantName}.b2clogin.com/oauth2/nativeclient";
-        private static readonly string PolicySignUpSignIn = "b2c_1_susi";
-        private static readonly string PolicyEditProfile = "b2c_1_edit";
+        private static readonly string PolicySignIn = "b2c_1_signin";
         private static readonly string PolicyResetPassword = "b2c_1_reset";
         private static readonly string AuthorityBase = $"https://{AzureAdB2CHostname}/tfp/{Tenant}/";
-        private static readonly string AuthoritySignUpSignIn = $"{AuthorityBase}{PolicySignUpSignIn}";
-        private static readonly string AuthorityEditProfile = $"{AuthorityBase}{PolicyEditProfile}";
+        private static readonly string AuthoritySignIn = $"{AuthorityBase}{PolicySignIn}";
         private static readonly string AuthorityResetPassword = $"{AuthorityBase}{PolicyResetPassword}";
-        //public static string[] ApiScopes = { $"https://{Tenant}/helloapi/Data.Read", $"https://{Tenant}/helloapi/Data.Write" };
-        //public static string ApiEndpoint = "https://fabrikamb2chello.azurewebsites.net/hello";
+        public static string[] ApiScopes = { $"https://{Tenant}/api/User.InventorAddin" };
 
-        private static AuthenticationResult _authState;
+        private static AuthenticationResult _authResult;
         private static IPublicClientApplication _publicClientApp;
 
         private static bool _signedIn;
@@ -44,7 +37,7 @@ namespace CadflairInventorAddin.Helpers
             }
             set
             {
-                if (!value) _authState = null;
+                if (!value) _authResult = null;
                 _signedIn = value;
                 SignInButton.Enabled = !value;
                 SignOutButton.Enabled = value;
@@ -54,23 +47,37 @@ namespace CadflairInventorAddin.Helpers
         public static ButtonDefinition SignInButton { get; set; }
         public static ButtonDefinition SignOutButton { get; set; }
 
-        public static void InitializeAzureB2C()
+        public static async void InitializeAzureB2C()
         {
             _publicClientApp = PublicClientApplicationBuilder.Create(ClientId)
-                .WithB2CAuthority(AuthoritySignUpSignIn)
-                .WithRedirectUri(RedirectUri)
-                .Build();
+                                                             .WithB2CAuthority(AuthoritySignIn)
+                                                             .WithB2CAuthority(AuthorityResetPassword)
+                                                             .WithRedirectUri(RedirectUri)
+                                                             .Build();
 
             TokenCacheHelper.Bind(_publicClientApp.UserTokenCache);
+
+            // try to sign in using existing token
+            try
+            {
+                var accounts = await _publicClientApp.GetAccountsAsync(PolicySignIn);
+                _authResult = await _publicClientApp.AcquireTokenSilent(ApiScopes, accounts.FirstOrDefault()).ExecuteAsync();
+                SignedIn = true;
+            }
+            catch
+            {
+                SignedIn = false;
+            }
         }
 
         private static async Task SignIn()
         {
             try
             {
-                _authState = await _publicClientApp.AcquireTokenInteractive(null)
-                                                   .WithParentActivityOrWindow(new InventorMainFrame(Globals.InventorApplication.MainFrameHWND))
-                                                   .ExecuteAsync();
+                _authResult = await _publicClientApp.AcquireTokenInteractive(ApiScopes)
+                                                    .WithB2CAuthority(AuthoritySignIn)
+                                                    .WithParentActivityOrWindow(new InventorMainFrame(Globals.InventorApplication.MainFrameHWND))
+                                                    .ExecuteAsync();
 
                 SignedIn = true;
             }
@@ -85,14 +92,14 @@ namespace CadflairInventorAddin.Helpers
                 else
                 {
                     MessageBox.Show($"Sign in failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Trace.TraceError($"SignIn failed: \n{ex}\n");
+                    Log.Error(ex, "SignIn");
                 }
             }
             catch (Exception ex)
             {
                 SignedIn = false;
                 MessageBox.Show($"Sign in failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                Trace.TraceError($"SignIn failed: \n{ex}\n");
+                Log.Error(ex, "SignIn");
             }
         }
 
@@ -100,11 +107,10 @@ namespace CadflairInventorAddin.Helpers
         {
             try
             {
-                _authState = await _publicClientApp.AcquireTokenInteractive(null)
-                                                   .WithParentActivityOrWindow(new InventorMainFrame(Globals.InventorApplication.MainFrameHWND))
-                                                   .WithPrompt(Prompt.SelectAccount)
-                                                   .WithB2CAuthority(AuthorityResetPassword)
-                                                   .ExecuteAsync();
+                _authResult = await _publicClientApp.AcquireTokenInteractive(ApiScopes)
+                                                    .WithB2CAuthority(AuthorityResetPassword)
+                                                    .WithParentActivityOrWindow(new InventorMainFrame(Globals.InventorApplication.MainFrameHWND))
+                                                    .ExecuteAsync();
 
                 SignedIn = true;
             }
@@ -112,7 +118,7 @@ namespace CadflairInventorAddin.Helpers
             {
                 SignedIn = false;
                 MessageBox.Show($"Password reset failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                Trace.TraceError($"ResetPassword failed: \n{ex}\n");
+                Log.Error(ex, "ResetPassword");
             }
         }
 
@@ -134,7 +140,7 @@ namespace CadflairInventorAddin.Helpers
             catch (MsalException ex)
             {
                 MessageBox.Show($"Sign out failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                Trace.TraceError($"SignOut failed: \n{ex}\n");
+                Log.Error(ex, "SignOut");
             }
         }
 
@@ -142,45 +148,41 @@ namespace CadflairInventorAddin.Helpers
         {
             try
             {
-                if (_authState == null || DateTimeOffset.Now > _authState.ExpiresOn)
+                if (_authResult == null || DateTimeOffset.Now > _authResult.ExpiresOn)
                 {
-                    var accounts = await _publicClientApp.GetAccountsAsync(PolicySignUpSignIn);
-                    _authState = await _publicClientApp.AcquireTokenSilent(null, accounts.FirstOrDefault()).ExecuteAsync();
+                    var accounts = await _publicClientApp.GetAccountsAsync(PolicySignIn);
+                    _authResult = await _publicClientApp.AcquireTokenSilent(ApiScopes, accounts.FirstOrDefault()).ExecuteAsync();
                     SignedIn = true;
                 }
 
-                return _authState.AccessToken;
+                return _authResult.AccessToken;
             }
             catch (MsalUiRequiredException)
             {
                 // User will need to sign in interactively.
                 SignedIn = false;
-                MessageBox.Show($"User not signed in!", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Please sign in to continue.", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Information);
                 return null;
             }
             catch (Exception ex)
             {
                 SignedIn = false;
-                MessageBox.Show($"Authentication failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                Trace.TraceError($"GetAccessToken failed: \n{ex}\n");
+                MessageBox.Show($"An unknown error occurred!", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error(ex, "GetAccessToken");
                 return null;
             }
         }
 
-
-        //private void DisplayUserInfo(AuthenticationResult authResult)
+        //private static void DisplayUserInfo(AuthenticationResult authResult)
         //{
         //    if (authResult != null)
         //    {
         //        JObject user = ParseIdToken(authResult.IdToken);
-        //        ConnectionRichTextBox.Document.Blocks.Clear();
-        //        ConnectionRichTextBox.AppendText($"Name: {user["name"]?.ToString()}\n");
-        //        ConnectionRichTextBox.AppendText($"User Identifier: {user["oid"]?.ToString()}\n");
-        //        ConnectionRichTextBox.AppendText($"Identity Provider: {user["iss"]?.ToString()}\n");
+        //        Log.Info(user.ToString());
         //    }
         //}
 
-        //JObject ParseIdToken(string idToken)
+        //private static JObject ParseIdToken(string idToken)
         //{
         //    // Parse the idToken to get user info
         //    idToken = idToken.Split('.')[1];
@@ -188,7 +190,7 @@ namespace CadflairInventorAddin.Helpers
         //    return JObject.Parse(idToken);
         //}
 
-        //private string Base64UrlDecode(string s)
+        //private static string Base64UrlDecode(string s)
         //{
         //    s = s.Replace('-', '+').Replace('_', '/');
         //    s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');

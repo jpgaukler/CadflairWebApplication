@@ -1,7 +1,9 @@
 using CadflairBlazorServer.Controllers;
 using CadflairDataAccess;
 using CadflairForgeAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Identity.Web;
@@ -14,16 +16,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
-builder.Services.AddControllers();
 
-// Authentication services
+// Authetication and authorization
+builder.Services.AddMicrosoftIdentityWebApiAuthentication(builder.Configuration, "AzureAdB2C");
+builder.Services.AddMicrosoftIdentityWebAppAuthentication(builder.Configuration, "AzureAdB2C");
+builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme).AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"));
 builder.Services.AddAuthorization(options =>
 {
-    ////can add policies for specific auth rules, consider adding a customer claim attribute in the azure portal
-    //options.AddPolicy("Admin", policy => policy.RequireClaim("jobTitle", "Admin"));
-    ////options.AddPolicy("Admin", policy => policy.RequireClaim("role", "Editor")); 
+    // Need this for [Authorize] on controllers to use bearer token for authentication
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+        .RequireAuthenticatedUser()
+        .Build();
 });
 
 // Signal R configuration
@@ -31,7 +35,6 @@ builder.Services.AddResponseCompression(options =>
 {
     options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 });
-
 
 // MudBlazor
 builder.Services.AddMudServices(config =>
@@ -68,17 +71,16 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRewriter(
-    new RewriteOptions().Add(context =>
+app.UseRewriter(new RewriteOptions().Add(context =>
+{
+    if (context.HttpContext.Request.Path == "/MicrosoftIdentity/Account/SignedOut")
     {
-        if (context.HttpContext.Request.Path == "/MicrosoftIdentity/Account/SignedOut")
-        {
-            //this will redirect users to the home page when they sign out
-            context.HttpContext.Response.Redirect("/");
-        };
-    }));
+        //this will redirect users to the home page when they sign out
+        context.HttpContext.Response.Redirect("/");
+    };
+}));
 
-//configure map methods
+// controllers, hubs, pages 
 app.MapBlazorHub();
 app.MapHub<ForgeCallbackHub>("/forgecallbackhub");
 app.MapFallbackToPage("/_Host");

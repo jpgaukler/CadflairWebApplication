@@ -1,4 +1,5 @@
 ﻿using CadflairDataAccess.Models;
+using CadflairInventorAddin.Api;
 using CadflairInventorAddin.Helpers;
 using Inventor;
 using Newtonsoft.Json;
@@ -23,9 +24,9 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             try
             {
-                if (!AzureB2CHelper.SignedIn)
+                if (!AuthenticationApi.SignedIn)
                 {
-                    MessageBox.Show($"Please sign in to Cadflair to use this command.", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show($"Please sign in to continue.", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
@@ -37,7 +38,7 @@ namespace CadflairInventorAddin.Commands.Upload
             }
             catch (Exception ex)
             {
-                Trace.TraceError($"UploadToCadflairButton_OnExecute failed: \n{ex}\n");
+                Log.Error(ex, "UploadToCadflairButton_OnExecute");
             }
         }
 
@@ -276,181 +277,6 @@ namespace CadflairInventorAddin.Commands.Upload
 
         #endregion
 
-        #region "Cadflair API"
-
-        public static async Task<string> UploadProductToCadflair(int userId, int subscriptionId, int productFolderId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string zipFileName)
-        {
-            bool uploadSuccessful = false;
-            string result = string.Empty;
-
-            try
-            {
-                dynamic productData = new
-                {
-                    UserId = userId,
-                    SubscriptionId = subscriptionId,
-                    ProductFolderId = productFolderId,
-                    DisplayName = displayName,
-                    RootFileName = rootFileName,
-                    ILogicFormJson = iLogicFormJson,
-                    ArgumentJson = argumentJson,
-                    IsPublic = isPublic,
-                    IsConfigurable = isConfigurable,
-                };
-
-                using (HttpClient client = new HttpClient())
-                using (MultipartFormDataContent formContent = new MultipartFormDataContent())
-                using (StringContent productDataContent = new StringContent(JsonConvert.SerializeObject(productData)))
-                using (FileStream stream = System.IO.File.Open(zipFileName, FileMode.Open))
-                using (StreamContent streamContent = new StreamContent(stream))
-                {
-                    // add product data to request
-                    productDataContent.Headers.Add("Content-Disposition", "form-data; name=\"ProductData\"");
-                    formContent.Add(productDataContent, "ProductData");
-
-                    // add file the form as a stream content
-                    streamContent.Headers.Add("Content-Type", "application/octet-stream");
-                    streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
-                    formContent.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
-
-                    using (HttpResponseMessage response = await client.PostAsync($"https://localhost:7269/api/product/create", formContent))
-                    {
-                        response.EnsureSuccessStatusCode();
-                        result = await response.Content.ReadAsStringAsync();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"UploadProductToCadflair failed: \n{ex}\n");
-            }
-
-            //return uploadSuccessful;
-            return result;
-        }
-
-        public static async Task<List<ProductFolder>> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
-        {
-            List<ProductFolder> folders = new List<ProductFolder>();
-
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                using (HttpResponseMessage response = await client.GetAsync($"https://localhost:7269/api/productfolder/get/{subscriptionId}/{parentId}"))
-                {
-                    response.EnsureSuccessStatusCode();
-                    folders = JsonConvert.DeserializeObject<List<ProductFolder>>(await response.Content.ReadAsStringAsync());
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"GetProductFoldersBySubscriptionIdAndParentId failed: \n{ex}\n");
-            }
-
-            return folders;
-        }
-
-        public static async Task<ProductFolder> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
-        {
-            string uri = $"https://localhost:7269/api/productfolder/create/{subscriptionId}/{createdById}/{displayName}/{parentId}";
-            ProductFolder folder = new ProductFolder();
-
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                using(HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri))
-                {
-                    string token = await AzureB2CHelper.GetAccessToken();
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                    using (HttpResponseMessage response = await client.SendAsync(request))
-                    {
-                        response.EnsureSuccessStatusCode();
-                        folder = JsonConvert.DeserializeObject<ProductFolder>(await response.Content.ReadAsStringAsync());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError($"CreateProductFolder failed: \n{ex}\n");
-            }
-
-            return folder;
-        }
-
-
-        #endregion
     }
-
 }
-
-
-
-//C:\Program Files(x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\WindowsFormsIntegration.dll
-//C:\Program Files(x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\WindowsBase.dll
-//C:\Program Files(x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\UIAutomationProvider.dll
-
-
-//public static string[] GetILogicFormNames(Document doc)
-//{
-//    List<string> formNames = new List<string>();
-
-//    foreach (AttributeSet set in doc.AttributeSets)
-//    {
-//        //ignore all attribute sets that are not iLogicUi
-//        if (!set.Name.ToLower().Contains("ilogicinternalui")) continue;
-
-//        //get form spec attribute
-//        Inventor.Attribute formSpec = set["FormSpec"];
-
-//        //convert byte array to xml string
-//        byte[] bytes = (byte[])formSpec.Value;
-//        string xmlString = Encoding.UTF8.GetString(bytes);
-
-//        //ignore the browser control spec
-//        string formName = GetiLogicFormName(xmlString);
-//        if (formName.Contains("iLogicBrowserUiFormSpecification")) continue;
-
-//        formNames.Add(formName);
-//    }
-
-//    return formNames.ToArray();
-//}
-
-//public static string GetiLogicFormName(string xmlFormSpec)
-//{
-//    XDocument doc = XDocument.Parse(xmlFormSpec);
-//    return doc.Element("FormSpecification").Element("Name").Value;
-//}
-
-
-//private static string GetMaxExpression(this Parameter parameter)
-//{
-//    if (parameter == null) return null;
-//    return parameter?.Tolerance?.Lower.ToString();
-//}
-
-//private static string SerializeiLogicFormSpecToJson(Document doc, string xmlString)
-//{
-//    //convert xml string to xdoc for parsing
-//    XDocument xDoc = XDocument.Parse(xmlString);
-//    XNamespace ns = xDoc.Root.GetNamespaceOfPrefix("xsi");
-//    XElement formSpecElement = xDoc.Element("FormSpecification");
-
-//    ILogicUiElement element = new ILogicUiElement()
-//    {
-//        Name = formSpecElement.Element("Name").Value,
-//        //Guid = formSpecElement.Element("Guid").Value,
-//        Items = RecurseILogicElements(doc, formSpecElement.Element("Items"), ns)
-//    };
-
-//    JsonSerializerSettings settings = new JsonSerializerSettings()
-//    {
-//        NullValueHandling = NullValueHandling.Ignore,
-//        DefaultValueHandling = DefaultValueHandling.Ignore //ignore empty strings and arrays
-//    };
-
-//    return JsonConvert.SerializeObject(element, settings); ;
-//}
-
 

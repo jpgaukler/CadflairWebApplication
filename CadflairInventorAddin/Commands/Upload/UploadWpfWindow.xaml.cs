@@ -1,4 +1,5 @@
 ﻿using CadflairDataAccess.Models;
+using CadflairInventorAddin.Api;
 using CadflairInventorAddin.Helpers;
 using Inventor;
 using Microsoft.Identity.Client;
@@ -22,7 +23,6 @@ namespace CadflairInventorAddin.Commands.Upload
     {
         private Document _doc;
         private List<ILogicFormElement> _iLogicForms;
-
 
         public UploadWpfWindow(Inventor.Document doc)
         {
@@ -72,7 +72,7 @@ namespace CadflairInventorAddin.Commands.Upload
 
         private async Task LoadProductFoldersRecursive(int? parentId, ItemCollection treeViewItems)
         {
-            List<ProductFolder> folders = await UploadToCadflair.GetProductFoldersBySubscriptionIdAndParentId(1, parentId);
+            List<ProductFolder> folders = await ProductApi.GetProductFoldersBySubscriptionIdAndParentId(1, parentId);
 
             foreach (ProductFolder folder in folders)
             {
@@ -103,7 +103,7 @@ namespace CadflairInventorAddin.Commands.Upload
                 parentId = ((ProductFolder)selectedItem.DataContext).Id; 
             }
 
-            ProductFolder folder = await UploadToCadflair.CreateProductFolder(1, 1, "New folder", parentId);
+            ProductFolder folder = await ProductApi.CreateProductFolder(1, 1, "New folder", parentId);
 
             TreeViewItem treeViewItem = new TreeViewItem
             {
@@ -167,21 +167,31 @@ namespace CadflairInventorAddin.Commands.Upload
             int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
 
             // Upload to Cadflair
-            string uploadResult = await UploadToCadflair.UploadProductToCadflair(userId: 1,
-                                                                                 subscriptionId: 1,
-                                                                                 productFolderId: productFolderId,
-                                                                                 displayName: DisplayNameTextBox.Text,
-                                                                                 rootFileName: System.IO.Path.GetFileName(_doc.FullFileName),
-                                                                                 iLogicFormJson: iLogicFormSpec.GetFormJson(),
-                                                                                 argumentJson: iLogicFormSpec.GetArgumentJson(),
-                                                                                 isPublic: true,
-                                                                                 isConfigurable: true,
-                                                                                 zipFileName: zipFileName);
+            Product product = await ProductApi.CreateProduct(userId: 1,
+                                                             subscriptionId: 1,
+                                                             productFolderId: productFolderId,
+                                                             displayName: DisplayNameTextBox.Text,
+                                                             rootFileName: System.IO.Path.GetFileName(_doc.FullFileName),
+                                                             iLogicFormJson: iLogicFormSpec.GetFormJson(),
+                                                             argumentJson: iLogicFormSpec.GetArgumentJson(),
+                                                             isPublic: true,
+                                                             isConfigurable: true,
+                                                             zipFileName: zipFileName);
 
             // clean up
             System.IO.File.Delete(zipFileName);
 
-            ConnectionRichTextBox.AppendText(uploadResult);
+            if(product == null)
+            {
+                ConnectionRichTextBox.AppendText("Upload failed!");
+            }
+            else
+            {
+                ConnectionRichTextBox.AppendText("Upload successful!\n");
+                ConnectionRichTextBox.AppendText($"Product Id: {product.Id}");
+                ConnectionRichTextBox.AppendText($"Display Name: {product.DisplayName}");
+                ConnectionRichTextBox.AppendText($"Created On: {product.CreatedOn}");
+            }
         }
     }
 }

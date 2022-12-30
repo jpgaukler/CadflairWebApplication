@@ -5,8 +5,8 @@ using CadflairInventorAddin.Helpers;
 using Inventor;
 using System;
 using System.Runtime.InteropServices;
-using System.Windows.Navigation;
 using System.Diagnostics;
+using CadflairInventorAddin.Api;
 
 namespace CadflairInventorAddin
 {
@@ -46,10 +46,8 @@ namespace CadflairInventorAddin
             GuidAttribute addInCLSID = (GuidAttribute)GuidAttribute.GetCustomAttribute(typeof(StandardAddInServer), typeof(GuidAttribute));
             Globals.AddInCLSIDString = "{" + addInCLSID.Value + "}";
 
-            // set up azure b2c authentication provider
-            AzureB2CHelper.InitializeAzureB2C();
-
             // add trace listener for logging errors
+            System.IO.File.Delete(Globals.OutputLogPath);
             Trace.Listeners.Add(new TextWriterTraceListener(Globals.OutputLogPath));
             Trace.AutoFlush = true;
 
@@ -60,17 +58,20 @@ namespace CadflairInventorAddin
             // setup button definitions
             ControlDefinitions controlDefs = Globals.InventorApplication.CommandManager.ControlDefinitions;
             _uploadToCadflair = controlDefs.AddButtonDefinition("Upload to Cadflair", "Cadflair Upload Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Upload the active model to Cadflair.", "Upload the active model to Cadflair.");
-            AzureB2CHelper.SignInButton = controlDefs.AddButtonDefinition("Sign In", "Cadflair SignIn Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Sign in to Cadflair.", "Sign in to Cadflair.");
-            AzureB2CHelper.SignOutButton = controlDefs.AddButtonDefinition("Sign Out", "Cadflair SignOut Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Sign out of Cadflair.", "Sign out of Cadflair.");
+            AuthenticationApi.SignInButton = controlDefs.AddButtonDefinition("Sign In", "Cadflair SignIn Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Sign in to Cadflair.", "Sign in to Cadflair.");
+            AuthenticationApi.SignOutButton = controlDefs.AddButtonDefinition("Sign Out", "Cadflair SignOut Command", CommandTypesEnum.kNonShapeEditCmdType, Globals.AddInCLSIDString, "Sign out of Cadflair.", "Sign out of Cadflair.");
             //_addDimensionAttributesButton = controlDefs.AddButtonDefinition("Add Automation\nAttributes", "Add Automation Attributes Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Add AttributeSets to automate drawing elements.", "Save drawing data to AttributeSets for drawing automation.", PictureDispConverter.ToIPictureDisp(Resources.LockSmall), PictureDispConverter.ToIPictureDisp(Resources.LockLarge));
             //_refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
 
             // add button handlers
             _uploadToCadflair.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
-            AzureB2CHelper.SignInButton.OnExecute += AzureB2CHelper.SignInButton_OnExecute;
-            AzureB2CHelper.SignOutButton.OnExecute += AzureB2CHelper.SignOutButton_OnExecute;
+            AuthenticationApi.SignInButton.OnExecute += AuthenticationApi.SignInButton_OnExecute;
+            AuthenticationApi.SignOutButton.OnExecute += AuthenticationApi.SignOutButton_OnExecute;
             //_addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
             //_refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+
+            // set up azure b2c authentication provider
+            AuthenticationApi.InitializeAzureB2C();
 
             if (firstTime)
             {
@@ -98,13 +99,13 @@ namespace CadflairInventorAddin
 
             //add components assembly ribbon 
             assemblyPanel.CommandControls.AddButton(_uploadToCadflair, true);
-            assemblyPanel.CommandControls.AddButton(AzureB2CHelper.SignInButton, true);
-            assemblyPanel.CommandControls.AddButton(AzureB2CHelper.SignOutButton, true);
+            assemblyPanel.CommandControls.AddButton(AuthenticationApi.SignInButton, true);
+            assemblyPanel.CommandControls.AddButton(AuthenticationApi.SignOutButton, true);
 
             //add components part ribbon 
             partPanel.CommandControls.AddButton(_uploadToCadflair, true);
-            partPanel.CommandControls.AddButton(AzureB2CHelper.SignInButton, true);
-            partPanel.CommandControls.AddButton(AzureB2CHelper.SignOutButton, true);
+            partPanel.CommandControls.AddButton(AuthenticationApi.SignInButton, true);
+            partPanel.CommandControls.AddButton(AuthenticationApi.SignOutButton, true);
 
             //add components drawing ribbon 
             //drawingPanel.CommandControls.AddButton(_addDimensionAttributesButton, true);
@@ -127,8 +128,8 @@ namespace CadflairInventorAddin
             // disconnect events
             _userInterfaceManager.UserInterfaceEvents.OnResetRibbonInterface -= UserInterfaceEvents_OnResetRibbonInterface;
             _uploadToCadflair.OnExecute -= UploadToCadflair.UploadToCadflairButton_OnExecute;
-            AzureB2CHelper.SignInButton.OnExecute -= AzureB2CHelper.SignInButton_OnExecute;
-            AzureB2CHelper.SignOutButton.OnExecute -= AzureB2CHelper.SignOutButton_OnExecute;
+            AuthenticationApi.SignInButton.OnExecute -= AuthenticationApi.SignInButton_OnExecute;
+            AuthenticationApi.SignOutButton.OnExecute -= AuthenticationApi.SignOutButton_OnExecute;
             //_addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
             //_refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
 
@@ -138,8 +139,8 @@ namespace CadflairInventorAddin
 
             //buttons 
             _uploadToCadflair = null;
-            AzureB2CHelper.SignInButton = null;
-            AzureB2CHelper.SignOutButton = null;
+            AuthenticationApi.SignInButton = null;
+            AuthenticationApi.SignOutButton = null;
             //_addDimensionAttributesButton = null;
             //_refreshDimensionsButton = null;
 

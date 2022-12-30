@@ -13,7 +13,7 @@ namespace CadflairInventorAddin.Helpers
         /// <summary>
         /// Path to the token cache
         /// </summary>
-        private static readonly string CacheFilePath = Path.Combine(Globals.AddInDirectory, "msalcache.bin");
+        private static readonly string CacheFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "msalcache.bin");
 
         private static readonly object FileLock = new object();
 
