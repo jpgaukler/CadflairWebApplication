@@ -11,7 +11,7 @@ using Microsoft.Identity.Client;
 
 namespace CadflairInventorAddin.Api
 {
-    internal class AuthenticationApi
+    internal class Authentication
     {
         private static readonly string TenantName = "cadflair";
         private static readonly string Tenant = $"{TenantName}.onmicrosoft.com";
@@ -57,7 +57,7 @@ namespace CadflairInventorAddin.Api
 
             TokenCacheHelper.Bind(_publicClientApp.UserTokenCache);
 
-            // try to sign in using existing token
+            // try to sign in using existing token in the cache
             try
             {
                 var accounts = await _publicClientApp.GetAccountsAsync(PolicySignIn);
@@ -144,7 +144,7 @@ namespace CadflairInventorAddin.Api
             }
         }
 
-        public static async Task<string> GetAccessToken()
+        public static async Task<AuthenticationResult> GetAuthenticationResult()
         {
             try
             {
@@ -155,7 +155,7 @@ namespace CadflairInventorAddin.Api
                     SignedIn = true;
                 }
 
-                return _authResult.AccessToken;
+                return _authResult;
             }
             catch (MsalUiRequiredException)
             {

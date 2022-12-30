@@ -24,7 +24,7 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             try
             {
-                if (!AuthenticationApi.SignedIn)
+                if (!Authentication.SignedIn)
                 {
                     MessageBox.Show($"Please sign in to continue.", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;

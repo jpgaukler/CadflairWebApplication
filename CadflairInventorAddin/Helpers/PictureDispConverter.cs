@@ -6,7 +6,7 @@ namespace CadflairInventorAddin.Helpers
     /// <summary>
     /// Class for converting icons to IPictureDisp to be usable by Inventor API elements.
     /// </summary>
-    public sealed class PictureDispConverter
+    public static class PictureDispConverter
     {
         [DllImport("OleAut32.dll", EntryPoint = "OleCreatePictureIndirect", ExactSpelling = true, PreserveSig = false)]
 
@@ -56,13 +56,13 @@ namespace CadflairInventorAddin.Helpers
 
         }
 
-        public static stdole.IPictureDisp ToIPictureDisp(System.Drawing.Icon icon)
+        public static stdole.IPictureDisp ToIPictureDisp(this System.Drawing.Icon icon)
         {
             PICTDESC.Icon pictIcon = new PICTDESC.Icon(icon);
             return OleCreatePictureIndirect(pictIcon, ref iPictureDispGuid, true);
         }
 
-        public static stdole.IPictureDisp ToIPictureDisp(System.Drawing.Bitmap bmp)
+        public static stdole.IPictureDisp ToIPictureDisp(this System.Drawing.Bitmap bmp)
         {
             PICTDESC.Bitmap pictBmp = new PICTDESC.Bitmap(bmp);
             return OleCreatePictureIndirect(pictBmp, ref iPictureDispGuid, true);

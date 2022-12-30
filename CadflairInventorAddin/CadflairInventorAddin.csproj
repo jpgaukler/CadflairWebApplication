@@ -165,8 +165,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\ApiClient.cs" />
+    <Compile Include="Api\Client.cs" />
     <Compile Include="Api\ProductApi.cs" />
+    <Compile Include="Api\UserApi.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -175,7 +176,7 @@
     <Compile Include="Commands\Upload\UploadWpfWindow.xaml.cs">
       <DependentUpon>UploadWpfWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Api\AuthenticationApi.cs" />
+    <Compile Include="Api\Authentication.cs" />
     <Compile Include="Helpers\DockableWindowHelper.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\Globals.cs" />
@@ -207,25 +208,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\TopAttributeSmall.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\BottomAttributeSmall.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LeftAttributeSmall.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\RightAttributeSmall.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\lock.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LockLarge.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Template.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LockSmall.ico" />
@@ -241,6 +227,24 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UploadLarge.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\UploadSmall.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SignInLarge.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SignInSmall.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SignOutSmall.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SignOutLarge.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

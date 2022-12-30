@@ -63,26 +63,6 @@ namespace CadflairInventorAddin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon BottomAttributeSmall {
-            get {
-                object obj = ResourceManager.GetObject("BottomAttributeSmall", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon LeftAttributeSmall {
-            get {
-                object obj = ResourceManager.GetObject("LeftAttributeSmall", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
         internal static System.Drawing.Icon LockLarge {
             get {
                 object obj = ResourceManager.GetObject("LockLarge", resourceCulture);
@@ -103,9 +83,9 @@ namespace CadflairInventorAddin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon RightAttributeSmall {
+        internal static System.Drawing.Icon SignInLarge {
             get {
-                object obj = ResourceManager.GetObject("RightAttributeSmall", resourceCulture);
+                object obj = ResourceManager.GetObject("SignInLarge", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -113,9 +93,9 @@ namespace CadflairInventorAddin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon Template {
+        internal static System.Drawing.Icon SignInSmall {
             get {
-                object obj = ResourceManager.GetObject("Template", resourceCulture);
+                object obj = ResourceManager.GetObject("SignInSmall", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -123,9 +103,39 @@ namespace CadflairInventorAddin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon TopAttributeSmall {
+        internal static System.Drawing.Icon SignOutLarge {
             get {
-                object obj = ResourceManager.GetObject("TopAttributeSmall", resourceCulture);
+                object obj = ResourceManager.GetObject("SignOutLarge", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon SignOutSmall {
+            get {
+                object obj = ResourceManager.GetObject("SignOutSmall", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon UploadLarge {
+            get {
+                object obj = ResourceManager.GetObject("UploadLarge", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon UploadSmall {
+            get {
+                object obj = ResourceManager.GetObject("UploadSmall", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

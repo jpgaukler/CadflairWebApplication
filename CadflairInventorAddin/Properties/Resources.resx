@@ -118,25 +118,28 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="BottomAttributeSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BottomAttributeSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="LeftAttributeSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\LeftAttributeSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="LockLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LockLarge.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="LockSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LockSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="RightAttributeSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RightAttributeSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="SignInLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SignInLarge.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Template" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Template.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="SignInSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SignInSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="TopAttributeSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\TopAttributeSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="SignOutLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SignOutLarge.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SignOutSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SignOutSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UploadLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UploadLarge.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="UploadSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\UploadSmall.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -58,7 +58,8 @@
                   IsExpanded="true"
                   Background="{StaticResource BrowserPaneAccentBrush}">
             <StackPanel Background="{StaticResource BrowserPaneBrush}">
-                <CheckBox Content="Allow Product Configuration" Margin="5,5"/>
+                <CheckBox x:Name="IsPublicCheckBox" Content="Make Model Public" IsChecked="true" Margin="5,5"/>
+                <CheckBox x:Name="AllowProductConfigurationCheckBox" Content="Allow Product Configuration" IsChecked="true" Margin="5,5"/>
 
                 <StackPanel Orientation="Horizontal" Margin="5,5" DockPanel.Dock="Top">
                     <Label Content="iLogic Form:"/>

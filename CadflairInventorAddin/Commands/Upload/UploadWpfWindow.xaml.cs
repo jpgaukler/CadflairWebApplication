@@ -23,6 +23,7 @@ namespace CadflairInventorAddin.Commands.Upload
     {
         private Document _doc;
         private List<ILogicFormElement> _iLogicForms;
+        private User _loggedInUser;
 
         public UploadWpfWindow(Inventor.Document doc)
         {
@@ -42,6 +43,11 @@ namespace CadflairInventorAddin.Commands.Upload
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // get logged in user
+            AuthenticationResult auth = await Authentication.GetAuthenticationResult();
+            _loggedInUser = await UserApi.GetUserByObjectIdentifier(auth.UniqueId);
+
+            // load iLogic form data into UI
             _iLogicForms = UploadToCadflair.GetILogicFormElements(_doc);
 
             foreach (ILogicFormElement form in _iLogicForms)
@@ -51,6 +57,7 @@ namespace CadflairInventorAddin.Commands.Upload
 
             ILogicFormsComboBox.SelectedIndex = 0;
 
+            // load product folders into the UI
             await LoadProductFoldersRecursive(null, ProductFolderTreeView.Items);
         }
 
@@ -105,6 +112,8 @@ namespace CadflairInventorAddin.Commands.Upload
 
             ProductFolder folder = await ProductApi.CreateProductFolder(1, 1, "New folder", parentId);
 
+            if (folder == null) return;
+
             TreeViewItem treeViewItem = new TreeViewItem
             {
                 DataContext = folder,
@@ -116,6 +125,18 @@ namespace CadflairInventorAddin.Commands.Upload
 
         private async void UploadButton_Click(object sender, RoutedEventArgs e)
         {
+
+            if (_loggedInUser == null)
+            {
+                MessageBox.Show("A valid user profile could not be found. Please verify that user is signed in to Cadflair.", "User Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
+
+            if (_loggedInUser.SubscriptionId == null)
+            {
+                MessageBox.Show("A valid Cadflair subscription could not be found.", "Subscription Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
 
             if (_doc.FileSaveCounter == 0)
             {
@@ -167,15 +188,15 @@ namespace CadflairInventorAddin.Commands.Upload
             int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
 
             // Upload to Cadflair
-            Product product = await ProductApi.CreateProduct(userId: 1,
-                                                             subscriptionId: 1,
+            Product product = await ProductApi.CreateProduct(userId: _loggedInUser.Id,
+                                                             subscriptionId: (int)_loggedInUser.SubscriptionId,
                                                              productFolderId: productFolderId,
                                                              displayName: DisplayNameTextBox.Text,
                                                              rootFileName: System.IO.Path.GetFileName(_doc.FullFileName),
                                                              iLogicFormJson: iLogicFormSpec.GetFormJson(),
                                                              argumentJson: iLogicFormSpec.GetArgumentJson(),
-                                                             isPublic: true,
-                                                             isConfigurable: true,
+                                                             isPublic: (bool)IsPublicCheckBox.IsChecked,
+                                                             isConfigurable: (bool)AllowProductConfigurationCheckBox.IsChecked,
                                                              zipFileName: zipFileName);
 
             // clean up
@@ -188,9 +209,9 @@ namespace CadflairInventorAddin.Commands.Upload
             else
             {
                 ConnectionRichTextBox.AppendText("Upload successful!\n");
-                ConnectionRichTextBox.AppendText($"Product Id: {product.Id}");
-                ConnectionRichTextBox.AppendText($"Display Name: {product.DisplayName}");
-                ConnectionRichTextBox.AppendText($"Created On: {product.CreatedOn}");
+                ConnectionRichTextBox.AppendText($"Product Id: {product.Id} \n");
+                ConnectionRichTextBox.AppendText($"Display Name: {product.DisplayName} \n");
+                ConnectionRichTextBox.AppendText($"Created On: {product.CreatedOn} \n");
             }
         }
     }

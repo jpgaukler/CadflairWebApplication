@@ -50,7 +50,7 @@ namespace CadflairInventorAddin.Api
                     streamContent.Headers.Add("Content-Disposition", $"form-data; name=\"ZipFile\"; filename=\"{System.IO.Path.GetFileName(zipFileName)}\"");
                     formContent.Add(streamContent, "ZipFile", System.IO.Path.GetFileName(zipFileName));
 
-                    string result = await ApiClient.Post(uri, formContent);
+                    string result = await Client.Post(uri, formContent);
                     Product product = JsonConvert.DeserializeObject<Product>(result);
                     return product;
                 }
@@ -71,7 +71,7 @@ namespace CadflairInventorAddin.Api
             try
             {
                 string uri = $"/api/productfolder/get/{subscriptionId}/{parentId}";
-                string result = await ApiClient.Get(uri);
+                string result = await Client.Get(uri);
                 List<ProductFolder> folders = JsonConvert.DeserializeObject<List<ProductFolder>>(result);
                 return folders;
             }
@@ -87,7 +87,7 @@ namespace CadflairInventorAddin.Api
             try
             {
                 string uri = $"/api/productfolder/create/{subscriptionId}/{createdById}/{displayName}/{parentId}";
-                string result = await ApiClient.Post(uri);
+                string result = await Client.Post(uri);
                 ProductFolder folder  = JsonConvert.DeserializeObject<ProductFolder>(result);
                 return folder;
             }
