@@ -1,5 +1,6 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
+using CadflairForgeAccess.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace CadflairForgeAccess.Services
 
         public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, string rootFileName, string? connectionId = null)
         {
-            var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey.ToString(), objectKey.ToString());
+            var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
 
             // prepare the payload
             List<JobPayloadItem.ViewsEnum> views = new()
@@ -94,14 +95,17 @@ namespace CadflairForgeAccess.Services
         /// <summary>
         /// Get the thumbnail for a model in Forge OSS storage
         /// </summary>
-        /// <param name="urn"></param>
+        /// <param name="bucketKey"></param>
+        /// <param name="objectKey"></param>
         /// <returns></returns>
-        public async Task<string> GetThumbnailBase64String(string encodedUrn)
+        public async Task<string> GetThumbnailBase64String(string bucketKey, string objectKey)
         {
             try
             {
+                var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
+
                 DerivativesApi derivative = await GetDerivativesApi();
-                Stream thumbnailStream = await derivative.GetThumbnailAsync(encodedUrn);
+                Stream thumbnailStream = await derivative.GetThumbnailAsync(objectDetails.encoded_urn);
 
                 byte[] byteArray;
 
@@ -111,7 +115,7 @@ namespace CadflairForgeAccess.Services
                     byteArray = memoryStream.ToArray();
                 }
 
-                return Convert.ToBase64String(byteArray);
+                return byteArray.ToBase64();
             }
             catch (Exception ex)
             {

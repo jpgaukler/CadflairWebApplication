@@ -22,7 +22,6 @@ namespace CadflairInventorAddin.Commands.Upload
     public partial class UploadWpfWindow : Window
     {
         private Document _doc;
-        private List<ILogicFormElement> _iLogicForms;
         private User _loggedInUser;
 
         public UploadWpfWindow(Inventor.Document doc)
@@ -45,41 +44,28 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             // get logged in user
             AuthenticationResult auth = await Authentication.GetAuthenticationResult();
-            _loggedInUser = await UserApi.GetUserByObjectIdentifier(auth.UniqueId);
-
-            // load iLogic form data into UI
-            _iLogicForms = UploadToCadflair.GetILogicFormElements(_doc);
-
-            foreach (ILogicFormElement form in _iLogicForms)
-            {
-                ILogicFormsComboBox.Items.Add(form.Name);
-            }
-
-            ILogicFormsComboBox.SelectedIndex = 0;
+            if (auth != null) _loggedInUser = await UserApi.GetUserByObjectIdentifier(auth.UniqueId);
 
             // load product folders into the UI
             await LoadProductFoldersRecursive(null, ProductFolderTreeView.Items);
+
+            // load iLogic form data into UI
+            ILogicFormsComboBox.ItemsSource = UploadToCadflair.GetILogicFormElements(_doc);
+            ILogicFormsComboBox.DisplayMemberPath = nameof(ILogicFormElement.Name);
+            ILogicFormsComboBox.SelectedIndex = 0;
         }
 
         private void ILogicFormsComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ParametersDataGrid.Items.Clear();
-            ILogicFormElement iLogicForm = _iLogicForms.FirstOrDefault(i => i.Name == ILogicFormsComboBox.SelectedItem.ToString());
-            PopulateParametersGrid(iLogicForm);
-        }
-
-        private void PopulateParametersGrid(ILogicFormElement iLogicForm)
-        {
-            foreach (ILogicFormElement item in iLogicForm.Items)
-            {
-                if (item.ParameterName != null) ParametersDataGrid.Items.Add(item);
-                if (item.Items != null) PopulateParametersGrid(item);
-            }
+            ILogicFormElement iLogicForm = (ILogicFormElement)ILogicFormsComboBox.SelectedItem;
+            ParametersDataGrid.ItemsSource = iLogicForm.GetParameterList();
         }
 
         private async Task LoadProductFoldersRecursive(int? parentId, ItemCollection treeViewItems)
         {
-            List<ProductFolder> folders = await ProductApi.GetProductFoldersBySubscriptionIdAndParentId(1, parentId);
+            if (_loggedInUser == null || _loggedInUser.SubscriptionId == null) return;
+
+            List<ProductFolder> folders = await ProductApi.GetProductFoldersBySubscriptionIdAndParentId((int)_loggedInUser.SubscriptionId, parentId);
 
             foreach (ProductFolder folder in folders)
             {
@@ -96,6 +82,24 @@ namespace CadflairInventorAddin.Commands.Upload
 
         private async void CreateProductFolderButton_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(ProductFolderTextBox.Text))
+            {
+                MessageBox.Show("Please enter a folder name.", "Folder Name Not Provided", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_loggedInUser == null)
+            {
+                MessageBox.Show("A valid user profile could not be found. Please verify that user is signed in to Cadflair.", "User Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
+
+            if (_loggedInUser.SubscriptionId == null)
+            {
+                MessageBox.Show("A valid Cadflair subscription could not be found.", "Subscription Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
+
             int? parentId = null;
             ItemCollection treeViewItems;
 
@@ -110,7 +114,7 @@ namespace CadflairInventorAddin.Commands.Upload
                 parentId = ((ProductFolder)selectedItem.DataContext).Id; 
             }
 
-            ProductFolder folder = await ProductApi.CreateProductFolder(1, 1, "New folder", parentId);
+            ProductFolder folder = await ProductApi.CreateProductFolder((int)_loggedInUser.SubscriptionId, _loggedInUser.Id, ProductFolderTextBox.Text, parentId);
 
             if (folder == null) return;
 
@@ -123,7 +127,7 @@ namespace CadflairInventorAddin.Commands.Upload
             treeViewItems.Add(treeViewItem);
         }
 
-        private async void UploadButton_Click(object sender, RoutedEventArgs e)
+        private async void CreateProductButton_Click(object sender, RoutedEventArgs e)
         {
 
             if (_loggedInUser == null)
@@ -173,19 +177,17 @@ namespace CadflairInventorAddin.Commands.Upload
             //}
 
             // Get parameters in form of json
-            ILogicFormElement iLogicFormSpec = _iLogicForms.FirstOrDefault(i => i.Name == ILogicFormsComboBox.SelectedItem.ToString());
-
-            //UploadToCadflair.SaveILogicUiElementToJson(iLogicFormSpec);
-            //UploadToCadflair.SaveILogicFormSpecToXml(iLogicFormSpec.Name);
-
-            //save model to zipfile
-            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
-
+            ILogicFormElement iLogicForm = (ILogicFormElement)ILogicFormsComboBox.SelectedItem;
 
             // NEED TO ADD CHECK FOR DUPLICATE DISPLAY NAME AND OTHER DATA VALIDATION!!!!
 
             TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
             int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
+
+
+
+            //save model to zipfile
+            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
 
             // Upload to Cadflair
             Product product = await ProductApi.CreateProduct(userId: _loggedInUser.Id,
@@ -193,8 +195,8 @@ namespace CadflairInventorAddin.Commands.Upload
                                                              productFolderId: productFolderId,
                                                              displayName: DisplayNameTextBox.Text,
                                                              rootFileName: System.IO.Path.GetFileName(_doc.FullFileName),
-                                                             iLogicFormJson: iLogicFormSpec.GetFormJson(),
-                                                             argumentJson: iLogicFormSpec.GetArgumentJson(),
+                                                             iLogicFormJson: iLogicForm.GetFormJson(),
+                                                             argumentJson: iLogicForm.GetArgumentJson(),
                                                              isPublic: (bool)IsPublicCheckBox.IsChecked,
                                                              isConfigurable: (bool)AllowProductConfigurationCheckBox.IsChecked,
                                                              zipFileName: zipFileName);

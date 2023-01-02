@@ -30,8 +30,8 @@
                     <TextBox x:Name="DisplayNameTextBox" Width="200"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="5,5" DockPanel.Dock="Top">
-                    <Label Content="User Id:"/>
-                    <TextBox x:Name="UserIdTextBox" Width="200"/>
+                    <Label Content="Folder Name:"/>
+                    <TextBox x:Name="ProductFolderTextBox" Width="200"/>
                 </StackPanel>
                 <StackPanel  Margin="5,5" DockPanel.Dock="Top">
                     <StackPanel Orientation="Horizontal">
@@ -94,8 +94,8 @@
                     VerticalAlignment="Bottom" 
                     HorizontalAlignment="Left"
                     DockPanel.Dock="Bottom">
-            <Button x:Name="UploadButton"
-                    Click="UploadButton_Click"
+            <Button x:Name="CreateProductButton"
+                    Click="CreateProductButton_Click"
                     Content="OK" 
                     MinWidth="100" 
                     Margin="0,0,5,0"

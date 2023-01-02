@@ -28,5 +28,12 @@ namespace CadflairForgeAccess.Helpers
             return Convert.ToBase64String(plainTextBytes);
         }
 
+        /// <summary>
+        /// Base64 encode a string
+        /// </summary>
+        internal static string ToBase64(this byte[] bytes)
+        {
+            return Convert.ToBase64String(bytes);
+        }
     }
 }

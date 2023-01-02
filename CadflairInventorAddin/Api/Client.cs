@@ -1,4 +1,5 @@
 ﻿using Microsoft.Identity.Client;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace CadflairInventorAddin.Api
             {
                 // add authorization token to request header
                 AuthenticationResult auth = await Authentication.GetAuthenticationResult();
-                if (string.IsNullOrWhiteSpace(auth.AccessToken)) return default;
+                if (auth == null) throw new Exception("User not signed in!");
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
 
                 // add content

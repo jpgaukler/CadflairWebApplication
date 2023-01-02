@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -85,40 +86,23 @@ namespace CadflairInventorAddin.Api
             {
                 SignedIn = false;
 
-                if (ex.Message.Contains("AADB2C90118"))
+                if (ex.Message.Contains("User canceled authentication.")) return;
+
+                if (ex.Message.Contains("user has forgotten their password"))
                 {
-                    await ResetPassword();
+                    // open user flow to reset password through the browser
+                    Process.Start("https://cadflair.b2clogin.com/cadflair.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_reset&client_id=7f344a2b-d9ed-4ed7-af25-0f3b381f855c&nonce=defaultNonce&redirect_uri=https%3A%2F%2Fcadflair.b2clogin.com%2Foauth2%2Fnativeclient&scope=openid&response_type=code&prompt=login");
+                    return;
                 }
-                else
-                {
-                    MessageBox.Show($"Sign in failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                    Log.Error(ex, "SignIn");
-                }
+
+                MessageBox.Show($"Sign in failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
+                Log.Error(ex, "SignIn");
             }
             catch (Exception ex)
             {
                 SignedIn = false;
                 MessageBox.Show($"Sign in failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
                 Log.Error(ex, "SignIn");
-            }
-        }
-
-        private static async Task ResetPassword()
-        {
-            try
-            {
-                _authResult = await _publicClientApp.AcquireTokenInteractive(ApiScopes)
-                                                    .WithB2CAuthority(AuthorityResetPassword)
-                                                    .WithParentActivityOrWindow(new InventorMainFrame(Globals.InventorApplication.MainFrameHWND))
-                                                    .ExecuteAsync();
-
-                SignedIn = true;
-            }
-            catch (Exception ex)
-            {
-                SignedIn = false;
-                MessageBox.Show($"Password reset failed:\n{ex}", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Error);
-                Log.Error(ex, "ResetPassword");
             }
         }
 
@@ -173,32 +157,6 @@ namespace CadflairInventorAddin.Api
             }
         }
 
-        //private static void DisplayUserInfo(AuthenticationResult authResult)
-        //{
-        //    if (authResult != null)
-        //    {
-        //        JObject user = ParseIdToken(authResult.IdToken);
-        //        Log.Info(user.ToString());
-        //    }
-        //}
-
-        //private static JObject ParseIdToken(string idToken)
-        //{
-        //    // Parse the idToken to get user info
-        //    idToken = idToken.Split('.')[1];
-        //    idToken = Base64UrlDecode(idToken);
-        //    return JObject.Parse(idToken);
-        //}
-
-        //private static string Base64UrlDecode(string s)
-        //{
-        //    s = s.Replace('-', '+').Replace('_', '/');
-        //    s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
-        //    var byteArray = Convert.FromBase64String(s);
-        //    var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
-        //    return decoded;
-        //}
-
         #region "UI"
 
         public static async void SignInButton_OnExecute(NameValueMap Context)
@@ -214,3 +172,30 @@ namespace CadflairInventorAddin.Api
         #endregion
     }
 }
+
+//private static void DisplayUserInfo(AuthenticationResult authResult)
+//{
+//    if (authResult != null)
+//    {
+//        JObject user = ParseIdToken(authResult.IdToken);
+//        Log.Info(user.ToString());
+//    }
+//}
+
+//private static JObject ParseIdToken(string idToken)
+//{
+//    // Parse the idToken to get user info
+//    idToken = idToken.Split('.')[1];
+//    idToken = Base64UrlDecode(idToken);
+//    return JObject.Parse(idToken);
+//}
+
+//private static string Base64UrlDecode(string s)
+//{
+//    s = s.Replace('-', '+').Replace('_', '/');
+//    s = s.PadRight(s.Length + (4 - s.Length % 4) % 4, '=');
+//    var byteArray = Convert.FromBase64String(s);
+//    var decoded = Encoding.UTF8.GetString(byteArray, 0, byteArray.Count());
+//    return decoded;
+//}
+
