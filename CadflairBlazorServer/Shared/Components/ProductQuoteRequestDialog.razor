@@ -1,6 +1,4 @@
-﻿@using System.ComponentModel.DataAnnotations
-@inject DataServicesManager _dataServicesManager
-@inject ISnackbar _snackbar
+﻿@using System.ComponentModel.DataAnnotations;
 
 <MudDialog>
     <DialogContent>
@@ -50,37 +48,3 @@
     </DialogActions>
 </MudDialog>
 
-
-@code {
-
-    [CascadingParameter] public MudDialogInstance? MudDialog { get; set; }
-    [Parameter] public int ProductConfigurationId { get; set; }
-
-    private bool _validInputs;
-    private string _firstName = string.Empty;
-    private string _lastName = string.Empty;
-    private string _emailAddress = string.Empty;
-    private string _phoneNumber = string.Empty;
-    private string _phoneExtension = string.Empty;
-    private string _messageText = string.Empty;
-
-    private async Task Submit_OnClick()
-    {
-        if (!_validInputs) return;
-
-        await _dataServicesManager.ProductService.CreateProductQuoteRequest(productConfigurationId: ProductConfigurationId,
-                                                                            firstName: _firstName,
-                                                                            lastName: _lastName,
-                                                                            emailAddress: _emailAddress,
-                                                                            phoneNumber: _phoneNumber,
-                                                                            phoneExtension: _phoneExtension,
-                                                                            messageText: _messageText);
-
-
-        _snackbar.Add("Request submitted!", Severity.Success);
-        MudDialog?.Close(DialogResult.Ok(true));
-    }
-
-    private void Cancel_OnClick() => MudDialog?.Cancel();
-
-}

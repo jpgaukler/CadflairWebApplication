@@ -1,4 +1,6 @@
-﻿@switch (Element.UiElementSpec)
+﻿@using System.ComponentModel.DataAnnotations
+
+@switch (Element.UiElementSpec)
 {
     case "ControlTabContainerSpec":
         <MudTabs ApplyEffectsToContainer="true" Outlined="true" Rounded="true" PanelClass="pa-3">
@@ -224,8 +226,8 @@
 
 @code {
 
-    [Parameter]
-    public ILogicFormElement Element { get; set; } = new();
+    [Parameter] public ILogicFormElement Element { get; set; } = new();
 
     private Variant _variant = Variant.Outlined;
+
 }
