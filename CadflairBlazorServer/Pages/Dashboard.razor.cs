@@ -75,11 +75,17 @@ namespace CadflairBlazorServer.Pages
             _thumbnails.Clear();
             foreach (Product product in _products)
             {
-                ProductVersion version = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(product.Id);
-                ProductConfiguration defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(version.Id);
-                string thumbnail = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(product.ForgeBucketKey, defaultConfiguration.ForgeZipKey);
-                _thumbnails.Add(product, thumbnail);
+                _ = LoadThumbnail(product);
             }
+        }
+
+        private async Task LoadThumbnail(Product product)
+        {
+            ProductVersion version = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(product.Id);
+            ProductConfiguration defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(version.Id);
+            string thumbnail = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(product.ForgeBucketKey, defaultConfiguration.ForgeZipKey);
+            _thumbnails.Add(product, thumbnail);
+            StateHasChanged();
         }
 
         private void ToggleView()

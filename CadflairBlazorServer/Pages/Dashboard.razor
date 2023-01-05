@@ -38,6 +38,18 @@
                          Elevation="0"
                          Hover="true">
                     <Columns>
+                        <Column T="Product">
+                            <CellTemplate>
+                                @if (_thumbnails.ContainsKey(context.Item))
+                                {
+                                    <MudImage Src="@($"data:image/png;base64,{_thumbnails[context.Item]}")" Alt="thumbnail image" Height="200" Width="200" />
+                                }
+                                else
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                }
+                            </CellTemplate>
+                        </Column>
                         <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
                         <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Subdirectory Name" />
                         <Column T="Product" Field="@nameof(Product.IsPublic)" Title="Is Public">
@@ -67,12 +79,17 @@
                     @foreach(Product product in _products)
                     {
                         <MudItem>
-                            <MudCard>
-                                <MudCardMedia Image="@($"data:image/png;base64,{_thumbnails[product]}")" Height="200" />
-                                <MudCardActions>
-                                    <MudButton Variant="Variant.Text" Color="Color.Primary">@product.DisplayName</MudButton>
-                                </MudCardActions>
-                            </MudCard>
+                            <MudPaper Height="200" Width="200">
+                                @if (_thumbnails.ContainsKey(product))
+                                {
+                                    <MudCardMedia Image="@($"data:image/png;base64,{_thumbnails[product]}")" Height="200" />
+                                }
+                                else
+                                {
+                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                }
+                                <MudButton Variant="Variant.Text" Color="Color.Primary">@product.DisplayName</MudButton>
+                            </MudPaper>
                         </MudItem>
                     }
                 </MudGrid>
@@ -90,7 +107,10 @@
                     <MudText Typo="Typo.body1">Is public:</MudText>
                     <MudText Typo="Typo.body1">Copy link:</MudText>
                 </div>
-                <MudImage Src="@($"data:image/png;base64,{_thumbnailString}")" Alt="@_selectedProduct?.DisplayName" Height="200" Width="200" />
+                @if (_selectedProduct != null && _thumbnails.ContainsKey(_selectedProduct))
+                {
+                    <MudImage Src="@($"data:image/png;base64,{_thumbnails[_selectedProduct]}")" Alt="thumbnail image" Height="200" Width="200" />
+                }
             </MudStack>
 
             <!-- product paramaters grid -->
