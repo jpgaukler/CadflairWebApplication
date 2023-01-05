@@ -40,6 +40,7 @@ namespace CadflairBlazorServer.Shared.Components
         // fields
         private User _loggedInUser = new();
         private HashSet<ProductFolderTreeItem> _productFolderTreeItems = new();
+        private ProductFolderTreeItem? _selectedFolderTreeItem;
         private ProductFolder? _selectedFolder;
 
         // class for product folder tree structure
@@ -47,6 +48,8 @@ namespace CadflairBlazorServer.Shared.Components
         {
             public ProductFolder ProductFolder { get; set; } = new();
             public HashSet<ProductFolderTreeItem> ChildItems { get; set; } = new();
+            public bool IsExpanded { get; set; } = false;
+            public bool HasChild => ChildItems != null && ChildItems.Count > 0;
         }
 
 
@@ -74,6 +77,7 @@ namespace CadflairBlazorServer.Shared.Components
 
         private void SelectedTreeItemChanged(ProductFolderTreeItem? selectedItem)
         {
+            _selectedFolderTreeItem = selectedItem;
             SelectedFolder = selectedItem?.ProductFolder;
         }
 
@@ -81,7 +85,7 @@ namespace CadflairBlazorServer.Shared.Components
         {
             DialogParameters parameters = new()
             {
-                { "ParentId", _selectedFolder == null ? null : _selectedFolder.Id },
+                { "ParentId", _selectedFolder?.Id },
                 { "UserId", _loggedInUser.Id },
                 { "SubscriptionId", _loggedInUser.SubscriptionId }
             };
@@ -90,14 +94,26 @@ namespace CadflairBlazorServer.Shared.Components
 
             if (!result.Cancelled)
             {
-                _productFolderTreeItems = new();
-                await LoadProductFoldersRecursive(null, _productFolderTreeItems);
+                var treeItem = new ProductFolderTreeItem() { ProductFolder = (ProductFolder)result.Data };
+
+                if (_selectedFolderTreeItem == null)
+                {
+                    _productFolderTreeItems.Add(treeItem);
+                    _productFolderTreeItems = _productFolderTreeItems.OrderBy(i => i.ProductFolder.DisplayName).ToHashSet();
+                }
+                else
+                {
+                    _selectedFolderTreeItem.ChildItems.Add(treeItem);
+                    _selectedFolderTreeItem.ChildItems = _selectedFolderTreeItem.ChildItems.OrderBy(i => i.ProductFolder.DisplayName).ToHashSet();
+                }
+
+                _snackbar.Add("Folder created.", Severity.Success);
             }
         }
 
-        private async Task DeleteProductFolder_OnClick()
+        private async Task DeleteProductFolderTreeItem_OnClick(ProductFolderTreeItem treeItem)
         {
-            if (_selectedFolder == null) return;
+            if (treeItem == null) return;
 
             bool? result = await _dialogService.ShowMessageBox(title: "Delete Folder", 
                                                                message: "Are you sure you want to delete this folder?", 
@@ -106,13 +122,22 @@ namespace CadflairBlazorServer.Shared.Components
 
             if (result == true)
             {
-                await _dataServicesManager.ProductService.DeleteProductFolder(_selectedFolder);
-                _snackbar.Add("Successfully deleted folder.", Severity.Success);
-
-                // refresh data
+                await _dataServicesManager.ProductService.DeleteProductFolder(treeItem.ProductFolder);
+                RemoveProductFolderTreeItem(treeItem);
                 _selectedFolder = null;
-                _productFolderTreeItems = new();
-                await LoadProductFoldersRecursive(null, _productFolderTreeItems);
+
+                _snackbar.Add("Folder deleted.", Severity.Success);
+            }
+        }
+
+        private void RemoveProductFolderTreeItem(ProductFolderTreeItem itemToRemove, HashSet<ProductFolderTreeItem>? items = null)
+        {
+            items ??= _productFolderTreeItems;
+
+            foreach (ProductFolderTreeItem item in items)
+            {
+                if (items.Remove(itemToRemove)) return;
+                RemoveProductFolderTreeItem(itemToRemove, item.ChildItems);
             }
         }
     }

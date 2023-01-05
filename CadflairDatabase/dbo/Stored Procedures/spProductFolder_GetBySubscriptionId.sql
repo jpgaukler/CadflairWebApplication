@@ -2,6 +2,6 @@
 	@SubscriptionId int
 AS
 
-SELECT * FROM [dbo].[ProductFolder] WHERE [SubscriptionId] = @SubscriptionId
+SELECT * FROM [dbo].[ProductFolder] WHERE [SubscriptionId] = @SubscriptionId ORDER BY [DisplayName]
 
 GO

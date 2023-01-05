@@ -20,39 +20,63 @@
 
     <!-- product folder tree -->
     <ProductFolderTree SelectedFolderChanged="SelectedProductFolderChanged" />
-    <MudStack Class="flex-grow-1 pa-3 mud-height-full" Row="true">
+    <MudStack Class="flex-grow-1 mud-height-full" Row="true">
         <MudStack>
-            <MudText Typo="Typo.h4">Products</MudText>
+            <MudToolBar DisableGutters="true">
+                <MudText Typo="Typo.h5">Products</MudText>
+                <MudSpacer />
+                <MudIconButton OnClick="ToggleView" Icon="@_toggleViewIcon" />
+            </MudToolBar>
 
             <!-- product data grid -->
-            <MudDataGrid T="Product"
+            @if (_displayListView)
+            {
+                <MudDataGrid T="Product"
                          Items="_products"
                          SelectedItemChanged="SelectedProductChanged"
                          Class="flex-grow-1"
+                         Elevation="0"
                          Hover="true">
-                <Columns>
-                    <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
-                    <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Subdirectory Name" />
-                    <Column T="Product" Field="@nameof(Product.IsPublic)" Title="Is Public">
-                        <CellTemplate>
-                            <MudCheckBox Checked="@context.Item.IsPublic" ReadOnly="true"></MudCheckBox>
-                        </CellTemplate>
-                    </Column>
-                    <Column T="Product" Field="@nameof(Product.CreatedOn)" Title="Created On">
-                        <CellTemplate>
-                            <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
-                                <MudIcon Icon="@Icons.Filled.CalendarToday" />
-                                <MudText>@context.Item.CreatedOn.DateTime.ToShortDateString()</MudText>
-                            </MudStack>
-                        </CellTemplate>
-                    </Column>
-                    <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Created On">
-                        <CellTemplate>
-                            <MudLink Href="@($"/{_subscription.SubdirectoryName}/products/{context.Item.SubdirectoryName}")">Configure</MudLink>
-                        </CellTemplate>
-                    </Column>
-                </Columns>
-            </MudDataGrid>
+                    <Columns>
+                        <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
+                        <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Subdirectory Name" />
+                        <Column T="Product" Field="@nameof(Product.IsPublic)" Title="Is Public">
+                            <CellTemplate>
+                                <MudCheckBox Checked="@context.Item.IsPublic" ReadOnly="true"></MudCheckBox>
+                            </CellTemplate>
+                        </Column>
+                        <Column T="Product" Field="@nameof(Product.CreatedOn)" Title="Created On">
+                            <CellTemplate>
+                                <MudStack Row="true" Justify="Justify.FlexStart" AlignItems="AlignItems.Center">
+                                    <MudIcon Icon="@Icons.Filled.CalendarToday" />
+                                    <MudText>@context.Item.CreatedOn.DateTime.ToShortDateString()</MudText>
+                                </MudStack>
+                            </CellTemplate>
+                        </Column>
+                        <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Created On">
+                            <CellTemplate>
+                                <MudLink Href="@($"/{_subscription.SubdirectoryName}/products/{context.Item.SubdirectoryName}")">Configure</MudLink>
+                            </CellTemplate>
+                        </Column>
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudGrid Justify="Justify.Center">
+                    @foreach(Product product in _products)
+                    {
+                        <MudItem>
+                            <MudCard>
+                                <MudCardMedia Image="@($"data:image/png;base64,{_thumbnails[product]}")" Height="200" />
+                                <MudCardActions>
+                                    <MudButton Variant="Variant.Text" Color="Color.Primary">@product.DisplayName</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            }
         </MudStack>
         <MudStack Class="mud-height-full">
 

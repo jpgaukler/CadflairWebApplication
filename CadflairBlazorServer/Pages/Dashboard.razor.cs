@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components;
 using CadflairDataAccess;
 using CadflairForgeAccess;
 using Microsoft.AspNetCore.Authorization;
+using MudBlazor;
 
 namespace CadflairBlazorServer.Pages
 {
@@ -22,12 +23,15 @@ namespace CadflairBlazorServer.Pages
         private User _loggedInUser = new();
         private Subscription _subscription = new();
         private List<Product> _products = new();
+        private Dictionary<Product, string> _thumbnails = new();
         private Product? _selectedProduct;
         private ProductVersion? _latestProductVersion;
         private ProductConfiguration? _defaultProductConfiguration;
         private List<ILogicFormElement> _parameterGridItems = new();
         private string _thumbnailString = string.Empty;
         private bool _showGetStarted = false;
+        private bool _displayListView = true;
+        private string _toggleViewIcon = Icons.Filled.GridView;
 
         protected override async Task OnInitializedAsync()
         {
@@ -55,7 +59,7 @@ namespace CadflairBlazorServer.Pages
             ILogicFormElement form = JsonConvert.DeserializeObject<ILogicFormElement>(_latestProductVersion.ILogicFormJson)!;
             form.SetParameterExpressions(_defaultProductConfiguration.ArgumentJson);
             _parameterGridItems = form.GetParameterList();
-            _thumbnailString = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(_selectedProduct.ForgeBucketKey, _defaultProductConfiguration.ForgeZipKey);
+
 
             //await _forgeViewer!.ViewDocument(_product.ForgeBucketKey, _defaultConfiguration.ForgeZipKey);
             //StateHasChanged();
@@ -67,6 +71,29 @@ namespace CadflairBlazorServer.Pages
         {
             if (productFolder == null) return;
             _products = await _dataServicesManager.ProductService.GetProductsByProductFolderId(productFolder.Id);
+
+            _thumbnails.Clear();
+            foreach (Product product in _products)
+            {
+                ProductVersion version = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(product.Id);
+                ProductConfiguration defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(version.Id);
+                string thumbnail = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(product.ForgeBucketKey, defaultConfiguration.ForgeZipKey);
+                _thumbnails.Add(product, thumbnail);
+            }
+        }
+
+        private void ToggleView()
+        {
+            _displayListView = !_displayListView;
+
+            if (_displayListView)
+            {
+                _toggleViewIcon = Icons.Filled.GridView;
+            }
+            else
+            {
+                _toggleViewIcon = Icons.Filled.ViewList;
+            }
         }
     }
 }

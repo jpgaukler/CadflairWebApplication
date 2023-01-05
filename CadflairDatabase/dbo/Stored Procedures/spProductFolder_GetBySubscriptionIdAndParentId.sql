@@ -5,11 +5,11 @@ AS
 
 IF @ParentId IS NULL
 	BEGIN
-		SELECT * FROM [dbo].[ProductFolder] WHERE [SubscriptionId] = @SubscriptionId AND [ParentId] IS NULL
+		SELECT * FROM [dbo].[ProductFolder] WHERE [SubscriptionId] = @SubscriptionId AND [ParentId] IS NULL ORDER BY [DisplayName]
 	END
 ELSE
 	BEGIN
-		SELECT * FROM [dbo].[ProductFolder] WHERE [SubscriptionId] = @SubscriptionId AND [ParentId] = @ParentId
+		SELECT * FROM [dbo].[ProductFolder] WHERE [SubscriptionId] = @SubscriptionId AND [ParentId] = @ParentId ORDER BY [DisplayName]
 	END
 
 

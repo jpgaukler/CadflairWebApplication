@@ -30,8 +30,7 @@ namespace CadflairBlazorServer.Shared.Components
             }
 
             ProductFolder productFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: SubscriptionId, createdById: UserId, displayName: _newProductFolderName, parentId: ParentId);
-            _snackbar.Add("New folder created.", Severity.Success);
-            MudDialog?.Close(DialogResult.Ok(true));
+            MudDialog?.Close(DialogResult.Ok(productFolder));
         }
 
         private void Cancel_OnClick() => MudDialog?.Cancel();

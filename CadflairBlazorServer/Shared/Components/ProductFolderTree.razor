@@ -1,26 +1,34 @@
 ﻿@attribute [Authorize]
 
-<MudPaper Class="pa-3">
-    <MudStack>
-        <MudText Typo="Typo.h6">Manage Product Families</MudText>
-        <MudButton OnClick="NewProductFolder_OnClick" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.CreateNewFolder">New Folder</MudButton>
-        <MudIconButton OnClick="DeleteProductFolder_OnClick" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
-        <MudPaper Elevation="0">
-            <MudTreeView T="ProductFolderTreeItem"
-                         Items="_productFolderTreeItems"
-                         SelectedValueChanged="SelectedTreeItemChanged"
-                         Hover="true"
-                         ExpandOnDoubleClick="true">
-                <ItemTemplate>
-                    <MudTreeViewItem Value="@context"
-                                     Items="@context.ChildItems"
-                                     Text="@context.ProductFolder.DisplayName"
-                                     EndText="@(context.ChildItems.Count() == 0 ? null : context.ChildItems.Count().ToString())"
-                                     Icon="@Icons.Custom.Uncategorized.Folder" />
-                </ItemTemplate>
-            </MudTreeView>
-        </MudPaper>
-    </MudStack>
-</MudPaper>
+
+<MudStack Class="pa-3" Style="min-width:275px;">
+    <MudButton OnClick="NewProductFolder_OnClick" Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Filled.CreateNewFolder">New Folder</MudButton>
+    <MudPaper Elevation="0">
+        <MudTreeView T="ProductFolderTreeItem"
+                     Items="_productFolderTreeItems"
+                     SelectedValueChanged="SelectedTreeItemChanged"
+                     Hover="true"
+                     ExpandOnDoubleClick="true">
+            <ItemTemplate>
+                <MudTreeViewItem Value="@context" @bind-Expanded="@context.IsExpanded" Items="@context.ChildItems">
+                    <Content>
+                        <MudMenu ActivationEvent="@MouseEvent.RightClick" PositionAtCurser="true" Class="d-flex align-center">
+                            <ActivatorContent>
+                                <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" Visible="@context.HasChild" />
+                                <MudIcon Icon="@Icons.Filled.Folder" Class="ml-0 mr-2" Color="@Color.Default" />
+                                <MudText>@context.ProductFolder.DisplayName</MudText>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem OnClick="() => DeleteProductFolderTreeItem_OnClick(context)" Icon="@Icons.Filled.Delete">Delete</MudMenuItem>
+                            </ChildContent>
+                        </MudMenu>
+                    </Content>
+                </MudTreeViewItem>
+            </ItemTemplate>
+        </MudTreeView>
+    </MudPaper>
+</MudStack>
+
+
 
 
