@@ -16,17 +16,22 @@
     </MudOverlay>
 </MudPopover>
 
-<div class="mud-height-full d-flex">
+<MudStack Row="true" Spacing="0" Class="mud-height-full">
 
     <!-- product folder tree -->
     <ProductFolderTree SelectedFolderChanged="SelectedProductFolderChanged" />
+
     <MudStack Class="flex-grow-1 mud-height-full" Row="true">
-        <MudStack>
-            <MudToolBar DisableGutters="true">
-                <MudText Typo="Typo.h5">Products</MudText>
-                <MudSpacer />
-                <MudIconButton OnClick="ToggleView" Icon="@_toggleViewIcon" />
-            </MudToolBar>
+        <MudStack Spacing="0" Class="flex-grow-1 pa-3">
+            <div>
+                <MudToolBar DisableGutters="true" Dense="true">
+                    <MudText Typo="Typo.h6">Products</MudText>
+                    <MudSpacer />
+                    <MudIconButton OnClick="ToggleView" Icon="@_toggleViewIcon" />
+                    <MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info"/>
+                </MudToolBar>
+                <MudDivider />
+            </div>
 
             <!-- product data grid -->
             @if (_displayListView)
@@ -34,24 +39,18 @@
                 <MudDataGrid T="Product"
                          Items="_products"
                          SelectedItemChanged="SelectedProductChanged"
-                         Class="flex-grow-1"
+                         ColumnResizeMode="ResizeMode.Column"
+                         Dense="true"
                          Elevation="0"
-                         Hover="true">
+                         Hover="true"
+                         Class="flex-grow-1">
                     <Columns>
-                        <Column T="Product">
+                        <Column T="Product" Sortable="false" Filterable="false" Resizable="false">
                             <CellTemplate>
-                                @if (_thumbnails.ContainsKey(context.Item))
-                                {
-                                    <MudImage Src="@($"data:image/png;base64,{_thumbnails[context.Item]}")" Alt="thumbnail image" Height="200" Width="200" />
-                                }
-                                else
-                                {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-                                }
+                                <ProductThumbnail Product="@context.Item" Height="100" Width="100" />
                             </CellTemplate>
                         </Column>
-                        <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
-                        <Column T="Product" Field="@nameof(Product.SubdirectoryName)" Title="Subdirectory Name" />
+                        <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name"/>
                         <Column T="Product" Field="@nameof(Product.IsPublic)" Title="Is Public">
                             <CellTemplate>
                                 <MudCheckBox Checked="@context.Item.IsPublic" ReadOnly="true"></MudCheckBox>
@@ -75,60 +74,68 @@
             }
             else
             {
-                <MudGrid Justify="Justify.Center">
-                    @foreach(Product product in _products)
+                <MudGrid Justify="Justify.FlexStart" Class="py-5 overflow-auto" Style="max-height: 100%">
+                    @foreach (Product product in _products)
                     {
                         <MudItem>
-                            <MudPaper Height="200" Width="200">
-                                @if (_thumbnails.ContainsKey(product))
-                                {
-                                    <MudCardMedia Image="@($"data:image/png;base64,{_thumbnails[product]}")" Height="200" />
-                                }
-                                else
-                                {
-                                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
-                                }
-                                <MudButton Variant="Variant.Text" Color="Color.Primary">@product.DisplayName</MudButton>
+                            <MudPaper>
+                                <MudButton Variant="Variant.Text">
+                                    <MudStack>
+                                        <ProductThumbnail Product="@product" Height="200" Width="200" />
+                                        @product.DisplayName
+                                    </MudStack>
+                                </MudButton>
                             </MudPaper>
                         </MudItem>
                     }
                 </MudGrid>
             }
         </MudStack>
-        <MudStack Class="mud-height-full">
 
-            <!-- product information -->
-            <MudStack Row="true">
-                <div class="flex-grow-1">
-                    <MudText Typo="Typo.h4">Details</MudText>
-                    <MudText Typo="Typo.body1">Display Name: @_selectedProduct?.DisplayName</MudText>
-                    <MudText Typo="Typo.body1">Parameters:</MudText>
-                    <MudText Typo="Typo.body1">Allows custom configurations:</MudText>
-                    <MudText Typo="Typo.body1">Is public:</MudText>
-                    <MudText Typo="Typo.body1">Copy link:</MudText>
+        <!-- product details drawer -->
+        <MudDrawer @bind-Open="_showDetails" 
+                   Elevation="0" 
+                   Variant="@DrawerVariant.Persistent" 
+                   Anchor="Anchor.Right" 
+                   ClipMode="DrawerClipMode.Always"
+                   Width="25%">
+
+            <MudStack Row="true" Class="mud-height-full overflow-auto">
+                <MudDivider Vertical="true"/>
+                <div>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-5">
+                        <MudText Typo="Typo.h5">Details</MudText>
+                        <MudIconButton OnClick="() => _showDetails = false" Icon="@Icons.Filled.Close" />
+                    </MudStack>
+                    <MudStack Row="true">
+                        <div class="flex-grow-1">
+                            <MudText Typo="Typo.body1">Display Name: @_selectedProduct?.DisplayName</MudText>
+                            <MudText Typo="Typo.body1">Parameters:</MudText>
+                            <MudText Typo="Typo.body1">Allows custom configurations:</MudText>
+                            <MudText Typo="Typo.body1">Is public:</MudText>
+                            <MudText Typo="Typo.body1">Copy link:</MudText>
+                        </div>
+                        <ProductThumbnail Product="@_selectedProduct" Height="400" Width="400" />
+                    </MudStack>
+
+                    <!-- product paramaters grid -->
+                    <MudDataGrid T="ILogicFormElement"
+                                 Items="_parameterGridItems"
+                                 Class="flex-grow-1 overflow-auto"
+                                 Striped="true"
+                                 Dense="true">
+                        <Columns>
+                            <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.Name)" Title="Display Name" />
+                            <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterName)" Title="Parameter Name" />
+                            <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterExpression)" Title="Default Value" />
+                        </Columns>
+                    </MudDataGrid>
                 </div>
-                @if (_selectedProduct != null && _thumbnails.ContainsKey(_selectedProduct))
-                {
-                    <MudImage Src="@($"data:image/png;base64,{_thumbnails[_selectedProduct]}")" Alt="thumbnail image" Height="200" Width="200" />
-                }
             </MudStack>
-
-            <!-- product paramaters grid -->
-            <MudDataGrid T="ILogicFormElement"
-                         Items="_parameterGridItems"
-                         Class="flex-grow-1 overflow-auto"
-                         Striped="true"
-                         Dense="true">
-                <Columns>
-                    <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.Name)" Title="Display Name" />
-                    <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterName)" Title="Parameter Name" />
-                    <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterExpression)" Title="Default Value" />
-                </Columns>
-            </MudDataGrid>
-        </MudStack>
+        </MudDrawer>
     </MudStack>
+</MudStack>
 
-</div>
 
 @*<MudDataGrid T="ProductConfiguration"
              Items="_productConfigurations"

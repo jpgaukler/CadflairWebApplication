@@ -77,6 +77,21 @@ namespace CadflairForgeAccess.Services
             return jobPosted;
         }
 
+        public async Task<bool> TranslationExists(string bucketKey, string objectKey)
+        {
+            try
+            {
+                DerivativesApi derivative = await GetDerivativesApi();
+                var forgeObject = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
+                dynamic manifest = await derivative.GetManifestAsync(forgeObject.encoded_urn);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<bool> TranslationExists(string encodedUrn)
         {
             try
@@ -97,15 +112,17 @@ namespace CadflairForgeAccess.Services
         /// </summary>
         /// <param name="bucketKey"></param>
         /// <param name="objectKey"></param>
+        /// <param name="width">The desired width of the thumbnail. Possible values are 100, 200 and 400.  (optional)</param>
+		/// <param name="height">The desired height of the thumbnail. Possible values are 100, 200 and 400.  (optional)</param>
         /// <returns></returns>
-        public async Task<string> GetThumbnailBase64String(string bucketKey, string objectKey)
+        public async Task<string> GetThumbnailBase64String(string bucketKey, string objectKey, int width = 100, int height = 100)
         {
             try
             {
                 var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
 
                 DerivativesApi derivative = await GetDerivativesApi();
-                Stream thumbnailStream = await derivative.GetThumbnailAsync(objectDetails.encoded_urn);
+                Stream thumbnailStream = await derivative.GetThumbnailAsync(objectDetails.encoded_urn, width, height);
 
                 byte[] byteArray;
 
