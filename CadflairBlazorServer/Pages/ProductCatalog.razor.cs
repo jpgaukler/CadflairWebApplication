@@ -1,133 +1,114 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using Newtonsoft.Json;
-using MudBlazor;
-using CadflairDataAccess;
 using CadflairDataAccess.Models;
-using CadflairForgeAccess;
-using CadflairBlazorServer.Shared.Components;
-using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
+using CadflairDataAccess;
+using MudBlazor;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace CadflairBlazorServer.Pages
 {
-    public partial class ProductCatalog : IAsyncDisposable
+    public partial class ProductCatalog
     {
         // services
+        [Inject] ProtectedSessionStorage _protectedSessionStorage { get; set; } = default!;
         [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
-        [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
         [Inject] NavigationManager _navigationManager { get; set; } = default!;
-        [Inject] IDialogService  _dialogService { get; set; } = default!;
-        [Inject] ISnackbar _snackbar { get; set; } = default!;
-        [Inject] IJSRuntime _js { get; set; } = default!;
 
         // parameters
-        [Parameter] public string ProductName { get; set; } = string.Empty;
         [Parameter] public string CompanyName { get; set; } = string.Empty;
 
         // fields
-        private ForgeViewer? _forgeViewer;
-        private HubConnection? _hubConnection;
         private Subscription _subscription = default!;
-        private Product _product = default!;
-        private ProductVersion _productVersion = default!;
-        private ProductConfiguration _defaultConfiguration = default!;
-        private ProductConfiguration? _productConfiguration;
-        private ILogicFormElement _iLogicFormData = default!;
-        private bool _validInputs = false;
-        private bool _configurationInProgress = false;
+        private List<Product> _products = new();
+        private List<BreadcrumbItem> _breadcrumbItems = new();
+        private bool _displayListView = true;
+        private bool _showDetails = false;
+
+        // class for product folder tree structure
+        private class ProductFolderTreeItem
+        {
+            public ProductFolder ProductFolder { get; set; } = new();
+            public HashSet<ProductFolderTreeItem> ChildItems { get; set; } = new();
+        }
+
+        // fields
+        private ProductFolderTreeItem? _selectedTreeItem = default!;
+        private HashSet<ProductFolderTreeItem> _productFolderTreeItems = new();
 
         protected override async Task OnInitializedAsync()
         {
-            // setup signal R hub connection
-            _hubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/forgecallbackhub"))
-                                                       .WithAutomaticReconnect()
-                                                       .Build();
-
-            _hubConnection.On<string>("CreateProductConfigurationModel_OnProgress", ReportProgress);
-            _hubConnection.On<int>("CreateProductConfigurationModel_OnComplete", ProductConfigurationCreated);
-            _hubConnection.On<string>("ModelDerivativeTranslation_OnComplete", ShowProductConfiguration);
-
             // get data
             _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
-            _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
-            _productVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(_product.Id);
-            _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(_productVersion.Id);
 
-            // construct UI
-            _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_productVersion.ILogicFormJson)!;
-            _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
-            await _forgeViewer!.ViewDocument(_product.ForgeBucketKey, _defaultConfiguration.ForgeZipKey);
-            StateHasChanged();
-        }
-
-        private async Task Submit_OnClick()
-        {
-            if (_configurationInProgress) return;
-            _configurationInProgress = true;
-
-            // connect to Signal R hub
-            if (_hubConnection?.State != HubConnectionState.Connected) await _hubConnection?.StartAsync()!;
-
-            _snackbar.Add("Generating new configuration", Severity.Info);
-
-            // create record in database
-            ProductConfiguration newConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: _productVersion.Id, argumentJson: _iLogicFormData.GetArgumentJson(), forgeZipKey: null, isDefault: false);
-
-            // submit the request to design automation 
-            await _forgeServicesManager.DesignAutomationService.CreateProductConfigurationModel(connectionId: _hubConnection?.ConnectionId!, productConfigurationId: newConfiguration.Id, inputBucketKey: _product.ForgeBucketKey, inputObjectKey: _defaultConfiguration.ForgeZipKey, inputPathInZip: _productVersion.RootFileName, inventorParamsJson: _iLogicFormData.GetArgumentJson());
-        }
-
-        private void ReportProgress(string message)
-        {
-            _snackbar.Add(message, Severity.Info);
-        }
-
-        private async Task ProductConfigurationCreated(int productConfigurationId)
-        {
-            _snackbar.Add("Generating preview...", Severity.Info);
-            _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
-        }
-
-        private void ShowProductConfiguration(string urn)
-        {
-            _configurationInProgress = false;
-            _snackbar.Add("Configuration generated successfully!", Severity.Info);
-            _ = _forgeViewer!.ViewDocument(urn);
-            StateHasChanged();
-        }
-
-        private async Task RequestQuote_OnClick()
-        {
-            if (_productConfiguration == null) return;
-            DialogParameters parameters = new()
+            if (_subscription == null)
             {
-                { "ProductConfigurationId", _productConfiguration.Id }
-            };
+                _navigationManager.NavigateTo("/notfound");
+            }
 
-            var result = await _dialogService.Show<ProductQuoteRequestDialog>("Request A Quote", parameters).Result;
-
-            //if (!result.Cancelled)
-            //{
-            //}
+            await LoadProductFoldersRecursive(null, _productFolderTreeItems);
+            await SelectedTreeItemChanged(_productFolderTreeItems.FirstOrDefault());
         }
 
-        private async Task DownloadStp_OnClick()
+        protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (_productConfiguration?.ForgeStpKey == null) return;
-            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product.ForgeBucketKey, _productConfiguration.ForgeStpKey);
-            _navigationManager.NavigateTo(url);
+            if (firstRender)
+            {
+                // load view setting
+                var viewSetting = await _protectedSessionStorage.GetAsync<bool>("_displayListView");
+                _displayListView = viewSetting.Success ? viewSetting.Value : false;
+                StateHasChanged();
+            }
         }
 
-        private async Task DownloadZip_OnClick()
+        private async Task LoadProductFoldersRecursive(int? parentId, HashSet<ProductFolderTreeItem> treeItems)
         {
-            if (_productConfiguration?.ForgeZipKey == null) return;
-            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product.ForgeBucketKey, _productConfiguration.ForgeZipKey);
-            _navigationManager.NavigateTo(url);
+            List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId(_subscription.Id, parentId);
+
+            foreach (ProductFolder folder in folders)
+            {
+                var treeItem = new ProductFolderTreeItem() { ProductFolder = folder };
+                treeItems.Add(treeItem);
+                await LoadProductFoldersRecursive(folder.Id, treeItem.ChildItems);
+            }
         }
 
-        public async ValueTask DisposeAsync()
+        private async Task SelectedTreeItemChanged(ProductFolderTreeItem? selectedItem)
         {
-            if (_hubConnection != null) await _hubConnection.DisposeAsync();
+            _selectedTreeItem = selectedItem;
+
+            if (_selectedTreeItem == null)
+            {
+                _products.Clear();
+                _breadcrumbItems.Clear();
+                return;
+            }
+
+            ProductFolder folder = _selectedTreeItem.ProductFolder;
+            _products = (await _dataServicesManager.ProductService.GetProductsByProductFolderId(folder.Id)).Where(i => i.IsPublic).ToList();
+
+            // refresh breadcrumbs
+            _breadcrumbItems.Clear();
+            _breadcrumbItems.Add(new BreadcrumbItem(text: folder.DisplayName, href: null, disabled: true));
+
+            while (folder.ParentId != null)
+            {
+                folder = await _dataServicesManager.ProductService.GetProductFolderById((int)folder.ParentId);
+                _breadcrumbItems.Add(new BreadcrumbItem(text: folder.DisplayName, href: null, disabled: true));
+            }
+
+            // reverse the list so the breadcrumbs are displayed from the top down
+            _breadcrumbItems.Reverse();
+        }
+
+        private void ProductsGrid_OnRowClick(DataGridRowClickEventArgs<Product> args)
+        {
+            Product product = args.Item;
+            _navigationManager.NavigateTo($" /{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}");
+        }
+
+        private async Task ToggleView()
+        {
+            _displayListView = !_displayListView;
+            await _protectedSessionStorage.SetAsync("_displayListView", _displayListView);
         }
     }
 }

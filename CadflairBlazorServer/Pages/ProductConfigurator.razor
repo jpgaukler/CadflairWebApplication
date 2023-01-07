@@ -1,0 +1,40 @@
+﻿@page "/{CompanyName}/products/{ProductName}"
+
+<div class="d-flex flex-row mud-height-full">
+    <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
+        <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
+
+        <!--Product Inputs-->
+        @if (_iLogicFormData == null)
+        {
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
+            </MudStack>
+        }
+        else
+        {
+            <MudForm @bind-IsValid="_validInputs" Class="flex-grow-1 overflow-auto">
+                <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
+                    @foreach (ILogicFormElement element in _iLogicFormData.Items)
+                    {
+                        <ProductInput Element="@element" @key="element"></ProductInput>
+                    }
+                </MudStack>
+            </MudForm>
+        }
+
+        <!--Action Buttons-->
+        <MudStack Class="pa-3">
+            <MudButton OnClick="Submit_OnClick" Disabled="@(!_validInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Submit</MudButton>
+            <MudButton OnClick="RequestQuote_OnClick" Disabled="_productConfiguration == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Request A Quote</MudButton>
+            <MudButton OnClick="DownloadZip_OnClick" Disabled="_productConfiguration?.ForgeZipKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Zip</MudButton>
+            <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Step</MudButton>
+        </MudStack>
+    </MudStack>
+
+    <!--Forge Viewer-->
+    <ForgeViewer @ref="_forgeViewer" />
+</div>
+
+
+
