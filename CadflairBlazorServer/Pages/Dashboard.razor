@@ -25,7 +25,14 @@
         <MudStack Spacing="0" Class="flex-grow-1 pa-3">
             <div>
                 <MudToolBar DisableGutters="true" Dense="true">
-                    <MudText Typo="Typo.h6">Products</MudText>
+                    <MudBreadcrumbs Items="_breadcrumbItems" Class="align-start">
+                        <SeparatorTemplate>
+                            <MudIcon Icon="@Icons.Material.Filled.ChevronRight"/>
+                        </SeparatorTemplate>
+                        <ItemTemplate Context="item">
+                            <MudText>@item.Text</MudText>
+                        </ItemTemplate>
+                    </MudBreadcrumbs>
                     <MudSpacer />
                     <MudIconButton OnClick="ToggleView" Icon="@_toggleViewIcon" />
                     <MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info"/>
@@ -79,7 +86,7 @@
                     {
                         <MudItem>
                             <MudPaper>
-                                <MudButton Variant="Variant.Text">
+                                <MudButton Variant="Variant.Text" Href=@($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}")>
                                     <MudStack>
                                         <ProductThumbnail Product="@product" Height="200" Width="200" />
                                         @product.DisplayName
@@ -90,68 +97,52 @@
                     }
                 </MudGrid>
             }
+
         </MudStack>
-
-        <!-- product details drawer -->
-        <MudDrawer @bind-Open="_showDetails" 
-                   Elevation="0" 
-                   Variant="@DrawerVariant.Persistent" 
-                   Anchor="Anchor.Right" 
-                   ClipMode="DrawerClipMode.Always"
-                   Width="25%">
-
-            <MudStack Row="true" Class="mud-height-full overflow-auto">
-                <MudDivider Vertical="true"/>
-                <div>
-                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-5">
-                        <MudText Typo="Typo.h5">Details</MudText>
-                        <MudIconButton OnClick="() => _showDetails = false" Icon="@Icons.Filled.Close" />
-                    </MudStack>
-                    <MudStack Row="true">
-                        <div class="flex-grow-1">
-                            <MudText Typo="Typo.body1">Display Name: @_selectedProduct?.DisplayName</MudText>
-                            <MudText Typo="Typo.body1">Parameters:</MudText>
-                            <MudText Typo="Typo.body1">Allows custom configurations:</MudText>
-                            <MudText Typo="Typo.body1">Is public:</MudText>
-                            <MudText Typo="Typo.body1">Copy link:</MudText>
-                        </div>
-                        <ProductThumbnail Product="@_selectedProduct" Height="400" Width="400" />
-                    </MudStack>
-
-                    <!-- product paramaters grid -->
-                    <MudDataGrid T="ILogicFormElement"
-                                 Items="_parameterGridItems"
-                                 Class="flex-grow-1 overflow-auto"
-                                 Striped="true"
-                                 Dense="true">
-                        <Columns>
-                            <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.Name)" Title="Display Name" />
-                            <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterName)" Title="Parameter Name" />
-                            <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterExpression)" Title="Default Value" />
-                        </Columns>
-                    </MudDataGrid>
-                </div>
-            </MudStack>
-        </MudDrawer>
     </MudStack>
 </MudStack>
 
 
-@*<MudDataGrid T="ProductConfiguration"
-             Items="_productConfigurations"
-             Hover="true">
-    <Columns>
-        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.IsDefault)" Title="Is Default">
-            <CellTemplate>
-                <MudCheckBox Checked="@context.Item.IsDefault" ReadOnly="true"></MudCheckBox>
-            </CellTemplate>
-        </Column>
-        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.Id)" Title="Id" />
-        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.ArgumentJson)" Title="Arguments" />
-        <Column T="ProductConfiguration" Field="@nameof(ProductConfiguration.CreatedOn)" Title="Created On" />
-    </Columns>
-</MudDataGrid>
+@*<!-- product details drawer -->
+<MudDrawer @bind-Open="_showDetails"
+           Elevation="0"
+           Variant="@DrawerVariant.Persistent"
+           Anchor="Anchor.Right"
+           ClipMode="DrawerClipMode.Always"
+           Width="600px">
 
+    <MudStack Row="true" Class="mud-height-full overflow-auto">
+        <MudDivider Vertical="true" />
+        <div>
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-5">
+                <MudText Typo="Typo.h5">Details</MudText>
+                <MudIconButton OnClick="() => _showDetails = false" Icon="@Icons.Filled.Close" />
+            </MudStack>
+            <MudStack Row="true">
+                <div class="flex-grow-1">
+                    <MudText Typo="Typo.body1">Display Name: @_selectedProduct?.DisplayName</MudText>
+                    <MudText Typo="Typo.body1">Parameters:</MudText>
+                    <MudText Typo="Typo.body1">Allows custom configurations:</MudText>
+                    <MudText Typo="Typo.body1">Is public:</MudText>
+                    <MudText Typo="Typo.body1">Copy link:</MudText>
+                </div>
+                <ProductThumbnail Product="@_selectedProduct" Height="400" Width="400" />
+            </MudStack>
+
+            <!-- product paramaters grid -->
+            <MudDataGrid T="ILogicFormElement"
+                         Items="_parameterGridItems"
+                         Class="flex-grow-1 overflow-auto"
+                         Striped="true"
+                         Dense="true">
+                <Columns>
+                    <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.Name)" Title="Display Name" />
+                    <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterName)" Title="Parameter Name" />
+                    <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterExpression)" Title="Default Value" />
+                </Columns>
+            </MudDataGrid>
+        </div>
+    </MudStack>
+</MudDrawer>
 *@
-
 

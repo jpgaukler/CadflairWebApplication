@@ -27,6 +27,7 @@ namespace CadflairBlazorServer.Pages
         private ProductVersion? _latestProductVersion;
         private ProductConfiguration? _defaultProductConfiguration;
         private List<ILogicFormElement> _parameterGridItems = new();
+        private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _showGetStarted = false;
         private bool _displayListView = true;
         private bool _showDetails = false;
@@ -69,6 +70,19 @@ namespace CadflairBlazorServer.Pages
         {
             if (productFolder == null) return;
             _products = await _dataServicesManager.ProductService.GetProductsByProductFolderId(productFolder.Id);
+
+            // refresh breadcrumbs
+            _breadcrumbItems.Clear();
+            _breadcrumbItems.Add(new BreadcrumbItem(text: productFolder.DisplayName, href: null, disabled: true));
+
+            while (productFolder.ParentId != null)
+            {
+                productFolder = await _dataServicesManager.ProductService.GetProductFolderById((int)productFolder.ParentId);
+                _breadcrumbItems.Add(new BreadcrumbItem(text: productFolder.DisplayName, href: null, disabled: true));
+            }
+
+            // reverse the list so the breadcrumbs are displayed from the top down
+            _breadcrumbItems.Reverse();
         }
 
         private void ToggleView()

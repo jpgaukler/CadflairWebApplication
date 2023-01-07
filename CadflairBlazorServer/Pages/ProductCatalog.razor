@@ -1,18 +1,11 @@
 ﻿@page "/{CompanyName}/products/{ProductName}"
-@layout ConfiguratorLayout
 
-<MudDrawer @bind-Open="@_drawerOpen"
-           Variant="@DrawerVariant.Persistent"
-           ClipMode="DrawerClipMode.Always"
-           Anchor="Anchor.Left"
-           Width="30%">
-    <MudDrawerHeader>
-        <MudText Typo="Typo.h5"><b>@_product?.DisplayName</b></MudText>
-    </MudDrawerHeader>
-    <MudStack Class="flex-grow-1 overflow-auto" Spacing="0">
+<div class="d-flex flex-row mud-height-full">
+    <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
+        <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
 
         <!--Product Inputs-->
-        @if (_iLogicFormData.Items == null)
+        @if (_iLogicFormData == null)
         {
             <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-grow-1">
                 <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
@@ -21,7 +14,7 @@
         else
         {
             <MudForm @bind-IsValid="_validInputs" Class="flex-grow-1 overflow-auto">
-                <MudStack Class="flex-grow-1 px-3 overflow-auto">
+                <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
                     @foreach (ILogicFormElement element in _iLogicFormData.Items)
                     {
                         <ProductInput Element="@element" @key="element"></ProductInput>
@@ -38,21 +31,9 @@
             <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Step</MudButton>
         </MudStack>
     </MudStack>
-</MudDrawer>
 
-<!--Collapse Drawer Button-->
-<MudStack Class="d-flex flex-row absolute z-10 ma-1">
-    <MudToggleIconButton @bind-Toggled="@_drawerOpen"
-                         Variant="Variant.Filled"
-                         Style="border-radius:50%"
-                         Icon="@Icons.Filled.ChevronRight" Color="@Color.Primary" Size="Size.Large"
-                         ToggledIcon="@Icons.Filled.ChevronLeft" ToggledColor="@Color.Primary" ToggledSize="Size.Large" />
-
-</MudStack>
-
-<!--Forge Viewer-->
-<div class="d-flex ma-0 pa-0" style="height: calc(100vh - var(--mud-appbar-height))">
-    <ForgeViewer @ref="_forgeViewer"/>
+    <!--Forge Viewer-->
+    <ForgeViewer @ref="_forgeViewer" />
 </div>
 
 

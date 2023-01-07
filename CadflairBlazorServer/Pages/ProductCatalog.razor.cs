@@ -25,18 +25,16 @@ namespace CadflairBlazorServer.Pages
         [Parameter] public string CompanyName { get; set; } = string.Empty;
 
         // fields
-        private Subscription _subscription = new();
-        private Product _product = new();
-        private ProductVersion _productVersion = new();
-        private ProductConfiguration _defaultConfiguration = new();
-        private ProductConfiguration? _productConfiguration;
-        private ILogicFormElement _iLogicFormData = new();
-        private bool _validInputs;
-        private bool _configurationInProgress = false;
         private ForgeViewer? _forgeViewer;
-        private bool _drawerOpen = true;
         private HubConnection? _hubConnection;
-
+        private Subscription _subscription = default!;
+        private Product _product = default!;
+        private ProductVersion _productVersion = default!;
+        private ProductConfiguration _defaultConfiguration = default!;
+        private ProductConfiguration? _productConfiguration;
+        private ILogicFormElement _iLogicFormData = default!;
+        private bool _validInputs = false;
+        private bool _configurationInProgress = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -45,26 +43,9 @@ namespace CadflairBlazorServer.Pages
                                                        .WithAutomaticReconnect()
                                                        .Build();
 
-            _hubConnection.On<string>("CreateProductConfigurationModel_OnProgress", (message) =>
-            {
-                _snackbar.Add(message, Severity.Info);
-            });
-
-            _hubConnection.On<int>("CreateProductConfigurationModel_OnComplete", async (productConfigurationId) =>
-            {
-                _snackbar.Add("Generating preview...", Severity.Info);
-                _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
-            });
-
-            _hubConnection.On<string>("ModelDerivativeTranslation_OnComplete", (urn) =>
-            {
-                _configurationInProgress = false;
-                _snackbar.Add("Configuration generated successfully!", Severity.Info);
-                //await _forgeViewer!.ViewDocument(urn);
-                //StateHasChanged();
-                InvokeAsync(() => _forgeViewer!.ViewDocument(urn));
-                InvokeAsync(StateHasChanged);
-            });
+            _hubConnection.On<string>("CreateProductConfigurationModel_OnProgress", ReportProgress);
+            _hubConnection.On<int>("CreateProductConfigurationModel_OnComplete", ProductConfigurationCreated);
+            _hubConnection.On<string>("ModelDerivativeTranslation_OnComplete", ShowProductConfiguration);
 
             // get data
             _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
@@ -94,6 +75,25 @@ namespace CadflairBlazorServer.Pages
 
             // submit the request to design automation 
             await _forgeServicesManager.DesignAutomationService.CreateProductConfigurationModel(connectionId: _hubConnection?.ConnectionId!, productConfigurationId: newConfiguration.Id, inputBucketKey: _product.ForgeBucketKey, inputObjectKey: _defaultConfiguration.ForgeZipKey, inputPathInZip: _productVersion.RootFileName, inventorParamsJson: _iLogicFormData.GetArgumentJson());
+        }
+
+        private void ReportProgress(string message)
+        {
+            _snackbar.Add(message, Severity.Info);
+        }
+
+        private async Task ProductConfigurationCreated(int productConfigurationId)
+        {
+            _snackbar.Add("Generating preview...", Severity.Info);
+            _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
+        }
+
+        private void ShowProductConfiguration(string urn)
+        {
+            _configurationInProgress = false;
+            _snackbar.Add("Configuration generated successfully!", Severity.Info);
+            _ = _forgeViewer!.ViewDocument(urn);
+            StateHasChanged();
         }
 
         private async Task RequestQuote_OnClick()
