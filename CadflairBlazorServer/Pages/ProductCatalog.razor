@@ -17,7 +17,7 @@
                                  Value="@context"
                                  Items="@context.ChildItems"
                                  Text="@context.ProductFolder.DisplayName"
-                                 Icon="@Icons.Filled.Folder" />
+                                 Icon="@Icons.Material.Filled.Folder" />
             </ItemTemplate>
         </MudTreeView>
     </MudStack>
@@ -43,7 +43,7 @@
                         </MudBreadcrumbs>
                     }
                     <MudSpacer />
-                    <MudIconButton OnClick="ToggleView" Icon="@(_displayListView ? Icons.Filled.GridView : Icons.Filled.ViewList)" />
+                    <MudIconButton OnClick="ToggleView" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
                     @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@
                 </MudToolBar>
                 <MudDivider />
@@ -61,7 +61,7 @@
                 {
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
                         <MudStack AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Filled.InsertDriveFile" Size="Size.Large" />
+                            <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
                             <MudText>No products found.</MudText>
                         </MudStack>
                     </MudStack>

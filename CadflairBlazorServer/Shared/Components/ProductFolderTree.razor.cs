@@ -92,7 +92,7 @@ namespace CadflairBlazorServer.Shared.Components
 
             var result = await _dialogService.Show<ProductFolderDialog>("New Folder", parameters).Result;
 
-            if (!result.Cancelled)
+            if (!result.Canceled)
             {
                 var treeItem = new ProductFolderTreeItem() { ProductFolder = (ProductFolder)result.Data };
 
