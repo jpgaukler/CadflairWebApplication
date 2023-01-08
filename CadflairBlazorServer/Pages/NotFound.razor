@@ -1,8 +1,18 @@
 ﻿@page "/notfound"
 
-<MudText>We're sorry. The page you are looking for could not be found!</MudText>
-<MudLink>Learn more about Cadflair ></MudLink>
-<MudLink>Read out latest post ></MudLink>
+<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
+    <MudPaper MaxWidth="50vw" Class="mud-background-gray pa-10">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudIcon Icon="@Icons.Filled.ErrorOutline" Style="font-size:15rem;"/>
+            <MudText Typo="Typo.h1" Style="font-size:15rem;"><b>404</b></MudText>
+        </MudStack>
+        <MudText Typo="Typo.h3">We're sorry. The page you are looking for could not be found!</MudText>
+        <MudStack Class="mt-10">
+            <MudLink Href="/">Learn more about Cadflair ></MudLink>
+            <MudLink>Read out latest post ></MudLink>
+        </MudStack>
+    </MudPaper>
+</MudStack>
 
 @code {
 

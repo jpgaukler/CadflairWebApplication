@@ -2,48 +2,63 @@
 
 <MudDialog>
     <DialogContent>
-        <MudForm @bind-IsValid="_validInputs">
-            <MudStack Row="true">
-                <MudTextField @bind-Value="_firstName"
-                              Label="First Name"
-                              Required="true"
-                              Variant="Variant.Filled"
-                              Immediate="true" />
-                <MudTextField @bind-Value="_lastName"
-                              Label="Last Name"
-                              Required="true"
-                              Variant="Variant.Filled"
-                              Immediate="true" />
+        <MudStack Row="true" Style="max-height:500px;">
+            <!-- configuration information -->
+            <MudStack Class="overflow-auto" AlignItems="AlignItems.Center" Style="max-width:300px;">
+                <ProductThumbnail Product="Product" ProductConfiguration="ProductConfiguration" Height="200" Width="200" />
+                <MudTable Items="@_parameterGridItems" Dense="true" Class="overflow-auto" FixedHeader="true" Height="100%">
+                    <HeaderContent>
+                        <MudTh>Parameter</MudTh>
+                        <MudTh>Value</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Paremeter">@context.Name</MudTd>
+                        <MudTd DataLabel="Value">@context.ParameterExpression.Replace("ul","")</MudTd>
+                    </RowTemplate>
+                </MudTable>
             </MudStack>
 
-            <MudTextField @bind-Value="_emailAddress"
-                          Label="Email Address"
-                          Required="true"
-                          Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address." })"
-                          Variant="Variant.Filled"
-                          Immediate="true" />
-
-            <MudStack Row="true">
-                <MudTextField @bind-Value="_phoneNumber"
-                              Label="Phone Number"
-                              Validation="@(new PhoneAttribute() { ErrorMessage = "Please enter a valid phone number." })"
-                              Variant="Variant.Filled"
-                              Immediate="true" />
-                <MudTextField @bind-Value="_phoneExtension"
-                              Label="Phone Extension"
-                              Variant="Variant.Filled"
-                              Immediate="true" />
-            </MudStack>
-
-            <MudTextField @bind-Value="_messageText"
-                          Label="Message"
-                          Variant="Variant.Filled"
-                          Immediate="true"
-                          Lines="8" />
-        </MudForm>
+            <!-- inputs -->
+            <MudForm @bind-IsValid="_validInputs" Class="overflow-auto">
+                <MudStack>
+                    <MudStack Row="true">
+                        <MudTextField @bind-Value="_firstName"
+                                      Label="First Name"
+                                      Required="true"
+                                      Variant="Variant.Filled" />
+                        <MudTextField @bind-Value="_lastName"
+                                      Label="Last Name"
+                                      Required="true"
+                                      Variant="Variant.Filled" />
+                    </MudStack>
+                    <MudTextField @bind-Value="_emailAddress"
+                                  Label="Email Address"
+                                  Required="true"
+                                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address." })"
+                                  Variant="Variant.Filled" />
+                    <MudStack Row="true">
+                        <MudTextField @bind-Value="_phoneNumber"
+                                      Required="true"
+                                      Label="Phone Number"
+                                      Mask="@_phoneMask"
+                                      HelperText="@_phoneMask.Mask"
+                                      Variant="Variant.Filled" />
+                        <MudTextField @bind-Value="_phoneExtension"
+                                      Label="Phone Extension"
+                                      Variant="Variant.Filled" />
+                    </MudStack>
+                    <MudTextField @bind-Value="_messageText"
+                                  Label="Message"
+                                  MaxLength="500"
+                                  Variant="Variant.Filled"
+                                  Immediate="true"
+                                  Lines="8" />
+                    <MudText Typo="Typo.body2" Align="Align.Right">@_messageText.Length.ToString()/500</MudText>
+                </MudStack>
+            </MudForm>
+        </MudStack>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
         <MudButton OnClick="Submit_OnClick" Color="Color.Primary" Disabled="!_validInputs">Submit</MudButton>
     </DialogActions>
 </MudDialog>

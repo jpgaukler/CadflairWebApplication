@@ -22,6 +22,7 @@ namespace CadflairBlazorServer.Pages
         private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _displayListView = true;
         private bool _showDetails = false;
+        private bool _loadingData = true;
 
         // class for product folder tree structure
         private class ProductFolderTreeItem
@@ -46,6 +47,7 @@ namespace CadflairBlazorServer.Pages
 
             await LoadProductFoldersRecursive(null, _productFolderTreeItems);
             await SelectedTreeItemChanged(_productFolderTreeItems.FirstOrDefault());
+            _loadingData = false;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -39,7 +39,8 @@ namespace CadflairBlazorServer.Shared.Components
         public async Task ViewDocument(string bucketKey, string objectKey)
         {
             //get forge object id
-            var forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
+            dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
+            Debug.WriteLine($"{forgeObject}");
             ViewDocument(forgeObject.encoded_urn);
         }
     }

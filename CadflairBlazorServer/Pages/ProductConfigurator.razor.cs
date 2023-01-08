@@ -99,12 +99,23 @@ namespace CadflairBlazorServer.Pages
         private async Task RequestQuote_OnClick()
         {
             if (_productConfiguration == null) return;
+
             DialogParameters parameters = new()
             {
-                { "ProductConfigurationId", _productConfiguration.Id }
+                { "Product", _product },
+                { "ProductVersion", _productVersion },
+                { "ProductConfiguration", _productConfiguration }
             };
 
-            var result = await _dialogService.Show<ProductQuoteRequestDialog>("Request A Quote", parameters).Result;
+            DialogOptions options = new()
+            {
+                CloseButton = true,
+                CloseOnEscapeKey = false,
+                DisableBackdropClick = true,
+                MaxWidth = MaxWidth.Large
+            };
+
+            var result = await _dialogService.Show<ProductQuoteRequestDialog>($"Request a Quote - {_product.DisplayName}", parameters, options).Result;
 
             //if (!result.Cancelled)
             //{
