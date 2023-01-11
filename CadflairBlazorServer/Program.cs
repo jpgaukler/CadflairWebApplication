@@ -1,5 +1,6 @@
 using CadflairBlazorServer.Controllers;
 using CadflairDataAccess;
+using CadflairEmailService;
 using CadflairForgeAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -54,6 +55,9 @@ builder.Services.AddSingleton<DataServicesManager>();
 
 // Forge services
 builder.Services.AddSingleton<ForgeServicesManager>();
+
+// Email service
+builder.Services.AddSingleton<EmailService>();
 
 var app = builder.Build();
 

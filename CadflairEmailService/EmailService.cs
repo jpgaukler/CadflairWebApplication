@@ -1,4 +1,5 @@
 ﻿using FluentEmail.Core;
+using FluentEmail.Core.Models;
 using FluentEmail.MailKitSmtp;
 using FluentEmail.Razor;
 using MailKit.Security;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +22,11 @@ namespace CadflairEmailService
         {
             SmtpClientOptions options = new()
             {
-                User = "test",
-                Password = "passweord",
+                User = "jpgaukler@gmail.com",
+                Password = "password",
                 UseSsl = true,
                 RequiresAuthentication = true,
-                Server = "smtp.office365.com",
+                Server = "smtp.gmail.com",
                 Port = 587,
                 SocketOptions = SecureSocketOptions.StartTls
             };
@@ -42,15 +44,22 @@ namespace CadflairEmailService
             StringBuilder template = new();
             template.AppendLine("Dear @Model.FirstName,");
             template.AppendLine("<p>Thanks for purchasing @Model.ProductName. We hope you enjoy it.</p>");
-            template.AppendLine("- The TimCo Team");
+            template.AppendLine("- Cadflair");
 
 
-            var email = await Email.From("tim@timco.com")
-                                   .To("test@test.com", "Sue")
+            SendResponse email = await Email.From("donotreply@cadflair.com")
+                                   .To("justin.gaukler@verizon.net", "Justin Gaukler")
                                    .Subject("Thanks!")
-                                   .UsingTemplate(template.ToString(), new { FirstName = "Tim", ProductName = "Bacon-Wrapped Bacon" })
+                                   //.Body("Test message")
+                                   .UsingTemplate(template.ToString(), new { FirstName = "Justin", ProductName = "Cadflair Pro" })
                                    .SendAsync();
 
+            Debug.WriteLine($"MessageId: {email.MessageId}, Successful: {email.Successful}");
+
+            foreach(string error in email.ErrorMessages)
+            {
+                Debug.WriteLine($"Error: {error}");
+            }
         }
 
         //public static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration)

@@ -1,6 +1,7 @@
 ﻿@page "/"
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DataServicesManager _dataServicesManager
+@inject CadflairEmailService.EmailService _emailService
 
 
 <PageTitle>Cadflair</PageTitle>
@@ -34,6 +35,7 @@
 <MudStack>
     <MudLink Href="/dashboard">Dashboard</MudLink>
     <MudLink Href="/justinsfirstsubscription/products">Catalog</MudLink>
+    <MudButton OnClick="SendEmail">Email Test</MudButton>
 </MudStack>
 
 
@@ -53,6 +55,12 @@
     protected override async Task OnInitializedAsync()
     {
         loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+    }
+
+    private async Task SendEmail()
+    {
+        await _emailService.SendEmail();
+        
     }
 
 }
