@@ -1,7 +1,7 @@
 using CadflairBlazorServer.Controllers;
 using CadflairDataAccess;
-using CadflairEmailService;
 using CadflairForgeAccess;
+using FluentEmail.Graph;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -56,8 +56,15 @@ builder.Services.AddSingleton<DataServicesManager>();
 // Forge services
 builder.Services.AddSingleton<ForgeServicesManager>();
 
-// Email service
-builder.Services.AddSingleton<EmailService>();
+// Fluent Email
+builder.Services.AddFluentEmail("donotreply@cadflair.com")
+                .AddGraphSender(new GraphSenderOptions()
+                {
+                    ClientId = builder.Configuration["MailCredentials:ClientId"],
+                    TenantId = builder.Configuration["MailCredentials:TenantId"],
+                    Secret = builder.Configuration["MailCredentials:Secret"],
+                })
+                .AddRazorRenderer();
 
 var app = builder.Build();
 

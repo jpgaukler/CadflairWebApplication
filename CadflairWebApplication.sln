@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairBlazorServer", "Cad
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairForgeAccess", "CadflairForgeAccess\CadflairForgeAccess.csproj", "{B0DFB3DB-8768-430C-8B82-07B1E46D5314}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairEmailService", "CadflairEmailService\CadflairEmailService.csproj", "{9A448991-2E0C-4DB6-BD1A-6E75D6CC16F5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,10 +53,6 @@ Global
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A448991-2E0C-4DB6-BD1A-6E75D6CC16F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A448991-2E0C-4DB6-BD1A-6E75D6CC16F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A448991-2E0C-4DB6-BD1A-6E75D6CC16F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A448991-2E0C-4DB6-BD1A-6E75D6CC16F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

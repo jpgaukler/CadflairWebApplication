@@ -1,7 +1,10 @@
 ﻿@page "/"
+@using System.Text
+@using FluentEmail.Core.Models
+@using System.Diagnostics
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DataServicesManager _dataServicesManager
-@inject CadflairEmailService.EmailService _emailService
+@inject FluentEmail.Core.IFluentEmail _emailService
 
 
 <PageTitle>Cadflair</PageTitle>
@@ -59,7 +62,26 @@
 
     private async Task SendEmail()
     {
-        await _emailService.SendEmail();
+
+            StringBuilder template = new();
+            template.AppendLine("Dear @Model.FirstName,");
+            template.AppendLine("<p>Thanks for purchasing @Model.ProductName. We hope you enjoy it.</p>");
+            template.AppendLine("- Cadflair");
+
+
+            SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
+                                                    .To("justin.gaukler@verizon.net")
+                                                    .Subject("Thanks!")
+                                                    //.Body("Test message")
+                                                    .UsingTemplate(template.ToString(), new { FirstName = "Justin", ProductName = "Cadflair Pro" })
+                                                    .SendAsync();
+
+            Debug.WriteLine($"MessageId: {email.MessageId}, Successful: {email.Successful}");
+
+            foreach(string error in email.ErrorMessages)
+            {
+                Debug.WriteLine($"Error: {error}");
+            }
         
     }
 

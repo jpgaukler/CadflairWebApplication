@@ -4,21 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>e73a3fd1-82d6-4457-9eef-aa810bbced53</UserSecretsId>
+	<PreserveCompilationContext>true</PreserveCompilationContext>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Authentication\**" />
-    <Content Remove="Authentication\**" />
-    <EmbeddedResource Remove="Authentication\**" />
-    <None Remove="Authentication\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Shared\ForgeViewer.razor.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.1" />
+    <PackageReference Include="FluentEmail.Graph" Version="2.1.0" />
+    <PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.2" />
     <PackageReference Include="Microsoft.Identity.Web" Version="1.25.10" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="1.25.10" />
     <PackageReference Include="MudBlazor" Version="6.1.7" />
