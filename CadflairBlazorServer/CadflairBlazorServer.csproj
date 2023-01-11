@@ -23,6 +23,12 @@
     <ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+	<EmbeddedResource Include="..\CadflairBlazorServer\EmailTemplates\TextFile.txt" />
+	<EmbeddedResource Include="..\CadflairBlazorServer\EmailTemplates\ThankYouTemplate.razor" />
+	<EmbeddedResource Include="..\CadflairBlazorServer\EmailTemplates\ThankYouTemplate.cshtml" />
+  </ItemGroup>
+
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
