@@ -99,6 +99,13 @@
     <Build Include="dbo\Stored Procedures\spProductConfiguration_UpdateById.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_GetByProductVersionId.sql" />
     <Build Include="dbo\Stored Procedures\spProductQuoteRequest_Insert.sql" />
+    <Build Include="dbo\Tables\Notification.sql" />
+    <Build Include="dbo\Tables\NotificationSetting.sql" />
+    <Build Include="dbo\Stored Procedures\spNotificationSetting_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spNotification_GetAll.sql" />
+    <Build Include="dbo\Stored Procedures\spNotificationSetting_GetByUserId.sql" />
+    <Build Include="dbo\Stored Procedures\spNotification_GetByEventName.sql" />
+    <Build Include="dbo\Stored Procedures\spNotificationSetting_GetByNotificationIdAndUserId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

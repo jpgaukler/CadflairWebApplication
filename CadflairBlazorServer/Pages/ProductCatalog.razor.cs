@@ -43,6 +43,7 @@ namespace CadflairBlazorServer.Pages
             if (_subscription == null)
             {
                 _navigationManager.NavigateTo("/notfound");
+                return;
             }
 
             await LoadProductFoldersRecursive(null, _productFolderTreeItems);

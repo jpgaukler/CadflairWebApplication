@@ -65,16 +65,36 @@ namespace CadflairBlazorServer.Pages
             if (_configurationInProgress) return;
             _configurationInProgress = true;
 
+            //check for existing configuration
+            List<ProductConfiguration> existingConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(_productVersion.Id);
+            _productConfiguration = existingConfigurations.Find(i => i.ArgumentJson == _iLogicFormData.GetArgumentJson());
+            if(_productConfiguration != null)
+            {
+                _snackbar.Add("Existing configuration found", Severity.Info);
+                _ = _forgeViewer!.ViewDocument(_product.ForgeBucketKey, _productConfiguration.ForgeZipKey);
+                StateHasChanged();
+                return;
+            }
+
             // connect to Signal R hub
             if (_hubConnection?.State != HubConnectionState.Connected) await _hubConnection?.StartAsync()!;
 
             _snackbar.Add("Generating new configuration", Severity.Info);
 
+
             // create record in database
-            ProductConfiguration newConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: _productVersion.Id, argumentJson: _iLogicFormData.GetArgumentJson(), forgeZipKey: null, isDefault: false);
+            ProductConfiguration newConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: _productVersion.Id, 
+                                                                                                                         argumentJson: _iLogicFormData.GetArgumentJson(), 
+                                                                                                                         forgeZipKey: null, 
+                                                                                                                         isDefault: false);
 
             // submit the request to design automation 
-            await _forgeServicesManager.DesignAutomationService.CreateProductConfigurationModel(connectionId: _hubConnection?.ConnectionId!, productConfigurationId: newConfiguration.Id, inputBucketKey: _product.ForgeBucketKey, inputObjectKey: _defaultConfiguration.ForgeZipKey, inputPathInZip: _productVersion.RootFileName, inventorParamsJson: _iLogicFormData.GetArgumentJson());
+            await _forgeServicesManager.DesignAutomationService.CreateProductConfigurationModel(connectionId: _hubConnection?.ConnectionId!, 
+                                                                                                productConfigurationId: newConfiguration.Id, 
+                                                                                                inputBucketKey: _product.ForgeBucketKey, 
+                                                                                                inputObjectKey: _defaultConfiguration.ForgeZipKey, 
+                                                                                                inputPathInZip: _productVersion.RootFileName, 
+                                                                                                inventorParamsJson: _iLogicFormData.GetArgumentJson());
         }
 
         private void ReportProgress(string message)
@@ -93,7 +113,7 @@ namespace CadflairBlazorServer.Pages
             _configurationInProgress = false;
             _snackbar.Add("Configuration generated successfully!", Severity.Info);
             _ = _forgeViewer!.ViewDocument(urn);
-            StateHasChanged();
+            InvokeAsync(StateHasChanged);
         }
 
         private async Task RequestQuote_OnClick()

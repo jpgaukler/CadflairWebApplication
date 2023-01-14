@@ -22,7 +22,7 @@ namespace CadflairBlazorServer.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+            _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
             _subscriptionTypes = await _dataServicesManager.SubscriptionService.GetSubscriptionTypes();
 
             if (_loggedInUser.SubscriptionId != null)

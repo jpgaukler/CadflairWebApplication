@@ -39,8 +39,7 @@
 
 <MudStack>
     <MudLink Href="/dashboard">Dashboard</MudLink>
-    <MudLink Href="/justinsfirstsubscription/products">Catalog</MudLink>
-    <MudButton OnClick="SendEmail">Email Test</MudButton>
+    <MudLink Href="/jaysdressers/products">Catalog</MudLink>
 </MudStack>
 
 
@@ -59,27 +58,34 @@
 
     protected override async Task OnInitializedAsync()
     {
-        loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+        loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
     }
 
     private async Task SendEmail()
     {
-        //StringBuilder template = new();
+        StringBuilder template = new();
         //template.AppendLine("Dear @Model.FirstName,");
         //template.AppendLine("<p>Thanks for purchasing @Model.ProductName. We hope you enjoy it.</p>");
         //template.AppendLine("- Cadflair");
 
-        foreach(string i in System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames())
-        {
-            Debug.WriteLine(i);
-        }
+        template.AppendLine("<h1>You've got a new request!</h1>");
+        template.AppendLine("<p>Click here to view > </p>");
+        template.AppendLine("<a href='http://www.cadflair.com/'>Cadflair link</a>");
+        template.AppendLine("- Cadflair");
+
+
+        //foreach(string i in System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames())
+        //{
+        //    Debug.WriteLine(i);
+        //}
 
         SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
                                                 .To("justin.gaukler@verizon.net")
                                                 .Subject("Thanks!")
                                                 //.Body("Test message")
                                                 //.UsingTemplate(template.ToString(), new { FirstName = "Justin", ProductName = "Cadflair Pro" })
-                                                .UsingTemplateFromEmbedded("CadflairBlazorServer.EmailTemplates.ThankYouTemplate.cshtml", new { }, ThisAssembly())
+                                                .UsingTemplate(template.ToString(), new { })
+                                                //.UsingTemplateFromEmbedded("CadflairBlazorServer.EmailTemplates.ThankYouTemplate.cshtml", new { }, ThisAssembly())
                                                 .SendAsync();
 
         Debug.WriteLine($"MessageId: {email.MessageId}, Successful: {email.Successful}");

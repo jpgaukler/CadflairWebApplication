@@ -19,6 +19,14 @@ if not exists (select * from dbo.[SubscriptionType] where [SubscriptionType].[Na
 			('Pro');
 	end
 
+--add notifications 
+if not exists (select * from dbo.[Notification] where [Notification].[EventName] = 'ProductQuoteRequest_Insert')
+	begin
+		insert into dbo.[Notification]([EventName], [EnabledByDefault])
+		values
+			('ProductQuoteRequest_Insert', 1)
+	end
+
 
 ----populate email address types
 --if not exists (select * from dbo.[EmailAddressType] where [EmailAddressType].[Name] = 'Primary')

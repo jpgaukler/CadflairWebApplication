@@ -11,6 +11,7 @@ namespace CadflairDataAccess
         public SubscriptionService SubscriptionService { get; }
         public UserService UserService { get; }
         public ProductService ProductService { get; }
+        public NotificationService NotificationService { get; }
 
         public DataServicesManager(IConfiguration configuration)
         {
@@ -19,6 +20,7 @@ namespace CadflairDataAccess
             SubscriptionService = new SubscriptionService(_dataAccess);
             UserService = new UserService(_dataAccess);
             ProductService = new ProductService(_dataAccess);
+            NotificationService = new NotificationService(_dataAccess);
         }
     }
 }

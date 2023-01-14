@@ -1,4 +1,5 @@
-﻿using CadflairDataAccess.Models;
+﻿using CadflairDataAccess;
+using CadflairDataAccess.Models;
 using CadflairDataAccess.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 
@@ -6,7 +7,7 @@ namespace CadflairBlazorServer.Helpers
 {
     internal static class AuthenticationHelpers
     {
-        public static async Task<User> GetUser(this AuthenticationStateProvider provider, UserService userService)
+        public static async Task<User> GetUser(this AuthenticationStateProvider provider, DataServicesManager dataServicesManager)
         {
             // get claims from auth provider
             AuthenticationState authState = await provider.GetAuthenticationStateAsync();
@@ -19,12 +20,19 @@ namespace CadflairBlazorServer.Helpers
             if (string.IsNullOrWhiteSpace(objectId)) return new User();
 
             // get user from db
-            User user = await userService.GetUserByObjectIdentifier(objectId) ?? new();
+            User user = await dataServicesManager.UserService.GetUserByObjectIdentifier(objectId) ?? new();
 
             //create new user if no match is found
             if (user.Id == 0)
             {
-                User newUser = await userService.CreateUser(Guid.Parse(objectId), firstName, lastName, emailAddress);
+                User newUser = await dataServicesManager.UserService.CreateUser(Guid.Parse(objectId), firstName, lastName, emailAddress);
+
+                // set up default notifications settings
+                foreach (Notification notification in await dataServicesManager.NotificationService.GetNotifications())
+                {
+                    await dataServicesManager.NotificationService.CreateNotificationSetting(notification.Id, newUser.Id, notification.EnabledByDefault);
+                }
+
                 return newUser;
             }
 
@@ -57,7 +65,7 @@ namespace CadflairBlazorServer.Helpers
 
             if (isDirty)
             {
-                await userService.UpdateUser(user);
+                await dataServicesManager.UserService.UpdateUser(user);
             }
 
             return user;

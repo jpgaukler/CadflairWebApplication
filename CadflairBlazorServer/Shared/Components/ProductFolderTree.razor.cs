@@ -56,7 +56,7 @@ namespace CadflairBlazorServer.Shared.Components
         protected override async Task OnInitializedAsync()
         {
             // get data
-            _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager.UserService);
+            _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
             if (_loggedInUser.SubscriptionId == null) return;
 
             // load the root level product folders
