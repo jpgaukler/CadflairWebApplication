@@ -83,18 +83,25 @@ namespace CadflairBlazorServer.Shared.Components
 
         private async Task NewProductFolder_OnClick()
         {
-            DialogParameters parameters = new()
-            {
-                { "ParentId", _selectedFolder?.Id },
-                { "UserId", _loggedInUser.Id },
-                { "SubscriptionId", _loggedInUser.SubscriptionId }
-            };
-
-            var result = await _dialogService.Show<ProductFolderDialog>("New Folder", parameters).Result;
+            var result = await _dialogService.Show<ProductFolderDialog>("New Folder").Result;
 
             if (!result.Canceled)
             {
-                var treeItem = new ProductFolderTreeItem() { ProductFolder = (ProductFolder)result.Data };
+                string newFolderName = (string)result.Data;
+
+                List<ProductFolder> existingFolders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId((int)_loggedInUser.SubscriptionId, _selectedFolder?.Id);
+                if (existingFolders.Exists(i => i.DisplayName.Equals(newFolderName, StringComparison.CurrentCultureIgnoreCase)))
+                {
+                    _snackbar.Add("A folder with this name already exists.", Severity.Warning);
+                    return;
+                }
+
+                ProductFolder productFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: (int)_loggedInUser.SubscriptionId, 
+                                                                                                            createdById: _loggedInUser.Id, 
+                                                                                                            displayName: newFolderName, 
+                                                                                                            parentId: _selectedFolder?.Id);
+
+                var treeItem = new ProductFolderTreeItem() { ProductFolder = productFolder };
 
                 if (_selectedFolderTreeItem == null)
                 {
@@ -115,9 +122,9 @@ namespace CadflairBlazorServer.Shared.Components
         {
             if (treeItem == null) return;
 
-            bool? result = await _dialogService.ShowMessageBox(title: "Delete Folder", 
-                                                               message: "Are you sure you want to delete this folder?", 
-                                                               yesText: "Yes", 
+            bool? result = await _dialogService.ShowMessageBox(title: "Delete Folder",
+                                                               message: "Are you sure you want to delete this folder?",
+                                                               yesText: "Yes",
                                                                cancelText: "Cancel");
 
             if (result == true)

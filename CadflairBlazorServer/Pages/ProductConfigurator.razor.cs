@@ -7,6 +7,10 @@ using CadflairDataAccess.Models;
 using CadflairForgeAccess;
 using CadflairBlazorServer.Shared.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Text;
+using FluentEmail.Core.Models;
+using System.Diagnostics;
+using FluentEmail.Core;
 
 namespace CadflairBlazorServer.Pages
 {
@@ -16,6 +20,7 @@ namespace CadflairBlazorServer.Pages
         [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
         [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
         [Inject] NavigationManager _navigationManager { get; set; } = default!;
+        [Inject] IFluentEmail _emailService { get; set; } = default!;
         [Inject] IDialogService  _dialogService { get; set; } = default!;
         [Inject] ISnackbar _snackbar { get; set; } = default!;
         [Inject] IJSRuntime _js { get; set; } = default!;
@@ -62,12 +67,10 @@ namespace CadflairBlazorServer.Pages
 
         private async Task Submit_OnClick()
         {
-            if (_configurationInProgress) return;
-            _configurationInProgress = true;
-
             //check for existing configuration
             List<ProductConfiguration> existingConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(_productVersion.Id);
             _productConfiguration = existingConfigurations.Find(i => i.ArgumentJson == _iLogicFormData.GetArgumentJson());
+
             if(_productConfiguration != null)
             {
                 _snackbar.Add("Existing configuration found", Severity.Info);
@@ -75,6 +78,9 @@ namespace CadflairBlazorServer.Pages
                 StateHasChanged();
                 return;
             }
+
+            if (_configurationInProgress) return;
+            _configurationInProgress = true;
 
             // connect to Signal R hub
             if (_hubConnection?.State != HubConnectionState.Connected) await _hubConnection?.StartAsync()!;
@@ -137,9 +143,59 @@ namespace CadflairBlazorServer.Pages
 
             var result = await _dialogService.Show<ProductQuoteRequestDialog>($"Request a Quote - {_product.DisplayName}", parameters, options).Result;
 
-            //if (!result.Cancelled)
-            //{
-            //}
+            if (!result.Canceled)
+            {
+                ProductQuoteRequest request = (ProductQuoteRequest)result.Data;
+
+                // create new record in db
+                await _dataServicesManager.ProductService.CreateProductQuoteRequest(request.ProductConfigurationId,
+                                                                                    request.FirstName,
+                                                                                    request.LastName,
+                                                                                    request.EmailAddress,
+                                                                                    request.PhoneNumber,
+                                                                                    request.PhoneExtension,
+                                                                                    request.MessageText);
+                _snackbar.Add("Request submitted!", Severity.Success);
+                _ = SendNotificationEmail(); 
+            }
+        }
+
+        public async Task SendNotificationEmail()
+        {
+            StringBuilder template = new();
+            //template.AppendLine("Dear @Model.FirstName,");
+            //template.AppendLine("<p>Thanks for purchasing @Model.ProductName. We hope you enjoy it.</p>");
+            //template.AppendLine("- Cadflair");
+
+            template.AppendLine("<h1>You've got a new request!</h1>");
+            template.AppendLine("<p>Click here to view > </p>");
+            template.AppendLine("<a href='http://www.cadflair.com/'>Cadflair link</a>");
+            template.AppendLine("- Cadflair");
+
+            // send notifications to subscribing users
+            Notification notification = await _dataServicesManager.NotificationService.GetNotificationByEventName("ProductQuoteRequest_Insert");
+
+            foreach (User user in await _dataServicesManager.UserService.GetUsersBySubscriptionId(_subscription.Id))
+            {
+                NotificationSetting setting = await _dataServicesManager.NotificationService.GetNotificationSettingByNotificationIdAndUserId(notification.Id, user.Id);
+                if (setting == null || !setting.IsEnabled) return;
+
+                SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
+                                                        .To(user.EmailAddress)
+                                                        .Subject("New Request!")
+                                                        //.Body("Test message")
+                                                        //.UsingTemplate(template.ToString(), new { FirstName = "Justin", ProductName = "Cadflair Pro" })
+                                                        .UsingTemplate(template.ToString(), new { })
+                                                        //.UsingTemplateFromEmbedded("CadflairBlazorServer.EmailTemplates.ThankYouTemplate.cshtml", new { }, ThisAssembly())
+                                                        .SendAsync();
+
+                Debug.WriteLine($"Notification email sent. Successful: {email.Successful}");
+
+                foreach (string error in email.ErrorMessages)
+                {
+                    Debug.WriteLine($"Error: {error}");
+                }
+            }
         }
 
         private async Task DownloadStp_OnClick()

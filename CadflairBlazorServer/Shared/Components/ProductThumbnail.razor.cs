@@ -26,58 +26,38 @@ namespace CadflairBlazorServer.Shared.Components
         /// <summary>
         /// Product to get the thumbnail for.
         /// </summary>
-        [Parameter] public Product Product
-        {
-            set
-            {
-                if (_product?.Id == value?.Id) return;
-                _product = value;
-                _ = LoadThumnailImage();
-            }
-        }
+        [Parameter] public Product? Product { get; set; }
 
         /// <summary>
         /// Configuration to get the thumbnail for. If not configuration if provided, the default configuration of the latest product version will be used.
         /// </summary>
-        [Parameter] public ProductConfiguration ProductConfiguration
-        {
-            set
-            {
-                if (_productConfiguration?.Id == value?.Id) return;
-                _productConfiguration = value;
-                _ = LoadThumnailImage();
-            }
-        }
+        [Parameter] public ProductConfiguration? ProductConfiguration { get; set; }
 
         // fields
-        private Product? _product;
-        private ProductConfiguration? _productConfiguration;
         private string? _thumbnailStringBase64;
         private bool _loading = false;
 
-
-        private async Task LoadThumnailImage()
+        protected override async Task OnInitializedAsync()
         {
-            if(_product == null) return;
+            if(Product == null) return;
 
             _thumbnailStringBase64 = null;
             _loading = true;
 
-            if(_productConfiguration == null)
+            if(ProductConfiguration == null)
             {
                 // get the default configuration
-                ProductVersion latestVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(_product.Id);
-                _productConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(latestVersion.Id);
+                ProductVersion latestVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(Product.Id);
+                ProductConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(latestVersion.Id);
             }
 
-            if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(_product.ForgeBucketKey, _productConfiguration.ForgeZipKey))
+            if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey))
             {
-                _thumbnailStringBase64 = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(_product.ForgeBucketKey, _productConfiguration.ForgeZipKey, Width, Height);
+                _thumbnailStringBase64 = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey, Width, Height);
             }
 
             _loading = false;
             StateHasChanged();
         }
-
     }
 }
