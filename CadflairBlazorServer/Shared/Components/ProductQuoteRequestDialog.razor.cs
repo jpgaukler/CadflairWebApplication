@@ -17,16 +17,16 @@ namespace CadflairBlazorServer.Shared.Components
         [Parameter] public Product Product{ get; set; } = default!;
         [Parameter] public ProductVersion ProductVersion { get; set; } = default!;
         [Parameter] public ProductConfiguration ProductConfiguration { get; set; } = default!;
+        [Parameter] public string? FirstName { get; set; } 
+        [Parameter] public string? LastName { get; set; } 
+        [Parameter] public string? EmailAddress { get; set; } 
+        [Parameter] public string? PhoneNumber  { get; set; } 
+        [Parameter] public string? PhoneExtension  { get; set; } 
+        [Parameter] public string? MessageText { get; set; } 
 
         // fields
         private List<ILogicFormElement> _parameterGridItems = new();
         private bool _validInputs;
-        private string _firstName = string.Empty;
-        private string _lastName = string.Empty;
-        private string _emailAddress = string.Empty;
-        private string _phoneNumber = string.Empty;
-        private string _phoneExtension = string.Empty;
-        private string _messageText = string.Empty;
 
         private PatternMask _phoneMask = new("xxx-xxx-xxxx")
         {
@@ -45,18 +45,7 @@ namespace CadflairBlazorServer.Shared.Components
         {
             if (!_validInputs) return;
 
-            ProductQuoteRequest request = new()
-            {
-                ProductConfigurationId = ProductConfiguration.Id,
-                FirstName = _firstName,
-                LastName = _lastName,
-                EmailAddress = _emailAddress,
-                PhoneNumber = _phoneNumber,
-                PhoneExtension = _phoneExtension,
-                MessageText = _messageText
-            };
-
-            MudDialog?.Close(DialogResult.Ok(request));
+            MudDialog?.Close(DialogResult.Ok(this));
         }
     }
 }

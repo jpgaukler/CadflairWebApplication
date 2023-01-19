@@ -11,6 +11,7 @@ using System.Text;
 using FluentEmail.Core.Models;
 using System.Diagnostics;
 using FluentEmail.Core;
+using CadflairBlazorServer.Helpers;
 
 namespace CadflairBlazorServer.Pages
 {
@@ -145,56 +146,25 @@ namespace CadflairBlazorServer.Pages
 
             if (!result.Canceled)
             {
-                ProductQuoteRequest request = (ProductQuoteRequest)result.Data;
+                ProductQuoteRequestDialog dialog = (ProductQuoteRequestDialog)result.Data;
 
                 // create new record in db
-                await _dataServicesManager.ProductService.CreateProductQuoteRequest(request.ProductConfigurationId,
-                                                                                    request.FirstName,
-                                                                                    request.LastName,
-                                                                                    request.EmailAddress,
-                                                                                    request.PhoneNumber,
-                                                                                    request.PhoneExtension,
-                                                                                    request.MessageText);
+                await _dataServicesManager.ProductService.CreateProductQuoteRequest(productConfigurationId: _productConfiguration.Id,
+                                                                                    firstName: dialog.FirstName,
+                                                                                    lastName: dialog.LastName,
+                                                                                    emailAddress: dialog.EmailAddress,
+                                                                                    phoneNumber: dialog.PhoneNumber,
+                                                                                    phoneExtension: dialog.PhoneExtension,
+                                                                                    messageText: dialog.MessageText);
+
+                _ = _emailService.SendNotificationEmail(dataServicesManager: _dataServicesManager,
+                                                        subscriptionId: _subscription.Id,
+                                                        eventName: "ProductQuoteRequest_Insert",
+                                                        subject: "New Request!",
+                                                        templateFilename: "NewProductQuoteRequest.cshtml",
+                                                        model: new { CustomerName = $"{dialog.FirstName} {dialog.LastName}", ProductName = _product.DisplayName }); 
+
                 _snackbar.Add("Request submitted!", Severity.Success);
-                _ = SendNotificationEmail(); 
-            }
-        }
-
-        public async Task SendNotificationEmail()
-        {
-            StringBuilder template = new();
-            //template.AppendLine("Dear @Model.FirstName,");
-            //template.AppendLine("<p>Thanks for purchasing @Model.ProductName. We hope you enjoy it.</p>");
-            //template.AppendLine("- Cadflair");
-
-            template.AppendLine("<h1>You've got a new request!</h1>");
-            template.AppendLine("<p>Click here to view > </p>");
-            template.AppendLine("<a href='http://www.cadflair.com/'>Cadflair link</a>");
-            template.AppendLine("- Cadflair");
-
-            // send notifications to subscribing users
-            Notification notification = await _dataServicesManager.NotificationService.GetNotificationByEventName("ProductQuoteRequest_Insert");
-
-            foreach (User user in await _dataServicesManager.UserService.GetUsersBySubscriptionId(_subscription.Id))
-            {
-                NotificationSetting setting = await _dataServicesManager.NotificationService.GetNotificationSettingByNotificationIdAndUserId(notification.Id, user.Id);
-                if (setting == null || !setting.IsEnabled) return;
-
-                SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
-                                                        .To(user.EmailAddress)
-                                                        .Subject("New Request!")
-                                                        //.Body("Test message")
-                                                        //.UsingTemplate(template.ToString(), new { FirstName = "Justin", ProductName = "Cadflair Pro" })
-                                                        .UsingTemplate(template.ToString(), new { })
-                                                        //.UsingTemplateFromEmbedded("CadflairBlazorServer.EmailTemplates.ThankYouTemplate.cshtml", new { }, ThisAssembly())
-                                                        .SendAsync();
-
-                Debug.WriteLine($"Notification email sent. Successful: {email.Successful}");
-
-                foreach (string error in email.ErrorMessages)
-                {
-                    Debug.WriteLine($"Error: {error}");
-                }
             }
         }
 

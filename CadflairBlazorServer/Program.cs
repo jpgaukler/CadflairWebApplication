@@ -26,9 +26,7 @@ builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 builder.Services.AddAuthorization(options =>
 {
     // Need this for [Authorize] on controllers to use bearer token for authentication
-    options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-        .RequireAuthenticatedUser()
-        .Build();
+    options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme).RequireAuthenticatedUser().Build();
 });
 
 // Signal R configuration
@@ -36,6 +34,7 @@ builder.Services.AddResponseCompression(options =>
 {
     options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 });
+
 
 // MudBlazor
 builder.Services.AddMudServices(config =>
@@ -77,7 +76,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 //configure use methods
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();

@@ -1,12 +1,6 @@
 ﻿@page "/"
-@using System.Text
-@using CadflairBlazorServer.EmailTemplates
-@using FluentEmail.Core.Models
-@using System.Diagnostics
-@using System.Reflection
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject DataServicesManager _dataServicesManager
-@inject FluentEmail.Core.IFluentEmail _emailService
 
 
 <PageTitle>Cadflair</PageTitle>
@@ -44,6 +38,7 @@
 
 
 @code {
+
     //[CascadingParameter]
     //private Task<AuthenticationState> _authenticationState { get; set; }
 
@@ -60,54 +55,5 @@
     {
         loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
     }
-
-    private async Task SendEmail()
-    {
-        StringBuilder template = new();
-        //template.AppendLine("Dear @Model.FirstName,");
-        //template.AppendLine("<p>Thanks for purchasing @Model.ProductName. We hope you enjoy it.</p>");
-        //template.AppendLine("- Cadflair");
-
-        template.AppendLine("<h1>You've got a new request!</h1>");
-        template.AppendLine("<p>Click here to view > </p>");
-        template.AppendLine("<a href='http://www.cadflair.com/'>Cadflair link</a>");
-        template.AppendLine("- Cadflair");
-
-
-        //foreach(string i in System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames())
-        //{
-        //    Debug.WriteLine(i);
-        //}
-
-        SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
-                                                .To("justin.gaukler@verizon.net")
-                                                .Subject("Thanks!")
-                                                //.Body("Test message")
-                                                //.UsingTemplate(template.ToString(), new { FirstName = "Justin", ProductName = "Cadflair Pro" })
-                                                .UsingTemplate(template.ToString(), new { })
-                                                //.UsingTemplateFromEmbedded("CadflairBlazorServer.EmailTemplates.ThankYouTemplate.cshtml", new { }, ThisAssembly())
-                                                .SendAsync();
-
-        Debug.WriteLine($"MessageId: {email.MessageId}, Successful: {email.Successful}");
-
-        foreach (string error in email.ErrorMessages)
-        {
-            Debug.WriteLine($"Error: {error}");
-        }
-
-    }
-
-    private Assembly ThisAssembly() => this.GetType().GetTypeInfo().Assembly;
-
-    //public void Using_Template_From_Embedded_Resource()
-    //{
-    //    var email = _emailService
-    //        .From(fromEmail)
-    //        .To(toEmail)
-    //        .Subject(subject)
-    //        .UsingTemplateFromEmbedded("FluentEmail.Core.Tests.test-embedded.txt", new { Test = "EMBEDDEDTEST" }, ThisAssembly());
-
-    //    Assert.AreEqual("yo email EMBEDDEDTEST", email.Data.Body);
-    //}
 
 }
