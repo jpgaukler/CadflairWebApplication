@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Text;
 
-namespace CadflairBlazorServer.Shared.Components
+namespace CadflairBlazorServer.Shared.Dialogs
 {
     public partial class ProductQuoteRequestDialog
     {

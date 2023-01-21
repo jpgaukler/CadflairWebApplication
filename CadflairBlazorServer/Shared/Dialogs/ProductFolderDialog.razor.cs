@@ -3,7 +3,7 @@ using MudBlazor;
 using CadflairDataAccess;
 using CadflairDataAccess.Models;
 
-namespace CadflairBlazorServer.Shared.Components
+namespace CadflairBlazorServer.Shared.Dialogs
 {
     public partial class ProductFolderDialog
     {
