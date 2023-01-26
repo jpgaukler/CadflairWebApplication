@@ -12,6 +12,7 @@ using FluentEmail.Core.Models;
 using System.Diagnostics;
 using FluentEmail.Core;
 using CadflairBlazorServer.Helpers;
+using CadflairBlazorServer.Shared.Dialogs;
 
 namespace CadflairBlazorServer.Pages
 {

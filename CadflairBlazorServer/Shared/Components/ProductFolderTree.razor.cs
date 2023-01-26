@@ -4,6 +4,7 @@ using MudBlazor;
 using CadflairDataAccess;
 using CadflairDataAccess.Models;
 using CadflairBlazorServer.Helpers;
+using CadflairBlazorServer.Shared.Dialogs;
 
 namespace CadflairBlazorServer.Shared.Components
 {

@@ -23,6 +23,10 @@ namespace CadflairInventorAddin.Commands.Upload
     {
         private Document _doc;
         private User _loggedInUser;
+        private List<ProductFolder> productFolders= new List<ProductFolder>()
+        {
+            new ProductFolder(){ DisplayName = "Products" }
+        };
 
         public UploadWpfWindow(Inventor.Document doc)
         {
@@ -31,12 +35,38 @@ namespace CadflairInventorAddin.Commands.Upload
             _doc = doc;
 
             // set colors of window
-            SolidColorBrush backgroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemMediaColor());
-            SolidColorBrush foregroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemMediaColor());
-            SolidColorBrush appFrameBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("ApplicationFrame_BackgroundColor").ToSystemMediaColor());
+            if(Globals.InventorApplication.ThemeManager.ActiveTheme.Name.Contains("Light"))
+            {
+                (System.Windows.Media.Color)FindResource("ApplicationFrameBackgroundColor") = ColorConverter.ConvertFromString("#d9d9d9");
+                Resources["ApplicationFrameBackgroundColor"] = ColorConverter.ConvertFromString("#d9d9d9");
+                Resources["BrowserPaneColor"] = ColorConverter.ConvertFromString("#f5f5f5");
+                Resources["BrowserPaneAccentColor"] = ColorConverter.ConvertFromString("#eaeaea");
+                Resources["BrowserPaneTextColor"] = ColorConverter.ConvertFromString("#666666");
+                Resources["InputBackgroundColor"] = ColorConverter.ConvertFromString("#ffffff");
+                Resources["ButtonBorderColor"] = ColorConverter.ConvertFromString("#bababa");
+                MessageBox.Show("light theme");
 
-            this.Background = backgroundBrush;
-            this.Foreground = foregroundBrush;
+            }
+
+            if(Globals.InventorApplication.ThemeManager.ActiveTheme.Name.Contains("Dark"))
+            {
+                Resources["ApplicationFrameBackgroundColor"] = ColorConverter.ConvertFromString("#222933");
+                Resources["BrowserPaneColor"] = ColorConverter.ConvertFromString("#3b4453");
+                Resources["BrowserPaneAccentColor"] = ColorConverter.ConvertFromString("#4b5463");
+                Resources["BrowserPaneTextColor"] = ColorConverter.ConvertFromString("#f5f5f5");
+                Resources["InputBackgroundColor"] = ColorConverter.ConvertFromString("#2c3340");
+                Resources["ButtonBorderColor"] = ColorConverter.ConvertFromString("#8691a1");
+                MessageBox.Show("dark theme");
+            }
+
+            //SolidColorBrush backgroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemMediaColor());
+            //SolidColorBrush foregroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemMediaColor());
+            //SolidColorBrush appFrameBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("ApplicationFrame_BackgroundColor").ToSystemMediaColor());
+
+            //this.Background = backgroundBrush;
+            //this.Foreground = foregroundBrush;
+
+
             //DataGridViewParameters.BackgroundColor = appFrameBrush;
         }
 
