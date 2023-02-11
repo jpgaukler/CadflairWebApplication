@@ -5,7 +5,7 @@
 
 <PageTitle>Cadflair</PageTitle>
 
-<AuthorizeView>
+@*<AuthorizeView>
     <Authorized>
         <p>Welcome, @context.User.Identity?.Name</p>
         <p>Auth Type: @context.User.Identity?.AuthenticationType</p>
@@ -30,11 +30,179 @@
         <p>Not logged in!</p>
     </NotAuthorized>
 </AuthorizeView>
+*@
 
-<MudStack>
+@*<MudStack>
     <MudLink Href="/dashboard">Dashboard</MudLink>
-    <MudLink Href="/jaysdressers/products">Catalog</MudLink>
 </MudStack>
+*@
+
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudGrid Justify="Justify.Center">
+        <!-- hero text -->
+        <MudItem xs="12" sm="6">
+            <MudStack Justify="Justify.Center" Style="min-height: 70vh;">
+                <h1 class="mud-typography-h1">
+                    <span class="fade-opacity-in delay1">Configuration</span><br />
+                    <span class="fade-opacity-in delay2">Made</span><br />
+                    <span class="fade-opacity-in delay3"><strong>Easy</strong></span><br />
+                    <svg class="vector-underline" viewBox="0 0 206 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 23C89.445 5.91642 175.379 -4.33371 203 9.33313" stroke-width="6" stroke-linecap="round" />
+                    </svg>
+                </h1>
+                <MudText Typo="Typo.body1">Start building your CAD based catalog today.</MudText>
+            </MudStack>
+        </MudItem>
+
+        <!-- hero image -->
+        <MudItem xs="12" sm="6">
+            <MudStack Justify="Justify.Center" Style="min-height: 70vh;">
+                <img src="/images/hero_photo_1.jpeg" alt="hero image" class="fade-opacity-in delay4" />
+            </MudStack>
+        </MudItem>
+
+        <!-- learn more button -->
+        <MudItem xs="12">
+            <a href="#what-we-do-top">
+                <MudStack AlignItems="AlignItems.Center" Spacing="0">
+                    <MudText Typo="Typo.h6">Learn More</MudText>
+                    <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Large" />
+                </MudStack>
+            </a>
+        </MudItem>
+
+        <!-- footer -->
+        <MudItem xs="12">
+
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+<div class="mud-background-gray" style="background: linear-gradient(0deg,var(--mud-palette-grey-lighter) 0%,var(--mud-palette-background-grey) 50%);">
+    <MudContainer MaxWidth="MaxWidth.Large">
+        <MudGrid>
+            <!-- what we do -->
+            <MudItem xs="12" sm="6" id="what-we-do-top" Class="my-15">
+                <MudStack>
+                    <img class="cadflair-logo-image" src="images/cadflair_logo.svg" alt="Cadflair Logo" />
+                    <MudText Typo="Typo.h2">What we do</MudText>
+                    <div>We love challenging the status quo, and pushing the boundaries of workflow automation. That means making your engineering workflows simpler, faster, and more consistent. We work closely with you to understand exactly how the inputs and outputs of your engineering department affect the efficiency of your business. By optimizing your design & drafting processes with a custom solution, we can help your business reduce up front design time, share engineering data with multiple stakeholders, and make your modeling process more robust. All that translates to a better experience for your end customers.</div>
+                </MudStack>
+            </MudItem>
+
+            <!-- what we do cards -->
+            <MudItem xs="12" sm="6" Class="my-15">
+                <MudStack>
+                    <MudCard Class="mud-background-gray">
+                        <MudCardContent>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
+                                <MudIcon Icon="@Icons.Material.Filled.Cloud" Size="Size.Large" />
+                                <div>
+                                    <MudText><strong>Cloud Powered CAD</strong></MudText>
+                                    <MudText Typo="Typo.body2">Bring your models to life with Autodesk Forge. By leveraging the power of the cloud, you can access your designs on any device. Anytime. Anywhere.</MudText>
+                                </div>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard Class="mud-background-gray">
+                        <MudCardContent>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
+                                <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
+                                <div>
+                                    <MudText><strong>Algorithm-driven modeling</strong></MudText>
+                                    <MudText Typo="Typo.body2">Optimize your designs with parametric algorithms. Sound complicated? Don’t worry, we’ll do the heavy lifting. We can develop logic to automate almost any repetative design task.</MudText>
+                                </div>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard Class="mud-background-gray">
+                        <MudCardContent>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
+                                <MudIcon Icon="@Icons.Material.Filled.ToggleOn" Size="Size.Large" />
+                                <div>
+                                    <MudText><strong>Custom product configurators</strong></MudText>
+                                    <MudText Typo="Typo.body2">Generate new model configurations with just a few clicks. From simple parts to multi-level assemblies, we’ve got you covered.</MudText>
+                                </div>
+                            </MudStack>
+                        </MudCardContent>
+                    </MudCard>
+                </MudStack>
+            </MudItem>
+
+            <!-- demo cards -->
+            <MudItem xs="12" Class="my-15">
+                <MudText Typo="Typo.h2" Class="mb-5">Product Demos</MudText>
+                <MudStack Row="true" Justify="Justify.Center" Spacing="5">
+                    <MudCard Class="mud-background-gray" Style="max-width:300px;">
+                        <MudCardMedia Image="images/dresser_exploded.png" Class="ma-5" Height="200" />
+                        <MudCardContent>
+                            <MudStack Spacing="5">
+                                <MudText Typo="Typo.h4"><strong>Jay's Dressers</strong></MudText>
+                                <MudText Typo="Typo.body2">Jay's Dressers implemented an online configurator to minimize time spent on repetitive CAD work. Now their designs go from quoting to manufacturing in a fraction of the time. Design your own dresser here to see how it works! </MudText>
+                            </MudStack>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Href="/jaysdressers/products" Color="Color.Primary">Check It Out</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                    <MudCard Class="mud-background-gray" Style="max-width:300px;">
+                        <MudCardMedia Image="images/silos_card_image.png" Class="ma-5" Height="200" />
+                        <MudCardContent>
+                            <MudStack Spacing="5">
+                                <MudText Typo="Typo.h4"><strong>BIG Silos</strong></MudText>
+                                <MudText Typo="Typo.body2">See how BIG Silos leverages forge to automate their selling process. By generating 2D drawings and 3D step files in the cloud, BIG silos is able to supply their customers with accurate CAD data within minutes of a request!</MudText>
+                            </MudStack>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Href="/demo" Color="Color.Primary">Check It Out</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                    <MudCard Class="mud-background-gray" Style="max-width:300px;">
+                        <MudCardMedia Image="images/silos_card_image.png" Class="ma-5" Height="200" />
+                        <MudCardContent>
+                            <MudStack Spacing="5">
+                                <MudText Typo="Typo.h4"><strong>HammerTek</strong></MudText>
+                                <MudText Typo="Typo.body2">Check out this awesome catalog created by Hammertek! BOOM!</MudText>
+                            </MudStack>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Href="/demo" Color="Color.Primary">Check It Out</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudStack>
+            </MudItem>
+
+            <!-- contact us -->
+            <MudItem xs="12" Class="my-15">
+                <MudText Typo="Typo.h2" Class="mb-5">Contact Us</MudText>
+                <MudStack Spacing="1">
+                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                        <MudText Style="min-width:125px;">First Name</MudText>
+                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter first name" Margin="Margin.Dense" />
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                        <MudText Style="min-width:125px;">Last Name</MudText>
+                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter last name" Margin="Margin.Dense" />
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                        <MudText Style="min-width:125px;">Email Address</MudText>
+                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter email address" Margin="Margin.Dense" />
+                    </MudStack>
+                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                        <MudText Style="min-width:125px;">Message</MudText>
+                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="What can we help you with?" Margin="Margin.Dense" Lines="6" />
+                    </MudStack>
+                    <MudStack Justify="Justify.Center" Class="my-3">
+                        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary">Submit</MudButton>
+                    </MudStack>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</div>
+
+
+
 
 
 @code {

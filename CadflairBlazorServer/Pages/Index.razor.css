@@ -1,0 +1,64 @@
+﻿.hero-image {
+    width:100%;
+    opacity: 0;
+    animation: fadein 1.8s forwards;
+}
+
+.fade-opacity-in{
+    opacity: 0;
+    animation: fadein 0.6s forwards;
+}
+
+.delay1 {
+    animation-delay: 0.4s;
+}
+
+.delay2 {
+    animation-delay: .8s;
+}
+
+.delay3{
+    animation-delay: 1.2s;
+}
+
+.delay4{
+    animation-delay: 1.8s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+.sub-tagline {
+    font-size: 1.25em;
+    font-weight: lighter;
+    margin-top: 1.25em;
+    opacity: 0;
+    animation: fadein 1.8s forwards;
+    animation-delay: 2.5s;
+}
+
+.vector-underline {
+    stroke: var(--mud-palette-primary);
+    width: 265px;
+    stroke-dasharray: 450;
+    stroke-dashoffset: 450;
+    animation: draw 0.4s linear forwards;
+    animation-delay: 1.8s;
+}
+
+@keyframes draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+
+
