@@ -5,7 +5,7 @@
 
 <PageTitle>Cadflair</PageTitle>
 
-@*<AuthorizeView>
+<AuthorizeView>
     <Authorized>
         <p>Welcome, @context.User.Identity?.Name</p>
         <p>Auth Type: @context.User.Identity?.AuthenticationType</p>
@@ -16,7 +16,7 @@
         }
 
         <p>Database user:</p>
-        <p>Id: @loggedInUser.Id</p>
+@*        <p>Id: @loggedInUser.Id</p>
         <p>Object Identifier: @loggedInUser.ObjectIdentifier</p>
         <p>First Name: @loggedInUser.FirstName</p>
         <p>Last Name: @loggedInUser.LastName</p>
@@ -24,13 +24,14 @@
         <p>Email: @loggedInUser.EmailAddress</p>
         <p>Created: @loggedInUser.CreatedOn</p>
         <p>SubscriptionId: @loggedInUser.SubscriptionId</p>
+*@
     </Authorized>
 
     <NotAuthorized>
         <p>Not logged in!</p>
     </NotAuthorized>
 </AuthorizeView>
-*@
+
 
 @*<MudStack>
     <MudLink Href="/dashboard">Dashboard</MudLink>
@@ -274,11 +275,11 @@
     //    await _js.InvokeVoidAsync("alert", message);
     //}
 
-    private User loggedInUser = new();
+    //private User loggedInUser = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
-    }
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
+    //}
 
 }

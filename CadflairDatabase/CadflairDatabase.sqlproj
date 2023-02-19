@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
     <ProjectGuid>{92153ca6-1de7-4b76-9ff6-210f8a4997e7}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath />
     <RootNamespace>CadflairDatabase</RootNamespace>
@@ -110,6 +110,7 @@
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />
     <None Include="Compare\HP_Z420_cadflairlocaldb_compare.scmp" />
+    <None Include="Publish Scripts\cadflairdev.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post Deployment Scripts\AddDemoData.PostDeployment.sql" />
