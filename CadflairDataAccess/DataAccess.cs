@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CadflairDataAccess
 {
-    public class DataAccess
+    internal class DataAccess
     {
 
         private readonly string _connectionString;
@@ -28,7 +28,7 @@ namespace CadflairDataAccess
         /// <param name="storedProcedure"></param>
         /// <param name="parameters"></param>
         /// <returns>A list of type <b>T</b> that matches the query.</returns>
-        public async Task<List<T>> LoadDataAsync<T, U>(string storedProcedure, U parameters)
+        internal async Task<List<T>> LoadDataAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
@@ -45,7 +45,7 @@ namespace CadflairDataAccess
         /// <param name="storedProcedure"></param>
         /// <param name="parameters"></param>
         /// <returns>The first record of type <b>T</b> that matches the query.</returns>
-        public async Task<T> LoadSingleAsync<T, U>(string storedProcedure, U parameters)
+        internal async Task<T> LoadSingleAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
@@ -61,7 +61,7 @@ namespace CadflairDataAccess
         /// <param name="storedProcedure"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public async Task SaveDataAsync<T>(string storedProcedure, T parameters)
+        internal async Task SaveDataAsync<T>(string storedProcedure, T parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {
@@ -76,7 +76,7 @@ namespace CadflairDataAccess
         /// <param name="storedProcedure"></param>
         /// <param name="parameters"></param>
         /// <returns>The <b>Id</b> of the record that was modified.</returns>
-        public async Task<T> SaveSingleAsync<T, U>(string storedProcedure, U parameters)
+        internal async Task<T> SaveSingleAsync<T, U>(string storedProcedure, U parameters)
         {
             using (IDbConnection connection = new SqlConnection(_connectionString))
             {

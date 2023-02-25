@@ -110,7 +110,7 @@
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />
     <None Include="Compare\HP_Z420_cadflairlocaldb_compare.scmp" />
-    <None Include="Publish Scripts\cadflairdev.publish.xml" />
+    <None Include="Publish Scripts\CadflairStaging.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Post Deployment Scripts\AddDemoData.PostDeployment.sql" />
