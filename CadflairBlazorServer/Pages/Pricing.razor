@@ -1,0 +1,95 @@
+﻿@page "/pricing"
+
+<PageTitle>Cadflair - Pricing</PageTitle>
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="my-15">
+    <MudText Typo="Typo.h1" Align="Align.Center">Pricing</MudText>
+    <MudText Typo="Typo.h2" Align="Align.Center">Choose the base plan for your business.</MudText>
+
+    <MudGrid Justify="Justify.Center">
+        <!-- basic plan -->
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-3 mud-background-gray">
+                <MudStack>
+                    <MudText Typo="Typo.h3" Align="Align.Center"><strong>Basic</strong></MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">$749<span style="font-size:0.5em;">/mo</span></MudText>
+                    <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Filled">Sign Up</MudButton>
+                    <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">Free Trial</MudButton>
+                    <MudDivider/>
+                    @foreach(PlanFeature feature in _features)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@(feature.Basic ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.CheckBoxOutlineBlank)" Color="Color.Default"/>
+                            <MudText Typo="Typo.body1">@feature.Description</MudText>
+                        </MudStack>
+                    }
+                </MudStack>
+            </MudPaper>"
+        </MudItem>
+        <!-- pro plan -->
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-3 mud-background-gray">
+                <MudStack>
+                    <MudText Typo="Typo.h3" Align="Align.Center"><strong>Pro</strong></MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">$1499<span style="font-size:0.5em;">/mo</span></MudText>
+                    <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Filled">Sign Up</MudButton>
+                    <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">Free Trial</MudButton>
+                    <MudDivider/>
+                    @foreach(PlanFeature feature in _features)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@(feature.Pro ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.CheckBoxOutlineBlank)" Color="Color.Default"/>
+                            <MudText Typo="Typo.body1">@feature.Description</MudText>
+                        </MudStack>
+                    }
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <!-- enterprise plan -->
+        <MudItem xs="12" sm="4">
+            <MudPaper Class="pa-3 mud-background-gray">
+                <MudStack>
+                    <MudText Typo="Typo.h3" Align="Align.Center"><strong>Premium</strong></MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">$4999<span style="font-size:0.5em;">/mo</span></MudText>
+                    <MudText Typo="Typo.h4" Align="Align.Center">Contact Sales</MudText>
+                    <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Filled">Sign Up</MudButton>
+                    <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Outlined">Free Trial</MudButton>
+                    <MudDivider/>
+                    @foreach(PlanFeature feature in _features)
+                    {
+                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@(feature.Ultra ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.CheckBoxOutlineBlank)" Color="Color.Default"/>
+                            <MudText Typo="Typo.body1">@feature.Description</MudText>
+                        </MudStack>
+                    }
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+<Footer/>
+
+
+@code {
+
+    private class PlanFeature
+    {
+        public string Description { get; set; } = string.Empty;
+        public bool Basic { get; set; }
+        public bool Pro { get; set; }
+        public bool Ultra { get; set; }
+    }
+
+    private List<PlanFeature> _features = new()
+    {
+        new PlanFeature { Description = "Cloud based product catalog", Basic = true, Pro = true, Ultra = true },
+        new PlanFeature { Description = "Upload and view static CAD models", Basic = true, Pro = true, Ultra = true },
+        new PlanFeature { Description = "Download neutral file formats", Basic = true, Pro = true, Ultra = true },
+        new PlanFeature { Description = "Dynamically generate new CAD model configurations", Basic = false, Pro = true, Ultra = true },
+        new PlanFeature { Description = "Track quote requests", Basic = false, Pro = true, Ultra = true },
+        new PlanFeature { Description = "Notifications for RFQs", Basic = false, Pro = true, Ultra = true },
+
+    };
+
+}

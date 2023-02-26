@@ -10,6 +10,7 @@ namespace CadflairInventorAddin.Api
     {
 
         private static readonly string BaseUrl = "https://localhost:7269";
+        //private static readonly string BaseUrl = "https://cadflair.azurewebsites.net/";
 
         private static async Task<string> CallApi(HttpMethod method, string endPoint, HttpContent content = null)
         {
