@@ -23,12 +23,8 @@ namespace CadflairInventorAddin.Commands.Upload
     {
         private Document _doc;
         private User _loggedInUser;
-        private List<ProductFolder> productFolders= new List<ProductFolder>()
-        {
-            new ProductFolder(){ DisplayName = "Products" }
-        };
 
-        public UploadWpfWindow(Inventor.Document doc)
+        public UploadWpfWindow(Document doc)
         {
             InitializeComponent();
 
@@ -37,7 +33,7 @@ namespace CadflairInventorAddin.Commands.Upload
             // set colors of window
             if(Globals.InventorApplication.ThemeManager.ActiveTheme.Name.Contains("Light"))
             {
-                (System.Windows.Media.Color)FindResource("ApplicationFrameBackgroundColor") = ColorConverter.ConvertFromString("#d9d9d9");
+                //(System.Windows.Media.Color)FindResource("ApplicationFrameBackgroundColor") = ColorConverter.ConvertFromString("#d9d9d9");
                 Resources["ApplicationFrameBackgroundColor"] = ColorConverter.ConvertFromString("#d9d9d9");
                 Resources["BrowserPaneColor"] = ColorConverter.ConvertFromString("#f5f5f5");
                 Resources["BrowserPaneAccentColor"] = ColorConverter.ConvertFromString("#eaeaea");

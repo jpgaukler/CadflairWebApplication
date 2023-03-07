@@ -21,7 +21,7 @@ namespace CadflairInventorAddin.Api
         {
             try
             {
-                string uri = $"/api/product/create";
+                string uri = $"/api/v1/product/create";
 
                 dynamic productData = new
                 {
@@ -57,7 +57,7 @@ namespace CadflairInventorAddin.Api
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "UploadProductToCadflair");
+                Log.Error(ex, "UploadProductToCadflair", userId, subscriptionId, displayName, rootFileName, iLogicFormJson, argumentJson, isPublic, isConfigurable, zipFileName);
                 return null;
             }
         }
@@ -70,7 +70,7 @@ namespace CadflairInventorAddin.Api
         {
             try
             {
-                string uri = $"/api/productfolder/get/{subscriptionId}/{parentId}";
+                string uri = $"/api/v1/productfolder/get/{subscriptionId}/{parentId}";
                 string result = await Client.Get(uri);
                 List<ProductFolder> folders = JsonConvert.DeserializeObject<List<ProductFolder>>(result);
                 return folders;
@@ -86,7 +86,7 @@ namespace CadflairInventorAddin.Api
         {
             try
             {
-                string uri = $"/api/productfolder/create/{subscriptionId}/{createdById}/{displayName}/{parentId}";
+                string uri = $"/api/v1/productfolder/create/{subscriptionId}/{createdById}/{displayName}/{parentId}";
                 string result = await Client.Post(uri);
                 ProductFolder folder  = JsonConvert.DeserializeObject<ProductFolder>(result);
                 return folder;

@@ -12,11 +12,13 @@ namespace CadflairForgeAccess.Services
         private readonly DesignAutomationClient _designAutomationClient;
         private readonly AuthorizationService _authService;
         private readonly ObjectStorageService _objectStorageService;
+        private readonly string _callbackUrl;
 
-        public DesignAutomationService(AuthorizationService authService, ObjectStorageService objectStorageService)
+        public DesignAutomationService(AuthorizationService authService, ObjectStorageService objectStorageService, string callbackUrl)
         {
             _authService = authService;
             _objectStorageService = objectStorageService;
+            _callbackUrl = callbackUrl;
 
             // Create a new ForgeService to be used with the design automation client
             ForgeConfiguration forgeConfiguration = new()
@@ -72,18 +74,16 @@ namespace CadflairForgeAccess.Services
                 };
 
                 // callback urls 
-                string callbackUrl = "https://a5b1-2601-88-301-97a0-3047-5b4b-cc66-ab71.ngrok.io";
-
                 XrefTreeArgument onCompleteCallback = new()
                 {
                     Verb = Verb.Post,
-                    Url = $"{callbackUrl}/api/forge/designautomation/productconfiguration/create/oncomplete?connectionId={connectionId}&productConfigurationId={productConfigurationId}&outputBucketKey={inputBucketKey}&outputObjectKey={outputObjectKey}&rootFileName={inputPathInZip}&outputStpKey={outputStpKey}"
+                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/oncomplete?connectionId={connectionId}&productConfigurationId={productConfigurationId}&outputBucketKey={inputBucketKey}&outputObjectKey={outputObjectKey}&rootFileName={inputPathInZip}&outputStpKey={outputStpKey}"
                 };
 
                 XrefTreeArgument onProgressCallback = new()
                 {
                     Verb = Verb.Post,
-                    Url = $"{callbackUrl}/api/forge/designautomation/productconfiguration/create/onprogress?connectionId={connectionId}"
+                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/onprogress?connectionId={connectionId}"
                 };
 
                 // submit workitem 

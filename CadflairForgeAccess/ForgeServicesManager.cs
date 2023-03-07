@@ -23,10 +23,11 @@ namespace CadflairForgeAccess
             //string clientSecret = Utils.GetAppSetting("FORGE_CLIENT_SECRET");
             string clientId = configuration["ForgeCredentials:ClientId"];
             string clientSecret = configuration["ForgeCredentials:Secret"];
+            string callbackUrl = configuration["ForgeCredentials:CallbackUrl"];
 
             AuthorizationService = new(clientId, clientSecret);
             ObjectStorageService = new(AuthorizationService);
-            DesignAutomationService = new(AuthorizationService, ObjectStorageService);
+            DesignAutomationService = new(AuthorizationService, ObjectStorageService, callbackUrl);
             ModelDerivativeService = new(AuthorizationService, ObjectStorageService);
         }
 

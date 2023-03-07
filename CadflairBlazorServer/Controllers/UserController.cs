@@ -19,7 +19,7 @@ namespace CadflairBlazorServer.Controllers
         }
 
         [HttpGet]
-        [Route("api/user/get/{objectIdentifier}")]
+        [Route("api/v1/user/get/{objectIdentifier}")]
         public async Task<IActionResult> GetUserByObjectIdentifier(string objectIdentifier)
         {
             try
@@ -29,7 +29,7 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = $"Exception occurred: {ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }
     }

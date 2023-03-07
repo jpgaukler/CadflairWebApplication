@@ -37,7 +37,7 @@ namespace CadflairBlazorServer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/product/create")]
+        [Route("api/v1/product/create")]
         public async Task<IActionResult> CreateProduct([FromForm] ProductUploadForm form)
         {
             try
@@ -105,11 +105,11 @@ namespace CadflairBlazorServer.Controllers
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
 
-                if (!uploadSuccessful) return BadRequest(new { Error = $"Unable to upload files to Autodesk Forge OSS." });
+                if (!uploadSuccessful) return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload files to Autodesk OSS." });
 
                 // start the Model Derivative translation so the default configuration is viewable in the browser
                 var tranlationJob = await _forgeServicesManager.ModelDerivativeService.TranslateObject(bucketKey, objectKey, rootFileName);
-                Debug.WriteLine($@"Model derivative translation started.");
+                Debug.WriteLine($"Model derivative translation started.");
 
                 if (product == null)
                 {
@@ -121,7 +121,7 @@ namespace CadflairBlazorServer.Controllers
                                                                                       isPublic: isPublic,
                                                                                       createdById: userId);
 
-                    Debug.WriteLine($@"Created new product: {product.DisplayName}");
+                    Debug.WriteLine($"Created new product: {product.DisplayName}");
                 }
 
                 // Create new ProductVersion
@@ -131,31 +131,30 @@ namespace CadflairBlazorServer.Controllers
                                                                                                                isConfigurable: isConfigurable,
                                                                                                                createdById: userId);
 
-                Debug.WriteLine($@"Created new product version: {product.DisplayName} Version: {productVersion.VersionNumber}");
+                Debug.WriteLine($"Created new product version: {product.DisplayName} Version: {productVersion.VersionNumber}");
 
                 // Create default ProductConfiguration 
                 ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id,
                                                                                                                                  argumentJson: argumentJson,
                                                                                                                                  forgeZipKey: objectKey,
                                                                                                                                  isDefault: true);
-                Debug.WriteLine($@"Created new product configuration: {productConfiguration.Id}");
+                Debug.WriteLine($"Created new product configuration: {productConfiguration.Id}");
 
                 return Ok(product);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = $"Product creation failed: {ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }
 
         #endregion
 
 
-
         #region "ProductFolder"
 
         [HttpPost]
-        [Route("api/productfolder/create/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
+        [Route("api/v1/productfolder/create/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
         public async Task<IActionResult> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
         {
             try
@@ -165,12 +164,12 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = $"Exception occurred: {ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }
 
         [HttpGet]
-        [Route("api/productfolder/get/{subscriptionId:int}/{parentId:int?}")]
+        [Route("api/v1/productfolder/get/{subscriptionId:int}/{parentId:int?}")]
         public async Task<IActionResult> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
         {
             try
@@ -180,7 +179,7 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { Error = $"Exception occurred: {ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }
 

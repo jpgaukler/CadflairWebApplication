@@ -38,7 +38,7 @@ namespace CadflairBlazorServer.Controllers
 
 
         [HttpPost]
-        [Route("api/forge/designautomation/productconfiguration/create/oncomplete")]
+        [Route("api/v1/designautomation/productconfiguration/create/oncomplete")]
         public async Task<IActionResult> CreateProductConfigurationModel_OnComplete(string connectionId, int productConfigurationId, string outputBucketKey, string outputObjectKey, string rootFileName, string outputStpKey, [FromBody] dynamic body)
         {
             try
@@ -82,7 +82,7 @@ namespace CadflairBlazorServer.Controllers
         }
 
         [HttpPost]
-        [Route("api/forge/designautomation/productconfiguration/create/onprogress")]
+        [Route("api/v1/designautomation/productconfiguration/create/onprogress")]
         public async Task<IActionResult> CreateProductConfigurationModel_OnProgress(string connectionId, [FromBody] dynamic body)
         {
             try
@@ -108,7 +108,7 @@ namespace CadflairBlazorServer.Controllers
         }
 
         [HttpPost]
-        [Route("/api/forge/modelderivative/translate/oncomplete")]
+        [Route("/api/v1/modelderivative/translate/oncomplete")]
         public async Task<IActionResult> ModelDerivativeTranslation_OnComplete([FromBody] dynamic body)
         {
             try
@@ -128,7 +128,7 @@ namespace CadflairBlazorServer.Controllers
                 Debug.WriteLine(ex.ToString());
             }
 
-            // ALWAYS return ok (200)
+            //ALWAYS RETURN OK TO THE FORGE API
             return Ok();
         }
 

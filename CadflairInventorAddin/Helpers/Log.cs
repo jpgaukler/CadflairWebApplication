@@ -9,7 +9,7 @@ namespace CadflairInventorAddin.Helpers
 {
     internal class Log
     {
-        public static void Error(Exception ex, string methodName, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null, object arg7 = null, object arg8 = null)
+        public static void Error(Exception ex, string methodName, object arg1 = null, object arg2 = null, object arg3 = null, object arg4 = null, object arg5 = null, object arg6 = null, object arg7 = null, object arg8 = null, object arg9 = null)
         {
             string args = string.Empty;
 
@@ -21,6 +21,7 @@ namespace CadflairInventorAddin.Helpers
             if (arg6 != null) args += $", {arg6}"; 
             if (arg7 != null) args += $", {arg7}"; 
             if (arg8 != null) args += $", {arg8}"; 
+            if (arg9 != null) args += $", {arg9}"; 
 
             Trace.TraceError($"{DateTimeOffset.Now} - {methodName}({args}) failed:");
             Trace.WriteLine(ex.ToString());
