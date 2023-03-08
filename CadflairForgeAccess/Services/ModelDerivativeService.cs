@@ -132,7 +132,7 @@ namespace CadflairForgeAccess.Services
                     byteArray = memoryStream.ToArray();
                 }
 
-                return byteArray.ToBase64();
+                return byteArray.ToBase64String();
             }
             catch (Exception ex)
             {

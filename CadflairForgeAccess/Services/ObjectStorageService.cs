@@ -57,7 +57,7 @@ namespace CadflairForgeAccess.Services
 
             //add the encoded urn to the object
             string objectId = (string)objectDetails.objectId;
-            objectDetails.encoded_urn = objectId.ToBase64();
+            objectDetails.encoded_urn = objectId.ToBase64String();
 
             return objectDetails;
         }

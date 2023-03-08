@@ -11,18 +11,9 @@ namespace CadflairForgeAccess.Helpers
     {
 
         /// <summary>
-        /// Reads appsettings from web.config
-        /// </summary>
-        internal static string GetAppSetting(string settingKey)
-        {
-            string? appSettingValue = Environment.GetEnvironmentVariable(settingKey)?.Trim();
-            return appSettingValue ?? string.Empty;
-        }
-
-        /// <summary>
         /// Base64 encode a string
         /// </summary>
-        internal static string ToBase64(this string plainText)
+        internal static string ToBase64String(this string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
             return Convert.ToBase64String(plainTextBytes);
@@ -31,7 +22,7 @@ namespace CadflairForgeAccess.Helpers
         /// <summary>
         /// Base64 encode a string
         /// </summary>
-        internal static string ToBase64(this byte[] bytes)
+        internal static string ToBase64String(this byte[] bytes)
         {
             return Convert.ToBase64String(bytes);
         }

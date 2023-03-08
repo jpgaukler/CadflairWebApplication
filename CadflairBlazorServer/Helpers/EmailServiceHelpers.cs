@@ -17,34 +17,24 @@ namespace CadflairBlazorServer.Helpers
 
             // get users that subscribe to notification
             List<Address> addresses = new();
+            List<User> users = await dataServicesManager.UserService.GetUsersBySubscriptionId(subscriptionId);
 
-            foreach (User user in await dataServicesManager.UserService.GetUsersBySubscriptionId(subscriptionId))
+            foreach (User user in users)
             {
                 NotificationSetting setting = await dataServicesManager.NotificationService.GetNotificationSettingByNotificationIdAndUserId(notification.Id, user.Id);
                 if (setting == null || !setting.IsEnabled) continue;
-                addresses.Add(new Address(user.EmailAddress));
-            }
 
-            if (addresses.Count < 1) return;
+                SendResponse email = await emailService.SetFrom("donotreply@cadflair.com")
+                                                       .To(user.EmailAddress)
+                                                       .Subject(subject)
+                                                       .UsingTemplateFromFile(Path.Combine(_templateRoot, templateFilename), model)
+                                                       .SendAsync();
 
-            // pull out first user so the rest can be BCC'd
-            string firstAddress = addresses[0].EmailAddress;
-            addresses.RemoveAt(0);
+                Trace.WriteLine($"Notification email sent. Event name: {eventName} Success: {email.Successful}");
 
-            SendResponse email = await emailService.SetFrom("donotreply@cadflair.com")
-                                                   .To(firstAddress)
-                                                   .Subject(subject)
-                                                   .BCC(addresses)
-                                                   .UsingTemplateFromFile(Path.Combine(_templateRoot, templateFilename), model)
-                                                   .SendAsync();
-
-            Debug.WriteLine($"Notification email sent. Event name: {eventName} Success: {email.Successful}");
-
-            if (!email.Successful)
-            {
-                foreach (string error in email.ErrorMessages)
+                if (!email.Successful)
                 {
-                    Debug.WriteLine($"Failed to send email: {error}");
+                    email.ErrorMessages.ForEach(message => Trace.TraceError($"Failed to send email: {message}"));
                 }
             }
         }

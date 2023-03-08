@@ -10,7 +10,7 @@
     [CreatedById]        INT                       NOT NULL,
     CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Product_ProductFolder] FOREIGN KEY ([ProductFolderId]) REFERENCES [dbo].[ProductFolder] ([Id]),
-    CONSTRAINT [FK_Product_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[ProductFolder] ([Id]),
+    CONSTRAINT [FK_Product_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([Id]),
     CONSTRAINT [FK_Product_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
     CONSTRAINT [UC_SubscriptionId_DisplayName] UNIQUE([SubscriptionId],[DisplayName]),
     CONSTRAINT [UC_SubscriptionId_SubdirectoryName] UNIQUE([SubscriptionId],[SubdirectoryName])
