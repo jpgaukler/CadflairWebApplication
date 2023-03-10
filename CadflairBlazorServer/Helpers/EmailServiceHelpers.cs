@@ -15,11 +15,7 @@ namespace CadflairBlazorServer.Helpers
             // get notification
             Notification notification = await dataServicesManager.NotificationService.GetNotificationByEventName(eventName);
 
-            // get users that subscribe to notification
-            List<Address> addresses = new();
-            List<User> users = await dataServicesManager.UserService.GetUsersBySubscriptionId(subscriptionId);
-
-            foreach (User user in users)
+            foreach (User user in await dataServicesManager.UserService.GetUsersBySubscriptionId(subscriptionId))
             {
                 NotificationSetting setting = await dataServicesManager.NotificationService.GetNotificationSettingByNotificationIdAndUserId(notification.Id, user.Id);
                 if (setting == null || !setting.IsEnabled) continue;
@@ -30,11 +26,11 @@ namespace CadflairBlazorServer.Helpers
                                                        .UsingTemplateFromFile(Path.Combine(_templateRoot, templateFilename), model)
                                                        .SendAsync();
 
-                Trace.WriteLine($"Notification email sent. Event name: {eventName} Success: {email.Successful}");
+                Trace.WriteLine($"Notification email sent. Event: {eventName}, Email Address: {user.EmailAddress}, Success: {email.Successful}");
 
                 if (!email.Successful)
                 {
-                    email.ErrorMessages.ForEach(message => Trace.TraceError($"Failed to send email: {message}"));
+                    email.ErrorMessages.ForEach(message => Trace.TraceError($"Notification email failed to send. Event: {eventName}, Email Address: {user.EmailAddress}, Success: {email.Successful}"));
                 }
             }
         }

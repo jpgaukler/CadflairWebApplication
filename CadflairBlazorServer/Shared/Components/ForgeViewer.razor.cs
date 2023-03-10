@@ -10,6 +10,8 @@ namespace CadflairBlazorServer.Shared.Components
         [Inject] IJSRuntime _js { get; set; } = default!;
         [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
 
+        private bool _modelNotFound = false;
+
         public async Task ViewDocument(string encodedUrn)
         {
             //get public token for viewables
@@ -29,7 +31,8 @@ namespace CadflairBlazorServer.Shared.Components
             }
             else
             {
-                Debug.WriteLine($"No derivative");
+                _modelNotFound = true;
+                Trace.WriteLine($"ForgeViewer: Model derivative not found - Urn (base64): {encodedUrn}");
 
                 //need to translate object
                 //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
@@ -40,7 +43,6 @@ namespace CadflairBlazorServer.Shared.Components
         {
             //get forge object id
             dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
-            Debug.WriteLine($"{forgeObject}");
             ViewDocument(forgeObject.encoded_urn);
         }
     }

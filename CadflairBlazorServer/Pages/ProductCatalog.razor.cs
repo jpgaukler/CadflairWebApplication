@@ -66,6 +66,9 @@ namespace CadflairBlazorServer.Pages
         {
             List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId(_subscription.Id, parentId);
 
+            if (folders == null)
+                return;
+
             foreach (ProductFolder folder in folders)
             {
                 var treeItem = new ProductFolderTreeItem() { ProductFolder = folder };
@@ -105,7 +108,7 @@ namespace CadflairBlazorServer.Pages
         private void ProductsGrid_OnRowClick(DataGridRowClickEventArgs<Product> args)
         {
             Product product = args.Item;
-            _navigationManager.NavigateTo($" /{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}");
+            _navigationManager.NavigateTo($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}");
         }
 
         private async Task ToggleView()

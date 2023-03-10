@@ -1,3 +1,14 @@
-﻿<div id="forgeViewer" style="background:gray; position: relative; width:100%; height:100%"></div>
-
+﻿@if (_modelNotFound)
+{
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full mud-width-full mud-background-gray">
+        <MudStack AlignItems="AlignItems.Center">
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" />
+            <MudText>Error loading model!</MudText>
+        </MudStack>
+    </MudStack>
+}
+else
+{
+    <div id="forgeViewer" class="mud-height-full mud-width-full mud-background-gray relative"></div>
+}
 

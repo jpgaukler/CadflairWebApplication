@@ -2,120 +2,123 @@
 
 <PageTitle>@CompanyName - Products</PageTitle>
 
+<div style="height: calc(100vh - var(--mud-appbar-height));">
+    <MudStack Row="true" Spacing="0" Class="mud-height-full">
 
-<MudStack Row="true" Spacing="0" Class="mud-height-full">
+        <!-- product folder tree -->
+        <MudStack Class="pa-3" Style="min-width:275px;">
+            <MudTreeView T="ProductFolderTreeItem"
+                         Items="_productFolderTreeItems"
+                         SelectedValueChanged="SelectedTreeItemChanged"
+                         Hover="true"
+                         ExpandOnDoubleClick="true">
+                <ItemTemplate>
+                    <MudTreeViewItem T="ProductFolderTreeItem"
+                                     Value="@context"
+                                     Items="@context.ChildItems"
+                                     Text="@context.ProductFolder.DisplayName"
+                                     Icon="@Icons.Material.Filled.Folder" />
+                </ItemTemplate>
+            </MudTreeView>
+        </MudStack>
+        <MudStack Class="flex-grow-1 mud-height-full">
+            <MudStack Spacing="0" Class="flex-grow-1 pa-3 overflow-auto">
 
-    <!-- product folder tree -->
-    <MudStack Class="pa-3" Style="min-width:275px;">
-        <MudTreeView T="ProductFolderTreeItem"
-                     Items="_productFolderTreeItems"
-                     SelectedValueChanged="SelectedTreeItemChanged"
-                     Hover="true"
-                     ExpandOnDoubleClick="true">
-            <ItemTemplate>
-                <MudTreeViewItem T="ProductFolderTreeItem"
-                                 Value="@context"
-                                 Items="@context.ChildItems"
-                                 Text="@context.ProductFolder.DisplayName"
-                                 Icon="@Icons.Material.Filled.Folder" />
-            </ItemTemplate>
-        </MudTreeView>
-    </MudStack>
-    <MudStack Class="flex-grow-1 mud-height-full">
-        <MudStack Spacing="0" Class="flex-grow-1 pa-3 overflow-auto">
+                <!-- header toolbar -->
+                <div>
+                    <MudToolBar DisableGutters="true" Dense="true">
+                        @if (_breadcrumbItems.Count < 1)
+                        {
+                            <MudText>Please select a folder.</MudText>
+                        }
+                        else
+                        {
+                            <MudBreadcrumbs Items="_breadcrumbItems" Class="align-start">
+                                <SeparatorTemplate>
+                                    <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
+                                </SeparatorTemplate>
+                                <ItemTemplate Context="item">
+                                    <MudText>@item.Text</MudText>
+                                </ItemTemplate>
+                            </MudBreadcrumbs>
+                        }
+                        <MudSpacer />
+                        <MudIconButton OnClick="ToggleView" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
+                        @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@
+                    </MudToolBar>
+                    <MudDivider />
+                </div>
 
-            <!-- header toolbar -->
-            <div>
-                <MudToolBar DisableGutters="true" Dense="true">
-                    @if (_breadcrumbItems.Count < 1)
-                    {
-                        <MudText>Please select a folder.</MudText>
-                    }
-                    else
-                    {
-                        <MudBreadcrumbs Items="_breadcrumbItems" Class="align-start">
-                            <SeparatorTemplate>
-                                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
-                            </SeparatorTemplate>
-                            <ItemTemplate Context="item">
-                                <MudText>@item.Text</MudText>
-                            </ItemTemplate>
-                        </MudBreadcrumbs>
-                    }
-                    <MudSpacer />
-                    <MudIconButton OnClick="ToggleView" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
-                    @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@
-                </MudToolBar>
-                <MudDivider />
-            </div>
-
-            @if (_loadingData)
-            {
-                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
-                    <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
-                </MudStack>
-            }
-            else
-            {
-                if (_products.Count < 1)
+                @if (_loadingData)
                 {
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
-                        <MudStack AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
-                            <MudText>No products found.</MudText>
-                        </MudStack>
+                        <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
                     </MudStack>
                 }
                 else
                 {
-                    if (_displayListView)
+                    if (_products.Count < 1)
                     {
-                        <!-- product list view -->
-                        <MudDataGrid T="Product"
-                         Items="_products"
-                         ColumnResizeMode="ResizeMode.Column"
-                         Dense="true"
-                         Elevation="0"
-                         Hover="true"
-                         FixedHeader="true"
-                         Height="100%"
-                         RowClick="ProductsGrid_OnRowClick"
-                         Class="overflow-auto">
-                            <Columns>
-                                <Column T="Product" Sortable="false" Filterable="false" Resizable="false" CellStyle="width:100px">
-                                    <CellTemplate>
-                                        <ProductThumbnail Product="@context.Item" Height="100" Width="100" />
-                                    </CellTemplate>
-                                </Column>
-                                <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
-                            </Columns>
-                        </MudDataGrid>
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
+                            <MudStack AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
+                                <MudText>No products found.</MudText>
+                            </MudStack>
+                        </MudStack>
                     }
                     else
                     {
-                        <!-- product grid view -->
-                        <MudGrid Justify="Justify.FlexStart" Class="my-5 overflow-auto" Style="max-height: 100%">
-                            @foreach (Product product in _products)
-                            {
-                                <MudItem>
-                                    <MudPaper>
-                                        <MudButton Variant="Variant.Text" Href=@($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}")>
-                                            <MudStack>
-                                                <ProductThumbnail Product="@product" Height="200" Width="200" />
-                                                @product.DisplayName
-                                            </MudStack>
-                                        </MudButton>
-                                    </MudPaper>
-                                </MudItem>
-                            }
-                        </MudGrid>
+                        if (_displayListView)
+                        {
+                            <!-- product list view -->
+                            <MudDataGrid T="Product"
+                             Items="_products"
+                             ColumnResizeMode="ResizeMode.Column"
+                             Dense="true"
+                             Elevation="0"
+                             Hover="true"
+                             FixedHeader="true"
+                             Height="100%"
+                             RowClick="ProductsGrid_OnRowClick"
+                             Class="overflow-auto">
+                                <Columns>
+                                    <Column T="Product" Sortable="false" Filterable="false" Resizable="false" CellStyle="width:100px">
+                                        <CellTemplate>
+                                            <ProductThumbnail Product="@context.Item" Height="100" Width="100" />
+                                        </CellTemplate>
+                                    </Column>
+                                    <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
+                                </Columns>
+                            </MudDataGrid>
+                        }
+                        else
+                        {
+                            <!-- product grid view -->
+                            <MudGrid Justify="Justify.FlexStart" Class="my-5 overflow-auto" Style="max-height: 100%">
+                                @foreach (Product product in _products)
+                                {
+                                    <MudItem>
+                                        <MudPaper>
+                                            <MudButton Variant="Variant.Text" Href=@($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}")>
+                                                <MudStack>
+                                                    <ProductThumbnail Product="@product" Height="200" Width="200" />
+                                                    @product.DisplayName
+                                                </MudStack>
+                                            </MudButton>
+                                        </MudPaper>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        }
                     }
                 }
-            }
+            </MudStack>
         </MudStack>
     </MudStack>
-</MudStack>
 
+
+
+</div>
 
 
 @*<!-- product details drawer -->

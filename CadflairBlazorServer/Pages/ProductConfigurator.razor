@@ -1,6 +1,6 @@
 ﻿@page "/{CompanyName}/products/{ProductName}"
 
-<div class="d-flex flex-row mud-height-full">
+<div class="d-flex flex-row" style="height: calc(100vh - var(--mud-appbar-height));">
     <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
         <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
 
