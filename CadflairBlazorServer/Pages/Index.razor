@@ -1,8 +1,4 @@
 ﻿@page "/"
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject DataServicesManager _dataServicesManager
-@inject ForgeServicesManager _forgeServicesManager
-
 
 <PageTitle>Cadflair</PageTitle>
 
@@ -200,23 +196,4 @@
 <Footer/>
 
 
-@code {
 
-    //[CascadingParameter]
-    //private Task<AuthenticationState> _authenticationState { get; set; }
-
-    //private async Task DisplayGreetingAlert()
-    //{
-    //    var authState = await _authenticationState;
-    //    var message = $"Hello {authState.User.Identity.Name}";
-    //    await _js.InvokeVoidAsync("alert", message);
-    //}
-
-    //private User loggedInUser = new();
-
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
-    //}
-
-}

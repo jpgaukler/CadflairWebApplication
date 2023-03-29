@@ -1,6 +1,6 @@
 ﻿@page "/{CompanyName}/products/{ProductName}"
 
-<div class="d-flex flex-row" style="height: calc(100vh - var(--mud-appbar-height));">
+<div class="d-flex flex-row mud-background-gray" style="height: calc(100vh - var(--mud-appbar-height));">
     <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
         <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
 
@@ -17,7 +17,7 @@
                 <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
                     @foreach (ILogicFormElement element in _iLogicFormData.Items)
                     {
-                        <ProductInput Element="@element" @key="element"></ProductInput>
+                        <ProductInput Element="@element" Disabled="@(_configurationInProgress || !_showSubmitButton)" @key="element"></ProductInput>
                     }
                 </MudStack>
             </MudForm>
@@ -25,15 +25,48 @@
 
         <!--Action Buttons-->
         <MudStack Class="pa-3">
-            <MudButton OnClick="Submit_OnClick" Disabled="@(!_validInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Submit</MudButton>
-            <MudButton OnClick="RequestQuote_OnClick" Disabled="_productConfiguration == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Request A Quote</MudButton>
-            <MudButton OnClick="DownloadZip_OnClick" Disabled="_productConfiguration?.ForgeZipKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Zip</MudButton>
-            <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Step</MudButton>
+            @if (_showSubmitButton)
+            {
+                <MudButton OnClick="Submit_OnClick" Disabled="@(!_validInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
+            }
+            else
+            {
+                <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth="true">Start Over</MudButton>
+            }
         </MudStack>
     </MudStack>
 
+
     <!--Forge Viewer-->
-    <ForgeViewer @ref="_forgeViewer" />
+    <div class="relative mud-height-full mud-width-full">
+        @if (_configurationInProgress)
+        {
+            <div class="relative mud-height-full mud-width-full">
+                <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="mud-height-full mud-width-full absolute">
+                    <MudProgressCircular Indeterminate="true" Size="Size.Large" />
+                </MudStack>
+            </div>
+        }
+        else
+        {
+            @if (_showRequestButton)
+            {
+                <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="300px;">
+                    <MudText Typo="Typo.h6">Like what you see?</MudText>
+                    <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
+                    <MudStack Row="true">
+                        <MudButton OnClick="RequestQuote_OnClick" Disabled="_productConfiguration == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Request A Quote</MudButton>
+                        <MudTooltip Text="Download STEP file.">
+                            @*<MudButton OnClick="DownloadZip_OnClick" Disabled="_productConfiguration?.ForgeZipKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Zip</MudButton>*@
+                            @*<MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Step</MudButton>*@
+                            <MudIconButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.FileDownload" />
+                        </MudTooltip>
+                    </MudStack>
+                </MudPaper>
+            }
+            <ForgeViewer @ref="_forgeViewer" />
+        }
+    </div>
 </div>
 
 

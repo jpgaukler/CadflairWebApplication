@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using CadflairDataAccess;
-using CadflairDataAccess.Models;
-using CadflairForgeAccess;
 
 namespace CadflairBlazorServer.Shared.Components
 {
@@ -34,17 +31,17 @@ namespace CadflairBlazorServer.Shared.Components
         [Parameter] public ProductConfiguration? ProductConfiguration { get; set; }
 
         // fields
-        private string? _thumbnailStringBase64;
+        private string _thumbnailStringBase64 = string.Empty;
         private bool _loading = false;
 
         protected override async Task OnInitializedAsync()
         {
-            if(Product == null) return;
+            if (Product == null)
+                return;
 
-            _thumbnailStringBase64 = null;
             _loading = true;
 
-            if(ProductConfiguration == null)
+            if (ProductConfiguration == null)
             {
                 // get the default configuration
                 ProductVersion latestVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(Product.Id);

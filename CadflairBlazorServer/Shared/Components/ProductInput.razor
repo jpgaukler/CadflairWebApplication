@@ -10,7 +10,7 @@
                     <MudStack>
                         @foreach (ILogicFormElement element in tabPanel.Items)
                         {
-                            <ProductInput Element="@element" @key="element"></ProductInput>
+                            <ProductInput Element="@element" Disabled="@Disabled" @key="element"></ProductInput>
                         }
                     </MudStack>
                 </MudTabPanel>
@@ -29,7 +29,7 @@
                     <MudStack>
                         @foreach (ILogicFormElement element in Element.Items)
                         {
-                            <ProductInput Element="@element" @key="element"></ProductInput>
+                            <ProductInput Element="@element" Disabled="@Disabled" @key="element"></ProductInput>
                         }
                     </MudStack>
                 </ChildContent>
@@ -41,7 +41,7 @@
         <MudStack Row="true" AlignItems="AlignItems.Center">
             @foreach (ILogicFormElement element in Element.Items)
             {
-                <ProductInput Element="@element" @key="element"></ProductInput>
+                <ProductInput Element="@element" Disabled="@Disabled" @key="element"></ProductInput>
             }
         </MudStack>
         break;
@@ -56,6 +56,7 @@
                                      ValueChanged="@((val) => Element.ParameterExpression = $"{val.ToString()} {Element.ParameterUnits}")"
                                      Label="@Element.Name"
                                      HideSpinButtons="true"
+                                     Disabled="@Disabled"
                                      Adornment="Adornment.End"
                                      AdornmentText="@Element.ParameterUnits"
                                      Variant="@_variant"
@@ -74,6 +75,7 @@
                                Max="@(Element.TrackBarMaxValue == null ? default(double) : (double)Element.TrackBarMaxValue)"
                                Step="@(Element.TrackBarIncrement == null ? default(double) : (double)Element.TrackBarIncrement)"
                                TickMarks="true"
+                               Disabled="@Disabled"
                                Variant="@_variant"
                                ValueLabel="true">
                         @Element.Name: 
@@ -96,6 +98,7 @@
         <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
             <MudTextField Label="@Element.Name" 
                           @bind-Value="@Element.ParameterExpression"
+                          Disabled="@Disabled"
                           Variant="@_variant"/>
         </MudTooltip>
         break;
@@ -110,7 +113,7 @@
                     <MudRadioGroup T="string" @bind-SelectedOption="Element.ParameterExpression">
                         @foreach (string expression in Element.ParameterExpressionList)
                         {
-                            <MudRadio Option="expression" Color="Color.Primary">
+                            <MudRadio Option="expression" Color="Color.Primary" Disabled="@Disabled">
                                 @if(Element.ParameterUnits == "ul")
                                 {
                                     @expression.Replace(Element.ParameterUnits, string.Empty)
@@ -131,6 +134,7 @@
                                @bind-Value="Element.ParameterExpression" 
                                Label="@Element.Name" 
                                Variant="@_variant" 
+                               Disabled="@Disabled"
                                AnchorOrigin="Origin.BottomCenter">
                         @foreach (string expression in Element.ParameterExpressionList)
                         {
@@ -154,6 +158,7 @@
                     <MudList Clickable="true" 
                              SelectedValue="Element.ParameterExpression"
                              SelectedValueChanged="@((val) => Element.ParameterExpression = (string)val)"
+                             Disabled="@Disabled"
                              Class="mud-paper-outlined mud-tabs-rounded pa-0"
                              Style="border-radius: var(--mud-default-borderradius);"
                              Dense="true">
@@ -188,6 +193,7 @@
                     <MudCheckBox T="bool" 
                                  Checked="Convert.ToBoolean(Element.ParameterExpression)"
                                  CheckedChanged="@((val) => Element.ParameterExpression = val.ToString())"
+                                 Disabled="@Disabled"
                                  Label="@Element.Name" 
                                  LabelPosition="LabelPosition.End" />
                 </MudTooltip>
@@ -197,6 +203,7 @@
                 <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
                     <MudSelect T="string" 
                                @bind-Value="Element.ParameterExpression" 
+                               Disabled="@Disabled"
                                Variant="@_variant"
                                Label="@Element.Name">
                         <MudSelectItem Value="@("True")" />
@@ -227,6 +234,7 @@
 @code {
 
     [Parameter] public ILogicFormElement Element { get; set; } = new();
+    [Parameter] public bool Disabled { get; set; } = false;
 
     private Variant _variant = Variant.Outlined;
 

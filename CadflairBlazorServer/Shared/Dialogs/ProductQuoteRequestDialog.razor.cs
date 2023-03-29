@@ -35,6 +35,16 @@ namespace CadflairBlazorServer.Shared.Dialogs
 
         protected override void OnInitialized()
         {
+            DialogOptions options = new()
+            {
+                CloseButton = true,
+                CloseOnEscapeKey = false,
+                DisableBackdropClick = true,
+                MaxWidth = MaxWidth.Large
+            };
+
+            MudDialog!.SetOptions(options);
+
             // load parameters
             ILogicFormElement form = JsonConvert.DeserializeObject<ILogicFormElement>(ProductVersion.ILogicFormJson)!;
             form.SetParameterExpressions(ProductConfiguration.ArgumentJson);
@@ -43,7 +53,8 @@ namespace CadflairBlazorServer.Shared.Dialogs
 
         private void Submit_OnClick()
         {
-            if (!_validInputs) return;
+            if (!_validInputs) 
+                return;
 
             MudDialog?.Close(DialogResult.Ok(this));
         }

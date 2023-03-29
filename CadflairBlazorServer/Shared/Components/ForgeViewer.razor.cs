@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using CadflairForgeAccess;
-using System.Diagnostics;
 
 namespace CadflairBlazorServer.Shared.Components
 {
@@ -9,33 +6,42 @@ namespace CadflairBlazorServer.Shared.Components
     {
         [Inject] IJSRuntime _js { get; set; } = default!;
         [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
+        [Inject] ILogger<ForgeViewer> _logger { get; set; } = default!;
 
         private bool _modelNotFound = false;
 
         public async Task ViewDocument(string encodedUrn)
         {
-            //get public token for viewables
-            var token = await _forgeServicesManager.AuthorizationService.GetPublic();
-
-            if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(encodedUrn))
+            try
             {
-                //define input parameters as JSON
-                var parameters = new
+                //get public token for viewables
+                var token = await _forgeServicesManager.AuthorizationService.GetPublic();
+
+                if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(encodedUrn))
                 {
-                    Token = token.access_token,
-                    Urn = encodedUrn
-                };
+                    //define input parameters as JSON
+                    var parameters = new
+                    {
+                        Token = token.access_token,
+                        Urn = encodedUrn
+                    };
 
-                //invoke the viewer
-                await _js.InvokeVoidAsync("launchViewer", parameters);
+                    //invoke the viewer
+                    await _js.InvokeVoidAsync("launchViewer", parameters);
+                }
+                else
+                {
+                    _logger.LogWarning($"ForgeViewer: Model derivative not found - Urn (base64): {encodedUrn}");
+                    _modelNotFound = true;
+
+                    //need to translate object
+                    //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
+                }
             }
-            else
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"Failed to load model - urn: {encodedUrn}");
                 _modelNotFound = true;
-                Trace.WriteLine($"ForgeViewer: Model derivative not found - Urn (base64): {encodedUrn}");
-
-                //need to translate object
-                //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
             }
         }
 

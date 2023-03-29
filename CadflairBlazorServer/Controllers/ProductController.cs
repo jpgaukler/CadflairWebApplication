@@ -1,11 +1,6 @@
-﻿using CadflairDataAccess;
-using CadflairDataAccess.Models;
-using CadflairForgeAccess;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace CadflairBlazorServer.Controllers

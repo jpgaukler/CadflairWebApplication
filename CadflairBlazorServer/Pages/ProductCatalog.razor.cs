@@ -1,7 +1,4 @@
-using CadflairDataAccess.Models;
 using Microsoft.AspNetCore.Components;
-using CadflairDataAccess;
-using MudBlazor;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace CadflairBlazorServer.Pages
@@ -9,6 +6,7 @@ namespace CadflairBlazorServer.Pages
     public partial class ProductCatalog
     {
         // services
+
         [Inject] ProtectedSessionStorage _protectedSessionStorage { get; set; } = default!;
         [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
         [Inject] NavigationManager _navigationManager { get; set; } = default!;

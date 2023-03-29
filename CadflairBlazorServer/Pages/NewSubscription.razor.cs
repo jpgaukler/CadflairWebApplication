@@ -1,8 +1,5 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using CadflairDataAccess;
-using CadflairDataAccess.Models;
-using CadflairBlazorServer.Helpers;
 
 namespace CadflairBlazorServer.Pages
 {
@@ -28,12 +25,14 @@ namespace CadflairBlazorServer.Pages
             if (_loggedInUser.SubscriptionId != null)
             {
                 _navigationManager.NavigateTo("/dashboard");
+                return;
             }
         }
 
         private async Task Submit_OnClick()
         {
-            if (!_validInputs) return;
+            if (!_validInputs) 
+                return;
 
             // create new subscription record
             Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: (int)SubscriptionTypeEnum.Pro, 

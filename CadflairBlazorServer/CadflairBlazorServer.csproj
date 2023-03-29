@@ -12,10 +12,9 @@
     <PackageReference Include="FluentEmail.Graph" Version="2.3.0" />
     <PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.ApplicationInsights.TraceListener" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.3" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="2.5.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.5.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.4" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="2.6.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.6.1" />
     <PackageReference Include="MudBlazor" Version="6.1.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

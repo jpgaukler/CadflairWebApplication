@@ -1,6 +1,3 @@
-using CadflairBlazorServer.Controllers;
-using CadflairDataAccess;
-using CadflairForgeAccess;
 using FluentEmail.Graph;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -8,15 +5,12 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
-using MudBlazor;
-using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add Application Insights for logging
-builder.Services.AddApplicationInsightsTelemetry();
 
 // Add services to the container.
+builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 

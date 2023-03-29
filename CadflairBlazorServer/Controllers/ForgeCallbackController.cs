@@ -1,13 +1,7 @@
-﻿using CadflairDataAccess;
-using CadflairDataAccess.Models;
-using CadflairForgeAccess;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using System.Diagnostics;
 
 namespace CadflairBlazorServer.Controllers
 {
@@ -24,16 +18,17 @@ namespace CadflairBlazorServer.Controllers
     [ApiController]
     public class ForgeCallbackController : ControllerBase
     {
-
         private readonly ForgeServicesManager _forgeServicesManager;
         private readonly DataServicesManager _dataServicesManager;
         private readonly IHubContext<ForgeCallbackHub> _hubContext;
+        private readonly ILogger<ForgeCallbackController> _logger;
 
-        public ForgeCallbackController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager, IHubContext<ForgeCallbackHub> hubContext)
+        public ForgeCallbackController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager, IHubContext<ForgeCallbackHub> hubContext, ILogger<ForgeCallbackController> logger)
         {
             _forgeServicesManager = forgeServicesManager;
             _dataServicesManager = dataServicesManager;
             _hubContext = hubContext;
+            _logger = logger;
         }
 
 
@@ -69,17 +64,18 @@ namespace CadflairBlazorServer.Controllers
                     byte[]? bytes = await client.DownloadDataAsync(new RestRequest());
                     string reportTxt = System.Text.Encoding.Default.GetString(bytes!);
 
-                    Debug.WriteLine($"Workitem failed: {reportTxt}");
+                    _logger.LogError($"Workitem failed: {reportTxt}");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                _logger.LogError(ex, $"An unknown error occurred!");
             }
 
             //ALWAYS RETURN OK TO THE FORGE API
             return Ok();
         }
+
 
         [HttpPost]
         [Route("api/v1/designautomation/productconfiguration/create/onprogress")]
@@ -100,12 +96,13 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                _logger.LogError(ex, $"An unknown error occurred!");
             }
 
             //ALWAYS RETURN OK TO THE FORGE API
             return Ok();
         }
+
 
         [HttpPost]
         [Route("/api/v1/modelderivative/translate/oncomplete")]
@@ -113,7 +110,6 @@ namespace CadflairBlazorServer.Controllers
         {
             try
             {
-                Debug.WriteLine("Model Derivative translation OnComplete");
                 JObject response = JObject.Parse((string)body.ToString());
                 JObject payload = response["payload"]?.Value<JObject>()!;
                 JObject workflowAttributes = payload["WorkflowAttributes"]?.Value<JObject>()!;
@@ -125,13 +121,12 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                _logger.LogError(ex, $"An unknown error occurred!");
             }
 
             //ALWAYS RETURN OK TO THE FORGE API
             return Ok();
         }
-
 
     }
 }
