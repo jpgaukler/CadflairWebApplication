@@ -10,10 +10,12 @@ namespace CadflairBlazorServer.Controllers
     public class UserController : ControllerBase
     {
         private readonly DataServicesManager _dataServicesManager;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(DataServicesManager dataServicesManager)
+        public UserController(DataServicesManager dataServicesManager, ILogger<UserController> logger)
         {
             _dataServicesManager = dataServicesManager;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -27,6 +29,7 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"An unknown error occurred!");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }

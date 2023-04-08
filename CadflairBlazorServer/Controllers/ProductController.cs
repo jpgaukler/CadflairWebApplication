@@ -12,11 +12,14 @@ namespace CadflairBlazorServer.Controllers
     {
         private readonly ForgeServicesManager _forgeServicesManager;
         private readonly DataServicesManager _dataServicesManager;
+        private readonly ILogger<ProductController> _logger;
+        private readonly long MAX_FILE_SIZE = 1024 * 1024 * 20;
 
-        public ProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager)
+        public ProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager, ILogger<ProductController> logger)
         {
             _forgeServicesManager = forgeServicesManager;
             _dataServicesManager = dataServicesManager;
+            _logger = logger;
         }
 
         #region "Product"
@@ -38,9 +41,17 @@ namespace CadflairBlazorServer.Controllers
             try
             {
                 //validate data
-                if (string.IsNullOrWhiteSpace(form.ProductData)) return ValidationProblem("Parameter 'ProductData' was not provided!");
-                if (form.ZipFile == null || form.ZipFile.Length == 0) return ValidationProblem("No zip file was provided!");
-                if (Path.GetExtension(form.ZipFile.FileName) != ".zip") return ValidationProblem("Invalid file type!");
+                if (string.IsNullOrWhiteSpace(form.ProductData)) 
+                    return ValidationProblem("Parameter 'ProductData' was not provided!");
+
+                if (form.ZipFile == null || form.ZipFile.Length == 0) 
+                    return ValidationProblem("No zip file was provided!");
+
+                if (Path.GetExtension(form.ZipFile.FileName) != ".zip") 
+                    return ValidationProblem("Invalid file type!");
+
+                if (form.ZipFile.Length > MAX_FILE_SIZE)
+                    return ValidationProblem($"File exceeds maximum file size ({MAX_FILE_SIZE/1000000} MB)!");
 
 
                 // NEED TO VALIDATE INPUTS!!!!!!!!!!!!!!!
@@ -63,10 +74,6 @@ namespace CadflairBlazorServer.Controllers
                 //Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
                 //Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
 
-                //// Upload check if greater than 2mb!
-                //if (memoryStream.Length > 2097152)
-                //{
-                //}
 
                 // check to see if product already exists
                 Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
@@ -89,9 +96,7 @@ namespace CadflairBlazorServer.Controllers
                 string tempFileName = Path.GetTempFileName();
 
                 using (FileStream stream = System.IO.File.Create(tempFileName))
-                {
                     await form.ZipFile.CopyToAsync(stream);
-                }
 
                 // Upload file to Autodesk Forge OSS 
                 string objectKey = Guid.NewGuid().ToString() + ".zip";
@@ -100,11 +105,11 @@ namespace CadflairBlazorServer.Controllers
                 // Delete the temp file from the server
                 System.IO.File.Delete(tempFileName);
 
-                if (!uploadSuccessful) return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload files to Autodesk OSS." });
+                if (!uploadSuccessful) 
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload files to Autodesk OSS." });
 
                 // start the Model Derivative translation so the default configuration is viewable in the browser
                 var tranlationJob = await _forgeServicesManager.ModelDerivativeService.TranslateObject(bucketKey, objectKey, rootFileName);
-                Debug.WriteLine($"Model derivative translation started.");
 
                 if (product == null)
                 {
@@ -115,8 +120,6 @@ namespace CadflairBlazorServer.Controllers
                                                                                       forgeBucketKey: bucketKey,
                                                                                       isPublic: isPublic,
                                                                                       createdById: userId);
-
-                    Debug.WriteLine($"Created new product: {product.DisplayName}");
                 }
 
                 // Create new ProductVersion
@@ -126,19 +129,17 @@ namespace CadflairBlazorServer.Controllers
                                                                                                                isConfigurable: isConfigurable,
                                                                                                                createdById: userId);
 
-                Debug.WriteLine($"Created new product version: {product.DisplayName} Version: {productVersion.VersionNumber}");
-
                 // Create default ProductConfiguration 
                 ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id,
                                                                                                                                  argumentJson: argumentJson,
                                                                                                                                  forgeZipKey: objectKey,
                                                                                                                                  isDefault: true);
-                Debug.WriteLine($"Created new product configuration: {productConfiguration.Id}");
 
                 return Ok(product);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"An unknown error occurred!");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }
@@ -159,6 +160,7 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"An unknown error occurred!");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }
@@ -174,6 +176,7 @@ namespace CadflairBlazorServer.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, $"An unknown error occurred!");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
             }
         }

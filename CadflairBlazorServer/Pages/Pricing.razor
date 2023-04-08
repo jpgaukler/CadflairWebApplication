@@ -19,7 +19,7 @@
                     <MudDivider/>
                     @foreach(PlanFeature feature in _features)
                     {
-                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudStack Row AlignItems="AlignItems.Center">
                             <MudIcon Icon="@(feature.Basic ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.CheckBoxOutlineBlank)" Color="Color.Default"/>
                             <MudText Typo="Typo.body1">@feature.Description</MudText>
                         </MudStack>
@@ -38,7 +38,7 @@
                     <MudDivider/>
                     @foreach(PlanFeature feature in _features)
                     {
-                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudStack Row AlignItems="AlignItems.Center">
                             <MudIcon Icon="@(feature.Pro ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.CheckBoxOutlineBlank)" Color="Color.Default"/>
                             <MudText Typo="Typo.body1">@feature.Description</MudText>
                         </MudStack>
@@ -58,7 +58,7 @@
                     <MudDivider/>
                     @foreach(PlanFeature feature in _features)
                     {
-                        <MudStack Row="true" AlignItems="AlignItems.Center">
+                        <MudStack Row AlignItems="AlignItems.Center">
                             <MudIcon Icon="@(feature.Ultra ? Icons.Material.Filled.CheckBox : Icons.Material.Filled.CheckBoxOutlineBlank)" Color="Color.Default"/>
                             <MudText Typo="Typo.body1">@feature.Description</MudText>
                         </MudStack>

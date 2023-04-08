@@ -3,7 +3,7 @@
 @switch (Element.UiElementSpec)
 {
     case "ControlTabContainerSpec":
-        <MudTabs ApplyEffectsToContainer="true" Outlined="true" Rounded="true" PanelClass="pa-3">
+        <MudTabs ApplyEffectsToContainer Outlined Rounded PanelClass="pa-3">
             @foreach(ILogicFormElement tabPanel in Element.Items)
             {
                 <MudTabPanel Text="@tabPanel.Name" ToolTip="@tabPanel.ToolTip">
@@ -21,7 +21,7 @@
 
     case "ControlGroupSpec":
         <MudExpansionPanels>
-            <MudExpansionPanel IsInitiallyExpanded="true">
+            <MudExpansionPanel IsInitiallyExpanded>
                 <TitleContent>
                     <MudText Typo="Typo.button"><b>@Element.Name</b></MudText>
                 </TitleContent>
@@ -38,7 +38,7 @@
         break;
 
     case "ControlRowSpec":
-        <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudStack Row AlignItems="AlignItems.Center">
             @foreach (ILogicFormElement element in Element.Items)
             {
                 <ProductInput Element="@element" Disabled="@Disabled" @key="element"></ProductInput>
@@ -54,12 +54,8 @@
                     <MudNumericField T="double?"
                                      Value="string.IsNullOrEmpty(Element.ParameterExpression) ? null : Double.Parse(Element.ParameterExpression.Replace(Element.ParameterUnits, string.Empty))"
                                      ValueChanged="@((val) => Element.ParameterExpression = $"{val.ToString()} {Element.ParameterUnits}")"
-                                     Label="@Element.Name"
-                                     HideSpinButtons="true"
-                                     Disabled="@Disabled"
-                                     Adornment="Adornment.End"
-                                     AdornmentText="@Element.ParameterUnits"
-                                     Variant="@_variant"
+                                     Label="@Element.Name" Disabled="@Disabled" Variant="@_variant"
+                                     Adornment="Adornment.End" AdornmentText="@Element.ParameterUnits" HideSpinButtons
                                      Validation="@(new RangeAttribute(minimum: Element.ParameterMinValue == null ? 0 : (double)Element.ParameterMinValue,
                                                                       maximum: Element.ParameterMaxValue == null ? 0 : (double)Element.ParameterMaxValue)
                                                                       { ErrorMessage = $"Please enter a value between {Element.ParameterMinValue} and {Element.ParameterMaxValue}." })" />
@@ -74,10 +70,10 @@
                                Min="@(Element.TrackBarMinValue == null ? default(double) : (double)Element.TrackBarMinValue)"
                                Max="@(Element.TrackBarMaxValue == null ? default(double) : (double)Element.TrackBarMaxValue)"
                                Step="@(Element.TrackBarIncrement == null ? default(double) : (double)Element.TrackBarIncrement)"
-                               TickMarks="true"
+                               TickMarks
                                Disabled="@Disabled"
                                Variant="@_variant"
-                               ValueLabel="true">
+                               ValueLabel>
                         @Element.Name: 
                         @if(Element.ParameterUnits == "ul")
                         {
@@ -96,10 +92,7 @@
 
     case "TextParameterControlSpec":
         <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
-            <MudTextField Label="@Element.Name" 
-                          @bind-Value="@Element.ParameterExpression"
-                          Disabled="@Disabled"
-                          Variant="@_variant"/>
+            <MudTextField @bind-Value="@Element.ParameterExpression" Label="@Element.Name" Disabled="@Disabled" Variant="@_variant" />
         </MudTooltip>
         break;
 
@@ -130,12 +123,8 @@
 
             case "ComboBox":
                 <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
-                    <MudSelect T="string" 
-                               @bind-Value="Element.ParameterExpression" 
-                               Label="@Element.Name" 
-                               Variant="@_variant" 
-                               Disabled="@Disabled"
-                               AnchorOrigin="Origin.BottomCenter">
+                    <MudSelect T="string" @bind-Value="Element.ParameterExpression" Label="@Element.Name"
+                               Variant="@_variant" Disabled="@Disabled" AnchorOrigin="Origin.BottomCenter">
                         @foreach (string expression in Element.ParameterExpressionList)
                         {
                             <MudSelectItem Value="expression">
@@ -155,14 +144,11 @@
 
             case "ListBox":
                 <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
-                    <MudList Clickable="true" 
-                             SelectedValue="Element.ParameterExpression"
+                    <MudList SelectedValue="Element.ParameterExpression"
                              SelectedValueChanged="@((val) => Element.ParameterExpression = (string)val)"
-                             Disabled="@Disabled"
-                             Class="mud-paper-outlined mud-tabs-rounded pa-0"
-                             Style="border-radius: var(--mud-default-borderradius);"
-                             Dense="true">
-                        <MudListSubheader DisableGutters="true" Class="pa-3">
+                             Class="mud-paper-outlined mud-tabs-rounded pa-0" Style="border-radius: var(--mud-default-borderradius);"
+                             Disabled="@Disabled" Dense Clickable>
+                        <MudListSubheader DisableGutters Class="pa-3">
                             <MudText><b>@Element.Name</b></MudText>
                         </MudListSubheader>
                         @foreach (string expression in Element.ParameterExpressionList)
@@ -193,19 +179,14 @@
                     <MudCheckBox T="bool" 
                                  Checked="Convert.ToBoolean(Element.ParameterExpression)"
                                  CheckedChanged="@((val) => Element.ParameterExpression = val.ToString())"
-                                 Disabled="@Disabled"
-                                 Label="@Element.Name" 
-                                 LabelPosition="LabelPosition.End" />
+                                 Label="@Element.Name" LabelPosition="LabelPosition.End" Disabled="@Disabled" />
                 </MudTooltip>
                 break;
 
             case "TrueOrFalse":
                 <MudTooltip Text="@Element.ToolTip" RootStyle="width:100%">
-                    <MudSelect T="string" 
-                               @bind-Value="Element.ParameterExpression" 
-                               Disabled="@Disabled"
-                               Variant="@_variant"
-                               Label="@Element.Name">
+                    <MudSelect T="string" @bind-Value="Element.ParameterExpression"
+                               Label="@Element.Name" Variant="@_variant" Disabled="@Disabled">
                         <MudSelectItem Value="@("True")" />
                         <MudSelectItem Value="@("False")" />
                     </MudSelect>

@@ -29,12 +29,6 @@
     </NotAuthorized>
 </AuthorizeView>
 
-
-@*<MudStack>
-    <MudLink Href="/dashboard">Dashboard</MudLink>
-</MudStack>
-*@
-
 <MudContainer MaxWidth="MaxWidth.Large">
     <MudGrid Justify="Justify.Center">
         <!-- hero text -->
@@ -88,7 +82,7 @@
                 <MudStack>
                     <MudCard Class="mud-background-gray">
                         <MudCardContent>
-                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
+                            <MudStack Row AlignItems="AlignItems.Center" Spacing="5">
                                 <MudIcon Icon="@Icons.Material.Filled.Cloud" Size="Size.Large" />
                                 <div>
                                     <MudText><strong>Cloud Powered CAD</strong></MudText>
@@ -99,7 +93,7 @@
                     </MudCard>
                     <MudCard Class="mud-background-gray">
                         <MudCardContent>
-                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
+                            <MudStack Row AlignItems="AlignItems.Center" Spacing="5">
                                 <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
                                 <div>
                                     <MudText><strong>Algorithm-driven modeling</strong></MudText>
@@ -110,7 +104,7 @@
                     </MudCard>
                     <MudCard Class="mud-background-gray">
                         <MudCardContent>
-                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="5">
+                            <MudStack Row AlignItems="AlignItems.Center" Spacing="5">
                                 <MudIcon Icon="@Icons.Material.Filled.ToggleOn" Size="Size.Large" />
                                 <div>
                                     <MudText><strong>Custom product configurators</strong></MudText>
@@ -125,7 +119,7 @@
             <!-- demo cards -->
             <MudItem xs="12" Class="my-15">
                 <MudText Typo="Typo.h2" Class="mb-5">Product Demos</MudText>
-                <MudStack Row="true" Justify="Justify.Center" Spacing="5">
+                <MudStack Row Justify="Justify.Center" Spacing="5">
                     <MudCard Class="mud-background-gray" Style="max-width:300px;">
                         <MudCardMedia Image="images/dresser_exploded.png" Class="ma-5" Height="200" />
                         <MudCardContent>
@@ -169,24 +163,24 @@
             <MudItem xs="12" Class="my-15">
                 <MudText Typo="Typo.h2" Class="mb-5">Contact Us</MudText>
                 <MudStack Spacing="1">
-                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                    <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudText Style="min-width:125px;">First Name</MudText>
                         <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter first name" Margin="Margin.Dense" />
                     </MudStack>
-                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                    <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudText Style="min-width:125px;">Last Name</MudText>
                         <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter last name" Margin="Margin.Dense" />
                     </MudStack>
-                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                    <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudText Style="min-width:125px;">Email Address</MudText>
                         <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter email address" Margin="Margin.Dense" />
                     </MudStack>
-                    <MudStack Row="true" AlignItems="AlignItems.Baseline">
+                    <MudStack Row AlignItems="AlignItems.Baseline">
                         <MudText Style="min-width:125px;">Message</MudText>
                         <MudTextField T="string" Variant="Variant.Outlined" Placeholder="What can we help you with?" Margin="Margin.Dense" Lines="6" />
                     </MudStack>
-                    <MudStack Row="true" Justify="Justify.SpaceAround" Class="my-3">
-                        <MudButton Variant="Variant.Filled" DisableElevation="true" Color="Color.Primary">Submit</MudButton>
+                    <MudStack Row Justify="Justify.SpaceAround" Class="my-3">
+                        <MudButton Variant="Variant.Filled" DisableElevation Color="Color.Primary">Submit</MudButton>
                     </MudStack>
                 </MudStack>
             </MudItem>

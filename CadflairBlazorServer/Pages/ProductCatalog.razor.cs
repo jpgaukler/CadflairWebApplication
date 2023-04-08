@@ -109,7 +109,7 @@ namespace CadflairBlazorServer.Pages
             _navigationManager.NavigateTo($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}");
         }
 
-        private async Task ToggleView()
+        private async Task ToggleView_OnClick()
         {
             _displayListView = !_displayListView;
             await _protectedSessionStorage.SetAsync("_displayListView", _displayListView);

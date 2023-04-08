@@ -5,7 +5,7 @@
     <MudPaper Class="rounded-lg pa-5 ma-5" Elevation="3">
         <MudForm @bind-IsValid="_validInputs">
             <MudStack>
-                <MudTextField @bind-Value="_companyName" Label="Company Name" Required="true" RequiredError="Company Name is required!" />
+                <MudTextField @bind-Value="_companyName" Label="Company Name" Required/>
 
                 <MudSelect T="SubscriptionType"
                            ToStringFunc="@(subscriptionType => subscriptionType?.Name)"

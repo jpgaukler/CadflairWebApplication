@@ -3,30 +3,25 @@
 <PageTitle>@CompanyName - Products</PageTitle>
 
 <div style="height: calc(100vh - var(--mud-appbar-height));">
-    <MudStack Row="true" Spacing="0" Class="mud-height-full">
+    <MudStack Row Spacing="0" Class="mud-height-full">
 
         <!-- product folder tree -->
         <MudStack Class="pa-3" Style="min-width:275px;">
-            <MudTreeView T="ProductFolderTreeItem"
-                         Items="_productFolderTreeItems"
+            <MudTreeView T="ProductFolderTreeItem" Items="_productFolderTreeItems"
                          SelectedValueChanged="SelectedTreeItemChanged"
-                         Hover="true"
-                         ExpandOnDoubleClick="true">
+                         Hover ExpandOnDoubleClick>
                 <ItemTemplate>
-                    <MudTreeViewItem T="ProductFolderTreeItem"
-                                     Value="@context"
-                                     Items="@context.ChildItems"
-                                     Text="@context.ProductFolder.DisplayName"
-                                     Icon="@Icons.Material.Filled.Folder" />
+                    <MudTreeViewItem T="ProductFolderTreeItem" Items="@context.ChildItems" Value="@context"
+                                     Text="@context.ProductFolder.DisplayName" Icon="@Icons.Material.Filled.Folder" />
                 </ItemTemplate>
             </MudTreeView>
         </MudStack>
+
         <MudStack Class="flex-grow-1 mud-height-full">
             <MudStack Spacing="0" Class="flex-grow-1 pa-3 overflow-auto">
-
                 <!-- header toolbar -->
                 <div>
-                    <MudToolBar DisableGutters="true" Dense="true">
+                    <MudToolBar DisableGutters Dense>
                         @if (_breadcrumbItems.Count < 1)
                         {
                             <MudText>Please select a folder.</MudText>
@@ -43,7 +38,8 @@
                             </MudBreadcrumbs>
                         }
                         <MudSpacer />
-                        <MudIconButton OnClick="ToggleView" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
+                        <MudIconButton OnClick="ToggleView_OnClick" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
+                        @*<MudToggleIconButton @bind-Toggled="_displayListView" Icon="@Icons.Material.Filled.ViewList" ToggledIcon="@Icons.Material.Filled.GridView" />*@
                         @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@
                     </MudToolBar>
                     <MudDivider />
@@ -52,7 +48,7 @@
                 @if (_loadingData)
                 {
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
-                        <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
+                        <MudProgressCircular Color="Color.Default" Indeterminate Size="Size.Large" />
                     </MudStack>
                 }
                 else
@@ -71,23 +67,18 @@
                         if (_displayListView)
                         {
                             <!-- product list view -->
-                            <MudDataGrid T="Product"
-                             Items="_products"
-                             ColumnResizeMode="ResizeMode.Column"
-                             Dense="true"
-                             Elevation="0"
-                             Hover="true"
-                             FixedHeader="true"
-                             Height="100%"
-                             RowClick="ProductsGrid_OnRowClick"
-                             Class="overflow-auto">
+                            <MudDataGrid T="Product" Items="_products"
+                                         RowClick="ProductsGrid_OnRowClick"
+                                         ColumnResizeMode="ResizeMode.Column"
+                                         Elevation="0" Height="100%" Class="overflow-auto"
+                                         Dense Hover FixedHeader>
                                 <Columns>
-                                    <Column T="Product" Sortable="false" Filterable="false" Resizable="false" CellStyle="width:100px">
+                                    <TemplateColumn Sortable="false" Filterable="false" Resizable="false" CellStyle="width:100px">
                                         <CellTemplate>
                                             <ProductThumbnail Product="@context.Item" Height="100" Width="100" />
                                         </CellTemplate>
-                                    </Column>
-                                    <Column T="Product" Field="@nameof(Product.DisplayName)" Title="Display Name" />
+                                    </TemplateColumn>
+                                    <PropertyColumn Property="x => x.DisplayName" Title="Display Name" />
                                 </Columns>
                             </MudDataGrid>
                         }
@@ -129,14 +120,14 @@
            ClipMode="DrawerClipMode.Always"
            Width="600px">
 
-    <MudStack Row="true" Class="mud-height-full overflow-auto">
-        <MudDivider Vertical="true" />
+    <MudStack Row Class="mud-height-full overflow-auto">
+        <MudDivider Vertical />
         <div>
-            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-5">
+            <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="pa-5">
                 <MudText Typo="Typo.h5">Details</MudText>
                 <MudIconButton OnClick="() => _showDetails = false" Icon="@Icons.Filled.Close" />
             </MudStack>
-            <MudStack Row="true">
+            <MudStack Row>
                 <div class="flex-grow-1">
                     <MudText Typo="Typo.body1">Display Name: @_selectedProduct?.DisplayName</MudText>
                     <MudText Typo="Typo.body1">Parameters:</MudText>
@@ -151,8 +142,8 @@
             <MudDataGrid T="ILogicFormElement"
                          Items="_parameterGridItems"
                          Class="flex-grow-1 overflow-auto"
-                         Striped="true"
-                         Dense="true">
+                         Striped
+                         Dense>
                 <Columns>
                     <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.Name)" Title="Display Name" />
                     <Column T="ILogicFormElement" Field="@nameof(ILogicFormElement.ParameterName)" Title="Parameter Name" />

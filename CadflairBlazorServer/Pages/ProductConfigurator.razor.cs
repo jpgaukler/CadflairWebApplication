@@ -182,7 +182,7 @@ namespace CadflairBlazorServer.Pages
             _navigationManager.NavigateTo(url);
         }
 
-        private async Task StartOver_OnClick()
+        private void StartOver_OnClick()
         {
             _showRequestButton = false;
             _showSubmitButton = true;
