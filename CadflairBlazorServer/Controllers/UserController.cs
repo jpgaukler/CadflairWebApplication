@@ -19,7 +19,7 @@ namespace CadflairBlazorServer.Controllers
         }
 
         [HttpGet]
-        [Route("api/v1/user/get/{objectIdentifier}")]
+        [Route("api/v1/users/{objectIdentifier}")]
         public async Task<IActionResult> GetUserByObjectIdentifier(string objectIdentifier)
         {
             try

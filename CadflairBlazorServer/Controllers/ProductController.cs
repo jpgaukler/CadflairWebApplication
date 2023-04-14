@@ -35,7 +35,7 @@ namespace CadflairBlazorServer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/v1/product/create")]
+        [Route("api/v1/products")]
         public async Task<IActionResult> CreateProduct([FromForm] ProductUploadForm form)
         {
             try
@@ -150,7 +150,7 @@ namespace CadflairBlazorServer.Controllers
         #region "ProductFolder"
 
         [HttpPost]
-        [Route("api/v1/productfolder/create/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
+        [Route("api/v1/productfolders/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
         public async Task<IActionResult> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
         {
             try
@@ -166,7 +166,7 @@ namespace CadflairBlazorServer.Controllers
         }
 
         [HttpGet]
-        [Route("api/v1/productfolder/get/{subscriptionId:int}/{parentId:int?}")]
+        [Route("api/v1/productfolders/{subscriptionId:int}/{parentId:int?}")]
         public async Task<IActionResult> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
         {
             try

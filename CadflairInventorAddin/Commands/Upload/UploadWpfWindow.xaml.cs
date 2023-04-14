@@ -3,22 +3,14 @@ using CadflairInventorAddin.Api;
 using CadflairInventorAddin.Helpers;
 using Inventor;
 using Microsoft.Identity.Client;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
 using System.Windows.Media;
 
 namespace CadflairInventorAddin.Commands.Upload
 {
-    /// <summary>
-    /// Interaction logic for UploadWpfControl.xaml
-    /// </summary>
     public partial class UploadWpfWindow : Window
     {
         private Document _doc;
@@ -28,42 +20,28 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             InitializeComponent();
 
-            _doc = doc;
-
             // set colors of window
             if(Globals.InventorApplication.ThemeManager.ActiveTheme.Name.Contains("Light"))
             {
-                //(System.Windows.Media.Color)FindResource("ApplicationFrameBackgroundColor") = ColorConverter.ConvertFromString("#d9d9d9");
                 Resources["ApplicationFrameBackgroundColor"] = ColorConverter.ConvertFromString("#d9d9d9");
                 Resources["BrowserPaneColor"] = ColorConverter.ConvertFromString("#f5f5f5");
                 Resources["BrowserPaneAccentColor"] = ColorConverter.ConvertFromString("#eaeaea");
-                Resources["BrowserPaneTextColor"] = ColorConverter.ConvertFromString("#666666");
+                Resources["BrowserPaneTextColor"] = ColorConverter.ConvertFromString("#000000");
                 Resources["InputBackgroundColor"] = ColorConverter.ConvertFromString("#ffffff");
                 Resources["ButtonBorderColor"] = ColorConverter.ConvertFromString("#bababa");
-                MessageBox.Show("light theme");
-
             }
 
             if(Globals.InventorApplication.ThemeManager.ActiveTheme.Name.Contains("Dark"))
             {
-                Resources["ApplicationFrameBackgroundColor"] = ColorConverter.ConvertFromString("#222933");
-                Resources["BrowserPaneColor"] = ColorConverter.ConvertFromString("#3b4453");
-                Resources["BrowserPaneAccentColor"] = ColorConverter.ConvertFromString("#4b5463");
-                Resources["BrowserPaneTextColor"] = ColorConverter.ConvertFromString("#f5f5f5");
-                Resources["InputBackgroundColor"] = ColorConverter.ConvertFromString("#2c3340");
-                Resources["ButtonBorderColor"] = ColorConverter.ConvertFromString("#8691a1");
-                MessageBox.Show("dark theme");
+                Resources["ApplicationFrameBackgroundColor"] = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#222933");
+                Resources["BrowserPaneColor"] = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#3b4453");
+                Resources["BrowserPaneAccentColor"] = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#4b5463");
+                Resources["BrowserPaneTextColor"] = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#f5f5f5");
+                Resources["InputBackgroundColor"] = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#2c3340");
+                Resources["ButtonBorderColor"] = (System.Windows.Media.Color)ColorConverter.ConvertFromString("#8691a1");
             }
 
-            //SolidColorBrush backgroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_BackgroundColor").ToSystemMediaColor());
-            //SolidColorBrush foregroundBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("BrowserPane_TextColor").ToSystemMediaColor());
-            //SolidColorBrush appFrameBrush = new SolidColorBrush(Globals.InventorApplication.ThemeManager.GetComponentThemeColor("ApplicationFrame_BackgroundColor").ToSystemMediaColor());
-
-            //this.Background = backgroundBrush;
-            //this.Foreground = foregroundBrush;
-
-
-            //DataGridViewParameters.BackgroundColor = appFrameBrush;
+            _doc = doc;
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
@@ -210,8 +188,6 @@ namespace CadflairInventorAddin.Commands.Upload
             TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
             int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
 
-
-
             //save model to zipfile
             string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
 
@@ -232,15 +208,17 @@ namespace CadflairInventorAddin.Commands.Upload
 
             if(product == null)
             {
-                ConnectionRichTextBox.AppendText("Upload failed!");
+                MessageBox.Show("Upload failed!", "Upload Failed!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
-                ConnectionRichTextBox.AppendText("Upload successful!\n");
-                ConnectionRichTextBox.AppendText($"Product Id: {product.Id} \n");
-                ConnectionRichTextBox.AppendText($"Display Name: {product.DisplayName} \n");
-                ConnectionRichTextBox.AppendText($"Created On: {product.CreatedOn} \n");
+                MessageBox.Show($"Product Id: {product.Id} \nDisplay Name: {product.DisplayName} \n", "Success!", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            UploadToCadflair.UploadToCadflair_OnTerminate();
         }
     }
 }

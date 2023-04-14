@@ -21,16 +21,17 @@ namespace CadflairBlazorServer.Pages
         // fields
         private ForgeViewer? _forgeViewer;
         private HubConnection? _hubConnection;
-        private Subscription _subscription = default!;
-        private Product _product = default!;
-        private ProductVersion _productVersion = default!;
-        private ProductConfiguration _defaultConfiguration = default!;
+        private Subscription? _subscription;
+        private Product? _product;
+        private ProductVersion? _productVersion;
+        private ProductConfiguration? _defaultConfiguration;
         private ProductConfiguration? _productConfiguration;
-        private ILogicFormElement _iLogicFormData = default!;
+        private ILogicFormElement? _iLogicFormData;
         private bool _showSubmitButton = true;
         private bool _showRequestButton = false;
         private bool _validInputs = false;
         private bool _configurationInProgress = false;
+        private bool _initializing = true;
 
         protected override async Task OnInitializedAsync()
         {
@@ -56,8 +57,13 @@ namespace CadflairBlazorServer.Pages
             }
 
             // construct UI
-            _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_productVersion.ILogicFormJson)!;
-            _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
+            if(_productVersion.ILogicFormJson != null)
+            {
+                _iLogicFormData = JsonConvert.DeserializeObject<ILogicFormElement>(_productVersion.ILogicFormJson)!;
+                _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
+            }
+
+            _initializing = false;
 
             // load default model in viewer
             await _forgeViewer!.ViewDocument(_product.ForgeBucketKey, _defaultConfiguration.ForgeZipKey);
@@ -66,21 +72,21 @@ namespace CadflairBlazorServer.Pages
 
         private async Task Submit_OnClick()
         {
-            if (_configurationInProgress) 
+            if (_configurationInProgress)
                 return;
 
             _configurationInProgress = true;
 
             //check for existing configuration
-            List<ProductConfiguration> existingConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(_productVersion.Id);
-            _productConfiguration = existingConfigurations.Find(i => i.ArgumentJson == _iLogicFormData.GetArgumentJson());
+            List<ProductConfiguration> existingConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(_productVersion!.Id);
+            _productConfiguration = existingConfigurations.Find(i => i.ArgumentJson == _iLogicFormData?.GetArgumentJson());
 
-            if(_productConfiguration != null)
+            if (_productConfiguration != null)
             {
                 _configurationInProgress = false;
                 _showSubmitButton = false;
                 _showRequestButton = true;
-                _ = _forgeViewer!.ViewDocument(_product.ForgeBucketKey, _productConfiguration.ForgeZipKey);
+                _ = _forgeViewer!.ViewDocument(_product!.ForgeBucketKey, _productConfiguration.ForgeZipKey);
                 _snackbar.Add("Existing configuration found!", Severity.Info);
                 StateHasChanged();
                 return;
@@ -96,15 +102,15 @@ namespace CadflairBlazorServer.Pages
 
             // create record in database
             ProductConfiguration newConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: _productVersion.Id,
-                                                                                                                         argumentJson: _iLogicFormData.GetArgumentJson(),
+                                                                                                                         argumentJson: _iLogicFormData!.GetArgumentJson(),
                                                                                                                          forgeZipKey: null,
                                                                                                                          isDefault: false);
 
             // submit the request to design automation 
             await _forgeServicesManager.DesignAutomationService.CreateProductConfigurationModel(connectionId: _hubConnection?.ConnectionId!,
                                                                                                 productConfigurationId: newConfiguration.Id,
-                                                                                                inputBucketKey: _product.ForgeBucketKey,
-                                                                                                inputObjectKey: _defaultConfiguration.ForgeZipKey,
+                                                                                                inputBucketKey: _product!.ForgeBucketKey,
+                                                                                                inputObjectKey: _defaultConfiguration!.ForgeZipKey,
                                                                                                 inputPathInZip: _productVersion.RootFileName,
                                                                                                 inventorParamsJson: _iLogicFormData.GetArgumentJson());
         }
@@ -138,7 +144,7 @@ namespace CadflairBlazorServer.Pages
                 { nameof(ProductQuoteRequestDialog.ProductConfiguration), _productConfiguration }
             };
 
-            var result = await _dialogService.Show<ProductQuoteRequestDialog>($"Request a Quote - {_product.DisplayName}", parameters).Result;
+            var result = await _dialogService.Show<ProductQuoteRequestDialog>($"Request a Quote - {_product!.DisplayName}", parameters).Result;
 
             if (!result.Canceled)
             {
@@ -154,7 +160,7 @@ namespace CadflairBlazorServer.Pages
                                                                                     messageText: dialog.MessageText);
 
                 _ = _emailService.SendNotificationEmail(dataServicesManager: _dataServicesManager,
-                                                        subscriptionId: _subscription.Id,
+                                                        subscriptionId: _subscription!.Id,
                                                         eventName: "ProductQuoteRequest_Insert",
                                                         subject: "New Request!",
                                                         templateFilename: "NewProductQuoteRequest.cshtml",
@@ -169,7 +175,7 @@ namespace CadflairBlazorServer.Pages
             if (_productConfiguration?.ForgeStpKey == null)
                 return;
 
-            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product.ForgeBucketKey, _productConfiguration.ForgeStpKey);
+            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product!.ForgeBucketKey, _productConfiguration.ForgeStpKey);
             _navigationManager.NavigateTo(url);
         }
 
@@ -178,7 +184,7 @@ namespace CadflairBlazorServer.Pages
             if (_productConfiguration?.ForgeZipKey == null)
                 return;
 
-            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product.ForgeBucketKey, _productConfiguration.ForgeZipKey);
+            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product!.ForgeBucketKey, _productConfiguration.ForgeZipKey);
             _navigationManager.NavigateTo(url);
         }
 

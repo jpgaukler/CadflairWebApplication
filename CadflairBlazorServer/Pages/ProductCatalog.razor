@@ -1,6 +1,6 @@
 ﻿@page "/{CompanyName}/products"
 
-<PageTitle>@CompanyName - Products</PageTitle>
+<PageTitle>Cadflair - Product Catalog</PageTitle>
 
 <div style="height: calc(100vh - var(--mud-appbar-height));">
     <MudStack Row Spacing="0" Class="mud-height-full">
@@ -45,7 +45,7 @@
                     <MudDivider />
                 </div>
 
-                @if (_loadingData)
+                @if (_initializing)
                 {
                     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
                         <MudProgressCircular Color="Color.Default" Indeterminate Size="Size.Large" />
@@ -53,7 +53,7 @@
                 }
                 else
                 {
-                    if (_products.Count < 1)
+                    if (_products.Count == 0)
                     {
                         <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
                             <MudStack AlignItems="AlignItems.Center">

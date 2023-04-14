@@ -2,15 +2,11 @@
 using CadflairInventorAddin.Api;
 using CadflairInventorAddin.Helpers;
 using Inventor;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Linq;
 
@@ -24,22 +20,31 @@ namespace CadflairInventorAddin.Commands.Upload
         {
             try
             {
-                if (!Authentication.SignedIn)
+                if (Authentication.SignedIn == false)
                 {
                     MessageBox.Show($"Please sign in to continue.", "Cadflair", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                if (_dockableWindowHelper != null && _dockableWindowHelper.IsOpen) return;
+                if (_dockableWindowHelper == null)
+                    _dockableWindowHelper = new DockableWindowHelper("Cadflair.UploadWindow", "Upload to Cadflair");
+
+                if (_dockableWindowHelper.IsOpen) 
+                    return;
 
                 UploadWpfWindow window = new UploadWpfWindow(Globals.InventorApplication.ActiveDocument);
-                _dockableWindowHelper = new DockableWindowHelper(window, "Cadflair.UploadWindow", "Upload to Cadflair");
+                _dockableWindowHelper.WpfWindow = window;
                 _dockableWindowHelper.Show();
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "UploadToCadflairButton_OnExecute");
             }
+        }
+
+        public static void UploadToCadflair_OnTerminate()
+        {
+            _dockableWindowHelper?.Close();
         }
 
         #region "iLogic form handling"

@@ -15,20 +15,34 @@ namespace CadflairInventorAddin.Helpers
     /// </summary>
     internal class DockableWindowHelper
     {
-        private readonly Window _wpfWindow;
+        private Window _wpfWindow;
         private readonly DockableWindow _dockableWindow;
         private readonly UserInterfaceManager _userInterfaceManager;
 
+        public Window WpfWindow
+        {
+            set
+            {
+                // capture reference to window
+                _wpfWindow = value;
+                _wpfWindow.WindowStyle = System.Windows.WindowStyle.None;
+                _wpfWindow.ResizeMode = System.Windows.ResizeMode.NoResize;
+
+                // attache wpf Window to DockableWindow
+                WindowInteropHelper helper = new WindowInteropHelper(value);
+                helper.EnsureHandle();
+                _dockableWindow.AddChild(helper.Handle);
+
+                // Set key hook.
+                HwndSource.FromHwnd(helper.Handle).AddHook(WndProc);
+            }
+        }
+
         public bool IsOpen { get; set; }
 
-        public DockableWindowHelper(Window wpfWindow, string dockableWindowInternalName, string dockableWindowTitle)
+        public DockableWindowHelper(string dockableWindowInternalName, string dockableWindowTitle)
         {
             _userInterfaceManager = Globals.InventorApplication.UserInterfaceManager;
-
-            // capture reference to window
-            _wpfWindow = wpfWindow;
-            _wpfWindow.WindowStyle = System.Windows.WindowStyle.None;
-            _wpfWindow.ResizeMode = System.Windows.ResizeMode.NoResize;
 
             // create the dockable window
             try
@@ -41,17 +55,10 @@ namespace CadflairInventorAddin.Helpers
                 _dockableWindow = _userInterfaceManager.DockableWindows.Add(Globals.AddInCLSIDString, dockableWindowInternalName, dockableWindowTitle);
             }
 
+            // dockable window settings
             _dockableWindow.SetMinimumSize(400, 550);
             _dockableWindow.ShowVisibilityCheckBox = false;
             _dockableWindow.ShowTitleBar = true;
-
-            // attache wpf Window to DockableWindow
-            WindowInteropHelper helper = new WindowInteropHelper(wpfWindow);
-            helper.EnsureHandle();
-            _dockableWindow.AddChild(helper.Handle);
-
-            // Set key hook.
-            HwndSource.FromHwnd(helper.Handle).AddHook(WndProc);
 
             // add event handlers for the dockable window
             _userInterfaceManager.DockableWindows.Events.OnHide += DockableWindow_OnHide;
@@ -60,33 +67,43 @@ namespace CadflairInventorAddin.Helpers
 
         public void Show()
         {
+            if (_wpfWindow == null)
+                return;
+
             _wpfWindow.Show();
             _dockableWindow.Visible = true;
             IsOpen = true;
+        }
+
+        public void Close()
+        {
+            _dockableWindow.Visible = false;
+            DockableWindow_OnHide(_dockableWindow, EventTimingEnum.kBefore, null, out HandlingCodeEnum _);
         }
 
         private void DockableWindow_OnHide(DockableWindow dockableWindow, EventTimingEnum beforeOrAfter, NameValueMap context, out HandlingCodeEnum handlingCode)
         {
             handlingCode = HandlingCodeEnum.kEventNotHandled;
 
-            if (dockableWindow.InternalName != _dockableWindow.InternalName) return;
-            if (beforeOrAfter == EventTimingEnum.kAfter) return;
+            if (dockableWindow.InternalName != _dockableWindow.InternalName)
+                return;
+
+            if (beforeOrAfter == EventTimingEnum.kAfter)
+                return;
 
             handlingCode = HandlingCodeEnum.kEventHandled;
 
-            _dockableWindow.Clear();
-            _userInterfaceManager.DockableWindows.Events.OnHide -= DockableWindow_OnHide;
-            _userInterfaceManager.DockableWindows.Events.OnHelp -= DockableWindow_OnHelp;
-            IsOpen = false;
-
             _wpfWindow.Close();
+            _dockableWindow.Clear();
+            IsOpen = false;
         }
 
         private void DockableWindow_OnHelp(DockableWindow DockableWindow, NameValueMap Context, out HandlingCodeEnum HandlingCode)
         {
             HandlingCode = HandlingCodeEnum.kEventNotHandled;
 
-            if (DockableWindow.InternalName != _dockableWindow.InternalName) return;
+            if (DockableWindow.InternalName != _dockableWindow.InternalName)
+                return;
 
             // ADD A LINK TO CADFLAIR HELP PAGE HERE
             Process.Start("http://www.cadflair.com/");

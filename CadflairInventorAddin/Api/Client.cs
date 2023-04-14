@@ -9,7 +9,7 @@ namespace CadflairInventorAddin.Api
     internal static class Client
     {
 
-        //private static readonly string BaseUrl = "https://localhost:7269";
+        //private static readonly string BaseUrl = "https://localhost:7269/";
         private static readonly string BaseUrl = "https://cadflair.azurewebsites.net/";
 
         private static async Task<string> CallApi(HttpMethod method, string endPoint, HttpContent content = null)
@@ -17,13 +17,20 @@ namespace CadflairInventorAddin.Api
             using (HttpClient client = new HttpClient())
             using (HttpRequestMessage request = new HttpRequestMessage(method, $"{BaseUrl}{endPoint}"))
             {
+                // set timeout
+                client.Timeout = TimeSpan.FromSeconds(30);
+
                 // add authorization token to request header
                 AuthenticationResult auth = await Authentication.GetAuthenticationResult();
-                if (auth == null) throw new Exception("User not signed in!");
+
+                if (auth == null) 
+                    throw new Exception("User not signed in!");
+
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", auth.AccessToken);
 
                 // add content
-                if (content != null) request.Content = content;
+                if (content != null) 
+                    request.Content = content;
 
                 // send the request
                 using (HttpResponseMessage response = await client.SendAsync(request))

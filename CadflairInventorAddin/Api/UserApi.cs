@@ -15,7 +15,7 @@ namespace CadflairInventorAddin.Api
         {
             try
             {
-                string endPoint = $"/api/v1/user/get/{objectIdentifier}";
+                string endPoint = $"api/v1/users/{objectIdentifier}";
                 string result = await Client.Get(endPoint);
                 User user  = JsonConvert.DeserializeObject<User>(result);
                 return user;

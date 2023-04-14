@@ -15,12 +15,12 @@ namespace CadflairBlazorServer.Pages
         [Parameter] public string CompanyName { get; set; } = string.Empty;
 
         // fields
-        private Subscription _subscription = default!;
+        private Subscription? _subscription;
         private List<Product> _products = new();
         private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _displayListView = true;
         private bool _showDetails = false;
-        private bool _loadingData = true;
+        private bool _initializing = true;
 
         // class for product folder tree structure
         private class ProductFolderTreeItem
@@ -46,7 +46,7 @@ namespace CadflairBlazorServer.Pages
 
             await LoadProductFoldersRecursive(null, _productFolderTreeItems);
             await SelectedTreeItemChanged(_productFolderTreeItems.FirstOrDefault());
-            _loadingData = false;
+            _initializing = false;
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -62,7 +62,7 @@ namespace CadflairBlazorServer.Pages
 
         private async Task LoadProductFoldersRecursive(int? parentId, HashSet<ProductFolderTreeItem> treeItems)
         {
-            List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId(_subscription.Id, parentId);
+            List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId(_subscription!.Id, parentId);
 
             if (folders == null)
                 return;
@@ -87,7 +87,9 @@ namespace CadflairBlazorServer.Pages
             }
 
             ProductFolder folder = _selectedTreeItem.ProductFolder;
-            _products = (await _dataServicesManager.ProductService.GetProductsByProductFolderId(folder.Id)).Where(i => i.IsPublic).ToList();
+            _products = (await _dataServicesManager.ProductService.GetProductsByProductFolderId(folder.Id))
+                                                                  .Where(i => i.IsPublic)
+                                                                  .ToList();
 
             // refresh breadcrumbs
             _breadcrumbItems.Clear();
@@ -106,7 +108,7 @@ namespace CadflairBlazorServer.Pages
         private void ProductsGrid_OnRowClick(DataGridRowClickEventArgs<Product> args)
         {
             Product product = args.Item;
-            _navigationManager.NavigateTo($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}");
+            _navigationManager.NavigateTo($"/{_subscription!.SubdirectoryName}/products/{product.SubdirectoryName}");
         }
 
         private async Task ToggleView_OnClick()
