@@ -6,18 +6,16 @@
         <MudForm @bind-IsValid="_validInputs">
             <MudStack>
                 <MudTextField @bind-Value="_companyName" Label="Company Name" Required/>
-
                 <MudSelect T="SubscriptionType"
                            ToStringFunc="@(subscriptionType => subscriptionType?.Name)"
                            @bind-Value="_subscriptionType"
                            Label="Subscription Type"
-                           Placeholder="Select subscription type">
+                           Placeholder="Select subscription type" Required>
                     @foreach (SubscriptionType type in _subscriptionTypes)
                     {
                         <MudSelectItem Value="type">@type.Name</MudSelectItem>
                     }
                 </MudSelect>
-
                 <MudButton OnClick="Submit_OnClick" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
             </MudStack>
         </MudForm>

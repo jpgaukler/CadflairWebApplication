@@ -31,6 +31,15 @@ builder.Services.AddResponseCompression(options =>
     options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 });
 
+// Fluent Email
+builder.Services.AddFluentEmail("donotreply@cadflair.com")
+                .AddGraphSender(new GraphSenderOptions()
+                {
+                    ClientId = builder.Configuration["MailCredentials:ClientId"],
+                    TenantId = builder.Configuration["MailCredentials:TenantId"],
+                    Secret = builder.Configuration["MailCredentials:Secret"],
+                })
+                .AddRazorRenderer();
 
 // MudBlazor
 builder.Services.AddMudServices(config =>
@@ -45,21 +54,10 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
-// Cadflair data access 
-builder.Services.AddSingleton<DataServicesManager>();
-
-// Forge services
-builder.Services.AddSingleton<ForgeServicesManager>();
-
-// Fluent Email
-builder.Services.AddFluentEmail("donotreply@cadflair.com")
-                .AddGraphSender(new GraphSenderOptions()
-                {
-                    ClientId = builder.Configuration["MailCredentials:ClientId"],
-                    TenantId = builder.Configuration["MailCredentials:TenantId"],
-                    Secret = builder.Configuration["MailCredentials:Secret"],
-                })
-                .AddRazorRenderer();
+// Cadflair services
+builder.Services.AddScoped<DataServicesManager>();
+builder.Services.AddScoped<ForgeServicesManager>();
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 

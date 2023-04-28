@@ -1,0 +1,18 @@
+﻿@model CadflairBlazorServer.Emails.WelcomeEmailModel
+
+@{
+    Layout = @"Emails/_NotificationLayout.cshtml";
+}
+
+<td style="padding:36px 30px 42px 30px;">
+    <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
+        <tr>
+            <td style="padding:0 0 36px 0;color:#153643;">
+                <h1 style="font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;">Welcome to Cadflair!</h1>
+                <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;"> Hi, @Model.Name</p>
+                <p>Welcome to Cadflair! Check out the resources below to get started!</p>
+                <a href="http://www.cadflair.com/" style="text-decoration:none;display:block;color:#ffffff;background-color:#50c0ff;border-radius:50px;width:80%;border-top:0px solid TRANSPARENT;font-weight:400;border-right:0px solid TRANSPARENT;border-bottom:0px solid TRANSPARENT;border-left:0px solid TRANSPARENT;padding-top:8px;padding-bottom:8px;font-family:'Roboto', Tahoma, Verdana, Segoe, sans-serif;font-size:15px;text-align:center;mso-border-alt:none;word-break:keep-all;" target="_blank"><span style="padding-left:0px;padding-right:0px;font-size:15px;display:inline-block;letter-spacing:normal;"><span dir="ltr" style="word-break: break-word;"><span data-mce-style="" dir="ltr" style="line-height: 30px;"><strong>Cadflair</strong></span></span></span></a>
+            </td>
+        </tr>
+    </table>
+</td>

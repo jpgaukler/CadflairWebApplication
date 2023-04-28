@@ -1,7 +1,4 @@
-﻿using CadflairDataAccess;
-using CadflairDataAccess.Models;
-using CadflairDataAccess.Services;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 
 namespace CadflairBlazorServer.Helpers
 {
@@ -17,7 +14,8 @@ namespace CadflairBlazorServer.Helpers
             string emailAddress = authState.User.Claims.FirstOrDefault(c => c.Type.Contains("email"))?.Value ?? string.Empty;
 
             // return empty user if not logged in
-            if (string.IsNullOrWhiteSpace(objectId)) return new User();
+            if (string.IsNullOrWhiteSpace(objectId)) 
+                return new User();
 
             // get user from db
             User user = await dataServicesManager.UserService.GetUserByObjectIdentifier(objectId) ?? new();
@@ -26,13 +24,6 @@ namespace CadflairBlazorServer.Helpers
             if (user.Id == 0)
             {
                 User newUser = await dataServicesManager.UserService.CreateUser(Guid.Parse(objectId), firstName, lastName, emailAddress);
-
-                // set up default notifications settings
-                foreach (Notification notification in await dataServicesManager.NotificationService.GetNotifications())
-                {
-                    await dataServicesManager.NotificationService.CreateNotificationSetting(notification.Id, newUser.Id, notification.EnabledByDefault);
-                }
-
                 return newUser;
             }
 
@@ -64,9 +55,7 @@ namespace CadflairBlazorServer.Helpers
             }
 
             if (isDirty)
-            {
                 await dataServicesManager.UserService.UpdateUser(user);
-            }
 
             return user;
         }

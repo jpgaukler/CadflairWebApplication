@@ -18,9 +18,9 @@ namespace CadflairDataAccess
             _connectionString = configuration.GetConnectionString("Default");
             _dataAccess = new DataAccess(_connectionString);
             SubscriptionService = new SubscriptionService(_dataAccess);
-            UserService = new UserService(_dataAccess);
-            ProductService = new ProductService(_dataAccess);
             NotificationService = new NotificationService(_dataAccess);
+            UserService = new UserService(_dataAccess, NotificationService);
+            ProductService = new ProductService(_dataAccess);
         }
     }
 }

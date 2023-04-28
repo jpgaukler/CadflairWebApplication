@@ -1,3 +1,4 @@
+using CadflairBlazorServer.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -9,7 +10,7 @@ namespace CadflairBlazorServer.Pages
         [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
         [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
         [Inject] NavigationManager _navigationManager { get; set; } = default!;
-        [Inject] IFluentEmail _emailService { get; set; } = default!;
+        [Inject] EmailService _emailService { get; set; } = default!;
         [Inject] IDialogService  _dialogService { get; set; } = default!;
         [Inject] ISnackbar _snackbar { get; set; } = default!;
         [Inject] IJSRuntime _js { get; set; } = default!;
@@ -159,12 +160,18 @@ namespace CadflairBlazorServer.Pages
                                                                                     phoneExtension: dialog.PhoneExtension,
                                                                                     messageText: dialog.MessageText);
 
-                _ = _emailService.SendNotificationEmail(dataServicesManager: _dataServicesManager,
-                                                        subscriptionId: _subscription!.Id,
-                                                        eventName: "ProductQuoteRequest_Insert",
+                // send email notification to subscribers of this event
+                ProductQuoteRequestEmailModel model = new()
+                {
+                    CustomerName = $"{dialog.FirstName} {dialog.LastName}",
+                    ProductName = _product.DisplayName
+                };
+
+                _ = _emailService.SendNotificationEmail(subscriptionId: _subscription!.Id,
+                                                        notificationId: (int)NotificationIdEnum.ProductQuoteRequest_Insert,
                                                         subject: "New Request!",
-                                                        templateFilename: "NewProductQuoteRequest.cshtml",
-                                                        model: new { CustomerName = $"{dialog.FirstName} {dialog.LastName}", ProductName = _product.DisplayName });
+                                                        emailTemplatePath: model.Path,
+                                                        emailModel: model);
 
                 _snackbar.Add("Request submitted!", Severity.Success);
             }

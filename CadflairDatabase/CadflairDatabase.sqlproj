@@ -104,8 +104,7 @@
     <Build Include="dbo\Stored Procedures\spNotificationSetting_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spNotification_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\spNotificationSetting_GetByUserId.sql" />
-    <Build Include="dbo\Stored Procedures\spNotification_GetByEventName.sql" />
-    <Build Include="dbo\Stored Procedures\spNotificationSetting_GetByNotificationIdAndUserId.sql" />
+    <Build Include="dbo\Stored Procedures\spNotification_GetById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

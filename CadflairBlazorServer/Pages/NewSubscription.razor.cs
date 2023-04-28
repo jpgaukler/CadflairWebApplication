@@ -9,10 +9,11 @@ namespace CadflairBlazorServer.Pages
         [Inject] NavigationManager _navigationManager { get; set; } = default!;
         [Inject] AuthenticationStateProvider _authenticationStateProvider { get; set; } = default!;
         [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
+        [Inject] EmailService _emailService { get; set; } = default!;
 
         // fields
         private User _loggedInUser = new();
-        private SubscriptionType _subscriptionType = new();
+        private SubscriptionType? _subscriptionType;
         private List<SubscriptionType> _subscriptionTypes = new();
         private bool _validInputs;
         private string _companyName = string.Empty;
@@ -35,7 +36,7 @@ namespace CadflairBlazorServer.Pages
                 return;
 
             // create new subscription record
-            Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: (int)SubscriptionTypeEnum.Pro, 
+            Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: _subscriptionType!.Id,
                                                                                                              companyName: _companyName, 
                                                                                                              ownerId: _loggedInUser.Id, 
                                                                                                              createdById: _loggedInUser.Id);
@@ -44,11 +45,24 @@ namespace CadflairBlazorServer.Pages
             _loggedInUser.SubscriptionId = newSubscription.Id;
             await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
 
-            // create products folder to act as the root directory
-            ProductFolder productFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: newSubscription.Id, 
-                                                                                                        createdById: _loggedInUser.Id, 
-                                                                                                        displayName: "Products", 
-                                                                                                        parentId: null);
+            // create 'Products' folder to act as the root directory
+            await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: newSubscription.Id, 
+                                                                          createdById: _loggedInUser.Id, 
+                                                                          displayName: "Products", 
+                                                                          parentId: null);
+
+
+            // send welcome email
+            WelcomeEmailModel model = new()
+            {
+                Name = _loggedInUser.FullName
+            };
+
+            _ = _emailService.SendEmail(toAddress: _loggedInUser.EmailAddress,
+                                        subject: "Welcome to Cadflair!",
+                                        emailTemplatePath: model.Path,
+                                        emailModel: model);
+
             _navigationManager.NavigateTo("/dashboard");
         }
     }

@@ -1,8 +1,6 @@
 ﻿using CadflairDataAccess.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CadflairDataAccess.Services
@@ -11,14 +9,17 @@ namespace CadflairDataAccess.Services
     {
 
         private readonly DataAccess _db;
+        private readonly NotificationService _notificationService;
 
-        public UserService(DataAccess db)
+        public UserService(DataAccess db, NotificationService notificationService)
         {
             _db = db;
+            _notificationService = notificationService;
         }
 
         #region "Users"
-        public Task<User> CreateUser(Guid objectIdentifier, string firstName, string lastName, string emailAddress)
+
+        public async Task<User> CreateUser(Guid objectIdentifier, string firstName, string lastName, string emailAddress)
         {
             dynamic values = new
             {
@@ -28,7 +29,13 @@ namespace CadflairDataAccess.Services
                 EmailAddress = emailAddress,
             };
 
-            return _db.SaveSingleAsync<User, dynamic>("[dbo].[spUser_Insert]", values);
+            User newUser = await _db.SaveSingleAsync<User, dynamic>("[dbo].[spUser_Insert]", values);
+
+            // set up default notifications settings
+            foreach (Notification notification in await _notificationService.GetNotifications())
+                await _notificationService.CreateNotificationSetting(notification.Id, newUser.Id);
+
+            return newUser;
         }
 
         public Task<User> GetUserByObjectIdentifier(string objectIdentifier)

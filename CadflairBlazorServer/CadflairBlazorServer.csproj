@@ -1,29 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>e73a3fd1-82d6-4457-9eef-aa810bbced53</UserSecretsId>
-	<PreserveCompilationContext>true</PreserveCompilationContext>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>e73a3fd1-82d6-4457-9eef-aa810bbced53</UserSecretsId>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentEmail.Graph" Version="2.4.0" />
-    <PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.4" />
-    <PackageReference Include="Microsoft.Identity.Web" Version="2.7.0" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" Version="2.7.0" />
-    <PackageReference Include="MudBlazor" Version="6.2.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
+	<ItemGroup>
+	  <Content Remove="Emails\WelcomeEmail.cshtml" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
-    <ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentEmail.Graph" Version="2.4.0" />
+		<PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
+		<PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.4" />
+		<PackageReference Include="Microsoft.Identity.Web" Version="2.7.0" />
+		<PackageReference Include="Microsoft.Identity.Web.UI" Version="2.7.0" />
+		<PackageReference Include="MudBlazor" Version="6.2.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
 
-	<ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+	<ItemGroup>
+		<ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
+		<ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Emails\WelcomeEmail.cshtml" />
+		<EmbeddedResource Include="Emails\ProductQuoteRequestEmail.cshtml" />
+	</ItemGroup>
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>

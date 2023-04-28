@@ -1,11 +1,4 @@
-﻿using Autodesk.Forge.Core;
-using Autodesk.Forge.Model;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace CadflairForgeAccess.Helpers
+﻿namespace CadflairForgeAccess.Helpers
 {
     internal static class Utils
     {

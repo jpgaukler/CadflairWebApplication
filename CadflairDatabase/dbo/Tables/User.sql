@@ -8,10 +8,5 @@
     [CreatedOn]           DATETIMEOFFSET(7)  NOT NULL DEFAULT sysdatetimeoffset(),
     CONSTRAINT [PK_User] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_User_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([Id]) ON DELETE SET NULL,
-    --CONSTRAINT [UC_User_EmailAddress] UNIQUE([EmailAddress])
+    CONSTRAINT [UC_User_EmailAddress] UNIQUE([EmailAddress])
 );
-
-
-GO
-
-CREATE INDEX [IX_User_EmailAddress] ON [dbo].[User] ([EmailAddress])

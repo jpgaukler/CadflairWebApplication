@@ -4,12 +4,6 @@ using System.Text;
 
 namespace CadflairDataAccess.Models
 {
-    public enum SubscriptionTypeEnum : int
-    {
-        Basic = 1,
-        Pro = 2,
-    }
-
     public class SubscriptionType
     {
         /// <summary>

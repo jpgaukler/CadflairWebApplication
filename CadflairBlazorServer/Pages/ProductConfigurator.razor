@@ -36,7 +36,7 @@
                 }
                 else
                 {
-                    <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth="true">Start Over</MudButton>
+                    <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth>Start Over</MudButton>
                 }
             </MudStack>
         </MudStack>
@@ -59,7 +59,7 @@
                 <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="300px;">
                     <MudText Typo="Typo.h6">Like what you see?</MudText>
                     <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
-                    <MudStack Row="true">
+                    <MudStack Row>
                         <MudButton OnClick="RequestQuote_OnClick" Disabled="_productConfiguration == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Request A Quote</MudButton>
                         <MudTooltip Text="Download STEP file.">
                             @*<MudButton OnClick="DownloadZip_OnClick" Disabled="_productConfiguration?.ForgeZipKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Zip</MudButton>*@

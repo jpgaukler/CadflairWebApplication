@@ -1,8 +1,5 @@
 ﻿using CadflairDataAccess.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CadflairDataAccess.Services
@@ -24,6 +21,11 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<Notification, dynamic>("[dbo].[spNotification_GetAll]", new { });
         }
 
+        public Task<Notification> GetNotificationById(int id)
+        {
+            return _db.LoadSingleAsync<Notification, dynamic>("[dbo].[spNotification_GetById]", new { Id = id });
+        }
+
         public Task<Notification> GetNotificationByEventName(string eventName)
         {
             return _db.LoadSingleAsync<Notification, dynamic>("[dbo].[spNotification_GetByEventName]", new { EventName = eventName });
@@ -33,34 +35,26 @@ namespace CadflairDataAccess.Services
 
         #region "NotificationSetting"
 
-        public Task<NotificationSetting> CreateNotificationSetting(int notificationId, int userId, bool isEnabled)
+        public async Task<NotificationSetting> CreateNotificationSetting(int notificationId, int userId)
         {
+            Notification notification = await GetNotificationById(notificationId);
+
             dynamic values = new
             {
-                NotificationId = notificationId,
+                NotificationId = notification.Id,
                 UserId = userId,
-                IsEnabled = isEnabled
+                IsEnabled = notification.EnabledByDefault
             };
 
-            return _db.SaveSingleAsync<NotificationSetting, dynamic>("[dbo].[spNotificationSetting_Insert]", values);
+            NotificationSetting newSetting = await _db.SaveSingleAsync<NotificationSetting, dynamic>("[dbo].[spNotificationSetting_Insert]", values);
+            return newSetting; 
         }
 
         public Task<List<NotificationSetting>> GetNotificationSettingsByUserId(int userId)
         {
             return _db.LoadDataAsync<NotificationSetting, dynamic>("[dbo].[spNotificationSetting_GetByUserId]", new { UserId = userId });
         }
-
-        public Task<NotificationSetting> GetNotificationSettingByNotificationIdAndUserId(int notificationId, int userId)
-        {
-            dynamic values = new
-            {
-                NotificationId = notificationId,
-                UserId = userId,
-            };
-
-            return _db.LoadSingleAsync<NotificationSetting, dynamic>("[dbo].[spNotificationSetting_GetByNotificationIdAndUserId]", values);
-        }
-
+      
         #endregion
 
     }
