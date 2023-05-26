@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 
 namespace CadflairBlazorServer.Pages
 {
@@ -7,12 +6,11 @@ namespace CadflairBlazorServer.Pages
     {
         // services
         [Inject] NavigationManager _navigationManager { get; set; } = default!;
-        [Inject] AuthenticationStateProvider _authenticationStateProvider { get; set; } = default!;
+        [Inject] AuthenticationService _authenticationService { get; set; } = default!;
         [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
         [Inject] EmailService _emailService { get; set; } = default!;
 
         // fields
-        private User _loggedInUser = new();
         private SubscriptionType? _subscriptionType;
         private List<SubscriptionType> _subscriptionTypes = new();
         private bool _validInputs;
@@ -20,34 +18,42 @@ namespace CadflairBlazorServer.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            _loggedInUser = await _authenticationStateProvider.GetUser(_dataServicesManager);
-            _subscriptionTypes = await _dataServicesManager.SubscriptionService.GetSubscriptionTypes();
+            if (await _authenticationService.IsLoggedInUserValid() == false)
+            {
+                _navigationManager.NavigateTo("/");
+                return;
+            }
 
-            if (_loggedInUser.SubscriptionId != null)
+            if (_authenticationService.LoggedInUser?.SubscriptionId != null)
             {
                 _navigationManager.NavigateTo("/dashboard");
                 return;
             }
+
+            _subscriptionTypes = await _dataServicesManager.SubscriptionService.GetSubscriptionTypes();
         }
 
         private async Task Submit_OnClick()
         {
+            if (_authenticationService.LoggedInUser == null) 
+                return;
+
             if (!_validInputs) 
                 return;
 
             // create new subscription record
             Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: _subscriptionType!.Id,
                                                                                                              companyName: _companyName, 
-                                                                                                             ownerId: _loggedInUser.Id, 
-                                                                                                             createdById: _loggedInUser.Id);
+                                                                                                             ownerId: _authenticationService.LoggedInUser.Id, 
+                                                                                                             createdById: _authenticationService.LoggedInUser.Id);
 
             // update the user
-            _loggedInUser.SubscriptionId = newSubscription.Id;
-            await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
+            _authenticationService.LoggedInUser.SubscriptionId = newSubscription.Id;
+            await _dataServicesManager.UserService.UpdateUser(_authenticationService.LoggedInUser);
 
             // create 'Products' folder to act as the root directory
             await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: newSubscription.Id, 
-                                                                          createdById: _loggedInUser.Id, 
+                                                                          createdById: _authenticationService.LoggedInUser.Id, 
                                                                           displayName: "Products", 
                                                                           parentId: null);
 
@@ -55,10 +61,10 @@ namespace CadflairBlazorServer.Pages
             // send welcome email
             WelcomeEmailModel model = new()
             {
-                Name = _loggedInUser.FullName
+                Name = _authenticationService.LoggedInUser.FullName
             };
 
-            _ = _emailService.SendEmail(toAddress: _loggedInUser.EmailAddress,
+            _ = _emailService.SendEmail(toAddress: _authenticationService.LoggedInUser.EmailAddress,
                                         subject: "Welcome to Cadflair!",
                                         emailTemplatePath: model.Path,
                                         emailModel: model);

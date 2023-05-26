@@ -56,6 +56,7 @@ builder.Services.AddMudServices(config =>
 
 // Cadflair services
 builder.Services.AddScoped<DataServicesManager>();
+builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<ForgeServicesManager>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<FileHandlingService>();

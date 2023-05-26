@@ -1,0 +1,21 @@
+﻿@page "/notauthorized"
+
+<PageTitle>Not Authorized</PageTitle>
+
+<div style="height: calc(100dvh - var(--mud-appbar-height));">
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full mud-width-full">
+        <MudPaper Class="mud-background-gray pa-10">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.Security" Style="font-size:6em;"/>
+                <MudText Typo="Typo.h1"><strong>Whoops!</strong></MudText>
+            </MudStack>
+            <MudText Typo="Typo.h3">You are not authorized to view this page.</MudText>
+            <MudStack Row Class="mt-10">
+                <MudText Typo="Typo.h6">Click here to log in:</MudText>
+                <MudButton Href="/MicrosoftIdentity/Account/SignIn?redirectUri=/dashboard" Variant="Variant.Filled">Log In</MudButton>
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</div>
+
+

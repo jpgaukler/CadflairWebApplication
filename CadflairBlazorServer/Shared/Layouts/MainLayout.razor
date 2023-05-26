@@ -1,6 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager _navManager
-
 
 <PageTitle>CadflairBlazorServer</PageTitle>
 
@@ -43,57 +41,4 @@
     </MudMainContent>
 </MudLayout>
 
-@code {
-    private MudThemeProvider? _mudThemeProvider;
-    private bool _isDarkMode = false;
 
-    private MudTheme _customTheme = new MudTheme()
-        {
-            Palette = new Palette()
-            {
-                //Primary = Colors.Blue.Default,
-                Primary = "#50C0FF",
-                AppbarBackground = Colors.Grey.Darken4,
-            },
-            PaletteDark = new PaletteDark()
-            {
-                Primary = Colors.Blue.Lighten1
-            },
-        };
-
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    //if (firstRender)
-    //    //{
-    //    //    if (_mudThemeProvider != null)
-    //    //    {
-    //    //        _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-    //    //    }
-
-    //    //    StateHasChanged();
-    //    //}
-    //}
-
-
-    //MudTheme MyCustomTheme = new MudTheme()
-    //{
-    //    Palette = new Palette()
-    //    {
-    //        Primary = Colors.Blue.Default,
-    //        Secondary = Colors.Green.Accent4,
-    //        AppbarBackground = Colors.Red.Default,
-    //    },
-
-    //    PaletteDark = new PaletteDark()
-    //    {
-    //        Primary = Colors.Blue.Lighten1
-    //    },
-
-    //    //LayoutProperties = new LayoutProperties()
-    //    //{
-    //    //    DrawerWidthLeft = "260px",
-    //    //    DrawerWidthRight = "300px"
-    //    //}
-    //};
-
-}

@@ -105,6 +105,7 @@
     <Build Include="dbo\Stored Procedures\spNotification_GetAll.sql" />
     <Build Include="dbo\Stored Procedures\spNotificationSetting_GetByUserId.sql" />
     <Build Include="dbo\Stored Procedures\spNotification_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductQuoteRequest_GetBySubscriptionId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

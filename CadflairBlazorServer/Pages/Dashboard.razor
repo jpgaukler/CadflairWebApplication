@@ -17,3 +17,21 @@
 </MudPopover>
 
 <MudText Typo="Typo.h1">Dashboard</MudText>
+<MudText Typo="Typo.h6">@_authenticationService.LoggedInUser?.FullName</MudText>
+
+<!-- product list view -->
+<MudDataGrid T="ProductQuoteRequest" Items="_productQuoteRequests"
+         RowClick="ProductQuoteRequestGrid_RowClick"
+         ColumnResizeMode="ResizeMode.Column"
+         Elevation="0" Height="100%" Class="overflow-auto"
+         Dense Hover FixedHeader>
+    <Columns>
+        <PropertyColumn Property="x => x.Id" Title="Id" />
+        <PropertyColumn Property="x => x.FirstName" Title="First Name" />
+        <PropertyColumn Property="x => x.LastName" Title="Last Name" />
+        <PropertyColumn Property="x => x.EmailAddress" Title="Email" />
+        <PropertyColumn Property="x => x.PhoneNumber" Title="Phone" />
+        <PropertyColumn Property="x => x.PhoneExtension" Title="Extension" />
+    </Columns>
+</MudDataGrid>
+

@@ -1,19 +1,21 @@
 ﻿@page "/notfound"
 
-<MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
-    <MudPaper MaxWidth="50vw" Class="mud-background-gray pa-10">
-        <MudStack Row AlignItems="AlignItems.Center">
-            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Style="font-size:15rem;"/>
-            <MudText Typo="Typo.h1" Style="font-size:15rem;"><b>404</b></MudText>
-        </MudStack>
-        <MudText Typo="Typo.h3">We're sorry. The page you are looking for could not be found!</MudText>
-        <MudStack Class="mt-10">
-            <MudLink Href="/">Learn more about Cadflair ></MudLink>
-            <MudLink>Read out latest post ></MudLink>
-        </MudStack>
-    </MudPaper>
-</MudStack>
+<PageTitle>Not Found</PageTitle>
 
-@code {
+<div style="height: calc(100dvh - var(--mud-appbar-height));">
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full mud-width-full">
+        <MudPaper Class="mud-background-gray pa-10">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Style="font-size:15rem;"/>
+                <MudText Typo="Typo.h1" Style="font-size:15rem;"><b>404</b></MudText>
+            </MudStack>
+            <MudText Typo="Typo.h3">We're sorry. The page you are looking for could not be found!</MudText>
+            <MudStack Class="mt-10">
+                <MudLink Href="/">Learn more about Cadflair</MudLink>
+                <MudLink Href="/">Read our latest post</MudLink>
+            </MudStack>
+        </MudPaper>
+    </MudStack>
+</div>
 
-}
+

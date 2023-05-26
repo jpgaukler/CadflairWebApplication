@@ -200,6 +200,11 @@ namespace CadflairDataAccess.Services
             return _db.SaveSingleAsync<ProductQuoteRequest, dynamic>("[dbo].[spProductQuoteRequest_Insert]", values);
         }
 
+        public Task<List<ProductQuoteRequest>> GetProductQuoteRequestsBySubscriptionId(int subscriptionId)
+        {
+            return _db.LoadDataAsync<ProductQuoteRequest, dynamic>("[dbo].[spProductQuoteRequest_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
+        }
+
 
         #endregion
 

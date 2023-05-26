@@ -1,4 +1,5 @@
-﻿global using Microsoft.JSInterop;
+﻿global using System.Diagnostics;
+global using Microsoft.JSInterop;
 global using Newtonsoft.Json;
 global using MudBlazor;
 global using MudBlazor.Services;
@@ -10,6 +11,5 @@ global using CadflairBlazorServer.Shared.Components;
 global using CadflairBlazorServer.Services;
 global using CadflairBlazorServer.Controllers;
 global using CadflairBlazorServer.Emails;
-global using CadflairBlazorServer.Helpers;
 global using CadflairBlazorServer.Shared.Dialogs;
 
