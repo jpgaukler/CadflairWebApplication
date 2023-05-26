@@ -30,7 +30,7 @@ namespace CadflairBlazorServer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unknown error occurred!");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
     }

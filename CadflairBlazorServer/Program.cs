@@ -58,6 +58,7 @@ builder.Services.AddMudServices(config =>
 builder.Services.AddScoped<DataServicesManager>();
 builder.Services.AddScoped<ForgeServicesManager>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<FileHandlingService>();
 
 var app = builder.Build();
 

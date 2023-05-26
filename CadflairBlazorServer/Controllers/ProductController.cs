@@ -12,13 +12,14 @@ namespace CadflairBlazorServer.Controllers
     {
         private readonly ForgeServicesManager _forgeServicesManager;
         private readonly DataServicesManager _dataServicesManager;
+        private readonly FileHandlingService _fileHandlingService;
         private readonly ILogger<ProductController> _logger;
-        private readonly long MAX_FILE_SIZE = 1024 * 1024 * 20;
 
-        public ProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager, ILogger<ProductController> logger)
+        public ProductController(ForgeServicesManager forgeServicesManager, DataServicesManager dataServicesManager, FileHandlingService fileHandlingService, ILogger<ProductController> logger)
         {
             _forgeServicesManager = forgeServicesManager;
             _dataServicesManager = dataServicesManager;
+            _fileHandlingService = fileHandlingService;
             _logger = logger;
         }
 
@@ -50,8 +51,8 @@ namespace CadflairBlazorServer.Controllers
                 if (Path.GetExtension(form.ZipFile.FileName) != ".zip") 
                     return ValidationProblem("Invalid file type!");
 
-                if (form.ZipFile.Length > MAX_FILE_SIZE)
-                    return ValidationProblem($"File exceeds maximum file size ({MAX_FILE_SIZE/1000000} MB)!");
+                if (form.ZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE)
+                    return ValidationProblem($"File exceeds maximum file size ({FileHandlingService.MAX_UPLOAD_SIZE/1000000} MB)!");
 
 
                 // NEED TO VALIDATE INPUTS!!!!!!!!!!!!!!!
@@ -93,10 +94,7 @@ namespace CadflairBlazorServer.Controllers
                 }
 
                 // Temporarily save the file to server
-                string tempFileName = Path.GetTempFileName();
-
-                using (FileStream stream = System.IO.File.Create(tempFileName))
-                    await form.ZipFile.CopyToAsync(stream);
+                string tempFileName = await _fileHandlingService.UploadFormFileToTempFolder(form.ZipFile);
 
                 // Upload file to Autodesk Forge OSS 
                 string objectKey = Guid.NewGuid().ToString() + ".zip";
@@ -140,7 +138,7 @@ namespace CadflairBlazorServer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unknown error occurred!");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -161,7 +159,7 @@ namespace CadflairBlazorServer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unknown error occurred!");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -177,7 +175,7 @@ namespace CadflairBlazorServer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unknown error occurred!");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"{ex}" });
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 

@@ -1,0 +1,36 @@
+﻿<MudTooltip Text="@TooltipText">
+    <MudIconButton OnClick="CopyTextToClipboard" Icon="@Icon" Size="@Size"/>
+</MudTooltip>
+
+@code{
+
+    // services
+    [Inject] IJSRuntime _js { get; set; } = default!;
+    [Inject] ISnackbar _snackbar { get; set; } = default!;
+    [Inject] ILogger<CopyToClipboard> _logger { get; set; } = default!;
+
+    // parameters
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public string TooltipText { get; set; } = "Copy";
+    [Parameter] public Size Size { get; set; } = Size.Small;
+    [Parameter] public string Icon { get; set; } = Icons.Material.Filled.ContentCopy;
+
+    private async Task CopyTextToClipboard()
+    {
+        if (Text == null)
+            return;
+
+        try
+        {
+            await _js.InvokeVoidAsync("clipboard.copyText", Text);
+            _snackbar.Add("Copied to clipboard!", Severity.Success);
+        }
+        catch (Exception ex) 
+        {
+            _snackbar.Add("Could not copy to clipboard!", Severity.Error);
+            _logger.LogError(ex, $"An unknown error occurred!");
+        }
+
+    }
+
+}
