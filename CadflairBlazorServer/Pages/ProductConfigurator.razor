@@ -10,15 +10,14 @@
         </MudStack>
     }
 
+    <!-- iLogicFormData -->
     @if (_productVersion?.IsConfigurable == true)
     {
         <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
             <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
-
-            <!--Product Inputs-->
             @if (_iLogicFormData != null)
             {
-                <MudForm @bind-IsValid="_validInputs" Class="flex-grow-1 overflow-auto">
+                <MudForm @bind-IsValid="_validConfigurationInputs" Class="flex-grow-1 overflow-auto">
                     <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
                         @foreach (ILogicFormElement element in _iLogicFormData.Items)
                         {
@@ -27,12 +26,10 @@
                     </MudStack>
                 </MudForm>
             }
-
-            <!--Action Buttons-->
             <MudStack Class="pa-3">
                 @if (_showSubmitButton)
                 {
-                    <MudButton OnClick="Submit_OnClick" Disabled="@(!_validInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
+                    <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
                 }
                 else
                 {
@@ -56,16 +53,16 @@
         {
             @if (_showRequestButton)
             {
-                <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="300px;">
-                    <MudText Typo="Typo.h6">Like what you see?</MudText>
-                    <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
-                    <MudStack Row>
-                        <MudButton OnClick="RequestQuote_OnClick" Disabled="_productConfiguration == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Request A Quote</MudButton>
-                        <MudTooltip Text="Download STEP file.">
-                            @*<MudButton OnClick="DownloadZip_OnClick" Disabled="_productConfiguration?.ForgeZipKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Zip</MudButton>*@
-                            @*<MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Download Step</MudButton>*@
-                            <MudIconButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.FileDownload" />
-                        </MudTooltip>
+                <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="250px;">
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.h6"><strong>Like what you see?</strong></MudText>
+                        <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
+                        <MudButton OnClick="() => _showRequestDialog = true" Disabled="_productConfiguration == null" 
+                                   Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary" Size="Size.Small" DisableElevation>Request A Quote</MudButton>
+                        <MudButton OnClick="() => _showShareDialog = true" Disabled="_productConfiguration == null" 
+                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Size="Size.Small">Share</MudButton>
+                        <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" 
+                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload" Size="Size.Small">Download Stp</MudButton>
                     </MudStack>
                 </MudPaper>
             }
@@ -73,5 +70,88 @@
         }
     </div>
 </div>
+
+<!-- request quote dialog -->
+<MudDialog @bind-IsVisible="_showRequestDialog" Options="_requestDialogOptions">
+    <TitleContent>
+        <MudStack AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4"><strong>Request a Quote</strong></MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Row Style="max-height:500px;">
+          @*<MudStack Class="overflow-auto" AlignItems="AlignItems.Center" Style="max-width:300px;">
+                <ProductThumbnail Product="_product" ProductConfiguration="_productConfiguration" Height="200" Width="200" />
+                <MudTable Items="@_iLogicFormData?.GetParameterList()" Class="overflow-auto" FixedHeader Dense Height="100%">
+                    <HeaderContent>
+                        <MudTh>Parameter</MudTh>
+                        <MudTh>Value</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Parameter">@context.Name</MudTd>
+                        <MudTd DataLabel="Value">@context.ParameterExpression.Replace("ul","")</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudStack>*@
+            <MudForm @bind-IsValid="_validRequestInputs" Class="overflow-auto">
+                <MudStack>
+                    <MudStack Row>
+                        <MudTextField @bind-Value="_firstName" Required
+                                      Label="First Name"
+                                      Variant="Variant.Outlined"/>
+                        <MudTextField @bind-Value="_lastName" Required
+                                      Label="Last Name"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                    <MudTextField @bind-Value="_emailAddress" Required
+                                  Label="Email Address"
+                                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address." })"
+                                  Variant="Variant.Outlined"/>
+                    <MudStack Row>
+                        <MudTextField @bind-Value="_phoneNumber" Required
+                                      Label="Phone Number"
+                                      Variant="Variant.Outlined" />
+                        <MudTextField @bind-Value="_phoneExtension"
+                                      Label="Phone Extension"
+                                      Variant="Variant.Outlined" />
+                    </MudStack>
+                    <MudTextField @bind-Value="_messageText"
+                                  Label="Message" MaxLength="500"
+                                  Variant="Variant.Outlined"
+                                  Immediate Lines="8"/>
+                    <MudText Typo="Typo.body2" Align="Align.Right">@($"{(_messageText == null ? "0" : _messageText?.Length.ToString())}/500")</MudText>
+                </MudStack>
+            </MudForm>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row Justify="Justify.SpaceBetween" Class="mud-width-full">
+            <MudButton OnClick="() => _showRequestDialog = false" Variant="Variant.Outlined">Cancel</MudButton>
+            <MudButton OnClick="RequestQuote_OnClick" Color="Color.Primary" Disabled="!_validRequestInputs" Variant="Variant.Filled" DisableElevation>Submit</MudButton>
+        </MudStack>
+    </DialogActions>
+</MudDialog>
+
+<!-- share dialog -->
+<MudDialog @bind-IsVisible="_showShareDialog" Options="_shareDialogOptions" ClassContent="pt-0 pb-3">
+    <TitleContent>
+        <MudStack AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4"><strong>Share</strong></MudText>
+            <MudText Typo="Typo.caption">Scan the code or copy the link to share this page with a friend.</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudStack AlignItems="AlignItems.Center" Spacing="0">
+            <MudImage Src="@($"data:image/png;base64,{_qrCodeImageAsBase64}")" Alt="qr code image" Height="200" Width="200" />
+            <MudTextField @bind-Value="_shareLink" Variant="Variant.Outlined" ReadOnly FullWidth />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row Justify="Justify.SpaceBetween" Class="mud-width-full">
+            <CopyToClipboard Text="@_shareLink" Size="Size.Medium" Label="Copy Link" Icon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" />
+            <MudButton OnClick="() => _showShareDialog = false" Variant="Variant.Filled" Color="Color.Primary" DisableElevation>Done</MudButton>
+        </MudStack>
+    </DialogActions>
+</MudDialog>
 
 

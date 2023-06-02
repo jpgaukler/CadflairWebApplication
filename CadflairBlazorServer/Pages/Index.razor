@@ -165,28 +165,7 @@
 
             <!-- contact us -->
             <MudItem xs="12" Class="my-15">
-                <MudText Typo="Typo.h2" Class="mb-5">Contact Us</MudText>
-                <MudStack Spacing="1">
-                    <MudStack Row AlignItems="AlignItems.Baseline">
-                        <MudText Style="min-width:125px;">First Name</MudText>
-                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter first name" Margin="Margin.Dense" />
-                    </MudStack>
-                    <MudStack Row AlignItems="AlignItems.Baseline">
-                        <MudText Style="min-width:125px;">Last Name</MudText>
-                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter last name" Margin="Margin.Dense" />
-                    </MudStack>
-                    <MudStack Row AlignItems="AlignItems.Baseline">
-                        <MudText Style="min-width:125px;">Email Address</MudText>
-                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="Enter email address" Margin="Margin.Dense" />
-                    </MudStack>
-                    <MudStack Row AlignItems="AlignItems.Baseline">
-                        <MudText Style="min-width:125px;">Message</MudText>
-                        <MudTextField T="string" Variant="Variant.Outlined" Placeholder="What can we help you with?" Margin="Margin.Dense" Lines="6" />
-                    </MudStack>
-                    <MudStack Row Justify="Justify.SpaceAround" Class="my-3">
-                        <MudButton Variant="Variant.Filled" DisableElevation Color="Color.Primary">Submit</MudButton>
-                    </MudStack>
-                </MudStack>
+                <ContactUsForm/>
             </MudItem>
         </MudGrid>
     </MudContainer>

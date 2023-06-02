@@ -1,0 +1,30 @@
+﻿@using System.ComponentModel.DataAnnotations 
+
+<MudPaper Class="pa-8" Elevation="5">
+    <MudForm @bind-IsValid="_isValid">
+        <MudStack Row AlignItems="AlignItems.Center" Class="mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Large" />
+            <MudText Typo="Typo.h4"><strong>Contact Us</strong></MudText>
+        </MudStack>
+        <MudStack>
+            <MudStack Row AlignItems="AlignItems.Baseline">
+                <MudTextField @bind-Value="_firstName" Variant="_variant" Label="First Name" Required />
+            </MudStack>
+            <MudStack Row AlignItems="AlignItems.Baseline">
+                <MudTextField @bind-Value="_lastName" Variant="_variant" Label="Last Name" Required />
+            </MudStack>
+            <MudStack Row AlignItems="AlignItems.Baseline">
+                <MudTextField @bind-Value="_emailAddress" Variant="_variant" Label="Email Address" Validation="@(new EmailAddressAttribute(){ ErrorMessage = "Please enter a valid email address."})" Required />
+            </MudStack>
+            <MudStack Row AlignItems="AlignItems.Baseline">
+                <MudTextField @bind-Value="_companyName" Variant="_variant" Label="Company Name" />
+            </MudStack>
+            <MudStack Row AlignItems="AlignItems.Baseline">
+                <MudTextField @bind-Value="_message" Variant="_variant" Label="Message" Placeholder="What can we help you with?" Lines="5" />
+            </MudStack>
+            <MudStack AlignItems="AlignItems.Center">
+                <MudButton OnClick="Submit_OnClick" Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary">Submit</MudButton>
+            </MudStack>
+        </MudStack>
+    </MudForm>
+</MudPaper>

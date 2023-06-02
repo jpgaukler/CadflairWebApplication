@@ -90,7 +90,7 @@
                                 {
                                     <MudItem>
                                         <MudPaper>
-                                            <MudButton Variant="Variant.Text" Href=@($"/{_subscription.SubdirectoryName}/products/{product.SubdirectoryName}")>
+                                            <MudButton Variant="Variant.Text" Href=@($"/{_subscription?.SubdirectoryName}/products/{product.SubdirectoryName}")>
                                                 <MudStack>
                                                     <ProductThumbnail Product="@product" Height="200" Width="200" />
                                                     @product.DisplayName

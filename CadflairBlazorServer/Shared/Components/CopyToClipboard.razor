@@ -1,5 +1,12 @@
 ﻿<MudTooltip Text="@TooltipText">
-    <MudIconButton OnClick="CopyTextToClipboard" Icon="@Icon" Size="@Size"/>
+    @if(Label == null)
+    {
+        <MudIconButton OnClick="CopyTextToClipboard" Icon="@Icon" Size="@Size" Variant="@Variant" Color="@Color" />
+    }
+    else
+    {
+        <MudButton OnClick="CopyTextToClipboard" StartIcon="@Icon" Size="@Size" Variant="@Variant" Color="@Color">@Label</MudButton>
+    }
 </MudTooltip>
 
 @code{
@@ -12,8 +19,11 @@
     // parameters
     [Parameter] public string? Text { get; set; }
     [Parameter] public string TooltipText { get; set; } = "Copy";
+    [Parameter] public Variant Variant { get; set; } = Variant.Text;
     [Parameter] public Size Size { get; set; } = Size.Small;
+    [Parameter] public Color Color { get; set; } = Color.Default;
     [Parameter] public string Icon { get; set; } = Icons.Material.Filled.ContentCopy;
+    [Parameter] public string? Label { get; set; }
 
     private async Task CopyTextToClipboard()
     {

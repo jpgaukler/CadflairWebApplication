@@ -1,6 +1,6 @@
-using CadflairBlazorServer.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using QRCoder;
 
 namespace CadflairBlazorServer.Pages
 {
@@ -30,21 +30,29 @@ namespace CadflairBlazorServer.Pages
         private ILogicFormElement? _iLogicFormData;
         private bool _showSubmitButton = true;
         private bool _showRequestButton = false;
-        private bool _validInputs = false;
+        private bool _validConfigurationInputs = false;
         private bool _configurationInProgress = false;
         private bool _initializing = true;
 
+        // dialog fields
+        private DialogOptions _shareDialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.ExtraSmall, DisableBackdropClick = true };
+        private bool _showShareDialog;
+        private string? _qrCodeImageAsBase64; 
+        private string? _shareLink;
+
+        private DialogOptions _requestDialogOptions = new() { MaxWidth = MaxWidth.Large, DisableBackdropClick = true };
+        private bool _showRequestDialog;
+        private string? _firstName;
+        private string? _lastName;
+        private string? _emailAddress;
+        private string? _phoneNumber;
+        private string? _phoneExtension;
+        private string? _messageText;
+        private bool _validRequestInputs;
+
+
         protected override async Task OnInitializedAsync()
         {
-            // setup signal R hub connection
-            _hubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/forgecallbackhub"))
-                                                       .WithAutomaticReconnect()
-                                                       .Build();
-
-            _hubConnection.On<string>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnProgress), ReportProgress);
-            _hubConnection.On<int>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), ProductConfigurationCreated);
-            _hubConnection.On<string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ShowProductConfiguration);
-
             // get data
             _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
             _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
@@ -57,6 +65,15 @@ namespace CadflairBlazorServer.Pages
                 return;
             }
 
+            // setup signal R hub connection
+            _hubConnection = new HubConnectionBuilder().WithUrl(_navigationManager.ToAbsoluteUri("/forgecallbackhub"))
+                                                       .WithAutomaticReconnect()
+                                                       .Build();
+
+            _hubConnection.On<string>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnProgress), ReportProgress);
+            _hubConnection.On<int>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), ProductConfigurationCreated);
+            _hubConnection.On<string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ShowProductConfiguration);
+
             // construct UI
             if(_productVersion.ILogicFormJson != null)
             {
@@ -64,10 +81,17 @@ namespace CadflairBlazorServer.Pages
                 _iLogicFormData.SetParameterExpressions(_defaultConfiguration.ArgumentJson);
             }
 
+            // TO DO: may want to create a sharable link for each specific configuration
+            _shareLink = $"{_navigationManager.BaseUri}{_subscription?.SubdirectoryName}/products/{_product?.SubdirectoryName}";
+            QRCodeGenerator qrGenerator = new();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(_shareLink, QRCodeGenerator.ECCLevel.Q);
+            Base64QRCode qrCode = new(qrCodeData);
+            _qrCodeImageAsBase64 = qrCode.GetGraphic(20);
+
             _initializing = false;
 
             // load default model in viewer
-            await _forgeViewer!.ViewDocument(_product.ForgeBucketKey, _defaultConfiguration.ForgeZipKey);
+            await _forgeViewer!.ViewDocument(_product!.ForgeBucketKey, _defaultConfiguration.ForgeZipKey);
             StateHasChanged();
         }
 
@@ -84,11 +108,11 @@ namespace CadflairBlazorServer.Pages
 
             if (_productConfiguration != null)
             {
+                _snackbar.Add("Existing configuration found!", Severity.Info);
                 _configurationInProgress = false;
                 _showSubmitButton = false;
                 _showRequestButton = true;
                 _ = _forgeViewer!.ViewDocument(_product!.ForgeBucketKey, _productConfiguration.ForgeZipKey);
-                _snackbar.Add("Existing configuration found!", Severity.Info);
                 StateHasChanged();
                 return;
             }
@@ -136,45 +160,36 @@ namespace CadflairBlazorServer.Pages
 
         private async Task RequestQuote_OnClick()
         {
-            if (_productConfiguration == null) return;
+            if (!_validRequestInputs) 
+                return;
 
-            DialogParameters parameters = new()
+            if (_product == null || _productConfiguration == null) 
+                return;
+
+            // create new record in db
+            await _dataServicesManager.ProductService.CreateProductQuoteRequest(productConfigurationId: _productConfiguration.Id,
+                                                                                firstName: _firstName,
+                                                                                lastName: _lastName,
+                                                                                emailAddress: _emailAddress,
+                                                                                phoneNumber: _phoneNumber,
+                                                                                phoneExtension: _phoneExtension,
+                                                                                messageText: _messageText);
+
+            // send email notification to subscribers of this event
+            ProductQuoteRequestEmailModel model = new()
             {
-                { nameof(ProductQuoteRequestDialog.Product), _product },
-                { nameof(ProductQuoteRequestDialog.ProductVersion), _productVersion },
-                { nameof(ProductQuoteRequestDialog.ProductConfiguration), _productConfiguration }
+                CustomerName = $"{_firstName} {_lastName}",
+                ProductName = _product.DisplayName
             };
 
-            var result = await _dialogService.Show<ProductQuoteRequestDialog>($"Request a Quote - {_product!.DisplayName}", parameters).Result;
+            _ = _emailService.SendNotificationEmail(subscriptionId: _subscription!.Id,
+                                                    notificationId: (int)NotificationIdEnum.ProductQuoteRequest_Insert,
+                                                    subject: "New Request!",
+                                                    emailTemplatePath: model.Path,
+                                                    emailModel: model);
 
-            if (!result.Canceled)
-            {
-                ProductQuoteRequestDialog dialog = (ProductQuoteRequestDialog)result.Data;
-
-                // create new record in db
-                await _dataServicesManager.ProductService.CreateProductQuoteRequest(productConfigurationId: _productConfiguration.Id,
-                                                                                    firstName: dialog.FirstName,
-                                                                                    lastName: dialog.LastName,
-                                                                                    emailAddress: dialog.EmailAddress,
-                                                                                    phoneNumber: dialog.PhoneNumber,
-                                                                                    phoneExtension: dialog.PhoneExtension,
-                                                                                    messageText: dialog.MessageText);
-
-                // send email notification to subscribers of this event
-                ProductQuoteRequestEmailModel model = new()
-                {
-                    CustomerName = $"{dialog.FirstName} {dialog.LastName}",
-                    ProductName = _product.DisplayName
-                };
-
-                _ = _emailService.SendNotificationEmail(subscriptionId: _subscription!.Id,
-                                                        notificationId: (int)NotificationIdEnum.ProductQuoteRequest_Insert,
-                                                        subject: "New Request!",
-                                                        emailTemplatePath: model.Path,
-                                                        emailModel: model);
-
-                _snackbar.Add("Request submitted!", Severity.Success);
-            }
+            _snackbar.Add("Request submitted!", Severity.Success);
+            _showRequestDialog = false;
         }
 
         private async Task DownloadStp_OnClick()

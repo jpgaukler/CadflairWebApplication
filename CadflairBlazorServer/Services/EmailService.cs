@@ -16,6 +16,31 @@ namespace CadflairBlazorServer.Services
             _logger = logger;
         }
 
+        public async Task SendEmail(string toAddress, string subject, string bodyText, bool isHtml = false)
+        {
+            try
+            {
+                SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
+                                                        .To(toAddress)
+                                                        .Subject(subject)
+                                                        .Body(bodyText, isHtml)
+                                                        .SendAsync();
+
+                if (email.Successful)
+                {
+                    _logger.LogInformation($"Email sent successfully. Email Address: {toAddress}");
+                }
+                else
+                {
+                    email.ErrorMessages.ForEach(message => _logger.LogError($"Email failed to send.  Email Address: {toAddress} Error Message: {message}"));
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"SendEmail failed: {ex}");
+            }
+        }
+
         public async Task SendEmail<T>(string toAddress, string subject, string emailTemplatePath, T emailModel)
         {
             try
@@ -28,16 +53,16 @@ namespace CadflairBlazorServer.Services
 
                 if (email.Successful)
                 {
-                    _logger.LogInformation($"Email sent. Email Address: {toAddress}");
+                    _logger.LogInformation($"Email sent successfully. Email Address: {toAddress}");
                 }
                 else
                 {
-                    email.ErrorMessages.ForEach(message => _logger.LogError($"Email failed to send.  Email Address: {toAddress}"));
+                    email.ErrorMessages.ForEach(message => _logger.LogError($"Email failed to send.  Email Address: {toAddress} Error Message: {message}"));
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SendEmail failed: {ex}");
+                _logger.LogError($"SendEmail<T> failed: {ex}");
             }
         }
 
@@ -69,13 +94,13 @@ namespace CadflairBlazorServer.Services
                     }
                     else
                     {
-                        email.ErrorMessages.ForEach(message => _logger.LogError($"Notification email failed to send. Notification Id: {notificationId}, Email Address: {user.EmailAddress}"));
+                        email.ErrorMessages.ForEach(message => _logger.LogError($"Notification email failed to send. Notification Id: {notificationId}, Email Address: {user.EmailAddress} Error Message: {message}"));
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SendNotificationEmail failed: {ex}");
+                _logger.LogError($"SendNotificationEmail<T> failed: {ex}");
             }
         }
     }
