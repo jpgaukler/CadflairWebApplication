@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
 
-namespace CadflairInventorAddin.Helpers
+namespace CadflairInventorLibrary.Helpers
 {
     /// <summary>
     /// Class for converting icons to IPictureDisp to be usable by Inventor API elements.
@@ -67,5 +68,17 @@ namespace CadflairInventorAddin.Helpers
             PICTDESC.Bitmap pictBmp = new PICTDESC.Bitmap(bmp);
             return OleCreatePictureIndirect(pictBmp, ref iPictureDispGuid, true);
         }
+
+        public static System.Drawing.Image ToImage(this stdole.IPictureDisp iPictureDisp, int width, int height)
+        {
+            Metafile mf = new Metafile(new IntPtr(iPictureDisp.Handle), new WmfPlaceableFileHeader());
+            return mf.GetThumbnailImage(width, height, ThumbnailCallback, IntPtr.Zero);
+        }
+
+        private static bool ThumbnailCallback()
+        {
+            return false;
+        }
+
     }
 }

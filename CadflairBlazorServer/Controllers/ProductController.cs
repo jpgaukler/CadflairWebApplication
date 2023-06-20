@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web.Resource;
-using System.Diagnostics;
+using System.IO.Compression;
 
 namespace CadflairBlazorServer.Controllers
 {
@@ -28,7 +28,9 @@ namespace CadflairBlazorServer.Controllers
         public class ProductUploadForm
         {
             public string? ProductData { get; set; }
-            public IFormFile? ZipFile { get; set; }
+            public IFormFile? InventorZipFile { get; set; }
+            public IFormFile? SvfZipFile { get; set; }
+            public IFormFile? StpFile { get; set; }
         }
 
         /// <summary>
@@ -41,19 +43,23 @@ namespace CadflairBlazorServer.Controllers
         {
             try
             {
-                //validate data
                 if (string.IsNullOrWhiteSpace(form.ProductData)) 
-                    return ValidationProblem("Parameter 'ProductData' was not provided!");
+                    return ValidationProblem($"Parameter '{nameof(ProductUploadForm.ProductData)}' was not provided!");
 
-                if (form.ZipFile == null || form.ZipFile.Length == 0) 
-                    return ValidationProblem("No zip file was provided!");
+                if (form.InventorZipFile == null || form.InventorZipFile.Length == 0 ||
+                    form.SvfZipFile == null || form.SvfZipFile.Length == 0 ||
+                    form.StpFile == null || form.StpFile.Length == 0)
+                    return ValidationProblem("Required files were not provided!");
 
-                if (Path.GetExtension(form.ZipFile.FileName) != ".zip") 
+                if (Path.GetExtension(form.InventorZipFile.FileName) != ".zip" || 
+                    Path.GetExtension(form.SvfZipFile.FileName) != ".zip" ||
+                    Path.GetExtension(form.StpFile.FileName) != ".stp") 
                     return ValidationProblem("Invalid file type!");
 
-                if (form.ZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE)
+                if (form.InventorZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE ||
+                    form.SvfZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE ||
+                    form.StpFile.Length > FileHandlingService.MAX_UPLOAD_SIZE)
                     return ValidationProblem($"File exceeds maximum file size ({FileHandlingService.MAX_UPLOAD_SIZE/1000000} MB)!");
-
 
                 // NEED TO VALIDATE INPUTS!!!!!!!!!!!!!!!
                 dynamic productData = JsonConvert.DeserializeObject<dynamic>(form.ProductData)!;
@@ -67,47 +73,8 @@ namespace CadflairBlazorServer.Controllers
                 bool isPublic = (bool)productData.IsPublic;
                 bool isConfigurable = (bool)productData.IsConfigurable;
 
-                //Debug.WriteLine($@"UserId: {productData.UserId}");
-                //Debug.WriteLine($@"SubscriptionId: {productData.SubscriptionId}");
-                //Debug.WriteLine($@"ProductFolderId: {productData.ProductFolderId}");
-                //Debug.WriteLine($@"DisplayName: {productData.DisplayName}");
-                //Debug.WriteLine($@"ArgumentJson: {productData.ArgumentJson}");
-                //Debug.WriteLine($@"IsPublic: {productData.IsPublic}");
-                //Debug.WriteLine($@"IsConfigurable: {productData.IsConfigurable}");
-
-
                 // check to see if product already exists
                 Product product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndDisplayName(subscriptionId, displayName);
-
-                // setup bucket for upload
-                string bucketKey;
-                if (product == null)
-                {
-                    // Create bucket for product new product
-                    bucketKey = Guid.NewGuid().ToString();
-                    await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey);
-                }
-                else
-                {
-                    // use existing bucket for upload
-                    bucketKey = product.ForgeBucketKey;
-                }
-
-                // Temporarily save the file to server
-                string tempFileName = await _fileHandlingService.UploadFormFileToTempFolder(form.ZipFile);
-
-                // Upload file to Autodesk Forge OSS 
-                string objectKey = Guid.NewGuid().ToString() + ".zip";
-                bool uploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey, objectKey, tempFileName);
-
-                // Delete the temp file from the server
-                System.IO.File.Delete(tempFileName);
-
-                if (!uploadSuccessful) 
-                    return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload files to Autodesk OSS." });
-
-                // start the Model Derivative translation so the default configuration is viewable in the browser
-                var tranlationJob = await _forgeServicesManager.ModelDerivativeService.TranslateObject(bucketKey, objectKey, rootFileName);
 
                 if (product == null)
                 {
@@ -115,7 +82,6 @@ namespace CadflairBlazorServer.Controllers
                     product = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: subscriptionId,
                                                                                       productFolderId: productFolderId,
                                                                                       displayName: displayName,
-                                                                                      forgeBucketKey: bucketKey,
                                                                                       isPublic: isPublic,
                                                                                       createdById: userId);
                 }
@@ -130,8 +96,82 @@ namespace CadflairBlazorServer.Controllers
                 // Create default ProductConfiguration 
                 ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: productVersion.Id,
                                                                                                                                  argumentJson: argumentJson,
-                                                                                                                                 forgeZipKey: objectKey,
                                                                                                                                  isDefault: true);
+                // setup bucket for file uploads
+                string bucketKey = Guid.NewGuid().ToString();
+                await _forgeServicesManager.ObjectStorageService.CreateBucket(bucketKey);
+
+                #region "upload inventor file"
+
+                // Temporarily save the inventor zip file to server
+                string tempFileName = await _fileHandlingService.UploadFormFileToTempFolder(form.InventorZipFile);
+
+                // Upload inventor zip to Autodesk Forge OSS 
+                string zipObjectKey = bucketKey + ".zip";
+                bool inventorUploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey, zipObjectKey, tempFileName);
+
+                // Delete the temp file from the server
+                System.IO.File.Delete(tempFileName);
+
+                if (!inventorUploadSuccessful)
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload inventor files to Autodesk OSS." });
+
+                #endregion
+
+                #region "upload stp file"
+
+                // Temporarily save the inventor zip file to server
+                string tempStpName = await _fileHandlingService.UploadFormFileToTempFolder(form.StpFile);
+
+                // Upload inventor zip to Autodesk Forge OSS 
+                string stpObjectKey = bucketKey + ".stp";
+                bool stpUploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey, stpObjectKey, tempStpName);
+
+                // Delete the temp file from the server
+                System.IO.File.Delete(tempStpName);
+
+                if (!stpUploadSuccessful)
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload stp file to Autodesk OSS." });
+
+                #endregion
+
+                #region "upload svf files"
+
+                // Temporarily save the svf zip file to server
+                string tempSvfName = await _fileHandlingService.UploadFormFileToTempFolder(form.SvfZipFile);
+
+                // unzip files and upload all svf fragments to OSS
+                DirectoryInfo svfExtractDirectory = Directory.CreateDirectory(Path.Combine(Path.GetDirectoryName(tempSvfName)!, $"{Path.GetFileName(tempSvfName)}_extract"));
+                ZipFile.ExtractToDirectory(tempSvfName, svfExtractDirectory.FullName);
+
+                // upload all svf files to OSS
+                bool svfUploadSuccessful = false;
+                foreach (FileInfo fileInfo in svfExtractDirectory.GetFiles())
+                {
+                    // there is a log file in the svf output that is usaully empty, which causes the Forge library to throw an exception 
+                    if (fileInfo.Length == 0)
+                        continue;
+
+                    // add slashes back into object names so the svf filenames match the original svf folder structure
+                    string objectKey = Path.GetFileName(fileInfo.FullName).Replace("%2F", "/");
+                    svfUploadSuccessful = await _forgeServicesManager.ObjectStorageService.UploadFile(bucketKey, objectKey, fileInfo.FullName);
+                }
+
+                // Delete temp files
+                System.IO.File.Delete(tempSvfName);
+                svfExtractDirectory.Delete(true);
+
+                if (!svfUploadSuccessful)
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Error = $"Unable to upload svf files to Autodesk OSS." });
+
+                #endregion
+
+                // update product configuration
+                productConfiguration.BucketKey = bucketKey;
+                productConfiguration.ZipObjectKey = zipObjectKey;
+                productConfiguration.StpObjectKey = stpObjectKey;
+                await _dataServicesManager.ProductService.UpdateProductConfiguration(productConfiguration);
+
 
                 return Ok(product);
             }

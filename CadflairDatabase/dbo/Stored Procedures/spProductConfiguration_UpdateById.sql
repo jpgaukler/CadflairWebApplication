@@ -3,10 +3,9 @@
 	@ProductVersionId int, 
 	@IsDefault bit,
 	@ArgumentJson nvarchar(MAX),
-	@ForgeZipKey varchar(50),
-	@ForgeStpKey varchar(50),
-	@ForgePdfKey varchar(50),
-	@ForgeDwgKey varchar(50) 
+	@BucketKey varchar(50),
+	@ZipObjectKey varchar(50),
+	@StpObjectKey varchar(50)
 AS
 
 BEGIN
@@ -17,10 +16,9 @@ BEGIN
 	SET ProductVersionId = @ProductVersionId,
 		IsDefault = @IsDefault,
 		ArgumentJson = @ArgumentJson,
-		ForgeZipKey = @ForgeZipKey,
-		ForgeStpKey = @ForgeStpKey,
-		ForgeDwgKey = @ForgeDwgKey,
-		ForgePdfKey = @ForgePdfKey
+		BucketKey = @BucketKey,
+		ZipObjectKey = @ZipObjectKey,
+		StpObjectKey = @StpObjectKey
 
 	WHERE Id = @Id;
 

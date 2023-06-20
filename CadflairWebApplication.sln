@@ -4,8 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairInventorPlugin", "CadflairInventorPlugin\CadflairInventorPlugin.csproj", "{C5D88CBE-B22A-4BE3-9FAA-75E89A9F40EB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7FA5AC3-725A-42A3-9631-13FEAD2961A5} = {B7FA5AC3-725A-42A3-9631-13FEAD2961A5}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairInventorAddin", "CadflairInventorAddin\CadflairInventorAddin.csproj", "{3DC284CE-6572-439D-ADA3-E703FF8498B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7FA5AC3-725A-42A3-9631-13FEAD2961A5} = {B7FA5AC3-725A-42A3-9631-13FEAD2961A5}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairDataAccess", "CadflairDataAccess\CadflairDataAccess.csproj", "{CAFA1AC2-91EB-4EF2-A6C4-3C63D8E81E15}"
 EndProject
@@ -14,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairBlazorServer", "CadflairBlazorServer\CadflairBlazorServer.csproj", "{60D98DFA-2C36-47DB-B5C8-DDFDDD227D6C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairForgeAccess", "CadflairForgeAccess\CadflairForgeAccess.csproj", "{B0DFB3DB-8768-430C-8B82-07B1E46D5314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairInventorLibrary", "CadflairInventorLibrary\CadflairInventorLibrary.csproj", "{B7FA5AC3-725A-42A3-9631-13FEAD2961A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +55,10 @@ Global
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0DFB3DB-8768-430C-8B82-07B1E46D5314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7FA5AC3-725A-42A3-9631-13FEAD2961A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7FA5AC3-725A-42A3-9631-13FEAD2961A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7FA5AC3-725A-42A3-9631-13FEAD2961A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7FA5AC3-725A-42A3-9631-13FEAD2961A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

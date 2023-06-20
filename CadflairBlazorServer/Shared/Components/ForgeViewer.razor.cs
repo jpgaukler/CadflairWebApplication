@@ -12,6 +12,8 @@ namespace CadflairBlazorServer.Shared.Components
 
         public async Task ViewDocument(string encodedUrn)
         {
+            _modelNotFound = false;
+
             try
             {
                 //get public token for viewables
@@ -23,7 +25,7 @@ namespace CadflairBlazorServer.Shared.Components
                     var parameters = new
                     {
                         Token = token.access_token,
-                        Urn = encodedUrn
+                        Urn = encodedUrn,
                     };
 
                     //invoke the viewer
@@ -47,9 +49,37 @@ namespace CadflairBlazorServer.Shared.Components
 
         public async Task ViewDocument(string bucketKey, string objectKey)
         {
+            _modelNotFound = false;
+
             //get forge object id
             dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
             ViewDocument(forgeObject.encoded_urn);
+        }
+
+        public async Task ViewDocumentInOss(string bucketKey, string objectKey = "bubble.json")
+        {
+            _modelNotFound = false;
+
+            try
+            {
+                //get public token for viewables
+                var token = await _forgeServicesManager.AuthorizationService.GetPublic();
+
+                var parameters = new
+                {
+                    Token = token.access_token,
+                    BucketKey = bucketKey,
+                    ObjectKey = objectKey,
+                };
+
+                //invoke the viewer
+                await _js.InvokeVoidAsync("launchViewer", parameters);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to load model from OSS - bucketKey: {bucketKey}, objectKey: {objectKey}");
+                _modelNotFound = true;
+            }
         }
     }
 }

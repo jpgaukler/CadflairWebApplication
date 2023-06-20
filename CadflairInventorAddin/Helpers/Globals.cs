@@ -11,6 +11,5 @@ namespace CadflairInventorAddin.Helpers
         public static Inventor.Application InventorApplication { get; set; }
 
         public static string AddInCLSIDString { get; set; }
-        public static string OutputLogPath { get => Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "output.log"); }
     }
 }

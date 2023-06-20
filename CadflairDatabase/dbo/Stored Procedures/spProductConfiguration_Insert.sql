@@ -1,8 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[spProductConfiguration_Insert]
 	@ProductVersionId int, 
 	@IsDefault bit,
-	@ArgumentJson nvarchar(MAX),
-	@ForgeZipKey varchar(50) 
+	@ArgumentJson nvarchar(MAX)
 AS
 
 BEGIN
@@ -11,13 +10,11 @@ BEGIN
 	INSERT INTO [dbo].[ProductConfiguration]
                 ([ProductVersionId]
 				,IsDefault
-                ,ArgumentJson
-                ,ForgeZipKey)
+                ,ArgumentJson)
            VALUES
 			    (@ProductVersionId
 				,@IsDefault
-		   	    ,@ArgumentJson
-			    ,@ForgeZipKey)
+		   	    ,@ArgumentJson)
 		   SELECT * FROM [dbo].[ProductConfiguration] WHERE Id = SCOPE_IDENTITY();
 END
 

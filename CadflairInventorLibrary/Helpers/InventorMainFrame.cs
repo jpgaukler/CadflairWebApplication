@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace CadflairInventorAddin.Helpers
+namespace CadflairInventorLibrary.Helpers
 {
-    internal class InventorMainFrame : System.Windows.Forms.IWin32Window
+    public class InventorMainFrame : System.Windows.Forms.IWin32Window
     {
         public IntPtr Handle { get; set; }
 

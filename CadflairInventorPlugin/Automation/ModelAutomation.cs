@@ -1,12 +1,7 @@
 ﻿using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils.Helpers;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CadflairInventorPlugin.Helpers;
 
 namespace CadflairInventorPlugin.Automation
 {
@@ -48,35 +43,6 @@ namespace CadflairInventorPlugin.Automation
             //    Trace.WriteLine("Updating part number...");
             //    doc.PropertySets["Design Tracking Properties"]["Part Number"].Value = map.Value["partNumber"];
             //}
-        }
-
-        public static void ExportStp(Document doc)
-        {
-            try
-            {
-                // Get the STEP translator Add-In.
-                TranslatorAddIn oSTPAddin = (TranslatorAddIn)Globals.InventorApplication.ApplicationAddIns.ItemById["{90AF7F40-0C01-11D5-8E83-0010B541CD80}"];
-                TranslationContext oContext = Globals.InventorApplication.TransientObjects.CreateTranslationContext();
-                oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism;
-
-                // Options for drawings...
-                NameValueMap oOptions = Globals.InventorApplication.TransientObjects.CreateNameValueMap();
-                //oOptions.Value["ApplicationProtocolType"] = 3; //automotive design
-
-                // Create a DataMedium object
-                DataMedium oDataMedium = Globals.InventorApplication.TransientObjects.CreateDataMedium();
-
-                // Set the destination file name
-                string stpName = "Result.stp";
-                oDataMedium.FileName = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), stpName);
-
-                // Publish document.
-                oSTPAddin.SaveCopyAs(doc, oContext, oOptions, oDataMedium);
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError("Falied to export stp - " + ex.ToString());
-            }
         }
     }
 }

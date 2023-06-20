@@ -68,51 +68,62 @@ namespace CadflairForgeAccess.Services
         /// <returns></returns>
         public async Task<bool> UploadFile(string bucketKey, string objectKey, string fullFileName)
         {
-            ObjectsApi objects = await GetObjectsApi();
+            bool success = false;
 
-            // Method to report progress during the file upload
-            void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
+            try
             {
-                Debug.WriteLine($"File Upload Progress: {progress} Elapsed: {elapsed} Objects: {string.Join(", ", objects)}");
+                ObjectsApi objects = await GetObjectsApi();
+
+                // Method to report progress during the file upload
+                void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
+                {
+                    Debug.WriteLine($"File Upload Progress: {progress} Elapsed: {elapsed} Objects: {string.Join(", ", objects)}");
+                }
+
+                // Method to refresh the token if it expires during upload
+                async Task<Bearer?> onRefreshToken()
+                {
+                    dynamic? token = await _authService.GetInternal();
+                    return new Bearer(token.token_type, token.expires_in, token.access_token);
+                }
+
+                //set options for upload
+                var uploadOptions = new Dictionary<string, object>()
+                {
+                    { "minutesExpiration", 10 },
+                    { "useAcceleration", true }
+                };
+
+                // Upload to aws using direct to S3 approach
+                using StreamReader reader = new(fullFileName);
+                List<UploadItemDesc> uploadList = new() { new UploadItemDesc(objectKey, reader.BaseStream) };
+                List<UploadItemDesc> uploadRes = await objects.uploadResources(bucketKey, uploadList, uploadOptions, onUploadProgress, onRefreshToken);
+                UploadItemDesc result = uploadRes.First();
+
+                //Debug.WriteLine($"File upload complete: {result.completedResponse}");
+
+                success = !result.Error;
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine($"File upload failed: {ex}");
+                success = false;
             }
 
-            // Method to refresh the token if it expires during upload
-            async Task<Bearer?> onRefreshToken()
-            {
-                dynamic? token = await _authService.GetInternal();
-                return new Bearer(token.token_type, token.expires_in, token.access_token);
-            }
-
-            //set options for upload
-            var uploadOptions = new Dictionary<string, object>()
-            {
-                { "minutesExpiration", 10 },
-                { "useAcceleration", true }
-            };
-
-            // Upload to aws using direct to S3 approach
-            using StreamReader reader = new(fullFileName);
-            List<UploadItemDesc> uploadList = new() { new UploadItemDesc(objectKey, reader.BaseStream) };
-            List<UploadItemDesc> uploadRes = await objects.uploadResources(bucketKey, uploadList, uploadOptions, onUploadProgress, onRefreshToken);
-            UploadItemDesc result = uploadRes.First();
-
-            Debug.WriteLine($"File upload complete: {result.completedResponse}");
-
-            bool success = !result.Error;
             return success;
         }
 
-        public async Task<string> GetSignedDownloadUrl(string bucketKey, string objectKey)
+        public async Task<string> GetSignedDownloadUrl(string bucketKey, string objectKey, int minuteExpiration = 60, bool singleUse = true)
         {
             ObjectsApi objects = await GetObjectsApi();
-            dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(60, true), "read");
+            dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(minuteExpiration, singleUse), "read");
             return result.signedUrl;
         }
 
-        public async Task<string> GetSignedUploadUrl(string bucketKey, string objectKey)
+        public async Task<string> GetSignedUploadUrl(string bucketKey, string objectKey, int minuteExpiration = 60, bool singleUse = true)
         {
             ObjectsApi objects = await GetObjectsApi();
-            dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(60, true), "write");
+            dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(minuteExpiration, singleUse), "write");
             return result.signedUrl;
         }
 

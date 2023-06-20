@@ -32,14 +32,16 @@ namespace CadflairBlazorServer.Pages
         private bool _showRequestButton = false;
         private bool _validConfigurationInputs = false;
         private bool _configurationInProgress = false;
+        private string _progressMessage = string.Empty;
         private bool _initializing = true;
 
-        // dialog fields
+        // share dialog 
         private DialogOptions _shareDialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.ExtraSmall, DisableBackdropClick = true };
         private bool _showShareDialog;
         private string? _qrCodeImageAsBase64; 
         private string? _shareLink;
 
+        // request dialog 
         private DialogOptions _requestDialogOptions = new() { MaxWidth = MaxWidth.Large, DisableBackdropClick = true };
         private bool _showRequestDialog;
         private string? _firstName;
@@ -71,8 +73,8 @@ namespace CadflairBlazorServer.Pages
                                                        .Build();
 
             _hubConnection.On<string>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnProgress), ReportProgress);
-            _hubConnection.On<int>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), ProductConfigurationCreated);
-            _hubConnection.On<string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ShowProductConfiguration);
+            _hubConnection.On<int>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), ShowNewProductConfiguration);
+            //_hubConnection.On<string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ShowProductConfiguration);
 
             // construct UI
             if(_productVersion.ILogicFormJson != null)
@@ -91,7 +93,7 @@ namespace CadflairBlazorServer.Pages
             _initializing = false;
 
             // load default model in viewer
-            await _forgeViewer!.ViewDocument(_product!.ForgeBucketKey, _defaultConfiguration.ForgeZipKey);
+            await _forgeViewer!.ViewDocumentInOss(_defaultConfiguration.BucketKey);
             StateHasChanged();
         }
 
@@ -101,6 +103,7 @@ namespace CadflairBlazorServer.Pages
                 return;
 
             _configurationInProgress = true;
+            _progressMessage = "Searching models...";
 
             //check for existing configuration
             List<ProductConfiguration> existingConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(_productVersion!.Id);
@@ -108,54 +111,50 @@ namespace CadflairBlazorServer.Pages
 
             if (_productConfiguration != null)
             {
-                _snackbar.Add("Existing configuration found!", Severity.Info);
                 _configurationInProgress = false;
                 _showSubmitButton = false;
                 _showRequestButton = true;
-                _ = _forgeViewer!.ViewDocument(_product!.ForgeBucketKey, _productConfiguration.ForgeZipKey);
-                StateHasChanged();
+                await _forgeViewer!.ViewDocumentInOss(_productConfiguration!.BucketKey);
                 return;
             }
-
 
             // connect to Signal R hub
             if (_hubConnection?.State != HubConnectionState.Connected)
                 await _hubConnection?.StartAsync()!;
 
-            _snackbar.Add("Generating new configuration", Severity.Info);
+            _progressMessage = "Generating new model...";
 
 
             // create record in database
             ProductConfiguration newConfiguration = await _dataServicesManager.ProductService.CreateProductConfiguration(productVersionId: _productVersion.Id,
                                                                                                                          argumentJson: _iLogicFormData!.GetArgumentJson(),
-                                                                                                                         forgeZipKey: null,
                                                                                                                          isDefault: false);
 
             // submit the request to design automation 
             await _forgeServicesManager.DesignAutomationService.CreateProductConfigurationModel(connectionId: _hubConnection?.ConnectionId!,
                                                                                                 productConfigurationId: newConfiguration.Id,
-                                                                                                inputBucketKey: _product!.ForgeBucketKey,
-                                                                                                inputObjectKey: _defaultConfiguration!.ForgeZipKey,
+                                                                                                inputBucketKey: _defaultConfiguration!.BucketKey,
+                                                                                                inputObjectKey: _defaultConfiguration!.ZipObjectKey,
                                                                                                 inputPathInZip: _productVersion.RootFileName,
                                                                                                 inventorParamsJson: _iLogicFormData.GetArgumentJson());
         }
 
-        private void ReportProgress(string message) => _snackbar.Add(message, Severity.Info);
-
-        private async Task ProductConfigurationCreated(int productConfigurationId)
+        private void ReportProgress(string message)
         {
-            _snackbar.Add("Generating preview...", Severity.Info);
-            _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
-        }
+            _progressMessage = message;
+            InvokeAsync(StateHasChanged);
+        } 
 
-        private void ShowProductConfiguration(string urn)
+        private async Task ShowNewProductConfiguration(int productConfigurationId)
         {
+            //_snackbar.Add("Workitem complete!", Severity.Success);
+            _progressMessage = "New model generated!";
             _configurationInProgress = false;
             _showSubmitButton = false;
             _showRequestButton = true;
-            _snackbar.Add("Configuration generated successfully!", Severity.Info);
-            _ = _forgeViewer!.ViewDocument(urn);
-            InvokeAsync(StateHasChanged);
+            _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
+            await _forgeViewer!.ViewDocumentInOss(_productConfiguration.BucketKey);
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task RequestQuote_OnClick()
@@ -194,19 +193,19 @@ namespace CadflairBlazorServer.Pages
 
         private async Task DownloadStp_OnClick()
         {
-            if (_productConfiguration?.ForgeStpKey == null)
+            if (_productConfiguration?.StpObjectKey == null)
                 return;
 
-            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product!.ForgeBucketKey, _productConfiguration.ForgeStpKey);
+            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_productConfiguration.BucketKey, _productConfiguration.StpObjectKey);
             _navigationManager.NavigateTo(url);
         }
 
         private async Task DownloadZip_OnClick()
         {
-            if (_productConfiguration?.ForgeZipKey == null)
+            if (_productConfiguration?.ZipObjectKey == null)
                 return;
 
-            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_product!.ForgeBucketKey, _productConfiguration.ForgeZipKey);
+            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_productConfiguration.BucketKey, _productConfiguration.ZipObjectKey);
             _navigationManager.NavigateTo(url);
         }
 

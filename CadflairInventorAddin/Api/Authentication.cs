@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using CadflairInventorAddin.Helpers;
+using CadflairInventorLibrary.Helpers;
 using Inventor;
 using Microsoft.Identity.Client;
 

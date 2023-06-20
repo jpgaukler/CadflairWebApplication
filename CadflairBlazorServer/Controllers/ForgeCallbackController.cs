@@ -33,25 +33,24 @@ namespace CadflairBlazorServer.Controllers
 
 
         [HttpPost]
-        [Route("api/v1/designautomation/productconfiguration/create/oncomplete")]
-        public async Task<IActionResult> CreateProductConfigurationModel_OnComplete(string connectionId, int productConfigurationId, string outputBucketKey, string outputObjectKey, string rootFileName, string outputStpKey, [FromBody] dynamic body)
+        [Route("api/v1/designautomation/productconfiguration/create/oncomplete/{connectionId}/{productConfigurationId}/{outputBucketKey}/{outputZipKey}/{outputStpKey}")]
+        public async Task<IActionResult> CreateProductConfigurationModel_OnComplete(string connectionId, int productConfigurationId, string outputBucketKey, string outputZipKey, string outputStpKey, [FromBody] dynamic body)
         {
             try
             {
                 // parse json
                 JObject response = JObject.Parse((string)body.ToString());
-                string status = response["status"]?.Value<string>()!;
-                string reportUrl = response["reportUrl"]?.Value<string>()!;
+                Debug.WriteLine($"Workitem complete: {response}");
+                string status = (string)response["status"]!;
+                string reportUrl = (string)response["reportUrl"]!;
 
                 if (status == "success")
                 {
-                    // translate result
-                    await _forgeServicesManager.ModelDerivativeService.TranslateObject(outputBucketKey, outputObjectKey, rootFileName, connectionId);
-
                     // update database record
                     ProductConfiguration productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
-                    productConfiguration.ForgeZipKey = outputObjectKey;
-                    productConfiguration.ForgeStpKey = outputStpKey;
+                    productConfiguration.BucketKey = outputBucketKey;
+                    productConfiguration.ZipObjectKey = outputZipKey;
+                    productConfiguration.StpObjectKey = outputStpKey;
                     await _dataServicesManager.ProductService.UpdateProductConfiguration(productConfiguration);
 
                     // send message to client
@@ -78,7 +77,7 @@ namespace CadflairBlazorServer.Controllers
 
 
         [HttpPost]
-        [Route("api/v1/designautomation/productconfiguration/create/onprogress")]
+        [Route("api/v1/designautomation/productconfiguration/create/onprogress/{connectionId}")]
         public async Task<IActionResult> CreateProductConfigurationModel_OnProgress(string connectionId, [FromBody] dynamic body)
         {
             try
@@ -87,12 +86,53 @@ namespace CadflairBlazorServer.Controllers
 
                 if (response["progress"] != null)
                 {
-                    JObject progress = JObject.Parse(response["progress"]?.Value<string>()!);
-                    string message = progress["message"]?.Value<string>()!;
+                    JObject progress = JObject.Parse((string)response["progress"]!);
+                    string message = (string)progress["message"]!;
 
                     // send message to client
                     await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfigurationModel_OnProgress", message);
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unknown error occurred!");
+            }
+
+            //ALWAYS RETURN OK TO THE FORGE API
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// Return a list of signed urls (one for each file name) to the design automation service so all svf files can be uploaded directly to Forge OSS. 
+        /// <br/><br/>
+        /// See blog post here: <see href="https://aps.autodesk.com/blog/speed-viewable-generation-when-using-design-automation-inventor">Speed up viewable generation when using Design Automation for Inventor</see>
+        /// </summary>
+        /// <param name="bucketKey"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/v1/designautomation/productconfiguration/create/onsvfoutput/{bucketKey}")]
+        public async Task<IActionResult> CreateProductConfigurationModel_OnSvfOutput(string bucketKey, [FromBody] dynamic body)
+        {
+            try
+            {
+                // create signed upload urls for the given bucket key, to upload the resulting svf files to OSS
+                JObject response = JObject.Parse((string)body.ToString());
+                string permissions = (string)response["permissions"]!;
+                JArray files = (JArray)response["files"]!;
+
+                Dictionary<string, string> signedUrls = new();
+
+                foreach (var filename in files)
+                {
+                    string objectKey = (string)filename!;
+                    string signedUrl = await _forgeServicesManager.ObjectStorageService.GetSignedUploadUrl(bucketKey, objectKey, minuteExpiration: 15, singleUse: true);
+                    signedUrls.Add(objectKey, signedUrl);
+                }
+
+                // return the list of signed urls as a json array
+                return Ok(JsonConvert.SerializeObject(signedUrls));
             }
             catch (Exception ex)
             {
@@ -111,10 +151,10 @@ namespace CadflairBlazorServer.Controllers
             try
             {
                 JObject response = JObject.Parse((string)body.ToString());
-                JObject payload = response["payload"]?.Value<JObject>()!;
-                JObject workflowAttributes = payload["WorkflowAttributes"]?.Value<JObject>()!;
-                string resourceUrn = response["resourceUrn"]?.Value<string>()!;
-                string connectionId = workflowAttributes["connectionId"]?.Value<string>()!;
+                JObject payload = (JObject)response["payload"]!;
+                JObject workflowAttributes = (JObject)payload["WorkflowAttributes"]!;
+                string resourceUrn = (string)response["resourceUrn"]!;
+                string connectionId = (string)workflowAttributes["connectionId"]!;
 
                 // send message to client
                 await _hubContext.Clients.Client(connectionId).SendAsync("ModelDerivativeTranslation_OnComplete", resourceUrn);
@@ -126,6 +166,33 @@ namespace CadflairBlazorServer.Controllers
 
             //ALWAYS RETURN OK TO THE FORGE API
             return Ok();
+        }
+
+
+        /// <summary>
+        /// Redirect a request from the Forge Viewer to load a model directly from a file is OSS. This method generates a signed url for the object and redirects the viewer to read from that location.
+        /// <br/><br/>
+        /// See blog post here: <see href="https://aps.autodesk.com/blog/speed-viewable-generation-when-using-design-automation-inventor">Speed up viewable generation when using Design Automation for Inventor</see>
+        /// </summary>
+        /// <param name="bucketKey"></param>
+        /// <param name="objectKey"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("/api/v1/viewer_proxy/{bucketKey}/{*objectKey}")]
+        public async Task<IActionResult> RedirectViewerToOSS(string bucketKey, string objectKey)
+        {
+            try
+            {
+                // must encode object key as URL form
+                string encodedObjectId = objectKey.Replace("/", "%2F");
+                string redirectUri = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(bucketKey, encodedObjectId);
+                return Redirect(redirectUri);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unknown error occurred!");
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
     }

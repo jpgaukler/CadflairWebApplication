@@ -43,31 +43,27 @@
     <div class="relative mud-height-full mud-width-full">
         @if (_configurationInProgress)
         {
-            <div class="relative mud-height-full mud-width-full">
-                <MudStack AlignItems="AlignItems.Center" Justify="Justify.Center" Class="mud-height-full mud-width-full absolute">
-                    <MudProgressCircular Size="Size.Large" Indeterminate />
-                </MudStack>
-            </div>
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute z-10 mud-height-full mud-width-full mud-background-gray">
+                <MudProgressCircular Size="Size.Large" Indeterminate />
+                <MudText Typo="Typo.button">@_progressMessage</MudText>
+            </MudStack>
         }
-        else
+        @if (_showRequestButton)
         {
-            @if (_showRequestButton)
-            {
-                <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="250px;">
-                    <MudStack Spacing="2">
-                        <MudText Typo="Typo.h6"><strong>Like what you see?</strong></MudText>
-                        <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
-                        <MudButton OnClick="() => _showRequestDialog = true" Disabled="_productConfiguration == null" 
-                                   Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary" Size="Size.Small" DisableElevation>Request A Quote</MudButton>
-                        <MudButton OnClick="() => _showShareDialog = true" Disabled="_productConfiguration == null" 
-                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Size="Size.Small">Share</MudButton>
-                        <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.ForgeStpKey == null" 
-                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload" Size="Size.Small">Download Stp</MudButton>
-                    </MudStack>
-                </MudPaper>
-            }
-            <ForgeViewer @ref="_forgeViewer" />
+            <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="250px;">
+                <MudStack Spacing="2">
+                    <MudText Typo="Typo.h6"><strong>Like what you see?</strong></MudText>
+                    <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
+                    <MudButton OnClick="() => _showRequestDialog = true" Disabled="_productConfiguration == null"
+                           Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary" Size="Size.Small" DisableElevation>Request A Quote</MudButton>
+                    <MudButton OnClick="() => _showShareDialog = true" Disabled="_productConfiguration == null"
+                           Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Size="Size.Small">Share</MudButton>
+                    <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.StpObjectKey == null"
+                           Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload" Size="Size.Small">Download Stp</MudButton>
+                </MudStack>
+            </MudPaper>
         }
+        <ForgeViewer @ref="_forgeViewer" />
     </div>
 </div>
 

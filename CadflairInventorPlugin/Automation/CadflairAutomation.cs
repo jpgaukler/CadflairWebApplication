@@ -23,7 +23,8 @@ using System.Collections.Generic;
 using Inventor;
 using Autodesk.Forge.DesignAutomation.Inventor.Utils;
 using Newtonsoft.Json;
-using CadflairInventorPlugin.Helpers;
+using System.IO;
+using CadflairInventorLibrary.Helpers;
 
 namespace CadflairInventorPlugin.Automation
 {
@@ -57,22 +58,27 @@ namespace CadflairInventorPlugin.Automation
                     }
 
                     // update parameters
-                    Globals.ReportProgress("Updating model parameters");
+                    ReportProgress("Updating model parameters...");
                     ModelAutomation.UpdateParameters(doc, map);
 
                     // update and save doc
-                    Globals.ReportProgress("Saving document");
+                    ReportProgress("Saving document...");
                     doc.Update();
                     doc.Save();
 
-                    //export stp
-                    Globals.ReportProgress("Exporting stp file");
-                    ModelAutomation.ExportStp(doc);
+                    // export stp
+                    ReportProgress("Exporting results...");
+                    string stpFilename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), "Result.stp");
+                    ExportHelpers.ExportStp(doc, stpFilename);
+
+                    // export svf files for on demand upload
+                    string svfFolder = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), "Svf");
+                    ExportHelpers.ExportSvf(doc, svfFolder);
 
                     // update drawing and export pdf
                     //DrawingAutomation.GenerateDrawing(doc, map);
 
-                    Globals.ReportProgress("Uploading results to Forge OSS");
+                    ReportProgress("Uploading results...");
 
                     doc.Close(SkipSave: true);
                 }
@@ -81,6 +87,18 @@ namespace CadflairInventorPlugin.Automation
             {
                 Trace.TraceError($"RunWithArguments failed - {ex}");
             }
+        }
+
+
+        private void ReportProgress(string message)
+        {
+            dynamic progress = new
+            {
+                message,
+            };
+
+            string progressJson = JsonConvert.SerializeObject(progress);
+            Trace.TraceInformation("!ACESAPI:acesHttpOperation({0},\"\",\"\",{1},null)", "onProgress", progressJson);
         }
 
     }

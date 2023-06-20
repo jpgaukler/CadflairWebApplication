@@ -20,7 +20,7 @@ namespace CadflairDataAccess.Services
 
         #region "Product"
 
-        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, string forgeBucketKey, bool isPublic, int createdById)
+        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, bool isPublic, int createdById)
         {
             dynamic values = new
             {
@@ -28,7 +28,6 @@ namespace CadflairDataAccess.Services
                 ProductFolderId = productFolderId,
                 DisplayName = displayName,
                 SubdirectoryName =  Regex.Replace(displayName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
-                ForgeBucketKey = forgeBucketKey,
                 IsPublic = isPublic,
                 CreatedById = createdById,
             };
@@ -134,14 +133,13 @@ namespace CadflairDataAccess.Services
 
         #region "ProductConfiguration"
 
-        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, string forgeZipKey, bool isDefault)
+        public Task<ProductConfiguration> CreateProductConfiguration(int productVersionId, string argumentJson, bool isDefault)
         {
             dynamic values = new
             {
                 ProductVersionId = productVersionId,
                 IsDefault = isDefault,
                 ArgumentJson = argumentJson,
-                ForgeZipKey = forgeZipKey,
             };
 
             return _db.SaveSingleAsync<ProductConfiguration, dynamic>("[dbo].[spProductConfiguration_Insert]", values);
@@ -170,10 +168,9 @@ namespace CadflairDataAccess.Services
                 productConfiguration.ProductVersionId,
                 productConfiguration.IsDefault,
                 productConfiguration.ArgumentJson,
-                productConfiguration.ForgeZipKey,
-                productConfiguration.ForgePdfKey,
-                productConfiguration.ForgeDwgKey,
-                productConfiguration.ForgeStpKey,
+                productConfiguration.BucketKey,
+                productConfiguration.ZipObjectKey,
+                productConfiguration.StpObjectKey,
             };
 
             return _db.SaveDataAsync("[dbo].[spProductConfiguration_UpdateById]", values);

@@ -1,12 +1,10 @@
-﻿using CadflairDataAccess.Models;
-using Inventor;
-using Newtonsoft.Json;
+﻿using Inventor;
 using System;
 using System.Collections.Generic;
 
-namespace CadflairInventorAddin.Helpers
+namespace CadflairInventorLibrary.Helpers
 {
-    internal static class ExtensionMethods
+    public static class ExtensionMethods
     {
         /// <summary>
         /// Get the associated drawing view object for the given dimension. Valid dimensions types are: <br/>
@@ -104,6 +102,11 @@ namespace CadflairInventorAddin.Helpers
             return null;
         }
 
+        public static T[] ToSingleArray<T>(this T obj)
+        {
+            return new T[] { obj };
+        }
+
         public static string[] ToStringArray(this ExpressionList expressionList)
         {
             if (expressionList == null || expressionList.Count == 0) return null;
@@ -118,22 +121,15 @@ namespace CadflairInventorAddin.Helpers
             return stringList.ToArray();
         }
 
-
-        public static Inventor.Color ToInventorColor(this System.Drawing.Color color)
-        {
-            return Globals.InventorApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
-        }
+        //public static Inventor.Color ToInventorColor(this System.Drawing.Color color)
+        //{
+        //    return Globals.InventorApplication.TransientObjects.CreateColor(color.R, color.G, color.B);
+        //}
 
         public static System.Drawing.Color ToSystemDrawingColor(this Inventor.Color color)
         {
             return System.Drawing.Color.FromArgb(color.Red, color.Green, color.Blue);
         }
-
-        public static System.Windows.Media.Color ToSystemMediaColor(this Inventor.Color color)
-        {
-            return System.Windows.Media.Color.FromRgb(color.Red, color.Green, color.Blue);
-        }
-
 
 
         #region methods to assist with preparing files for upload 

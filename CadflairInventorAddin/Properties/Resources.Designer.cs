@@ -63,6 +63,26 @@ namespace CadflairInventorAddin.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon ExportSvfLarge {
+            get {
+                object obj = ResourceManager.GetObject("ExportSvfLarge", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon ExportSvfSmall {
+            get {
+                object obj = ResourceManager.GetObject("ExportSvfSmall", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon LockLarge {
             get {
                 object obj = ResourceManager.GetObject("LockLarge", resourceCulture);

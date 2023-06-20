@@ -48,10 +48,10 @@ namespace CadflairBlazorServer.Shared.Components
                 ProductConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(latestVersion.Id);
             }
 
-            if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey))
-            {
-                _thumbnailStringBase64 = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey, Width, Height);
-            }
+            //if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey))
+            //{
+            //    _thumbnailStringBase64 = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey, Width, Height);
+            //}
 
             _loading = false;
             StateHasChanged();

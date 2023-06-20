@@ -1,6 +1,7 @@
 ﻿using CadflairDataAccess.Models;
 using CadflairInventorAddin.Api;
 using CadflairInventorAddin.Helpers;
+using CadflairInventorLibrary.Helpers;
 using Inventor;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace CadflairInventorAddin.Commands.Upload
 {
     internal static class UploadToCadflair
     {
+        public static ButtonDefinition UploadToCadflairButton { get; set; }
+
         private static DockableWindowHelper _dockableWindowHelper;
 
         public static void UploadToCadflairButton_OnExecute(NameValueMap Context)
@@ -209,7 +212,7 @@ namespace CadflairInventorAddin.Commands.Upload
 
         #endregion
 
-        #region "Zip file handling"
+        #region "inventor file handling"
 
         /// <summary>
         /// Create a zip folder in the temp directory for the Inventor document that is provided. 
@@ -223,7 +226,7 @@ namespace CadflairInventorAddin.Commands.Upload
         /// <param name="includeDrawings"></param>
         /// <returns>The full file name of the resulting zip file.</returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public static string CreateTemporaryZipFile(Document doc, bool includeDrawings)
+        public static string ZipInventorFiles(Document doc, bool includeDrawings)
         {
             if (doc.FileSaveCounter == 0) throw new FileNotFoundException();
 
@@ -231,16 +234,16 @@ namespace CadflairInventorAddin.Commands.Upload
             doc.Save();
 
             //create the temp folder
-            string tempFolderName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+            string tempFolderName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid().ToString());
             DirectoryInfo dir = Directory.CreateDirectory(tempFolderName);
 
             //copy the doc to the temp folder
-            CopyInventorFile(doc, tempFolderName, true);
+            CopyInventorFile(doc, tempFolderName, includeDrawings);
 
             //copy all the references to the temp folder
             foreach (Document refDoc in doc.AllReferencedDocuments)
             {
-                CopyInventorFile(refDoc, tempFolderName, true);
+                CopyInventorFile(refDoc, tempFolderName, includeDrawings);
             }
 
             //zip up the temp folder

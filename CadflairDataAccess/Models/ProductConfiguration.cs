@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CadflairDataAccess.Models
 {
@@ -27,24 +25,19 @@ namespace CadflairDataAccess.Models
         public string ArgumentJson { get; set; }
 
         /// <summary>
-        /// Object key (Autodesk Forge OSS) for the zip file containing the Inventor model. The bucket key for the object is stored in the Product table.
+        /// Bucket key for the files that are stored in Autodesk Forge OSS. 
         /// </summary>
-        public string ForgeZipKey { get; set; }
+        public string BucketKey { get; set; }
 
         /// <summary>
-        /// Object key (Autodesk Forge OSS) for the stp file that is exported from this configuration. The bucket key for the object is stored in the Product table.
+        /// Object key (Autodesk Forge OSS) for the zip file containing the Inventor model. 
         /// </summary>
-        public string ForgeStpKey { get; set; }
+        public string ZipObjectKey { get; set; }
 
         /// <summary>
-        /// Object key (Autodesk Forge OSS) for the pdf file that is exported from the drawing for this configuration. The bucket key for the object is stored in the Product table.
+        /// Object key (Autodesk Forge OSS) for the stp file that is exported from this configuration. 
         /// </summary>
-        public string ForgePdfKey { get; set; }
-
-        /// <summary>
-        /// Object key (Autodesk Forge OSS) for the AutoCAD dwg file that is exported from the drawing for this configuration. The bucket key for the object is stored in the Product table.
-        /// </summary>
-        public string ForgeDwgKey { get; set; }
+        public string StpObjectKey { get; set; }
 
         /// <summary>
         /// Date and time that the record was created.

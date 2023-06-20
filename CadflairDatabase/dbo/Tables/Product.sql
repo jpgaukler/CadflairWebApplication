@@ -4,7 +4,6 @@
     [ProductFolderId]    INT                       NOT NULL,
     [DisplayName]		 NVARCHAR(50)              NOT NULL,
     [SubdirectoryName]   VARCHAR(50)               NOT NULL,
-    [ForgeBucketKey]	 VARCHAR(50)               NOT NULL,
     [IsPublic]			 BIT                       NOT NULL DEFAULT 0,
     [CreatedOn]			 DATETIMEOFFSET(7)    	   NOT NULL DEFAULT sysdatetimeoffset(),
     [CreatedById]        INT                       NOT NULL,

@@ -7,6 +7,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using CadflairInventorAddin.Api;
+using CadflairInventorLibrary.Helpers;
+using System.Reflection;
 
 namespace CadflairInventorAddin
 {
@@ -25,7 +27,8 @@ namespace CadflairInventorAddin
         #region ApplicationAddInServer Members
 
         private UserInterfaceManager _userInterfaceManager;
-        private ButtonDefinition _uploadToCadflair;
+        private string _outputLogPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "output.log");
+
         //private ButtonDefinition _addDimensionAttributesButton;
         //private ButtonDefinition _refreshDimensionsButton;
 
@@ -47,8 +50,8 @@ namespace CadflairInventorAddin
             Globals.AddInCLSIDString = "{" + addInCLSID.Value + "}";
 
             // add trace listener for logging errors
-            System.IO.File.Delete(Globals.OutputLogPath);
-            Trace.Listeners.Add(new TextWriterTraceListener(Globals.OutputLogPath));
+            System.IO.File.Delete(_outputLogPath);
+            Trace.Listeners.Add(new TextWriterTraceListener(_outputLogPath));
             Trace.AutoFlush = true;
 
             // add user interface manager
@@ -58,14 +61,24 @@ namespace CadflairInventorAddin
             // setup button definitions
             ControlDefinitions controlDefs = Globals.InventorApplication.CommandManager.ControlDefinitions;
 
-            _uploadToCadflair = controlDefs.AddButtonDefinition(DisplayName: "Upload\nProduct",
-                                                                InternalName: "Cadflair Upload Command",
-                                                                Classification: CommandTypesEnum.kNonShapeEditCmdType,
-                                                                ClientId:Globals.AddInCLSIDString,
-                                                                DescriptionText: "Command to upload a model to the Cadflair platform.",
-                                                                ToolTipText: "Upload the active model to Cadflair.",
-                                                                StandardIcon: Resources.UploadSmall.ToIPictureDisp(),
-                                                                LargeIcon: Resources.UploadLarge.ToIPictureDisp());
+            UploadToCadflair.UploadToCadflairButton = controlDefs.AddButtonDefinition(DisplayName: "Upload\nProduct",
+                                                                                      InternalName: "Cadflair Upload Command",
+                                                                                      Classification: CommandTypesEnum.kNonShapeEditCmdType,
+                                                                                      ClientId: Globals.AddInCLSIDString,
+                                                                                      DescriptionText: "Command to upload a model to the Cadflair platform.",
+                                                                                      ToolTipText: "Upload the active model to Cadflair.",
+                                                                                      StandardIcon: Resources.UploadSmall.ToIPictureDisp(),
+                                                                                      LargeIcon: Resources.UploadLarge.ToIPictureDisp());
+
+            ExportSvf.ExportSvfButton = controlDefs.AddButtonDefinition(DisplayName: "Export Svf",
+                                                                        InternalName: "Cadflair Export Svf Command",
+                                                                        Classification: CommandTypesEnum.kNonShapeEditCmdType,
+                                                                        ClientId: Globals.AddInCLSIDString,
+                                                                        DescriptionText: "Command to export a model to svf format for use with the online Forge Viewer.",
+                                                                        ToolTipText: "Save the active document as Svf format.",
+                                                                        StandardIcon: Resources.ExportSvfSmall.ToIPictureDisp(),
+                                                                        LargeIcon: Resources.ExportSvfLarge.ToIPictureDisp());
+
 
             Authentication.SignInButton = controlDefs.AddButtonDefinition(DisplayName: "Sign In", 
                                                                           InternalName: "Cadflair SignIn Command", 
@@ -89,7 +102,8 @@ namespace CadflairInventorAddin
             //_refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
 
             // add button handlers
-            _uploadToCadflair.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
+            UploadToCadflair.UploadToCadflairButton.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
+            ExportSvf.ExportSvfButton.OnExecute += ExportSvf.ExportSvfButton_OnExecute;
             Authentication.SignInButton.OnExecute += Authentication.SignInButton_OnExecute;
             Authentication.SignOutButton.OnExecute += Authentication.SignOutButton_OnExecute;
             //_addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
@@ -123,12 +137,14 @@ namespace CadflairInventorAddin
             RibbonPanel drawingPanel = drawingTab.RibbonPanels.Add("Cadflair", "Cadflair Drawing Panel", Globals.AddInCLSIDString);
 
             //add components assembly ribbon 
-            assemblyPanel.CommandControls.AddButton(_uploadToCadflair, true);
+            assemblyPanel.CommandControls.AddButton(UploadToCadflair.UploadToCadflairButton, true);
+            assemblyPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
             assemblyPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             assemblyPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
 
             //add components part ribbon 
-            partPanel.CommandControls.AddButton(_uploadToCadflair, true);
+            partPanel.CommandControls.AddButton(UploadToCadflair.UploadToCadflairButton, true);
+            partPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
             partPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             partPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
 
@@ -152,7 +168,8 @@ namespace CadflairInventorAddin
 
             // disconnect events
             _userInterfaceManager.UserInterfaceEvents.OnResetRibbonInterface -= UserInterfaceEvents_OnResetRibbonInterface;
-            _uploadToCadflair.OnExecute -= UploadToCadflair.UploadToCadflairButton_OnExecute;
+            UploadToCadflair.UploadToCadflairButton.OnExecute -= UploadToCadflair.UploadToCadflairButton_OnExecute;
+            ExportSvf.ExportSvfButton.OnExecute -= ExportSvf.ExportSvfButton_OnExecute;
             Authentication.SignInButton.OnExecute -= Authentication.SignInButton_OnExecute;
             Authentication.SignOutButton.OnExecute -= Authentication.SignOutButton_OnExecute;
             //_addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
@@ -163,7 +180,7 @@ namespace CadflairInventorAddin
             _userInterfaceManager = null;
 
             //buttons 
-            _uploadToCadflair = null;
+            UploadToCadflair.UploadToCadflairButton = null;
             Authentication.SignInButton = null;
             Authentication.SignOutButton = null;
             //_addDimensionAttributesButton = null;

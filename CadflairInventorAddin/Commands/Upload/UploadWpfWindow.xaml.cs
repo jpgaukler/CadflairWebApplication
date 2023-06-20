@@ -1,8 +1,10 @@
 ﻿using CadflairDataAccess.Models;
 using CadflairInventorAddin.Api;
 using CadflairInventorAddin.Helpers;
+using CadflairInventorLibrary.Helpers;
 using Inventor;
 using Microsoft.Identity.Client;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
@@ -188,8 +190,16 @@ namespace CadflairInventorAddin.Commands.Upload
             TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
             int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
 
-            //save model to zipfile
-            string zipFileName = UploadToCadflair.CreateTemporaryZipFile(_doc, true);
+            // save model to zipfile
+            string inventorZipName = UploadToCadflair.ZipInventorFiles(_doc, true);
+
+            // save svf files to zip folder
+            string tempFolderName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid().ToString());
+            string svfZipName = ExportHelpers.ExportSvfAsZip(_doc, tempFolderName);
+
+            // save stp file
+            string stpFileName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"{Guid.NewGuid()}.stp");
+            ExportHelpers.ExportStp(_doc, stpFileName);
 
             // Upload to Cadflair
             Product product = await ProductApi.CreateProduct(userId: _loggedInUser.Id,
@@ -201,10 +211,14 @@ namespace CadflairInventorAddin.Commands.Upload
                                                              argumentJson: iLogicForm.GetArgumentJson(),
                                                              isPublic: (bool)IsPublicCheckBox.IsChecked,
                                                              isConfigurable: (bool)AllowProductConfigurationCheckBox.IsChecked,
-                                                             zipFileName: zipFileName);
+                                                             inventorZipName: inventorZipName,
+                                                             stpFileName: stpFileName,
+                                                             svfZipName: svfZipName);
 
             // clean up
-            System.IO.File.Delete(zipFileName);
+            System.IO.File.Delete(inventorZipName);
+            System.IO.File.Delete(svfZipName);
+            System.IO.File.Delete(stpFileName);
 
             if(product == null)
             {

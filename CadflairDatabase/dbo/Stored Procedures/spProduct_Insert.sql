@@ -3,7 +3,6 @@
 	@ProductFolderId int,
 	@DisplayName nvarchar(50),
 	@SubdirectoryName varchar(50),
-	@ForgeBucketKey varchar(50),
 	@IsPublic bit,
 	@CreatedById int
 AS
@@ -16,7 +15,6 @@ BEGIN
 			   ,ProductFolderId
 			   ,DisplayName
 			   ,SubdirectoryName
-			   ,ForgeBucketKey
 			   ,IsPublic
 			   ,CreatedById)
 		   VALUES
@@ -24,7 +22,6 @@ BEGIN
 			   ,@ProductFolderId
 			   ,@DisplayName
 			   ,@SubdirectoryName
-			   ,@ForgeBucketKey
 			   ,@IsPublic
 			   ,@CreatedById)
 		   SELECT * FROM [dbo].[Product] WHERE Id = SCOPE_IDENTITY();

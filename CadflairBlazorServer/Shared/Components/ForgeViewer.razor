@@ -1,14 +1,9 @@
 ﻿@if (_modelNotFound)
 {
-    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full mud-width-full mud-background-gray">
-        <MudStack AlignItems="AlignItems.Center">
-            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" />
-            <MudText>Error loading model!</MudText>
-        </MudStack>
+    <MudStack Spacing="1" Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute z-10 mud-height-full mud-width-full mud-background-gray">
+        <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" />
+        <MudText Typo="Typo.button">Error loading model</MudText>
     </MudStack>
 }
-else
-{
-    <div id="forgeViewer" class="mud-height-full mud-width-full mud-background-gray relative"></div>
-}
+<div id="forgeViewer" class="mud-height-full mud-width-full mud-background-gray relative"></div>
 

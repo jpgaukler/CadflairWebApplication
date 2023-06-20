@@ -59,31 +59,40 @@ namespace CadflairForgeAccess.Services
                 };
 
                 // output files
-                string outputObjectKey = Guid.NewGuid().ToString() + ".zip";
+                string outputBucketKey = Guid.NewGuid().ToString();
+                await _objectStorageService.CreateBucket(outputBucketKey);
+
+                string outputZipKey = outputBucketKey + ".zip";
                 XrefTreeArgument outputModelArgument = new()
                 {
-                    Url = await _objectStorageService.GetSignedUploadUrl(inputBucketKey, outputObjectKey),
+                    Url = await _objectStorageService.GetSignedUploadUrl(outputBucketKey, outputZipKey),
                     Verb = Verb.Put,
                 };
 
-                string outputStpKey = outputObjectKey.Replace(".zip", ".stp");
+                string outputStpKey = outputBucketKey + ".stp";
                 XrefTreeArgument outputStpArgument = new()
                 {
-                    Url = await _objectStorageService.GetSignedUploadUrl(inputBucketKey, outputStpKey),
+                    Url = await _objectStorageService.GetSignedUploadUrl(outputBucketKey, outputStpKey),
                     Verb = Verb.Put,
+                };
+
+                XrefTreeArgument outputSvfArgument = new()
+                {
+                    Verb = Verb.Post,
+                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/onsvfoutput/{outputBucketKey}",
                 };
 
                 // callback urls 
                 XrefTreeArgument onCompleteCallback = new()
                 {
                     Verb = Verb.Post,
-                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/oncomplete?connectionId={connectionId}&productConfigurationId={productConfigurationId}&outputBucketKey={inputBucketKey}&outputObjectKey={outputObjectKey}&rootFileName={inputPathInZip}&outputStpKey={outputStpKey}"
+                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/oncomplete/{connectionId}/{productConfigurationId}/{outputBucketKey}/{outputZipKey}/{outputStpKey}"
                 };
 
                 XrefTreeArgument onProgressCallback = new()
                 {
                     Verb = Verb.Post,
-                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/onprogress?connectionId={connectionId}"
+                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/onprogress/{connectionId}"
                 };
 
                 // submit workitem 
@@ -96,6 +105,7 @@ namespace CadflairForgeAccess.Services
                         { "inventorParams", inventorParamsArgument },
                         { "outputProduct", outputModelArgument },
                         { "outputStp", outputStpArgument },
+                        { "outputSvf", outputSvfArgument },
                         { "onComplete", onCompleteCallback },
                         { "onProgress", onProgressCallback }
                     }
