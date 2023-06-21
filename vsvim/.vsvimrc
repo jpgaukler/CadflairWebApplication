@@ -3,3 +3,9 @@
 
 "move up one paragraph
 :map <K> <S-{>
+
+"move to end of line
+:map <L> <End>
+
+"move to start of line
+:map <H> <^>
