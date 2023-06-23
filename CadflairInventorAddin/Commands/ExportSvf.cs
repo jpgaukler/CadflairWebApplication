@@ -21,6 +21,19 @@ namespace CadflairInventorAddin.Commands
             {
                 Document doc = Globals.InventorApplication.ActiveDocument;
 
+                //string outputFolder = System.IO.Path.GetDirectoryName(doc.FullFileName);
+
+                //string rValue = Microsoft.VisualBasic.Interaction.InputBox("R", "Enter R Value", "255");
+                //string gValue = Microsoft.VisualBasic.Interaction.InputBox("G", "Enter G Value", "255");
+                //string bValue = Microsoft.VisualBasic.Interaction.InputBox("B", "Enter B Value", "255");
+
+                //ExportHelpers.ExportThumbnail(doc, 400, outputFolder, Globals.InventorApplication.TransientObjects.CreateColor(Convert.ToByte(rValue), Convert.ToByte(gValue), Convert.ToByte(bValue)));
+                //ExportHelpers.ExportThumbnail(doc, outputFolder);
+                //Process.Start(outputFolder);
+
+                //Color backgroundColor = Globals.InventorApplication.TransientObjects.CreateColor(0xEC, 0xEC, 0xEC, 0.0); // hardcoded. Make as a parameter
+
+
                 // export svf files for on demand upload
                 //string svfFolder = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), "Svf");
                 //DirectoryInfo dir = Directory.CreateDirectory(svfFolder);

@@ -1,6 +1,9 @@
 ﻿using Inventor;
 using System;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 
@@ -10,18 +13,13 @@ namespace CadflairInventorLibrary.Helpers
     {
 
         /// <summary>
-        /// Generates Svf files for the given document in a temporary folder. The svf files will be converted to a flattened file structure and saved to a zip folder
-        /// for upload to Cadflair. These files can then be uploaded to Forge OSS to be used by the model viewer.
+        /// Converts the given folder to a zip folder and deletes the original directory (and all child files).
         /// </summary>
-        /// <param name="doc"></param>
         /// <param name="outputFolderPath"></param>
         /// <returns>The file name of the resulting zip folder.</returns>
-        public static string ExportSvfAsZip(Document doc, string outputFolderPath)
+        public static string ConvertToZip(string outputFolderPath)
         {
-            DirectoryInfo dir = Directory.CreateDirectory(outputFolderPath);
-
-            // export the svf files to the temp folder
-            ExportSvf(doc, outputFolderPath);
+            DirectoryInfo dir = new DirectoryInfo(outputFolderPath);
 
             // zip up the temp folder
             string zipFileName = $"{outputFolderPath}.zip";
@@ -76,16 +74,11 @@ namespace CadflairInventorLibrary.Helpers
                 var bubbleFileNew = System.IO.Path.Combine(outputFolderPath, "bubble.json");
                 System.IO.File.Move(bubbleFileOriginal, bubbleFileNew);
 
-                // include the thumbnail as png (THIS IS INTENDED TO BE A TEMPORARY WORKAROUND)
-                string thumbnailFilename = System.IO.Path.Combine(outputFolderPath, "thumbnail.png");
-                doc.Thumbnail.ToImage(200, 200).Save(thumbnailFilename);
-
                 // delete "result.collaboration" file
                 System.IO.File.Delete(oData.FileName);
 
                 // flatten to single folder
                 FlattenSvfToSingleFolder(outputFolderPath, outputFolderPath, null);
-
 
                 Trace.WriteLine($"Svf exported successfully: {outputFolderPath}");
             }
@@ -133,6 +126,107 @@ namespace CadflairInventorLibrary.Helpers
             }
         }
 
+        public static void ExportThumbnail(Document doc, string outputFolderPath, int sizeInPixels = 200, Inventor.Color backgroundColor = null)
+        {
+            try
+            {
+                if (!(doc is PartDocument) && !(doc is AssemblyDocument))
+                    return;
+
+                Trace.TraceInformation("Exporting thumbnail for: " + System.IO.Path.GetFileName(doc.FullFileName));
+
+                DirectoryInfo dir = Directory.CreateDirectory(outputFolderPath);
+
+                // turn off unwanted objects
+                dynamic invDoc = doc;
+                bool showWorkFeatures = invDoc.ObjectVisibility.AllWorkFeatures;
+                bool showSketches = invDoc.ObjectVisibility.Sketches;
+                bool showSketches3D = invDoc.ObjectVisibility.Sketches3D;
+                bool showSketchDimensions = invDoc.ObjectVisibility.SketchDimensions;
+                bool showAnnotations3D = invDoc.ObjectVisibility.Annotations3D;
+
+                invDoc.ObjectVisibility.AllWorkFeatures = false;
+                invDoc.ObjectVisibility.Sketches = false;
+                invDoc.ObjectVisibility.Sketches3D = false;
+                invDoc.ObjectVisibility.SketchDimensions = false;
+                invDoc.ObjectVisibility.Annotations3D = false;
+
+                // setup camera
+                dynamic inventorApp = doc.Parent;
+                inventorApp.DisplayOptions.Show3DIndicator = false;
+                Camera cam = inventorApp.TransientObjects.CreateCamera();
+                cam.SceneObject = invDoc.ComponentDefinition;
+                cam.ViewOrientationType = ViewOrientationTypeEnum.kIsoTopRightViewOrientation;
+                cam.Fit();
+                cam.ApplyWithoutTransition();
+
+                // apply background color
+                if (backgroundColor == null)
+                {
+                    backgroundColor = inventorApp.TransientObjects.CreateColor(0xEC, 0xEC, 0xEC, 0.0); // hardcoded. Make as a parameter
+                    //backgroundColor = inventorApp.TransientObjects.CreateColor(0, 0, 0); // black, tested this for converting to transparent background but it resulted in jagged edges
+                }
+
+                // generate image twice as large, and then downsample it (antialiasing)
+                string filePathLarge = System.IO.Path.Combine(outputFolderPath, "thumbnail-large.png");
+                cam.SaveAsBitmap(filePathLarge, sizeInPixels * 2, sizeInPixels * 2, backgroundColor, backgroundColor);
+
+                // resize image, see reference https://stackoverflow.com/a/24199315
+                using (var image = Image.FromFile(filePathLarge))
+                using (var destImage = new Bitmap(sizeInPixels, sizeInPixels))
+                {
+
+                    destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+                    using (var graphics = Graphics.FromImage(destImage))
+                    {
+                        graphics.CompositingMode = CompositingMode.SourceCopy;
+                        graphics.CompositingQuality = CompositingQuality.HighQuality;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.SmoothingMode = SmoothingMode.HighQuality;
+                        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                        using (var wrapMode = new ImageAttributes())
+                        {
+                            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                            var destRect = new Rectangle(0, 0, sizeInPixels, sizeInPixels);
+                            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                        }
+                    }
+
+                    //// replace background pixels with transparent color
+                    //System.Drawing.Color colorToReplace = backgroundColor.ToSystemDrawingColor();
+                    //System.Drawing.Color transparentColor = System.Drawing.Color.FromArgb(0,0,0,0);
+                    //for (int x = 0; x < destImage.Width; x++)
+                    //{
+                    //    for (int y = 0; y < destImage.Height; y++)
+                    //    {
+                    //        if (destImage.GetPixel(x, y).Equals(colorToReplace))
+                    //            destImage.SetPixel(x, y, transparentColor);
+                    //    }
+                    //}
+
+                    string filePath = System.IO.Path.Combine(outputFolderPath, "thumbnail.png");
+                    destImage.Save(filePath);
+
+                    // clean up
+                    System.IO.File.Delete(filePathLarge);
+
+                    // reset object visibility to inital settings
+                    invDoc.ObjectVisibility.AllWorkFeatures = showWorkFeatures;
+                    invDoc.ObjectVisibility.Sketches = showSketches;
+                    invDoc.ObjectVisibility.Sketches3D = showSketches3D;
+                    invDoc.ObjectVisibility.Annotations3D = showAnnotations3D;
+                    invDoc.ObjectVisibility.SketchDimensions = showSketchDimensions;
+
+                    Trace.WriteLine($"Thumbnail exported successfully: {filePath}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError($"Could not export thumbnail - {ex}");
+            }
+        }
 
         public static void ExportStp(Document doc, string resultFileName)
         {

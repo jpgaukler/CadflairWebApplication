@@ -276,7 +276,7 @@
                              x:Name="CompanyNameTextBox" IsEnabled="false" Margin="0,5" d:Text="Sample text"/>
                 </DockPanel>-->
                 <DockPanel>
-                    <Label Content="Product Name" MinWidth="150"/>
+                    <Label Content="Display Name" MinWidth="150"/>
                     <TextBox x:Name="DisplayNameTextBox" Margin="0,5" d:Text="Sample text"/>
                 </DockPanel>
                 <DockPanel>

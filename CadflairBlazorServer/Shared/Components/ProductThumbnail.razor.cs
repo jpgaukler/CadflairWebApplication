@@ -34,27 +34,23 @@ namespace CadflairBlazorServer.Shared.Components
         private string _thumbnailStringBase64 = string.Empty;
         private bool _loading = false;
 
-        protected override async Task OnInitializedAsync()
+        //protected override async Task OnInitializedAsync()
+        protected override async Task OnParametersSetAsync()
         {
             if (Product == null)
                 return;
 
             _loading = true;
+            StateHasChanged();
 
-            if (ProductConfiguration == null)
-            {
-                // get the default configuration
-                ProductVersion latestVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(Product.Id);
-                ProductConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(latestVersion.Id);
-            }
-
-            //if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey))
-            //{
-            //    _thumbnailStringBase64 = await _forgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(Product.ForgeBucketKey, ProductConfiguration.ForgeZipKey, Width, Height);
-            //}
+            // get the default configuration
+            // MAY NEED TO MODIFY THIS IF I WANT TO SHOT A DIFFERENT CONFIGURATION
+            ProductVersion latestVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(Product.Id);
+            ProductConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(latestVersion.Id);
+            _thumbnailStringBase64 = await _forgeServicesManager.ObjectStorageService.GetThumbnailAsBase64(ProductConfiguration.BucketKey);
 
             _loading = false;
-            StateHasChanged();
         }
+
     }
 }

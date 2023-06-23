@@ -66,21 +66,22 @@ namespace CadflairInventorPlugin.Automation
                     doc.Update();
                     doc.Save();
 
-                    // export stp
-                    ReportProgress("Exporting results...");
-                    string stpFilename = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), "Result.stp");
-                    ExportHelpers.ExportStp(doc, stpFilename);
+                    // export results
+                    ReportProgress("Exporting viewables...");
 
-                    // export svf files for on demand upload
-                    string svfFolder = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(doc.FullFileName), "Svf");
-                    ExportHelpers.ExportSvf(doc, svfFolder);
+                    string rootFolderPath = System.IO.Path.GetDirectoryName(System.IO.Path.GetDirectoryName(doc.FullFileName)); // input files get unzipped to a folder in the root directory, go up two levels to get the root
+                    string stpFilename = System.IO.Path.Combine(rootFolderPath, "Result.stp");
+                    string viewablesFolderPath = System.IO.Path.Combine(rootFolderPath, "Viewables");
+                    ExportHelpers.ExportStp(doc, stpFilename);
+                    ExportHelpers.ExportSvf(doc, viewablesFolderPath);
+                    ExportHelpers.ExportThumbnail(doc, viewablesFolderPath);
 
                     // update drawing and export pdf
                     //DrawingAutomation.GenerateDrawing(doc, map);
 
-                    ReportProgress("Uploading results...");
-
                     doc.Close(SkipSave: true);
+
+                    ReportProgress("Uploading results...");
                 }
             }
             catch (Exception ex)

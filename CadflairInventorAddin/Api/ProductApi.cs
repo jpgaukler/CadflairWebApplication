@@ -17,7 +17,7 @@ namespace CadflairInventorAddin.Api
 
         #region "Product"
 
-        public static async Task<Product> CreateProduct(int userId, int subscriptionId, int productFolderId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string inventorZipName, string stpFileName, string svfZipName)
+        public static async Task<Product> CreateProduct(int userId, int subscriptionId, int productFolderId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string inventorZipName, string stpFileName, string viewablesZipName)
         {
             try
             {
@@ -39,10 +39,10 @@ namespace CadflairInventorAddin.Api
                 using (MultipartFormDataContent formContent = new MultipartFormDataContent())
                 using (StringContent productDataContent = new StringContent(JsonConvert.SerializeObject(productData)))
                 using (FileStream inventorZipStream = File.Open(inventorZipName, FileMode.Open))
-                using (FileStream svfZipStream = File.Open(svfZipName, FileMode.Open))
+                using (FileStream viewablesZipStream = File.Open(viewablesZipName, FileMode.Open))
                 using (FileStream stpStream = File.Open(stpFileName, FileMode.Open))
                 using (StreamContent inventorContent = new StreamContent(inventorZipStream))
-                using (StreamContent svfContent = new StreamContent(svfZipStream))
+                using (StreamContent viewablesContent = new StreamContent(viewablesZipStream))
                 using (StreamContent stpContent = new StreamContent(stpStream))
                 {
                     // add product data to request
@@ -57,12 +57,12 @@ namespace CadflairInventorAddin.Api
                     // add stp file the form as a stream content
                     stpContent.Headers.Add("Content-Type", "application/octet-stream");
                     stpContent.Headers.Add("Content-Disposition", $"form-data; name=\"StpFile\"; filename=\"{Path.GetFileName(stpFileName)}\"");
-                    formContent.Add(stpContent, "StpFile", Path.GetFileName(svfZipName));
+                    formContent.Add(stpContent, "StpFile", Path.GetFileName(stpFileName));
 
-                    // add svf zip file the form as a stream content
-                    svfContent.Headers.Add("Content-Type", "application/octet-stream");
-                    svfContent.Headers.Add("Content-Disposition", $"form-data; name=\"SvfZipFile\"; filename=\"{Path.GetFileName(svfZipName)}\"");
-                    formContent.Add(svfContent, "SvfZipFile", Path.GetFileName(svfZipName));
+                    // add viewables zip file the form as a stream content
+                    viewablesContent.Headers.Add("Content-Type", "application/octet-stream");
+                    viewablesContent.Headers.Add("Content-Disposition", $"form-data; name=\"ViewablesZipFile\"; filename=\"{Path.GetFileName(viewablesZipName)}\"");
+                    formContent.Add(viewablesContent, "ViewablesZipFile", Path.GetFileName(viewablesZipName));
 
                     string result = await Client.Post(uri, formContent);
                     Product product = JsonConvert.DeserializeObject<Product>(result);
@@ -72,7 +72,23 @@ namespace CadflairInventorAddin.Api
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "UploadProductToCadflair", userId, subscriptionId, displayName, rootFileName, iLogicFormJson, argumentJson, isPublic, isConfigurable, inventorZipName, svfZipName);
+                Log.Error(ex, "UploadProductToCadflair", userId, subscriptionId, displayName, rootFileName, iLogicFormJson, argumentJson, isPublic, isConfigurable, inventorZipName, viewablesZipName);
+                return null;
+            }
+        }
+
+        public static async Task<Product> GetProductBySubscriptionIdAndDisplayName(int subscriptionId, string displayName)
+        {
+            try
+            {
+                string uri = $"api/v1/products/{subscriptionId}/{displayName}";
+                string result = await Client.Get(uri);
+                Product product = JsonConvert.DeserializeObject<Product>(result);
+                return product;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "GetProductBySubscriptionIdAndDisplayName", subscriptionId, displayName);
                 return null;
             }
         }

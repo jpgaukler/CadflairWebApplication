@@ -1,8 +1,8 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using CadflairForgeAccess.Helpers;
+using RestSharp;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 
 namespace CadflairForgeAccess.Services
 {
@@ -40,6 +40,24 @@ namespace CadflairForgeAccess.Services
             dynamic bucket = await buckets.CreateBucketAsync(bucketPayload, "US");
 
             return bucket;
+        }
+
+        public async Task DeleteBucket(string bucketKey)
+        {
+            BucketsApi buckets = await GetBucketsApi();
+            await buckets.DeleteBucketAsync(bucketKey);
+        }
+
+        public async Task<List<string>> GetBucketKeys(string region = "US", int limit = 100, string? startAt = null)
+        {
+            BucketsApi bucketsApi = await GetBucketsApi();
+            dynamic buckets = await bucketsApi.GetBucketsAsync(region, limit, startAt);
+
+            List<string> bucketKeys = new();
+            foreach (KeyValuePair<string, dynamic> bucket in new DynamicDictionaryItems(buckets.items))
+                bucketKeys.Add(bucket.Value.bucketKey);
+
+            return bucketKeys;
         }
 
         public async Task<dynamic> GetBucketDetails(string bucketKey)
@@ -125,6 +143,31 @@ namespace CadflairForgeAccess.Services
             ObjectsApi objects = await GetObjectsApi();
             dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(minuteExpiration, singleUse), "write");
             return result.signedUrl;
+        }
+
+        /// <summary>
+        /// Retrieve a thumbnail image from an OSS bucket and convert it to a base64 string.
+        /// </summary>
+        /// <param name="bucketKey"></param>
+        /// <param name="objectKey"></param>
+        /// <returns></returns>
+        public async Task<string> GetThumbnailAsBase64(string bucketKey, string objectKey = "thumbnail.png")
+        {
+            try
+            {
+                ObjectsApi objects = await GetObjectsApi();
+                dynamic result = await objects.CreateSignedResourceAsync(bucketKey, objectKey, new PostBucketsSigned(15, true), "read");
+
+                // download data and convert to base64
+                RestClient client = new(result.signedUrl);
+                byte[]? bytes = await client.DownloadDataAsync(new RestRequest());
+
+                return bytes?.ToBase64String() ?? string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
     }

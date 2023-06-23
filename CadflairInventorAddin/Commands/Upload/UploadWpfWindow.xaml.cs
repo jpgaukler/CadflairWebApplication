@@ -166,6 +166,12 @@ namespace CadflairInventorAddin.Commands.Upload
                 return;
             }
 
+            Product existingProduct = await ProductApi.GetProductBySubscriptionIdAndDisplayName((int)_loggedInUser.SubscriptionId, DisplayNameTextBox.Text);
+            if (existingProduct != null)
+            {
+                if (MessageBox.Show($"There is already a product named '{DisplayNameTextBox.Text}'. Would you like to overwrite it with a new version?", "Existing Product Found", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.No)
+                    return;
+            }
 
             // Save limits for numeric text box parameters as attributes
             //foreach (DataGridViewRow row in DataGridViewParameters.Rows)
@@ -193,9 +199,11 @@ namespace CadflairInventorAddin.Commands.Upload
             // save model to zipfile
             string inventorZipName = UploadToCadflair.ZipInventorFiles(_doc, true);
 
-            // save svf files to zip folder
-            string tempFolderName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid().ToString());
-            string svfZipName = ExportHelpers.ExportSvfAsZip(_doc, tempFolderName);
+            // save viewables files to zip folder
+            string viewablesFolderName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Guid.NewGuid().ToString());
+            ExportHelpers.ExportSvf(_doc, viewablesFolderName);
+            ExportHelpers.ExportThumbnail(_doc, viewablesFolderName);
+            string viewablesZipName = ExportHelpers.ConvertToZip(viewablesFolderName);
 
             // save stp file
             string stpFileName = System.IO.Path.Combine(System.IO.Path.GetTempPath(), $"{Guid.NewGuid()}.stp");
@@ -213,11 +221,11 @@ namespace CadflairInventorAddin.Commands.Upload
                                                              isConfigurable: (bool)AllowProductConfigurationCheckBox.IsChecked,
                                                              inventorZipName: inventorZipName,
                                                              stpFileName: stpFileName,
-                                                             svfZipName: svfZipName);
+                                                             viewablesZipName: viewablesZipName);
 
             // clean up
             System.IO.File.Delete(inventorZipName);
-            System.IO.File.Delete(svfZipName);
+            System.IO.File.Delete(viewablesZipName);
             System.IO.File.Delete(stpFileName);
 
             if(product == null)

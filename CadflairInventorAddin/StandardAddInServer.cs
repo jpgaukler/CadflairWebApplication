@@ -138,13 +138,13 @@ namespace CadflairInventorAddin
 
             //add components assembly ribbon 
             assemblyPanel.CommandControls.AddButton(UploadToCadflair.UploadToCadflairButton, true);
-            assemblyPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
+            //assemblyPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
             assemblyPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             assemblyPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
 
             //add components part ribbon 
             partPanel.CommandControls.AddButton(UploadToCadflair.UploadToCadflairButton, true);
-            partPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
+            //partPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
             partPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             partPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
 

@@ -112,8 +112,8 @@ namespace CadflairBlazorServer.Controllers
         /// <param name="body"></param>
         /// <returns></returns>
         [HttpPost]
-        [Route("api/v1/designautomation/productconfiguration/create/onsvfoutput/{bucketKey}")]
-        public async Task<IActionResult> CreateProductConfigurationModel_OnSvfOutput(string bucketKey, [FromBody] dynamic body)
+        [Route("api/v1/designautomation/productconfiguration/create/onviewables/{bucketKey}")]
+        public async Task<IActionResult> CreateProductConfigurationModel_OnViewables(string bucketKey, [FromBody] dynamic body)
         {
             try
             {

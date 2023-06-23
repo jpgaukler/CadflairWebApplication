@@ -76,10 +76,10 @@ namespace CadflairForgeAccess.Services
                     Verb = Verb.Put,
                 };
 
-                XrefTreeArgument outputSvfArgument = new()
+                XrefTreeArgument outputViewablesArgument = new()
                 {
                     Verb = Verb.Post,
-                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/onsvfoutput/{outputBucketKey}",
+                    Url = $"{_callbackUrl}/api/v1/designautomation/productconfiguration/create/onviewables/{outputBucketKey}",
                 };
 
                 // callback urls 
@@ -105,7 +105,7 @@ namespace CadflairForgeAccess.Services
                         { "inventorParams", inventorParamsArgument },
                         { "outputProduct", outputModelArgument },
                         { "outputStp", outputStpArgument },
-                        { "outputSvf", outputSvfArgument },
+                        { "outputViewables", outputViewablesArgument },
                         { "onComplete", onCompleteCallback },
                         { "onProgress", onProgressCallback }
                     }
