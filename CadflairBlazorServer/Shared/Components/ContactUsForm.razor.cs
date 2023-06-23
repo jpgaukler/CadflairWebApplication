@@ -38,6 +38,13 @@ namespace CadflairBlazorServer.Shared.Components
 
                 await _emailService.SendEmail(toAddress: "justin.gaukler@verizon.net", subject: "Keep Me Informed!", bodyText: bodyText);
                 _snackbar.Add("Message submitted!", Severity.Success);
+
+                // clear form
+                _firstName = null;
+                _lastName = null;
+                _emailAddress = null;
+                _companyName = null;
+                _message = null;
             }
             catch (Exception ex)
             {

@@ -9,8 +9,8 @@ namespace CadflairInventorAddin.Api
     internal static class Client
     {
 
-        private static readonly string BaseUrl = "https://localhost:7269/";
-        //private static readonly string BaseUrl = "https://cadflair.azurewebsites.net/";
+        //private static readonly string BaseUrl = "https://localhost:7269/";
+        private static readonly string BaseUrl = "https://cadflair.azurewebsites.net/";
 
         private static async Task<string> CallApi(HttpMethod method, string endPoint, HttpContent content = null)
         {

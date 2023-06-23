@@ -2,7 +2,7 @@
 
 <PageTitle>Cadflair</PageTitle>
 
-<AuthorizeView>
+@*<AuthorizeView>
     <Authorized>
         <p>Welcome, @context.User.Identity?.Name</p>
         <p>Auth Type: @context.User.Identity?.AuthenticationType</p>
@@ -28,11 +28,15 @@
         <p>Not logged in!</p>
     </NotAuthorized>
 </AuthorizeView>
+*@
 
+@*
+<MudButton OnClick="EmailTest_OnClick">Email Test</MudButton>
 <MudLink Href="/dashboard">Dashboard</MudLink>
 <MudLink Href="/buckettools">Bucket Tools</MudLink>
 <CopyToClipboard Text="TEST"/>
-<MudButton OnClick="EmailTest_OnClick">Email Test</MudButton>
+*@
+
 
 <MudContainer MaxWidth="MaxWidth.Large">
     <MudGrid Justify="Justify.Center">
@@ -54,7 +58,8 @@
         <!-- hero image -->
         <MudItem xs="12" sm="6">
             <MudStack Justify="Justify.Center" Style="min-height: 70vh;">
-                <img src="/images/hero_photo_1.jpeg" alt="hero image" class="fade-opacity-in delay-5" />
+                @*<img src="/images/hero_photo_1.jpeg" alt="hero image" class="fade-opacity-in delay-5" />*@
+                <img src="/images/laptop_mockup.png" alt="hero image" class="fade-opacity-in delay-5" />
             </MudStack>
         </MudItem>
 
@@ -165,13 +170,20 @@
             </MudItem>
 
             <!-- contact us -->
-            <MudItem xs="12" Class="my-15">
-                <ContactUsForm/>
+            <MudItem xs="12" Class="my-15" id="contact-us-tag">
+                <MudPaper Class="pa-8" Elevation="5">
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Large" />
+                        <MudText Typo="Typo.h4"><strong>Contact Us</strong></MudText>
+                    </MudStack>
+                    <MudText Typo="Typo.body1" Class="my-10">Want to be involved with Cadflair? We are looking for early adopters to help us develop a rock solid product. Please reach out if Cadflair could help your business!</MudText>
+                    <ContactUsForm />
+                </MudPaper>
             </MudItem>
         </MudGrid>
     </MudContainer>
 </div>
-<Footer/>
+<Footer />
 
 
 

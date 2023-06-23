@@ -12,9 +12,9 @@
             <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
         </MudLink>
         <MudSpacer />
-        <MudButton Href="/" Color="Color.Inherit" Class="px-3 py-5">Demo</MudButton>
+        <MudButton Href="/demo/products" Color="Color.Inherit" Class="px-3 py-5">Demo</MudButton>
         @*<MudButton Href="/pricing" Color="Color.Inherit" Class="px-3 py-5">Pricing</MudButton>*@
-        <MudButton Href="/" Color="Color.Inherit" Class="px-3 py-5">Contact Us</MudButton>
+        <MudButton OnClick="ContactUs_OnClick" Color="Color.Inherit" Class="px-3 py-5">Contact Us</MudButton>
 
 @*        <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
             <MudIcon Icon="@Icons.Material.Filled.LightMode" />
@@ -30,8 +30,9 @@
             <NotAuthorized>
                 <MudStack Row="true" Spacing="0">
                     @*<MudButton Href="/MicrosoftIdentity/Account/SignIn?redirectUri=/Pricing" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>*@
-                    <MudButton Href="/MicrosoftIdentity/Account/SignIn" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>
-                    <MudButton Href="/MicrosoftIdentity/Account/SignUp" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>
+                    @*<MudButton Href="/MicrosoftIdentity/Account/SignIn" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>*@
+                    @*<MudButton Href="/MicrosoftIdentity/Account/SignUp" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>*@
+                    <MudButton Href="/comingsoon" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>
                 </MudStack>
             </NotAuthorized>
         </AuthorizeView>

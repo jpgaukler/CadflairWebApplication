@@ -2,8 +2,8 @@
 
 <PageTitle>Coming Soon!</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="py-10">
-    <MudGrid Spacing="10">
+<MudContainer MaxWidth="MaxWidth.Large">
+    <MudGrid Spacing="10" Class="py-10 mb-10">
         <MudItem xs="12" Class="my-8">
             <MudStack Row AlignItems="AlignItems.Center" Class="mb-5">
                 <MudIcon Icon="@Icons.Material.Filled.HourglassTop" Style="font-size:6em;" />
@@ -18,17 +18,7 @@
                     <MudText Typo="Typo.h4"><strong>Stay Informed</strong></MudText>
                 </MudStack>
                 <MudText Typo="Typo.body1">Want to be the first to know about Cadflair news? Join our mailing list to stay informed about Cadflair development.</MudText>
-                <MudForm IsValid="_isValid">
-                    <MudStack>
-                        <MudTextField @bind-Value="_firstName" Label="First Name" Variant="Variant.Outlined" Required />
-                        <MudTextField @bind-Value="_lastName" Label="Last Name" Variant="Variant.Outlined" Required />
-                        <MudTextField @bind-Value="_emailAddress" Label="Email" Variant="Variant.Outlined" Required />
-                        <MudTextField @bind-Value="_companyName" Label="Company Name" Variant="Variant.Outlined" />
-                        <MudStack AlignItems="AlignItems.Center">
-                            <MudButton OnClick="EmailList_OnClick" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" Class="align-self-center">Submit</MudButton>
-                        </MudStack>
-                    </MudStack>
-                </MudForm>
+                <ContactUsForm />
             </MudStack>
         </MudItem>
         <MudItem xs="12" xl="6">
@@ -43,24 +33,5 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+<Footer/>
 
-@*<div style="height: calc(100dvh - var(--mud-appbar-height));">
-</div>
-*@
-
-@code {
-
-    private string? _firstName;
-    private string? _lastName;
-    private string? _companyName;
-    private string? _emailAddress;
-    private bool _isValid;
-
-    private void EmailList_OnClick()
-    {
-        if (!_isValid)
-            return;
-
-    }
-
-}

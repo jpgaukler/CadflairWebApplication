@@ -171,6 +171,13 @@ namespace CadflairInventorLibrary.Helpers
                 string filePathLarge = System.IO.Path.Combine(outputFolderPath, "thumbnail-large.png");
                 cam.SaveAsBitmap(filePathLarge, sizeInPixels * 2, sizeInPixels * 2, backgroundColor, backgroundColor);
 
+                // reset object visibility to inital settings
+                invDoc.ObjectVisibility.AllWorkFeatures = showWorkFeatures;
+                invDoc.ObjectVisibility.Sketches = showSketches;
+                invDoc.ObjectVisibility.Sketches3D = showSketches3D;
+                invDoc.ObjectVisibility.Annotations3D = showAnnotations3D;
+                invDoc.ObjectVisibility.SketchDimensions = showSketchDimensions;
+
                 // resize image, see reference https://stackoverflow.com/a/24199315
                 using (var image = Image.FromFile(filePathLarge))
                 using (var destImage = new Bitmap(sizeInPixels, sizeInPixels))
@@ -211,13 +218,6 @@ namespace CadflairInventorLibrary.Helpers
 
                     // clean up
                     System.IO.File.Delete(filePathLarge);
-
-                    // reset object visibility to inital settings
-                    invDoc.ObjectVisibility.AllWorkFeatures = showWorkFeatures;
-                    invDoc.ObjectVisibility.Sketches = showSketches;
-                    invDoc.ObjectVisibility.Sketches3D = showSketches3D;
-                    invDoc.ObjectVisibility.Annotations3D = showAnnotations3D;
-                    invDoc.ObjectVisibility.SketchDimensions = showSketchDimensions;
 
                     Trace.WriteLine($"Thumbnail exported successfully: {filePath}");
                 }

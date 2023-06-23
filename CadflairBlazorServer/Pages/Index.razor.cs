@@ -1,4 +1,3 @@
-using FluentEmail.Core.Models;
 using Microsoft.AspNetCore.Components;
 using System.Diagnostics;
 using System.Reflection;
@@ -9,7 +8,7 @@ namespace CadflairBlazorServer.Pages
     {
         // services
         [Inject] AuthenticationService _authenticationService { get; set; } = default!;
-        [Inject] IFluentEmail _emailService { get; set; } = default!;
+        [Inject] EmailService _emailService { get; set; } = default!;
         [Inject] IDialogService  _dialogService { get; set; } = default!;
         [Inject] ISnackbar _snackbar { get; set; } = default!;
         [Inject] IJSRuntime _js { get; set; } = default!;
@@ -22,27 +21,37 @@ namespace CadflairBlazorServer.Pages
         //    //}
         //}
 
-        private async Task EmailTest_OnClick()
-        {
+        //private async Task EmailTest_OnClick()
+        //{
+        //    if (await _authenticationService.IsLoggedInUserValid() == false)
+        //        return;
 
-            ProductQuoteRequestEmailModel model = new()
-            {
-                CustomerName = "Customer",
-                ProductName = "Product"
-            };
+        //    // send welcome email
+        //    WelcomeEmailModel model = new()
+        //    {
+        //        Name = _authenticationService.LoggedInUser!.FullName
+        //    };
 
-            SendResponse email = await _emailService.SetFrom("donotreply@cadflair.com")
-                                                    .To("justin.gaukler@verizon.net")
-                                                    .Subject("TEST EMAIL")
-                                                    .UsingTemplateFromEmbedded(model.Path, model, Assembly.GetExecutingAssembly())
-                                                    .SendAsync();
+        //    _ = _emailService.SendEmail(toAddress: _authenticationService.LoggedInUser.EmailAddress,
+        //                                subject: "Welcome to Cadflair!",
+        //                                emailTemplatePath: model.Path,
+        //                                emailModel: model);
 
-            Trace.WriteLine($"Success? {email.Successful}");
 
-            if (!email.Successful)
-                email.ErrorMessages.ForEach(message => Trace.TraceError($"{message}"));
+        //    ProductQuoteRequestEmailModel model2 = new()
+        //    {
+        //        CustomerName = "Customer",
+        //        ProductName = "Product"
+        //    };
 
-        }
+        //    _ = _emailService.SendNotificationEmail(subscriptionId: (int)_authenticationService.LoggedInUser.SubscriptionId!,
+        //                                            notificationId: (int)NotificationIdEnum.ProductQuoteRequest_Insert,
+        //                                            subject: "New Request!",
+        //                                            emailTemplatePath: model2.Path,
+        //                                            emailModel: model2);
+
+
+        //}
 
     }
 }

@@ -26,9 +26,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Emails\_NotificationLayout.cshtml" />
-		<EmbeddedResource Include="Emails\WelcomeEmail.cshtml" />
-		<EmbeddedResource Include="Emails\ProductQuoteRequestEmail.cshtml" />
+		<EmbeddedResource Include="Emails\_NotificationLayout.cshtml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Emails\WelcomeEmail.cshtml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Emails\ProductQuoteRequestEmail.cshtml">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
 
 	<ProjectExtensions>

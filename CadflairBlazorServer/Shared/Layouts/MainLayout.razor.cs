@@ -8,6 +8,7 @@ namespace CadflairBlazorServer.Shared.Layouts
         [Inject] NavigationManager _navManager { get; set; } = default!;
         [Inject] AuthenticationService _authenticationService { get; set; } = default!;
         [Inject] ISnackbar _snackbar { get; set; } = default!;
+        [Inject] IJSRuntime _js { get; set; } = default!;
 
         // fields
         private MudThemeProvider? _mudThemeProvider;
@@ -30,6 +31,11 @@ namespace CadflairBlazorServer.Shared.Layouts
         //protected override async Task OnInitializedAsync()
         //{
         //}
+
+        private async Task ContactUs_OnClick()
+        {
+            await _js.InvokeVoidAsync("anchorLink.scrollIntoView", "contact-us-tag");
+        }
 
     }
 }
