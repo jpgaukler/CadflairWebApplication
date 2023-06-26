@@ -19,7 +19,7 @@ namespace CadflairBlazorServer.Shared.Components
         private string? _message;
         private bool _isValid;
 
-        private async Task Submit_OnClick()
+        private void Submit_OnClick()
         {
             if (!_isValid)
                 return;
@@ -37,9 +37,8 @@ namespace CadflairBlazorServer.Shared.Components
                                   {_message} 
                                   """;
 
-                await _dataServicesManager.NotificationService.CreateContactRequest(_firstName, _lastName, _emailAddress, _companyName, _message);
-
-                await _emailService.SendEmail(toAddress: "justin.gaukler@verizon.net", subject: "Keep Me Informed!", bodyText: bodyText);
+                _ =  _dataServicesManager.NotificationService.CreateContactRequest(_firstName, _lastName, _emailAddress, _companyName, _message);
+                _ = _emailService.SendEmail(toAddress: "justin.gaukler@verizon.net", subject: "Keep Me Informed!", bodyText: bodyText);
                 _snackbar.Add("Message submitted!", Severity.Success);
 
                 // clear form
