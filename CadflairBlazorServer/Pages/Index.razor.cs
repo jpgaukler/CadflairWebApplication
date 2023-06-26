@@ -53,5 +53,10 @@ namespace CadflairBlazorServer.Pages
 
         //}
 
+        private async Task LearnMore_OnClick()
+        {
+            await _js.InvokeVoidAsync("anchorLink.scrollIntoView", "learn-more-tag");
+        }
+
     }
 }

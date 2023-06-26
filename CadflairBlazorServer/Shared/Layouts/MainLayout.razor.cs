@@ -21,11 +21,19 @@ namespace CadflairBlazorServer.Shared.Layouts
                 //Primary = Colors.Blue.Default,
                 Primary = "#50C0FF",
                 AppbarBackground = Colors.Grey.Darken4,
+                //AppbarBackground = Colors.Grey.Darken3,
             },
             PaletteDark = new PaletteDark()
             {
                 Primary = Colors.Blue.Lighten1
             },
+            Typography = new()
+            {
+                H1 = new()
+                {
+                    FontSize = "4rem",
+                }
+            }
         };
 
         //protected override async Task OnInitializedAsync()
@@ -34,6 +42,13 @@ namespace CadflairBlazorServer.Shared.Layouts
 
         private async Task ContactUs_OnClick()
         {
+            // navgate back to home page
+            if (_navManager.BaseUri != _navManager.Uri)
+            {
+                _navManager.NavigateTo("/");
+                await Task.Delay(500);
+            }
+
             await _js.InvokeVoidAsync("anchorLink.scrollIntoView", "contact-us-tag");
         }
 

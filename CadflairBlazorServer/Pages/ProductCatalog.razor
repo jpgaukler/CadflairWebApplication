@@ -2,6 +2,20 @@
 
 <PageTitle>Cadflair - Product Catalog</PageTitle>
 
+<MudOverlay Visible="_showOverlay" Absolute DarkBackground>
+    <MudPaper Outlined Class="pa-5">
+        <MudStack>
+            <MudStack Row AlignItems="AlignItems.Center" Class="mb-3">
+                <MudIcon Icon="@Icons.Material.Filled.Info" />
+                <MudText Typo="Typo.h6">Pick a product to generate a custom configuration!</MudText>
+            </MudStack>
+            <MudImage Src="/images/select_product.png" Width="600" Class="my-5" />
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => _showOverlay = false">Ok</MudButton>
+        </MudStack>
+    </MudPaper>
+</MudOverlay>
+
+
 <div style="height: calc(100dvh - var(--mud-appbar-height));">
     <MudStack Row Spacing="0" Class="mud-height-full">
 
@@ -38,6 +52,9 @@
                             </MudBreadcrumbs>
                         }
                         <MudSpacer />
+                        <MudTooltip Text="Help">
+                            <MudIconButton OnClick="() => _showOverlay = true" Icon="@Icons.Material.Filled.Help" />
+                        </MudTooltip>
                         <MudIconButton OnClick="ToggleView_OnClick" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
                         @*<MudToggleIconButton @bind-Toggled="_displayListView" Icon="@Icons.Material.Filled.ViewList" ToggledIcon="@Icons.Material.Filled.GridView" />*@
                         @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@
@@ -68,10 +85,10 @@
                         {
                             <!-- product list view -->
                             <MudDataGrid T="Product" Items="_products"
-                                         RowClick="ProductsGrid_OnRowClick"
-                                         ColumnResizeMode="ResizeMode.Column"
-                                         Elevation="0" Height="100%" Class="overflow-auto"
-                                         Dense Hover FixedHeader>
+                             RowClick="ProductsGrid_OnRowClick"
+                             ColumnResizeMode="ResizeMode.Column"
+                             Elevation="0" Height="100%" Class="overflow-auto"
+                             Dense Hover FixedHeader>
                                 <Columns>
                                     <TemplateColumn Sortable="false" Filterable="false" Resizable="false" CellStyle="width:100px">
                                         <CellTemplate>

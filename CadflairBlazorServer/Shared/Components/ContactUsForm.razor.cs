@@ -5,6 +5,7 @@ namespace CadflairBlazorServer.Shared.Components
     public partial class ContactUsForm
     {
         // services
+        [Inject] DataServicesManager _dataServicesManager { get; set; } = default!;
         [Inject] EmailService _emailService { get; set; } = default!;
         [Inject] ISnackbar _snackbar { get; set; } = default!;
         [Inject] ILogger<ContactUsForm> _logger { get; set; } = default!;
@@ -35,6 +36,8 @@ namespace CadflairBlazorServer.Shared.Components
                                   Message: 
                                   {_message} 
                                   """;
+
+                await _dataServicesManager.NotificationService.CreateContactRequest(_firstName, _lastName, _emailAddress, _companyName, _message);
 
                 await _emailService.SendEmail(toAddress: "justin.gaukler@verizon.net", subject: "Keep Me Informed!", bodyText: bodyText);
                 _snackbar.Add("Message submitted!", Severity.Success);

@@ -18,8 +18,9 @@ namespace CadflairBlazorServer.Pages
         private Subscription? _subscription;
         private List<Product> _products = new();
         private List<BreadcrumbItem> _breadcrumbItems = new();
-        private bool _displayListView = true;
+        private bool _displayListView = false;
         private bool _showDetails = false;
+        private bool _showOverlay = true;
         private bool _initializing = true;
 
         // class for product folder tree structure

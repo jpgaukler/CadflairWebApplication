@@ -34,6 +34,7 @@ namespace CadflairBlazorServer.Pages
         private bool _configurationInProgress = false;
         private string _progressMessage = string.Empty;
         private bool _initializing = true;
+        private bool _showOverlay = true;
 
         // share dialog 
         private DialogOptions _shareDialogOptions = new() { FullWidth = true, MaxWidth = MaxWidth.ExtraSmall, DisableBackdropClick = true };
@@ -42,7 +43,7 @@ namespace CadflairBlazorServer.Pages
         private string? _shareLink;
 
         // request dialog 
-        private DialogOptions _requestDialogOptions = new() { MaxWidth = MaxWidth.Large, DisableBackdropClick = true };
+        private DialogOptions _requestDialogOptions = new() { MaxWidth = MaxWidth.Small, DisableBackdropClick = true };
         private bool _showRequestDialog;
         private string? _firstName;
         private string? _lastName;
@@ -107,7 +108,7 @@ namespace CadflairBlazorServer.Pages
 
             //check for existing configuration
             List<ProductConfiguration> existingConfigurations = await _dataServicesManager.ProductService.GetProductsConfigurationsByProductVersionId(_productVersion!.Id);
-            _productConfiguration = existingConfigurations.Find(i => i.ArgumentJson == _iLogicFormData?.GetArgumentJson());
+            _productConfiguration = existingConfigurations.Find(i => i.BucketKey != null && i.ArgumentJson == _iLogicFormData?.GetArgumentJson());
 
             if (_productConfiguration != null)
             {

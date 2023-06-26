@@ -57,5 +57,20 @@ namespace CadflairDataAccess.Services
       
         #endregion
 
+        public async Task<ContactRequest> CreateContactRequest(string firtName, string lastName, string emailAddress, string companyName, string message)
+        {
+            dynamic values = new
+            {
+                FirstName = firtName,
+                LastName = lastName,
+                EmailAddress = emailAddress,
+                CompanyName = companyName,
+                Message = message,
+            };
+
+            ContactRequest newSetting = await _db.SaveSingleAsync<ContactRequest, dynamic>("[dbo].[spContactRequest_Insert]", values);
+            return newSetting; 
+        }
+
     }
 }
