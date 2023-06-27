@@ -40,10 +40,13 @@
 
 <MudContainer MaxWidth="MaxWidth.Large">
     <MudGrid Justify="Justify.Center">
-        <!-- hero text -->
-        <MudItem xs="12" sm="4">
-            <MudStack Justify="Justify.Center" Style="min-height: 70vh;">
-                <h1 class="mud-typography-h1" style="font-size:4rem;">
+        <!-- hero -->
+        <MudItem xs="12">
+            <div style="min-height:100px;"></div>
+        </MudItem>
+        <MudItem xs="12" md="4">
+            <MudStack>
+                <h1 class="mud-typography-h1" style="font-size:3.5rem;">
                     <span class="fade-opacity-in delay-1">Configuration</span><br />
                     <span class="fade-opacity-in delay-2">Made</span><br />
                     <span class="fade-opacity-in delay-3"><strong>Easy</strong></span><br />
@@ -54,20 +57,22 @@
                 <div class="fade-opacity-in delay-5 my-10">
                     <p class="mud-typography mud-typography-body1 my-3">Use CAD to automate your sales process.</p>
                     <MudButton Href="/demo/products" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
-                        Try Demo 
-                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward"/>
+                        Try Demo
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
                     </MudButton>
                 </div>
             </MudStack>
         </MudItem>
 
-        <!-- hero image -->
-        <MudItem xs="12" sm="8">
-            <MudStack Justify="Justify.Center" Style="min-height: 70vh;">
-                @*<img src="/images/hero_photo_1.jpeg" alt="hero image" class="fade-opacity-in delay-5" />*@
-                <img src="/images/laptop_mockup.png" alt="hero image" class="fade-opacity-in delay-5" />
-            </MudStack>
-        </MudItem>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudItem sm="8">
+                <MudImage Src="/images/laptop_mockup.png" Alt="hero image" Fluid ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Class="pa-10" />
+            </MudItem>
+            <MudItem xs="12">
+                <div style="min-height:100px;"></div>
+            </MudItem>
+        </MudHidden>
+
 
         <!-- learn more button -->
         <MudItem xs="12">
@@ -85,6 +90,7 @@
     <MudContainer MaxWidth="MaxWidth.Large">
         <MudGrid>
 
+            <!-- what is cadflair -->
             <MudItem sm="12">
                 <div style="min-height:125px;"></div>
             </MudItem>
@@ -240,6 +246,7 @@
         </MudGrid>
     </MudContainer>
 </div>
+
 <Footer />
 
 

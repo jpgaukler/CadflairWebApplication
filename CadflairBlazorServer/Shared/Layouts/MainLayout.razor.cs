@@ -13,6 +13,7 @@ namespace CadflairBlazorServer.Shared.Layouts
         // fields
         private MudThemeProvider? _mudThemeProvider;
         private bool _isDarkMode = false;
+        private bool _navDrawerOpen = false;
 
         private MudTheme _customTheme = new()
         {
@@ -42,6 +43,7 @@ namespace CadflairBlazorServer.Shared.Layouts
 
         private async Task ContactUs_OnClick()
         {
+            _navDrawerOpen = false;
             // navgate back to home page
             if (_navManager.BaseUri != _navManager.Uri)
             {

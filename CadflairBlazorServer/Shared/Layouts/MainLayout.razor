@@ -12,34 +12,51 @@
             <MudImage Src="/images/cadflair_logo_dark.svg" Alt="Cadflair Logo" Height="40" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
         </MudLink>
         <MudSpacer />
-        <MudButton Href="/demo/products" Color="Color.Inherit" Class="px-3 py-5">Demo</MudButton>
-        @*<MudButton Href="/pricing" Color="Color.Inherit" Class="px-3 py-5">Pricing</MudButton>*@
-        <MudButton OnClick="ContactUs_OnClick" Color="Color.Inherit" Class="px-3 py-5">Contact Us</MudButton>
+        ﻿<MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <MudIconButton Icon="@Icons.Material.Rounded.Notes" Color="Color.Inherit" Edge="Edge.Start" OnClick="() => _navDrawerOpen = true" />
+            <MudDrawer @bind-Open="_navDrawerOpen" Anchor="Anchor.End" Variant="@DrawerVariant.Temporary" Elevation="1">
+                <MudToolBar Dense DisableGutters>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Rounded.Close" Color="Color.Inherit" OnClick="() => _navDrawerOpen = false" />
+                </MudToolBar>
+                <MudNavMenu>
+                    <MudNavLink Href="/demo/products">Demo</MudNavLink>
+                    <MudNavLink OnClick="ContactUs_OnClick">Contact Us</MudNavLink>
+                </MudNavMenu>
+            </MudDrawer>
+        </MudHidden>
+        ﻿<MudHidden Breakpoint="Breakpoint.MdAndUp" Invert>
+            <MudButton Href="/demo/products" Color="Color.Inherit" Class="px-3 py-5">Demo</MudButton>
+            <MudButton OnClick="ContactUs_OnClick" Color="Color.Inherit" Class="px-3 py-5">Contact Us</MudButton>
+            @*<MudButton Href="/pricing" Color="Color.Inherit" Class="px-3 py-5">Pricing</MudButton>*@
 
-@*        <MudStack Row="true" Spacing="0" AlignItems="AlignItems.Center">
-            <MudIcon Icon="@Icons.Material.Filled.LightMode" />
-            <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" />
-            <MudIcon Icon="@Icons.Material.Filled.DarkMode" />
-        </MudStack>
-*@
-        <AuthorizeView>
-            <Authorized>
-                <MudButton Href="/MicrosoftIdentity/Account/SignOut" Color="Color.Inherit" Class="px-3 py-5">Log Out</MudButton>
-                @*<MudButton Href="/MicrosoftIdentity/Account/EditProfile" Color="Color.Primary" Class="px-3 py-5">Edit Profile</MudButton>*@
-            </Authorized>
-            <NotAuthorized>
-                <MudStack Row="true" Spacing="0">
-                    @*<MudButton Href="/MicrosoftIdentity/Account/SignIn?redirectUri=/Pricing" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>*@
-                    @*<MudButton Href="/MicrosoftIdentity/Account/SignIn" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>*@
-                    @*<MudButton Href="/MicrosoftIdentity/Account/SignUp" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>*@
-                    <MudButton Href="/comingsoon" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>
-                </MudStack>
-            </NotAuthorized>
-        </AuthorizeView>
+            <AuthorizeView>
+                <Authorized>
+                    <MudButton Href="/MicrosoftIdentity/Account/SignOut" Color="Color.Inherit" Class="px-3 py-5">Log Out</MudButton>
+                    @*<MudButton Href="/MicrosoftIdentity/Account/EditProfile" Color="Color.Primary" Class="px-3 py-5">Edit Profile</MudButton>*@
+                </Authorized>
+                <NotAuthorized>
+                    <MudStack Row Spacing="0">
+                        @*<MudButton Href="/MicrosoftIdentity/Account/SignIn?redirectUri=/Pricing" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>*@
+                        @*<MudButton Href="/MicrosoftIdentity/Account/SignIn" Color="Color.Inherit" Class="px-3 py-5">Log In</MudButton>*@
+                        @*<MudButton Href="/MicrosoftIdentity/Account/SignUp" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>*@
+                        <MudButton Href="/comingsoon" Color="Color.Primary" Class="px-3 py-5">Sign Up</MudButton>
+                    </MudStack>
+                </NotAuthorized>
+            </AuthorizeView>
+        </MudHidden>
     </MudAppBar>
+
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
 
 
+@*
+<MudStack Row Spacing="0" AlignItems="AlignItems.Center">
+    <MudIcon Icon="@Icons.Material.Filled.LightMode" />
+    <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" />
+    <MudIcon Icon="@Icons.Material.Filled.DarkMode" />
+</MudStack>
+*@

@@ -100,6 +100,8 @@ namespace CadflairBlazorServer.Pages
 
         private async Task Submit_OnClick()
         {
+            _showOverlay = false;
+
             if (_configurationInProgress)
                 return;
 
