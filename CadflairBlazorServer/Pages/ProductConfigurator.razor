@@ -2,64 +2,76 @@
 
 <PageTitle>Cadflair - Configure</PageTitle>
 
-<div class="d-flex flex-column" style="height: calc(100dvh - var(--mud-appbar-height));">
-    <MudStack Row Class="mud-background-gray relative flex-grow-1">
-        @if (_initializing)
-        {
-            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute z-10 mud-width-full mud-height-full mud-background-gray">
-                <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
-            </MudStack>
-        }
+<div style="height: calc(100dvh - var(--mud-appbar-height));" class="d-flex flex-column relative">
+    @if (_initializing)
+    {
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute mud-width-full mud-height-full mud-background-gray" Style="z-index:1400;">
+            <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
+        </MudStack>
+    }
+
+    <MudDrawerContainer Class="flex-grow-1 relative">
 
         <!-- iLogicFormData -->
         @if (_productVersion?.IsConfigurable == true)
         {
-            <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
-                <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                    <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
-                    <MudTooltip Text="Help">
-                        <MudIconButton OnClick="() => _showOverlay = true" Icon="@Icons.Material.Filled.Help" />
-                    </MudTooltip>
-                </MudStack>
-                @if (_iLogicFormData != null)
-                {
-                    <MudForm @bind-IsValid="_validConfigurationInputs" Class="flex-grow-1 overflow-auto">
-                        <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
-                            @foreach (ILogicFormElement element in _iLogicFormData.Items)
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <MudDrawer Open Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="400px">
+                    <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
+                        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
+                            <MudTooltip Text="Help">
+                                <MudIconButton OnClick="() => _showOverlay = true" Icon="@Icons.Material.Filled.Help" />
+                            </MudTooltip>
+                        </MudStack>
+                        @if (_iLogicFormData != null)
+                        {
+                            <MudForm @bind-IsValid="_validConfigurationInputs" Class="flex-grow-1 overflow-auto">
+                                <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
+                                    @foreach (ILogicFormElement element in _iLogicFormData.Items)
+                                    {
+                                        <ProductInput Element="@element" Disabled="@(_configurationInProgress || !_showSubmitButton)" @key="element"></ProductInput>
+                                    }
+                                </MudStack>
+                            </MudForm>
+                        }
+                        <MudStack Class="pa-3">
+                            @if (_showSubmitButton)
                             {
-                                <ProductInput Element="@element" Disabled="@(_configurationInProgress || !_showSubmitButton)" @key="element"></ProductInput>
+                                <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
+                            }
+                            else
+                            {
+                                <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth>Start Over</MudButton>
                             }
                         </MudStack>
-                    </MudForm>
-                }
-                <MudStack Class="pa-3">
-                    @if (_showSubmitButton)
-                    {
-                        <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
-                    }
-                    else
-                    {
-                        <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth>Start Over</MudButton>
-                    }
-                </MudStack>
-            </MudStack>
+                    </MudStack>
+                </MudDrawer>
+            </MudHidden>
 
+            <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert>
+                <div class="absolute z-10">
+                    <MudFab OnClick="() => _showConfigureDialog = true" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Class="ma-2"/>
+                </div>
+            </MudHidden>
         }
 
         <!--Forge Viewer-->
-        <div class="relative mud-height-full mud-width-full">
-            <MudOverlay Visible="_showOverlay" Class="d-flex flex-column align-start justify-start" Absolute DarkBackground>
-                <MudPaper Outlined Class="pa-5 ma-5" MaxWidth="360px">
-                    <MudStack>
-                        <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Material.Filled.ArrowBack" />
-                            <MudText Typo="Typo.h6">Enter product parameters</MudText>
+        <div class="relative mud-height-full">
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <MudOverlay Visible="_showOverlay" Class="d-flex flex-column align-start justify-start" Absolute DarkBackground>
+                    <MudPaper Outlined Class="pa-5 ma-5" MaxWidth="360px">
+                        <MudStack>
+                            <MudStack Row AlignItems="AlignItems.Center">
+                                <MudIcon Icon="@Icons.Material.Filled.ArrowBack" />
+                                <MudText Typo="Typo.h6">Enter product parameters</MudText>
+                            </MudStack>
+                            <MudText Typo="Typo.body2">Select product parameters, then click <strong>GENERATE MODEL</strong> to create a new product configuration!</MudText>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => _showOverlay = false" Class="">Ok</MudButton>
                         </MudStack>
-                        <MudText Typo="Typo.body2">Select product parameters, then click <strong>GENERATE MODEL</strong> to create a new product configuration!</MudText>
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => _showOverlay = false" Class="">Ok</MudButton>
-                    </MudStack>
-                </MudPaper>
-            </MudOverlay>
+                    </MudPaper>
+                </MudOverlay>
+            </MudHidden>
 
             @if (_configurationInProgress)
             {
@@ -86,7 +98,8 @@
             <ForgeViewer @ref="_forgeViewer" />
         </div>
 
-    </MudStack>
+    </MudDrawerContainer>
+
     <div style="background-color: var(--mud-palette-appbar-background);" class="pa-1">
         <MudText Typo="Typo.caption" Style="color: var(--mud-palette-appbar-text);">DISCLAIMER: This page is for demonstration purposes only. Any similarity to actual products or companies is purely coincidental.</MudText>
     </div>
@@ -99,7 +112,7 @@
             <MudIcon Icon="@Icons.Material.Filled.Email" Size="Size.Large" />
             <MudText Typo="Typo.h6"><strong>Learn More</strong></MudText>
             <MudSpacer />
-            <MudIconButton OnClick="() => _showRequestDialog = false" Icon="@Icons.Material.Filled.Close"/>
+            <MudIconButton OnClick="() => _showRequestDialog = false" Icon="@Icons.Material.Filled.Close" />
         </MudStack>
     </TitleContent>
     <DialogContent>
@@ -109,46 +122,46 @@
         </MudStack>
     </DialogContent>
 
-@*    <DialogContent>
-        <MudStack Row Style="max-height:500px;">
-            <MudForm @bind-IsValid="_validRequestInputs" Class="overflow-auto">
-                <MudStack>
-                    <MudStack Row>
-                        <MudTextField @bind-Value="_firstName" Required
-                                      Label="First Name"
-                                      Variant="Variant.Outlined"/>
-                        <MudTextField @bind-Value="_lastName" Required
-                                      Label="Last Name"
-                                      Variant="Variant.Outlined" />
-                    </MudStack>
-                    <MudTextField @bind-Value="_emailAddress" Required
-                                  Label="Email Address"
-                                  Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address." })"
-                                  Variant="Variant.Outlined"/>
-                    <MudStack Row>
-                        <MudTextField @bind-Value="_phoneNumber" Required
-                                      Label="Phone Number"
-                                      Variant="Variant.Outlined" />
-                        <MudTextField @bind-Value="_phoneExtension"
-                                      Label="Phone Extension"
-                                      Variant="Variant.Outlined" />
-                    </MudStack>
-                    <MudTextField @bind-Value="_messageText"
-                                  Label="Message" MaxLength="500"
-                                  Variant="Variant.Outlined"
-                                  Immediate Lines="8"/>
-                    <MudText Typo="Typo.body2" Align="Align.Right">@($"{(_messageText == null ? "0" : _messageText?.Length.ToString())}/500")</MudText>
-                </MudStack>
-            </MudForm>
-        </MudStack>
+    @*    <DialogContent>
+    <MudStack Row Style="max-height:500px;">
+    <MudForm @bind-IsValid="_validRequestInputs" Class="overflow-auto">
+    <MudStack>
+    <MudStack Row>
+    <MudTextField @bind-Value="_firstName" Required
+    Label="First Name"
+    Variant="Variant.Outlined"/>
+    <MudTextField @bind-Value="_lastName" Required
+    Label="Last Name"
+    Variant="Variant.Outlined" />
+    </MudStack>
+    <MudTextField @bind-Value="_emailAddress" Required
+    Label="Email Address"
+    Validation="@(new EmailAddressAttribute() { ErrorMessage = "Please enter a valid email address." })"
+    Variant="Variant.Outlined"/>
+    <MudStack Row>
+    <MudTextField @bind-Value="_phoneNumber" Required
+    Label="Phone Number"
+    Variant="Variant.Outlined" />
+    <MudTextField @bind-Value="_phoneExtension"
+    Label="Phone Extension"
+    Variant="Variant.Outlined" />
+    </MudStack>
+    <MudTextField @bind-Value="_messageText"
+    Label="Message" MaxLength="500"
+    Variant="Variant.Outlined"
+    Immediate Lines="8"/>
+    <MudText Typo="Typo.body2" Align="Align.Right">@($"{(_messageText == null ? "0" : _messageText?.Length.ToString())}/500")</MudText>
+    </MudStack>
+    </MudForm>
+    </MudStack>
     </DialogContent>
     <DialogActions>
-        <MudStack Row Justify="Justify.SpaceBetween" Class="mud-width-full">
-            <MudButton OnClick="() => _showRequestDialog = false" Variant="Variant.Outlined">Cancel</MudButton>
-            <MudButton OnClick="RequestQuote_OnClick" Color="Color.Primary" Disabled="!_validRequestInputs" Variant="Variant.Filled" DisableElevation>Submit</MudButton>
-        </MudStack>
+    <MudStack Row Justify="Justify.SpaceBetween" Class="mud-width-full">
+    <MudButton OnClick="() => _showRequestDialog = false" Variant="Variant.Outlined">Cancel</MudButton>
+    <MudButton OnClick="RequestQuote_OnClick" Color="Color.Primary" Disabled="!_validRequestInputs" Variant="Variant.Filled" DisableElevation>Submit</MudButton>
+    </MudStack>
     </DialogActions>
-*@
+    *@
 </MudDialog>
 
 <!-- share dialog -->
@@ -174,6 +187,45 @@
 </MudDialog>
 
 
+<!-- configure dialog (mobile) -->
+<MudDialog @bind-IsVisible="_showConfigureDialog" Options="_configureDialogOptions" Class="pa-0 ma-0" ClassContent="d-flex flex-column" ContentStyle="height:100dvh;">
+    <DialogContent>
+        <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+            <MudText Typo="Typo.h4"><strong>Configure</strong></MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => _showConfigureDialog = false" />
+        </MudStack>
+        <MudStack Class="flex-grow-1 overflow-auto" Spacing="0">
+            <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.h5" Class="pa-4"><b>@_product?.DisplayName</b></MudText>
+            </MudStack>
+            @if (_iLogicFormData != null)
+            {
+                <MudForm @bind-IsValid="_validConfigurationInputs" Class="flex-grow-1 overflow-auto">
+                    <MudStack Class="mud-height-full px-3 pb-3 overflow-auto">
+                        @foreach (ILogicFormElement element in _iLogicFormData.Items)
+                        {
+                            <ProductInput Element="@element" Disabled="@(_configurationInProgress || !_showSubmitButton)" @key="element"></ProductInput>
+                        }
+                    </MudStack>
+                </MudForm>
+            }
+            <MudStack Class="pa-3">
+                @if (_showSubmitButton)
+                {
+                    <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
+                }
+                else
+                {
+                    <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth>Start Over</MudButton>
+                }
+            </MudStack>
+        </MudStack>
+    </DialogContent>
+</MudDialog>
+
+
+
+
 @*<MudStack Class="overflow-auto" AlignItems="AlignItems.Center" Style="max-width:300px;">
     <ProductThumbnail Product="_product" ProductConfiguration="_productConfiguration" Height="200" Width="200" />
     <MudTable Items="@_iLogicFormData?.GetParameterList()" Class="overflow-auto" FixedHeader Dense Height="100%">
@@ -187,3 +239,4 @@
         </RowTemplate>
     </MudTable>
 </MudStack>*@
+

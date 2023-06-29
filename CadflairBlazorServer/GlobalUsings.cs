@@ -11,5 +11,4 @@ global using CadflairBlazorServer.Shared.Components;
 global using CadflairBlazorServer.Services;
 global using CadflairBlazorServer.Controllers;
 global using CadflairBlazorServer.Emails;
-global using CadflairBlazorServer.Shared.Dialogs;
 

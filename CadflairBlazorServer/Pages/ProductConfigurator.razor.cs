@@ -53,6 +53,9 @@ namespace CadflairBlazorServer.Pages
         private string? _messageText;
         private bool _validRequestInputs;
 
+        // configure dialog 
+        private DialogOptions _configureDialogOptions = new() { FullScreen = true, NoHeader = true };
+        private bool _showConfigureDialog;
 
         protected override async Task OnInitializedAsync()
         {
@@ -101,6 +104,7 @@ namespace CadflairBlazorServer.Pages
         private async Task Submit_OnClick()
         {
             _showOverlay = false;
+            _showConfigureDialog = false;
 
             if (_configurationInProgress)
                 return;

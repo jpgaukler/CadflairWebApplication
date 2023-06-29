@@ -20,8 +20,16 @@ namespace CadflairBlazorServer.Pages
         private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _displayListView = false;
         private bool _showDetails = false;
-        private bool _showOverlay = true;
+        private bool _drawerOpen = true;
         private bool _initializing = true;
+        private DialogOptions _productFolderDialogOptions = new() 
+        { 
+            FullWidth = true, 
+            MaxWidth = MaxWidth.ExtraSmall, 
+            DisableBackdropClick = true 
+        };
+        private bool _showNewFolderDialog = false;
+        private string? _newProductFolderName;
 
         // class for product folder tree structure
         private class ProductFolderTreeItem
@@ -105,6 +113,25 @@ namespace CadflairBlazorServer.Pages
             // reverse the list so the breadcrumbs are displayed from the top down
             _breadcrumbItems.Reverse();
         }
+
+        private async Task AddNewProductFolder_OnClick()
+        {
+            await Task.Delay(1000);
+            //if (_newProductFolderName == null)
+            //    return;
+
+            //await _dataServicesManager.ProductService.CreateProductFolder(_subscription.Id, 1, _newProductFolderName, _selectedTreeItem.ProductFolder.Id);
+
+            _newProductFolderName = null;
+            _showNewFolderDialog = false;
+        }
+
+        private void CancelNewProductFolder_OnClick()
+        {
+            _newProductFolderName = null;
+            _showNewFolderDialog = false;
+        }
+
 
         private void ProductsGrid_OnRowClick(DataGridRowClickEventArgs<Product> args)
         {
