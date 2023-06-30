@@ -15,6 +15,7 @@
         <!-- iLogicFormData -->
         @if (_productVersion?.IsConfigurable == true)
         {
+            <!-- desktop -->
             <MudHidden Breakpoint="Breakpoint.MdAndDown">
                 <MudDrawer Open Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="400px">
                     <MudStack Class="flex-grow-1 overflow-auto" Spacing="0" Style="width:25%; min-width:400px;">
@@ -38,26 +39,47 @@
                         <MudStack Class="pa-3">
                             @if (_showSubmitButton)
                             {
-                                <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
+                                <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Generate Model</MudButton>
                             }
                             else
                             {
-                                <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth>Start Over</MudButton>
+                                <MudButton OnClick="StartOver_OnClick" StartIcon="@Icons.Material.Filled.Replay" Variant="Variant.Outlined" FullWidth>Start Over</MudButton>
                             }
                         </MudStack>
                     </MudStack>
                 </MudDrawer>
             </MudHidden>
 
-            <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert>
-                <div class="absolute z-10">
-                    <MudFab OnClick="() => _showConfigureDialog = true" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Class="ma-2"/>
-                </div>
+            <!-- mobile -->
+            <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert Class="absolute z-10">
+                @if (_showActionButtons == false)
+                {
+                    <div class="absolute z-10 pa-2">
+                        <MudChip OnClick="() => _showConfigureDialog = true" Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary">Design Your Own!</MudChip>
+                    </div>
+                }
             </MudHidden>
         }
 
         <!--Forge Viewer-->
         <div class="relative mud-height-full">
+
+            @if (_configurationInProgress)
+            {
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute z-10 mud-height-full mud-width-full mud-background-gray">
+                    @if (_progressMessage.ToLower().Contains("error"))
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Error" Size="Size.Large" />
+                    }
+                    else
+                    {
+                        <MudProgressCircular Size="Size.Large" Indeterminate />
+                    }
+                    <MudText Typo="Typo.button">@_progressMessage</MudText>
+                </MudStack>
+            }
+
+            <!-- desktop -->
             <MudHidden Breakpoint="Breakpoint.MdAndDown">
                 <MudOverlay Visible="_showOverlay" Class="d-flex flex-column align-start justify-start" Absolute DarkBackground>
                     <MudPaper Outlined Class="pa-5 ma-5" MaxWidth="360px">
@@ -73,28 +95,52 @@
                 </MudOverlay>
             </MudHidden>
 
-            @if (_configurationInProgress)
+            @if (_showActionButtons)
             {
-                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute z-10 mud-height-full mud-width-full mud-background-gray">
-                    <MudProgressCircular Size="Size.Large" Indeterminate />
-                    <MudText Typo="Typo.button">@_progressMessage</MudText>
-                </MudStack>
+                <!-- desktop -->
+                <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                    <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="275px;">
+                        <MudStack Spacing="2">
+                            <MudText Typo="Typo.h6"><strong>Like what you see?</strong></MudText>
+                            @*<MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>*@
+                            <MudButton OnClick="() => _showRequestDialog = true" Disabled="_productConfiguration == null"
+                                   Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary" Size="Size.Small" DisableElevation>Request A Quote</MudButton>
+                            <MudButton OnClick="() => _showShareDialog = true" Disabled="_productConfiguration == null"
+                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Size="Size.Small">Share</MudButton>
+                            <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.StpObjectKey == null"
+                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload" Size="Size.Small">Download Stp</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudHidden>
+
+                <!-- mobile -->
+                <MudHidden Breakpoint="Breakpoint.MdAndDown" Invert>
+                    @if (_minimizeActionButtons)
+                    {
+                        <div class="absolute z-10 pa-2">
+                            <MudChip OnClick="() => _minimizeActionButtons = false" Icon="@Icons.Material.Filled.Info" Size="Size.Small" Color="Color.Primary">Like what you see?</MudChip>
+                        </div>
+                    }
+                    else
+                    {
+                        <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="275px;">
+                            <MudStack Spacing="2">
+                                <MudStack Row AlignItems="AlignItems.Center">
+                                    <MudText Typo="Typo.h6"><strong>Like what you see?</strong></MudText>
+                                    <MudSpacer />
+                                    <MudIconButton OnClick="() => _minimizeActionButtons = true" Icon="@Icons.Material.Filled.Close" Size="Size.Small" />
+                                </MudStack>
+                                <MudButton OnClick="() => _showRequestDialog = true" Disabled="_productConfiguration == null"
+                                   Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary" Size="Size.Small" DisableElevation>Request A Quote</MudButton>
+                                <MudButton OnClick="() => _showShareDialog = true" Disabled="_productConfiguration == null"
+                                   Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Size="Size.Small">Share</MudButton>
+                                <MudButton OnClick="StartOver_OnClick" StartIcon="@Icons.Material.Filled.Replay" Variant="Variant.Outlined" Size="Size.Small" FullWidth>Start Over</MudButton>
+                            </MudStack>
+                        </MudPaper>
+                    }
+                </MudHidden>
             }
-            @if (_showRequestButton)
-            {
-                <MudPaper Class="absolute z-10 pa-3 ma-3" MaxWidth="250px;">
-                    <MudStack Spacing="2">
-                        <MudText Typo="Typo.h6"><strong>Like what you see?</strong></MudText>
-                        <MudText Typo="Typo.body2" Class="mb-3">This is our bread and butter. Request a quote today!</MudText>
-                        <MudButton OnClick="() => _showRequestDialog = true" Disabled="_productConfiguration == null"
-                               Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RequestQuote" Color="Color.Primary" Size="Size.Small" DisableElevation>Request A Quote</MudButton>
-                        <MudButton OnClick="() => _showShareDialog = true" Disabled="_productConfiguration == null"
-                               Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.PersonAddAlt1" Size="Size.Small">Share</MudButton>
-                        <MudButton OnClick="DownloadStp_OnClick" Disabled="_productConfiguration?.StpObjectKey == null"
-                               Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.FileDownload" Size="Size.Small">Download Stp</MudButton>
-                    </MudStack>
-                </MudPaper>
-            }
+
             <ForgeViewer @ref="_forgeViewer" />
         </div>
 
@@ -186,7 +232,6 @@
     </DialogActions>
 </MudDialog>
 
-
 <!-- configure dialog (mobile) -->
 <MudDialog @bind-IsVisible="_showConfigureDialog" Options="_configureDialogOptions" Class="pa-0 ma-0" ClassContent="d-flex flex-column" ContentStyle="height:100dvh;">
     <DialogContent>
@@ -210,18 +255,14 @@
                 </MudForm>
             }
             <MudStack Class="pa-3">
-                @if (_showSubmitButton)
-                {
-                    <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true">Generate Model</MudButton>
-                }
-                else
-                {
-                    <MudButton OnClick="StartOver_OnClick" Variant="Variant.Filled" FullWidth>Start Over</MudButton>
-                }
+                <MudButton OnClick="Submit_OnClick" Disabled="@(!_validConfigurationInputs || _configurationInProgress)" Variant="Variant.Filled" Color="Color.Primary" FullWidth>Generate Model</MudButton>
             </MudStack>
         </MudStack>
     </DialogContent>
 </MudDialog>
+
+
+
 
 
 

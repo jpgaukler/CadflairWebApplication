@@ -29,7 +29,8 @@ namespace CadflairBlazorServer.Pages
         private ProductConfiguration? _productConfiguration;
         private ILogicFormElement? _iLogicFormData;
         private bool _showSubmitButton = true;
-        private bool _showRequestButton = false;
+        private bool _showActionButtons = false;
+        private bool _minimizeActionButtons = false;
         private bool _validConfigurationInputs = false;
         private bool _configurationInProgress = false;
         private string _progressMessage = string.Empty;
@@ -76,8 +77,9 @@ namespace CadflairBlazorServer.Pages
                                                        .WithAutomaticReconnect()
                                                        .Build();
 
-            _hubConnection.On<string>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnProgress), ReportProgress);
-            _hubConnection.On<int>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), ShowNewProductConfiguration);
+            _hubConnection.On<string>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnProgress), CreateProductConfigurationModel_OnProgress);
+            _hubConnection.On<int, bool>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), CreateProductConfigurationModel_OnComplete);
+            _hubConnection.On<int, bool>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), CreateProductConfigurationModel_OnComplete);
             //_hubConnection.On<string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ShowProductConfiguration);
 
             // construct UI
@@ -120,7 +122,7 @@ namespace CadflairBlazorServer.Pages
             {
                 _configurationInProgress = false;
                 _showSubmitButton = false;
-                _showRequestButton = true;
+                _showActionButtons = true;
                 await _forgeViewer!.ViewDocumentInOss(_productConfiguration!.BucketKey);
                 return;
             }
@@ -146,21 +148,30 @@ namespace CadflairBlazorServer.Pages
                                                                                                 inventorParamsJson: _iLogicFormData.GetArgumentJson());
         }
 
-        private void ReportProgress(string message)
+        private void CreateProductConfigurationModel_OnProgress(string message)
         {
             _progressMessage = message;
             InvokeAsync(StateHasChanged);
         } 
 
-        private async Task ShowNewProductConfiguration(int productConfigurationId)
+        private async Task CreateProductConfigurationModel_OnComplete(int productConfigurationId, bool success)
         {
-            //_snackbar.Add("Workitem complete!", Severity.Success);
-            _progressMessage = "New model generated!";
-            _configurationInProgress = false;
-            _showSubmitButton = false;
-            _showRequestButton = true;
-            _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
-            await _forgeViewer!.ViewDocumentInOss(_productConfiguration.BucketKey);
+            if (success)
+            {
+                _progressMessage = "New model generated!";
+                _configurationInProgress = false;
+                _showSubmitButton = false;
+                _showActionButtons = true;
+                _productConfiguration = await _dataServicesManager.ProductService.GetProductConfigurationById(productConfigurationId);
+                await _forgeViewer!.ViewDocumentInOss(_productConfiguration.BucketKey);
+            }
+            else
+            {
+                // TO DO: delete the failed product configuration record here
+                _progressMessage = "Error!";
+                _snackbar.Add("Failed to generate model!", Severity.Error);
+            }
+
             await InvokeAsync(StateHasChanged);
         }
 
@@ -218,7 +229,7 @@ namespace CadflairBlazorServer.Pages
 
         private void StartOver_OnClick()
         {
-            _showRequestButton = false;
+            _showActionButtons = false;
             _showSubmitButton = true;
         }
 

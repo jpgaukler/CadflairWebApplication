@@ -1,20 +1,23 @@
 ﻿<MudTooltip Text="@TooltipText">
     @if(Label == null)
     {
-        <MudIconButton OnClick="CopyTextToClipboard" Icon="@Icon" Size="@Size" Variant="@Variant" Color="@Color" />
+        <div class="relative">
+            <!-- on mobile, can not access the clipboard from javascript interop, so this is a direct call to the javascript from client html -->
+            <button onclick="mudWindow.copyToClipboard(this.value)" value="@Text" class="absolute z-10 mud-height-full mud-width-full" style="opacity:0;">Copy</button>
+            <MudIconButton Icon="@Icon" Size="@Size" Variant="@Variant" Color="@Color" />
+        </div>
     }
     else
     {
-        <MudButton OnClick="CopyTextToClipboard" StartIcon="@Icon" Size="@Size" Variant="@Variant" Color="@Color">@Label</MudButton>
+        <MudButton StartIcon="@Icon" Size="@Size" Variant="@Variant" Color="@Color">
+            @Label
+            <!-- on mobile, can not access the clipboard from javascript interop, so this is a direct call to the javascript from client html -->
+            <button onclick="mudWindow.copyToClipboard(this.value)" value="@Text" class="absolute z-10 mud-height-full mud-width-full" style="opacity:0;">Copy</button>
+        </MudButton>
     }
 </MudTooltip>
 
 @code{
-
-    // services
-    [Inject] IJSRuntime _js { get; set; } = default!;
-    [Inject] ISnackbar _snackbar { get; set; } = default!;
-    [Inject] ILogger<CopyToClipboard> _logger { get; set; } = default!;
 
     // parameters
     [Parameter] public string? Text { get; set; }
@@ -25,22 +28,7 @@
     [Parameter] public string Icon { get; set; } = Icons.Material.Filled.ContentCopy;
     [Parameter] public string? Label { get; set; }
 
-    private async Task CopyTextToClipboard()
-    {
-        if (Text == null)
-            return;
-
-        try
-        {
-            await _js.InvokeVoidAsync("clipboard.copyText", Text);
-            _snackbar.Add("Copied to clipboard!", Severity.Success);
-        }
-        catch (Exception ex) 
-        {
-            _snackbar.Add("Could not copy to clipboard!", Severity.Error);
-            _logger.LogError(ex, $"An unknown error occurred!");
-        }
-
-    }
-
 }
+
+
+

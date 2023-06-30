@@ -8,9 +8,12 @@ using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
-builder.Services.AddApplicationInsightsTelemetry();
+if (builder.Environment.IsProduction() || builder.Environment.IsStaging())
+{
+    builder.Services.AddApplicationInsightsTelemetry();
+}
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
 

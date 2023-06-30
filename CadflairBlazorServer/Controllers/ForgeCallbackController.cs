@@ -54,10 +54,13 @@ namespace CadflairBlazorServer.Controllers
                     await _dataServicesManager.ProductService.UpdateProductConfiguration(productConfiguration);
 
                     // send message to client
-                    await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfigurationModel_OnComplete", productConfigurationId);
+                    await _hubContext.Clients.Client(connectionId).SendAsync(nameof(CreateProductConfigurationModel_OnComplete), productConfigurationId, true);
                 }
                 else
                 {
+                    // send message to client
+                    await _hubContext.Clients.Client(connectionId).SendAsync(nameof(CreateProductConfigurationModel_OnComplete), productConfigurationId, false);
+
                     // download workitem report
                     RestClient client = new(reportUrl);
                     byte[]? bytes = await client.DownloadDataAsync(new RestRequest());
@@ -90,7 +93,7 @@ namespace CadflairBlazorServer.Controllers
                     string message = (string)progress["message"]!;
 
                     // send message to client
-                    await _hubContext.Clients.Client(connectionId).SendAsync("CreateProductConfigurationModel_OnProgress", message);
+                    await _hubContext.Clients.Client(connectionId).SendAsync(nameof(CreateProductConfigurationModel_OnProgress), message);
                 }
             }
             catch (Exception ex)
@@ -157,7 +160,7 @@ namespace CadflairBlazorServer.Controllers
                 string connectionId = (string)workflowAttributes["connectionId"]!;
 
                 // send message to client
-                await _hubContext.Clients.Client(connectionId).SendAsync("ModelDerivativeTranslation_OnComplete", resourceUrn);
+                await _hubContext.Clients.Client(connectionId).SendAsync(nameof(ModelDerivativeTranslation_OnComplete), resourceUrn);
             }
             catch (Exception ex)
             {

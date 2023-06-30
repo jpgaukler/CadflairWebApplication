@@ -6,7 +6,7 @@
         <MudTextField @bind-Value="_lastName" Variant="_variant" Label="Last Name" Required />
         <MudTextField @bind-Value="_emailAddress" Variant="_variant" Label="Email Address" Validation="@(new EmailAddressAttribute(){ ErrorMessage = "Please enter a valid email address."})" Required />
         <MudTextField @bind-Value="_companyName" Variant="_variant" Label="Company Name" />
-        <MudTextField @bind-Value="_message" Variant="_variant" Label="Message" Placeholder="What can we help you with?" Lines="5" MaxLength="500" Immediate />
+        <MudTextField @bind-Value="_message" Variant="_variant" Label="Message" Placeholder="What can we help you with?" Lines="4" MaxLength="500" Immediate />
         <MudText Typo="Typo.caption" Align="Align.End">@($"{(_message == null ? "0" : _message.Length)}/500")</MudText>
         <MudStack AlignItems="AlignItems.Center">
             <MudButton OnClick="Submit_OnClick" Variant="Variant.Filled" Size="Size.Large" Color="Color.Primary">Submit</MudButton>
