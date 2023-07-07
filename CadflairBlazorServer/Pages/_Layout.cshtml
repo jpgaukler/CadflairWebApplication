@@ -8,6 +8,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="~/" />
+    <link rel="icon" type="image/svg" sizes="32x32" href="/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
 
     <!-- Autodesk Forge Viewer styles -->
     <link href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" rel="stylesheet" type="text/css">
@@ -39,7 +41,16 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="_framework/blazor.server.js"></script>
+    <!-- Blazor script -->
+    <script src="_framework/blazor.server.js" autostart="false"></script>
+
+    <script>
+        Blazor.start().then(() => {
+            Blazor.defaultReconnectionHandler._reconnectCallback = function (d) {
+                document.location.reload();
+            }
+        });
+    </script>
 
     <!-- MudBlazor script -->
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>

@@ -1,16 +1,13 @@
 ﻿@page "/{CompanyName}/products/{ProductName}"
+@layout ConfiguratorLayout
 
 <PageTitle>Cadflair - Configure</PageTitle>
 
-<div style="height: calc(100dvh - var(--mud-appbar-height));" class="d-flex flex-column relative">
-    @if (_initializing)
-    {
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="absolute mud-width-full mud-height-full mud-background-gray" Style="z-index:1400;">
-            <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
-        </MudStack>
-    }
-
+<div class="mud-height-full d-flex flex-column">
     <MudDrawerContainer Class="flex-grow-1 relative">
+        <MudOverlay Visible="_initializing" Class="mud-background" Style="z-index:1400;" Absolute>
+            <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
+        </MudOverlay>
 
         <!-- iLogicFormData -->
         @if (_productVersion?.IsConfigurable == true)
@@ -260,11 +257,6 @@
         </MudStack>
     </DialogContent>
 </MudDialog>
-
-
-
-
-
 
 
 @*<MudStack Class="overflow-auto" AlignItems="AlignItems.Center" Style="max-width:300px;">

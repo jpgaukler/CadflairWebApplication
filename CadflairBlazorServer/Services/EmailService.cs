@@ -37,11 +37,11 @@ namespace CadflairBlazorServer.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SendEmail failed: {ex}");
+                _logger.LogError($"{nameof(SendEmail)} failed: {ex}");
             }
         }
 
-        public async Task SendEmail<T>(string toAddress, string subject, string emailTemplatePath, T emailModel)
+        public async Task SendEmailUsingTemplate<T>(string toAddress, string subject, string emailTemplatePath, T emailModel)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace CadflairBlazorServer.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SendEmail<T> failed: {ex}");
+                _logger.LogError($"{nameof(SendEmailUsingTemplate)} failed: {ex}");
             }
         }
 
@@ -100,7 +100,7 @@ namespace CadflairBlazorServer.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SendNotificationEmail<T> failed: {ex}");
+                _logger.LogError($"{nameof(SendNotificationEmail)} failed: {ex}");
             }
         }
     }

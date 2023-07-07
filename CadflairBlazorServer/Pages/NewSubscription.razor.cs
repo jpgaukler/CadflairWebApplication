@@ -64,10 +64,10 @@ namespace CadflairBlazorServer.Pages
                 Name = _authenticationService.LoggedInUser.FullName
             };
 
-            _ = _emailService.SendEmail(toAddress: _authenticationService.LoggedInUser.EmailAddress,
-                                        subject: "Welcome to Cadflair!",
-                                        emailTemplatePath: model.Path,
-                                        emailModel: model);
+            _ = _emailService.SendEmailUsingTemplate(toAddress: _authenticationService.LoggedInUser.EmailAddress,
+                                                     subject: "Welcome to Cadflair!",
+                                                     emailTemplatePath: model.Path,
+                                                     emailModel: model);
 
             _navigationManager.NavigateTo("/dashboard");
         }

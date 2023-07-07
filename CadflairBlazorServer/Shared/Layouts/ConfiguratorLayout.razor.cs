@@ -2,17 +2,13 @@ using Microsoft.AspNetCore.Components;
 
 namespace CadflairBlazorServer.Shared.Layouts
 {
-    public partial class MainLayout 
+    public partial class ConfiguratorLayout
     {
         // services
         [Inject] NavigationManager _navManager { get; set; } = default!;
-        [Inject] AuthenticationService _authenticationService { get; set; } = default!;
         [Inject] ISnackbar _snackbar { get; set; } = default!;
         [Inject] IJSRuntime _js { get; set; } = default!;
 
-        // fields
-        private MudThemeProvider? _mudThemeProvider;
-        private bool _isDarkMode = false;
 
         private MudTheme _customTheme = new()
         {

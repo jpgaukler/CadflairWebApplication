@@ -1,78 +1,18 @@
 ﻿@inherits LayoutComponentBase
-@inject AuthenticationStateProvider _authStateProvider
-@inject NavigationManager _navManager
-
 
 <PageTitle>CadflairBlazorServer</PageTitle>
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudThemeProvider Theme="_customTheme"/>
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar>
-        <MudLink Href="/">
-            <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
-        </MudLink>
-        <MudSpacer />
-        <AuthorizeView>
-            <Authorized>
-                <MudLink Href="/MicrosoftIdentity/Account/SignOut">Log Out</MudLink>
-                <MudLink Href="/MicrosoftIdentity/Account/EditProfile">Profile</MudLink>
-            </Authorized>
-            <NotAuthorized>
-                <MudLink Href="/MicrosoftIdentity/Account/SignIn">Log In</MudLink>
-                <MudButton Link="/MicrosoftIdentity/Account/SignUp" Color="Color.Inherit">Sign Up</MudButton>
-            </NotAuthorized>
-        </AuthorizeView>
+    <AppBar/>
 
-        @*<MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Inherit" T="bool" Label="Toggle Light/Dark Mode" />*@
-    </MudAppBar>
-
-    <MudMainContent>
+    <MudMainContent Class="fixed" Style="top:0; bottom:0; left:0; right:0;">
         @Body
     </MudMainContent>
 </MudLayout>
 
 
 
-@code {
-    private MudThemeProvider? _mudThemeProvider;
-    private bool _isDarkMode = true;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            if (_mudThemeProvider != null)
-            {
-                _isDarkMode = await _mudThemeProvider.GetSystemPreference();
-            }
-
-            StateHasChanged();
-        }
-    }
-
-
-    //MudTheme MyCustomTheme = new MudTheme()
-    //{
-    //    Palette = new Palette()
-    //    {
-    //        Primary = Colors.Blue.Default,
-    //        Secondary = Colors.Green.Accent4,
-    //        AppbarBackground = Colors.Red.Default,
-    //    },
-
-    //    PaletteDark = new PaletteDark()
-    //    {
-    //        Primary = Colors.Blue.Lighten1
-    //    },
-
-    //    //LayoutProperties = new LayoutProperties()
-    //    //{
-    //    //    DrawerWidthLeft = "260px",
-    //    //    DrawerWidthRight = "300px"
-    //    //}
-    //};
-
-}
