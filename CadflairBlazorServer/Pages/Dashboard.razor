@@ -20,8 +20,8 @@
 <MudText Typo="Typo.h6">@_authenticationService.LoggedInUser?.FullName</MudText>
 
 <!-- product list view -->
-<MudDataGrid T="ProductQuoteRequest" Items="_productQuoteRequests"
-         RowClick="ProductQuoteRequestGrid_RowClick"
+<MudDataGrid Items="_productQuoteRequests"
+         RowClick="(DataGridRowClickEventArgs<ProductQuoteRequest> args) => ProductQuoteRequestGrid_RowClick(args)"
          ColumnResizeMode="ResizeMode.Column"
          Elevation="0" Height="100%" Class="overflow-auto"
          Dense Hover FixedHeader>

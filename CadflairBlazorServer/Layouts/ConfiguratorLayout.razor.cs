@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace CadflairBlazorServer.Shared.Layouts
+namespace CadflairBlazorServer.Layouts
 {
     public partial class ConfiguratorLayout
     {

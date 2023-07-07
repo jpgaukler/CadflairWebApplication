@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace CadflairBlazorServer.Shared.Components
+namespace CadflairBlazorServer.Shared
 {
     public partial class ForgeViewer
     {

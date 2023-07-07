@@ -19,7 +19,7 @@ namespace CadflairBlazorServer.Pages
         private List<Product> _products = new();
         private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _displayListView = false;
-        private bool _showDetails = false;
+        //private bool _showDetails = false;
         private bool _drawerOpen = true;
         private bool _initializing = true;
         private DialogOptions _productFolderDialogOptions = new() 

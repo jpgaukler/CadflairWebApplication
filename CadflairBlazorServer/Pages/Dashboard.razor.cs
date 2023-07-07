@@ -46,7 +46,7 @@ namespace CadflairBlazorServer.Pages
 
         private void ProductQuoteRequestGrid_RowClick(DataGridRowClickEventArgs<ProductQuoteRequest> args)
         {
-
+            Debug.WriteLine($"{args.Item.FirstName} {args.Item.LastName}");
         }
 
         public void Dispose() => _authenticationService.OnImpersonateUserSet -= UpdateUI;
