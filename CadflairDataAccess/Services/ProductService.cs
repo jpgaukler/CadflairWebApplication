@@ -113,6 +113,12 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
         }
 
+        /// <summary>
+        /// NEED TO DELETE THIS METHOD AND REPLACE IT WITH NEW TECHNIQUE OF GETTING ALL FOLDERS IN ONE CALL. SEE PRODUCT CATALOG PAGE. 
+        /// </summary>
+        /// <param name="subscriptionId"></param>
+        /// <param name="parentId"></param>
+        /// <returns></returns>
         public Task<List<ProductFolder>> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
         {
             dynamic values = new

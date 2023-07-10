@@ -34,6 +34,8 @@ namespace CadflairDataAccess.Models
         /// <summary>
         /// Date and time that the record was created.
         /// </summary>
-        public DateTimeOffset CreatedOn { get; set; } 
+        public DateTimeOffset CreatedOn { get; set; }
+
+        public IEnumerable<ProductFolder> ChildFolders { get; set; }
     }
 }
