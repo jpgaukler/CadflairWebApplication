@@ -108,26 +108,20 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetById]", new { Id = id });
         }
 
-        public Task<List<ProductFolder>> GetProductFoldersBySubscriptionId(int subscriptionId)
+        public async Task<List<ProductFolder>> GetProductFoldersBySubscriptionId(int subscriptionId)
         {
-            return _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
-        }
+            var folders = await _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
 
-        /// <summary>
-        /// NEED TO DELETE THIS METHOD AND REPLACE IT WITH NEW TECHNIQUE OF GETTING ALL FOLDERS IN ONE CALL. SEE PRODUCT CATALOG PAGE. 
-        /// </summary>
-        /// <param name="subscriptionId"></param>
-        /// <param name="parentId"></param>
-        /// <returns></returns>
-        public Task<List<ProductFolder>> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
-        {
-            dynamic values = new
+            if (folders == null || folders.Any() == false)
+                return new List<ProductFolder>();
+
+            foreach (ProductFolder folder in folders)
             {
-                SubscriptionId = subscriptionId,
-                ParentId = parentId,
-            };
+                folder.ChildFolders = folders.Where(child => child.ParentId == folder.Id).ToList();
+                //folder.ParentFolder = folders.FirstOrDefault(parent => parent.Id == folder.ParentId);
+            }
 
-            return _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionIdAndParentId]", values);
+            return folders.Where(i => i.ParentId == null).ToList();
         }
 
         public Task DeleteProductFolder(ProductFolder productFolder)

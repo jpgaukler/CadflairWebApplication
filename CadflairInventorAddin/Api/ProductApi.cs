@@ -97,18 +97,18 @@ namespace CadflairInventorAddin.Api
 
         #region "ProductFolder"
 
-        public static async Task<List<ProductFolder>> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
+        public static async Task<List<ProductFolder>> GetProductFoldersBySubscriptionId(int subscriptionId)
         {
             try
             {
-                string uri = $"api/v1/productfolders/{subscriptionId}/{parentId}";
+                string uri = $"api/v1/productfolders/{subscriptionId}";
                 string result = await Client.Get(uri);
                 List<ProductFolder> folders = JsonConvert.DeserializeObject<List<ProductFolder>>(result);
                 return folders;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "GetProductFoldersBySubscriptionIdAndParentId", subscriptionId, parentId);
+                Log.Error(ex, "GetProductFoldersBySubscriptionId", subscriptionId);
                 return new List<ProductFolder>();
             }
         }

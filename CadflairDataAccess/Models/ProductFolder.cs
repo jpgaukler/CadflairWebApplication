@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace CadflairDataAccess.Models
 {
-    public class ProductFolder
+    public class ProductFolder : IComparable
     {
         /// <summary>
         /// Primary key.
@@ -36,6 +35,11 @@ namespace CadflairDataAccess.Models
         /// </summary>
         public DateTimeOffset CreatedOn { get; set; }
 
-        public IEnumerable<ProductFolder> ChildFolders { get; set; }
+        public List<ProductFolder> ChildFolders { get; set; } = new List<ProductFolder>();
+
+        public int CompareTo(object obj)
+        {
+            return DisplayName.CompareTo(((ProductFolder)obj).DisplayName);
+        }
     }
 }

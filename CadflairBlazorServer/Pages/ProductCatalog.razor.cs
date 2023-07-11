@@ -32,7 +32,7 @@ namespace CadflairBlazorServer.Pages
         private string? _newProductFolderName;
 
         // fields
-        private HashSet<ProductFolder> _productFolders = new();
+        private List<ProductFolder> _productFolders = new List<ProductFolder>();
         private ProductFolder? _selectedProductFolder;
 
         protected override async Task OnInitializedAsync()
@@ -64,18 +64,7 @@ namespace CadflairBlazorServer.Pages
 
         private async Task LoadProductFolders()
         {
-            List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionId(_subscription!.Id);
-
-            if (folders == null)
-                return;
-
-            foreach (ProductFolder folder in folders)
-            {
-                folder.ChildFolders = folders.Where(child => child.ParentId == folder.Id);
-                //folder.ParentFolder = folders.FirstOrDefault(parent => parent.Id == folder.ParentId);
-            }
-
-            _productFolders = folders.Where(i => i.ParentId == null).ToHashSet();
+            _productFolders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionId(_subscription!.Id);
         }
 
         private async Task SelectedProductFolderChanged(ProductFolder? selectedFolder)
@@ -85,7 +74,7 @@ namespace CadflairBlazorServer.Pages
             if (_selectedProductFolder == null)
             {
                 _products.Clear();
-                _breadcrumbItems.Clear();
+                //_breadcrumbItems.Clear();
                 return;
             }
 
@@ -111,13 +100,28 @@ namespace CadflairBlazorServer.Pages
         private async Task AddNewProductFolder_OnClick()
         {
             await Task.Delay(1000);
-            //if (_newProductFolderName == null)
-            //    return;
 
-            //await _dataServicesManager.ProductService.CreateProductFolder(_subscription.Id, 1, _newProductFolderName, _selectedTreeItem.ProductFolder.Id);
+            if (_newProductFolderName == null)
+                return;
 
-            _newProductFolderName = null;
-            _showNewFolderDialog = false;
+            //ProductFolder newFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: _subscription!.Id,
+            //                                                                                        createdById: 1,
+            //                                                                                        displayName: _newProductFolderName,
+            //                                                                                        parentId: _selectedProductFolder?.Id);
+
+            //if (_selectedProductFolder == null)
+            //{
+            //    _productFolders.Add(newFolder);
+            //    _productFolders.Sort();
+            //}
+            //else
+            //{
+            //    _selectedProductFolder.ChildFolders.Add(newFolder);
+            //    _selectedProductFolder.ChildFolders.Sort();
+            //}
+
+            //_newProductFolderName = null;
+            //_showNewFolderDialog = false;
         }
 
         private void CancelNewProductFolder_OnClick()

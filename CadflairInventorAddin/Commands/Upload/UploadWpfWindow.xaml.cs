@@ -6,6 +6,7 @@ using Inventor;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -53,7 +54,7 @@ namespace CadflairInventorAddin.Commands.Upload
             if (auth != null) _loggedInUser = await UserApi.GetUserByObjectIdentifier(auth.UniqueId);
 
             // load product folders into the UI
-            await LoadProductFoldersRecursive(null, ProductFolderTreeView.Items);
+            await LoadProductFolders();
 
             // load iLogic form data into UI
             ILogicFormsComboBox.ItemsSource = UploadToCadflair.GetILogicFormElements(_doc);
@@ -67,23 +68,31 @@ namespace CadflairInventorAddin.Commands.Upload
             ParametersDataGrid.ItemsSource = iLogicForm.GetParameterList();
         }
 
-        private async Task LoadProductFoldersRecursive(int? parentId, ItemCollection treeViewItems)
+        private async Task LoadProductFolders()
         {
             if (_loggedInUser == null || _loggedInUser.SubscriptionId == null) return;
 
-            List<ProductFolder> folders = await ProductApi.GetProductFoldersBySubscriptionIdAndParentId((int)_loggedInUser.SubscriptionId, parentId);
+            List<ProductFolder> folderList = await ProductApi.GetProductFoldersBySubscriptionId((int)_loggedInUser.SubscriptionId);
 
-            foreach (ProductFolder folder in folders)
+            RecurseFolders(ProductFolderTreeView.Items, folderList);
+
+            void RecurseFolders(ItemCollection collection, IEnumerable<ProductFolder> folders)
             {
-                TreeViewItem treeViewItem = new TreeViewItem
+                foreach (ProductFolder folder in folders)
                 {
-                    DataContext = folder,
-                    Header = folder.DisplayName,
-                };
+                    TreeViewItem treeViewItem = new TreeViewItem
+                    {
+                        DataContext = folder,
+                        Header = folder.DisplayName,
+                    };
 
-                treeViewItems.Add(treeViewItem);
-                await LoadProductFoldersRecursive(folder.Id, treeViewItem.Items);
+                    collection.Add(treeViewItem);
+
+                    if (folder.ChildFolders.Any())
+                        RecurseFolders(treeViewItem.Items, folder.ChildFolders);
+                }
             }
+
         }
 
         private async void CreateProductFolderButton_Click(object sender, RoutedEventArgs e)
@@ -122,7 +131,8 @@ namespace CadflairInventorAddin.Commands.Upload
 
             ProductFolder folder = await ProductApi.CreateProductFolder((int)_loggedInUser.SubscriptionId, _loggedInUser.Id, ProductFolderTextBox.Text, parentId);
 
-            if (folder == null) return;
+            if (folder == null) 
+                return;
 
             TreeViewItem treeViewItem = new TreeViewItem
             {

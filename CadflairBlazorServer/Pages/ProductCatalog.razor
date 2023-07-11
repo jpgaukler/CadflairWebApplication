@@ -12,7 +12,7 @@
                 <MudText Typo="Typo.h6">Folders</MudText>
             </MudDrawerHeader>
             <MudStack Class="mud-height-full overflow-auto">
-                <MudTreeView T="ProductFolder" Items="_productFolders"
+                <MudTreeView T="ProductFolder" Items="_productFolders.ToHashSet()"
                              SelectedValueChanged="SelectedProductFolderChanged"
                              Hover ExpandOnDoubleClick>
                     <ItemTemplate>

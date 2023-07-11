@@ -194,12 +194,12 @@ namespace CadflairBlazorServer.Controllers
         }
 
         [HttpGet]
-        [Route("api/v1/productfolders/{subscriptionId:int}/{parentId:int?}")]
-        public async Task<IActionResult> GetProductFoldersBySubscriptionIdAndParentId(int subscriptionId, int? parentId)
+        [Route("api/v1/productfolders/{subscriptionId:int}")]
+        public async Task<IActionResult> GetProductFoldersBySubscriptionId(int subscriptionId)
         {
             try
             {
-                List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionIdAndParentId(subscriptionId, parentId);
+                List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionId(subscriptionId);
                 return Ok(folders);
             }
             catch (Exception ex)
