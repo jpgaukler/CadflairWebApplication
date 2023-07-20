@@ -16,12 +16,14 @@ namespace CadflairBlazorServer.Pages
 
         // fields
         private Subscription? _subscription;
+        private List<ProductFolder> _productFolders = new();
+        private ProductFolder? _selectedProductFolder;
         private List<Product> _products = new();
         private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _displayListView = false;
-        //private bool _showDetails = false;
         private bool _drawerOpen = true;
         private bool _initializing = true;
+
         private DialogOptions _productFolderDialogOptions = new() 
         { 
             FullWidth = true, 
@@ -30,10 +32,6 @@ namespace CadflairBlazorServer.Pages
         };
         private bool _showNewFolderDialog = false;
         private string? _newProductFolderName;
-
-        // fields
-        private List<ProductFolder> _productFolders = new List<ProductFolder>();
-        private ProductFolder? _selectedProductFolder;
 
         protected override async Task OnInitializedAsync()
         {
@@ -47,8 +45,11 @@ namespace CadflairBlazorServer.Pages
             }
 
             await LoadProductFolders();
-            await SelectedProductFolderChanged(_productFolders.FirstOrDefault());
+            await ProductFolder_OnClick(_productFolders.FirstOrDefault());
             _initializing = false;
+
+            // required to get the top level folder to appear as activated
+            StateHasChanged();
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -67,34 +68,51 @@ namespace CadflairBlazorServer.Pages
             _productFolders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionId(_subscription!.Id);
         }
 
-        private async Task SelectedProductFolderChanged(ProductFolder? selectedFolder)
+        private async Task ProductFolder_OnClick(ProductFolder? selectedFolder)
         {
+            _products.Clear();
+            _breadcrumbItems.Clear();
             _selectedProductFolder = selectedFolder;
 
             if (_selectedProductFolder == null)
-            {
-                _products.Clear();
-                //_breadcrumbItems.Clear();
                 return;
-            }
 
-            ProductFolder folder = _selectedProductFolder;
-            _products = (await _dataServicesManager.ProductService.GetProductsByProductFolderId(folder.Id))
+            _products = (await _dataServicesManager.ProductService.GetProductsByProductFolderId(_selectedProductFolder.Id))
                                                                   .Where(i => i.IsPublic)
                                                                   .ToList();
 
-            //// refresh breadcrumbs
-            //_breadcrumbItems.Clear();
-            //_breadcrumbItems.Add(new BreadcrumbItem(text: folder.DisplayName, href: null, disabled: true));
+            // refresh breadcrumbs
+            ProductFolder folder = _selectedProductFolder;
 
-            //while (folder.ParentId != null)
-            //{
-            //    folder = await _dataServicesManager.ProductService.GetProductFolderById((int)folder.ParentId);
-            //    _breadcrumbItems.Add(new BreadcrumbItem(text: folder.DisplayName, href: null, disabled: true));
-            //}
+            _breadcrumbItems.Add(new BreadcrumbItem(text: folder.DisplayName, href: null));
 
-            //// reverse the list so the breadcrumbs are displayed from the top down
-            //_breadcrumbItems.Reverse();
+            while (folder.ParentFolder != null)
+            {
+                folder = folder.ParentFolder;
+                _breadcrumbItems.Add(new BreadcrumbItem(text: folder.DisplayName, href: null));
+            }
+
+            // reverse the list so the breadcrumbs are displayed from the top down
+            _breadcrumbItems.Reverse();
+        }
+
+        private async Task BreadcrumbItem_OnClick(BreadcrumbItem breadcrumbItem)
+        {
+            if (_selectedProductFolder == null)
+                return;
+
+            ProductFolder folder = _selectedProductFolder;
+
+            while (folder.ParentFolder != null)
+            {
+                folder = folder.ParentFolder;
+
+                if (folder.DisplayName == breadcrumbItem.Text)
+                {
+                    await ProductFolder_OnClick(folder);
+                    break;
+                }
+            }
         }
 
         private async Task AddNewProductFolder_OnClick()

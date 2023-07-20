@@ -12,11 +12,10 @@
                 <MudText Typo="Typo.h6">Folders</MudText>
             </MudDrawerHeader>
             <MudStack Class="mud-height-full overflow-auto">
-                <MudTreeView T="ProductFolder" Items="_productFolders.ToHashSet()"
-                             SelectedValueChanged="SelectedProductFolderChanged"
-                             Hover ExpandOnDoubleClick>
+                <MudTreeView T="ProductFolder" Items="_productFolders.ToHashSet()" Hover ExpandOnDoubleClick>
                     <ItemTemplate>
-                        <MudTreeViewItem Items="@context.ChildFolders.ToHashSet()" Value="@context"
+                        <MudTreeViewItem Items="@context.ChildFolders.ToHashSet()" OnClick="() => ProductFolder_OnClick(context)"
+                                         Value="@context" Activated="_selectedProductFolder == context"
                                          Text="@context.DisplayName" Icon="@Icons.Material.Filled.Folder" />
                     </ItemTemplate>
                 </MudTreeView>
@@ -34,28 +33,25 @@
         <!-- header toolbar -->
         <div>
             <MudToolBar DisableGutters Dense>
-                @*                        @if (_breadcrumbItems.Count < 1)
+                @if (_selectedProductFolder == null)
                 {
-                <MudText>Please select a folder.</MudText>
+                    <MudText>Please select a folder.</MudText>
                 }
                 else
                 {
-                <MudBreadcrumbs Items="_breadcrumbItems" Class="align-start">
-                <SeparatorTemplate>
-                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
-                </SeparatorTemplate>
-                <ItemTemplate Context="item">
-                <MudText>@item.Text</MudText>
-                </ItemTemplate>
-                </MudBreadcrumbs>
+                    <MudBreadcrumbs Items="_breadcrumbItems" Class="align-start">
+                        <SeparatorTemplate>
+                            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Class="my-2 mx-0" />
+                        </SeparatorTemplate>
+                        <ItemTemplate Context="item">
+                            <MudButton Class="pa-2" OnClick="() => BreadcrumbItem_OnClick(item)">
+                                <MudText>@item.Text</MudText>
+                            </MudButton>
+                        </ItemTemplate>
+                    </MudBreadcrumbs>
                 }
-                *@
-                <MudText Typo="Typo.h6">Pick a product!</MudText>
+                @*<MudText Typo="Typo.h6">Pick a product!</MudText>*@
                 <MudSpacer />
-                @*                            <MudTooltip Text="Help">
-                <MudIconButton OnClick="() => _showOverlay = true" Icon="@Icons.Material.Filled.Help" />
-                </MudTooltip>
-                *@
                 <MudIconButton OnClick="ToggleView_OnClick" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
                 @*<MudToggleIconButton @bind-Toggled="_displayListView" Icon="@Icons.Material.Filled.ViewList" ToggledIcon="@Icons.Material.Filled.GridView" />*@
                 @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@

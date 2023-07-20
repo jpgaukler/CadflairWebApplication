@@ -36,6 +36,7 @@ namespace CadflairDataAccess.Models
         public DateTimeOffset CreatedOn { get; set; }
 
         public List<ProductFolder> ChildFolders { get; set; } = new List<ProductFolder>();
+        public ProductFolder ParentFolder { get; set; }
 
         public int CompareTo(object obj)
         {

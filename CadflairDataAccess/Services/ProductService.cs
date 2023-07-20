@@ -118,7 +118,7 @@ namespace CadflairDataAccess.Services
             foreach (ProductFolder folder in folders)
             {
                 folder.ChildFolders = folders.Where(child => child.ParentId == folder.Id).ToList();
-                //folder.ParentFolder = folders.FirstOrDefault(parent => parent.Id == folder.ParentId);
+                folder.ParentFolder = folders.FirstOrDefault(parent => parent.Id == folder.ParentId);
             }
 
             return folders.Where(i => i.ParentId == null).ToList();
