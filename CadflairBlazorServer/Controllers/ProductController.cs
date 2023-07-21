@@ -56,10 +56,10 @@ namespace CadflairBlazorServer.Controllers
                     Path.GetExtension(form.StpFile.FileName) != ".stp") 
                     return ValidationProblem("Invalid file type!");
 
-                if (form.InventorZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE ||
-                    form.ViewablesZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE ||
-                    form.StpFile.Length > FileHandlingService.MAX_UPLOAD_SIZE)
-                    return ValidationProblem($"File exceeds maximum file size ({FileHandlingService.MAX_UPLOAD_SIZE/1000000} MB)!");
+                if (form.InventorZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE_IN_BYTES ||
+                    form.ViewablesZipFile.Length > FileHandlingService.MAX_UPLOAD_SIZE_IN_BYTES ||
+                    form.StpFile.Length > FileHandlingService.MAX_UPLOAD_SIZE_IN_BYTES)
+                    return ValidationProblem($"File exceeds maximum file size ({FileHandlingService.MAX_UPLOAD_SIZE_IN_BYTES/1000000} MB)!");
 
                 // NEED TO VALIDATE INPUTS!!!!!!!!!!!!!!!
                 dynamic productData = JsonConvert.DeserializeObject<dynamic>(form.ProductData)!;

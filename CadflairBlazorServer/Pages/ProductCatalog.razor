@@ -19,8 +19,6 @@
                                          Text="@context.DisplayName" Icon="@Icons.Material.Filled.Folder" />
                     </ItemTemplate>
                 </MudTreeView>
-                <MudSpacer />
-                @*<MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="() => _showNewFolderDialog = true">New Folder</MudButton>*@
             </MudStack>
         </MudDrawer>
     </MudHidden>
@@ -29,6 +27,7 @@
         <MudOverlay Visible="_initializing" Absolute Class="mud-background">
             <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
         </MudOverlay>
+
 
         <!-- header toolbar -->
         <div>
@@ -53,7 +52,6 @@
                 @*<MudText Typo="Typo.h6">Pick a product!</MudText>*@
                 <MudSpacer />
                 <MudIconButton OnClick="ToggleView_OnClick" Icon="@(_displayListView ? Icons.Material.Filled.GridView : Icons.Material.Filled.ViewList)" />
-                @*<MudToggleIconButton @bind-Toggled="_displayListView" Icon="@Icons.Material.Filled.ViewList" ToggledIcon="@Icons.Material.Filled.GridView" />*@
                 @*<MudIconButton OnClick="() => _showDetails = !_showDetails" Icon="@Icons.Filled.Info" />*@
             </MudToolBar>
             <MudDivider />
@@ -114,19 +112,6 @@
 
 
 
-<MudDialog @bind-IsVisible="_showNewFolderDialog" Options="_productFolderDialogOptions">
-    <TitleContent>
-        <MudText Typo="Typo.h6">Add Folder</MudText>
-    </TitleContent>
-    <DialogContent>
-        <MudTextField Label="Folder Name" @bind-Value="_newProductFolderName" Variant="Variant.Outlined" Immediate />
-    </DialogContent>
-    <DialogActions>
-        <MudButton OnClick="CancelNewProductFolder_OnClick">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="AddNewProductFolder_OnClick" Disabled="@(string.IsNullOrWhiteSpace(_newProductFolderName))">Ok</MudButton>
-    </DialogActions>
-</MudDialog>
-
 @*<!-- product details drawer -->
 <MudDrawer @bind-Open="_showDetails"
            Elevation="0"
@@ -169,5 +154,4 @@
     </MudStack>
 </MudDrawer>
 *@
-
 

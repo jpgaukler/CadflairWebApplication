@@ -107,6 +107,9 @@
     <Build Include="dbo\Stored Procedures\spProductQuoteRequest_GetBySubscriptionId.sql" />
     <Build Include="dbo\Tables\ContactRequest.sql" />
     <Build Include="dbo\Stored Procedures\spContactRequest_Insert.sql" />
+    <Build Include="dbo\Tables\CadModel.sql" />
+    <Build Include="dbo\Stored Procedures\spCadModel_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spCadModel_GetByProductFolderId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

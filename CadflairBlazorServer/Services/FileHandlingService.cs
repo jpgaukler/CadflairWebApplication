@@ -8,7 +8,7 @@ namespace CadflairBlazorServer.Services
         private readonly IWebHostEnvironment _environment;
         private readonly IJSRuntime _js;
 
-        public const long MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
+        public const long MAX_UPLOAD_SIZE_IN_BYTES = 20 * 1024 * 1024;
 
         public FileHandlingService(IWebHostEnvironment environment, IJSRuntime js, ILogger<FileHandlingService> logger)
         {
@@ -45,11 +45,11 @@ namespace CadflairBlazorServer.Services
         /// <returns>The full path of the temporary file.</returns>
         public async Task<string> UploadBrowserFileToTempFolder(IBrowserFile file, IProgress<int>? progress = null)
         {
-            if (file.Size > MAX_UPLOAD_SIZE)
-                throw new Exception($"File exceeds maximum file size ({MAX_UPLOAD_SIZE / 1000000} MB)!");
+            if (file.Size > MAX_UPLOAD_SIZE_IN_BYTES)
+                throw new Exception($"File exceeds maximum file size ({MAX_UPLOAD_SIZE_IN_BYTES / 1000000} MB)!");
 
             string path = GetTempFilenameForUpload();
-            using Stream readStream = file.OpenReadStream(MAX_UPLOAD_SIZE);
+            using Stream readStream = file.OpenReadStream(MAX_UPLOAD_SIZE_IN_BYTES);
             using FileStream writeStream = new(path, FileMode.Create);
 
             if (progress == null)
@@ -83,8 +83,8 @@ namespace CadflairBlazorServer.Services
         /// <returns>The full path of the temporary file.</returns>
         public async Task<string> UploadFormFileToTempFolder(IFormFile file)
         {
-            if (file.Length > MAX_UPLOAD_SIZE)
-                throw new Exception($"File exceeds maximum file size ({MAX_UPLOAD_SIZE / 1000000} MB)!");
+            if (file.Length > MAX_UPLOAD_SIZE_IN_BYTES)
+                throw new Exception($"File exceeds maximum file size ({MAX_UPLOAD_SIZE_IN_BYTES / 1000000} MB)!");
 
             string path = GetTempFilenameForUpload();
 

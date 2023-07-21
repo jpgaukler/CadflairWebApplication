@@ -21,17 +21,9 @@ namespace CadflairBlazorServer.Pages
         private List<Product> _products = new();
         private List<BreadcrumbItem> _breadcrumbItems = new();
         private bool _displayListView = false;
+        private string _displayListViewSettingKey = "CBDF3903-DED8-465C-933F-4308D56E4A6D";
         private bool _drawerOpen = true;
         private bool _initializing = true;
-
-        private DialogOptions _productFolderDialogOptions = new() 
-        { 
-            FullWidth = true, 
-            MaxWidth = MaxWidth.ExtraSmall, 
-            DisableBackdropClick = true 
-        };
-        private bool _showNewFolderDialog = false;
-        private string? _newProductFolderName;
 
         protected override async Task OnInitializedAsync()
         {
@@ -57,7 +49,7 @@ namespace CadflairBlazorServer.Pages
             if (firstRender)
             {
                 // load view setting
-                var viewSetting = await _protectedSessionStorage.GetAsync<bool>("_displayListView");
+                var viewSetting = await _protectedSessionStorage.GetAsync<bool>(_displayListViewSettingKey);
                 _displayListView = viewSetting.Success ? viewSetting.Value : false;
                 StateHasChanged();
             }
@@ -115,40 +107,6 @@ namespace CadflairBlazorServer.Pages
             }
         }
 
-        private async Task AddNewProductFolder_OnClick()
-        {
-            await Task.Delay(1000);
-
-            if (_newProductFolderName == null)
-                return;
-
-            //ProductFolder newFolder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: _subscription!.Id,
-            //                                                                                        createdById: 1,
-            //                                                                                        displayName: _newProductFolderName,
-            //                                                                                        parentId: _selectedProductFolder?.Id);
-
-            //if (_selectedProductFolder == null)
-            //{
-            //    _productFolders.Add(newFolder);
-            //    _productFolders.Sort();
-            //}
-            //else
-            //{
-            //    _selectedProductFolder.ChildFolders.Add(newFolder);
-            //    _selectedProductFolder.ChildFolders.Sort();
-            //}
-
-            //_newProductFolderName = null;
-            //_showNewFolderDialog = false;
-        }
-
-        private void CancelNewProductFolder_OnClick()
-        {
-            _newProductFolderName = null;
-            _showNewFolderDialog = false;
-        }
-
-
         private void ProductsGrid_OnRowClick(DataGridRowClickEventArgs<Product> args)
         {
             Product product = args.Item;
@@ -158,7 +116,7 @@ namespace CadflairBlazorServer.Pages
         private async Task ToggleView_OnClick()
         {
             _displayListView = !_displayListView;
-            await _protectedSessionStorage.SetAsync("_displayListView", _displayListView);
+            await _protectedSessionStorage.SetAsync(_displayListViewSettingKey, _displayListView);
         }
     }
 }
