@@ -65,7 +65,6 @@ namespace CadflairBlazorServer.Controllers
                 dynamic productData = JsonConvert.DeserializeObject<dynamic>(form.ProductData)!;
                 int userId = (int)productData.UserId;
                 int subscriptionId = (int)productData.SubscriptionId;
-                int productFolderId = (int)productData.ProductFolderId;
                 string displayName = (string)productData.DisplayName;
                 string iLogicFormJson = (string)productData.ILogicFormJson;
                 string argumentJson = (string)productData.ArgumentJson;
@@ -80,7 +79,6 @@ namespace CadflairBlazorServer.Controllers
                 {
                     // Create new Product
                     product = await _dataServicesManager.ProductService.CreateProduct(subscriptionId: subscriptionId,
-                                                                                      productFolderId: productFolderId,
                                                                                       displayName: displayName,
                                                                                       isPublic: isPublic,
                                                                                       createdById: userId);
@@ -175,41 +173,41 @@ namespace CadflairBlazorServer.Controllers
         #endregion
 
 
-        #region "ProductFolder"
+        //#region "CatalogFolder"
 
-        [HttpPost]
-        [Route("api/v1/productfolders/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
-        public async Task<IActionResult> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
-        {
-            try
-            {
-                ProductFolder folder = await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId, createdById, displayName, parentId);
-                return Ok(folder);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unknown error occurred!");
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
+        //[HttpPost]
+        //[Route("api/v1/catalogfolders/{subscriptionId:int}/{createdById:int}/{displayName}/{parentId:int?}")]
+        //public async Task<IActionResult> CreateCatalogFolder(int subscriptionId, int createdById, string displayName, int? parentId)
+        //{
+        //    try
+        //    {
+        //        CatalogFolder folder = await _dataServicesManager.CatalogService.CreateCatalogFolder(subscriptionId, createdById, displayName, parentId);
+        //        return Ok(folder);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, $"An unknown error occurred!");
+        //        return StatusCode(StatusCodes.Status500InternalServerError);
+        //    }
+        //}
 
-        [HttpGet]
-        [Route("api/v1/productfolders/{subscriptionId:int}")]
-        public async Task<IActionResult> GetProductFoldersBySubscriptionId(int subscriptionId)
-        {
-            try
-            {
-                List<ProductFolder> folders = await _dataServicesManager.ProductService.GetProductFoldersBySubscriptionId(subscriptionId);
-                return Ok(folders);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"An unknown error occurred!");
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-        }
+        //[HttpGet]
+        //[Route("api/v1/catalogfolders/{subscriptionId:int}")]
+        //public async Task<IActionResult> GetCatalogFoldersBySubscriptionId(int subscriptionId)
+        //{
+        //    try
+        //    {
+        //        List<CatalogFolder> folders = await _dataServicesManager.CatalogService.GetCatalogFoldersBySubscriptionId(subscriptionId);
+        //        return Ok(folders);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, $"An unknown error occurred!");
+        //        return StatusCode(StatusCodes.Status500InternalServerError);
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
     }
 }

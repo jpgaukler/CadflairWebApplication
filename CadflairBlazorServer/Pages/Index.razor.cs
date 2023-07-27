@@ -1,17 +1,11 @@
 using Microsoft.AspNetCore.Components;
-using System.Diagnostics;
-using System.Reflection;
 
 namespace CadflairBlazorServer.Pages
 {
     public partial class Index
     {
         // services
-        [Inject] AuthenticationService _authenticationService { get; set; } = default!;
-        [Inject] EmailService _emailService { get; set; } = default!;
-        [Inject] IDialogService  _dialogService { get; set; } = default!;
-        [Inject] ISnackbar _snackbar { get; set; } = default!;
-        [Inject] IJSRuntime _js { get; set; } = default!;
+        [Inject] IJSRuntime JSRuntime { get; set; } = default!;
 
         //protected override async Task OnInitializedAsync()
         //{
@@ -55,7 +49,7 @@ namespace CadflairBlazorServer.Pages
 
         private async Task LearnMore_OnClick()
         {
-            await _js.InvokeVoidAsync("anchorLink.scrollIntoView", "learn-more-tag");
+            await JSRuntime.InvokeVoidAsync("anchorLink.scrollIntoView", "learn-more-tag");
         }
 
     }

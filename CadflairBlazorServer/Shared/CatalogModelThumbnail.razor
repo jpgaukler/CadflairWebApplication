@@ -1,0 +1,18 @@
+﻿<MudPaper Height="@($"{Height}px")" Width="@($"{Width}px")" Elevation="0" Class="d-flex align-center justify-center">
+    @if (string.IsNullOrWhiteSpace(_thumbnailStringBase64))
+    {
+        @if (_loading)
+        {
+            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+        }
+        else
+        {
+            <MudIcon Icon="@Icons.Material.Filled.ImageNotSupported" Size="Size.Large" />
+        }
+    }
+    else
+    {
+        <MudImage Src="@($"data:image/png;base64,{_thumbnailStringBase64}")" Alt="thumbnail image" Height="Height" Width="Width" />
+    }
+</MudPaper>
+

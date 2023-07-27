@@ -2,12 +2,8 @@
 using CadflairInventorAddin.Helpers;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CadflairInventorAddin.Api
@@ -17,7 +13,7 @@ namespace CadflairInventorAddin.Api
 
         #region "Product"
 
-        public static async Task<Product> CreateProduct(int userId, int subscriptionId, int productFolderId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string inventorZipName, string stpFileName, string viewablesZipName)
+        public static async Task<Product> CreateProduct(int userId, int subscriptionId, string displayName, string rootFileName, string iLogicFormJson, string argumentJson, bool isPublic, bool isConfigurable, string inventorZipName, string stpFileName, string viewablesZipName)
         {
             try
             {
@@ -27,7 +23,6 @@ namespace CadflairInventorAddin.Api
                 {
                     UserId = userId,
                     SubscriptionId = subscriptionId,
-                    ProductFolderId = productFolderId,
                     DisplayName = displayName,
                     RootFileName = rootFileName,
                     ILogicFormJson = iLogicFormJson,
@@ -95,41 +90,41 @@ namespace CadflairInventorAddin.Api
 
         #endregion
 
-        #region "ProductFolder"
+        //#region "CatalogFolder"
 
-        public static async Task<List<ProductFolder>> GetProductFoldersBySubscriptionId(int subscriptionId)
-        {
-            try
-            {
-                string uri = $"api/v1/productfolders/{subscriptionId}";
-                string result = await Client.Get(uri);
-                List<ProductFolder> folders = JsonConvert.DeserializeObject<List<ProductFolder>>(result);
-                return folders;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "GetProductFoldersBySubscriptionId", subscriptionId);
-                return new List<ProductFolder>();
-            }
-        }
+        //public static async Task<List<CatalogFolder>> GetCatalogFoldersBySubscriptionId(int subscriptionId)
+        //{
+        //    try
+        //    {
+        //        string uri = $"api/v1/catalogFolders/{subscriptionId}";
+        //        string result = await Client.Get(uri);
+        //        List<CatalogFolder> folders = JsonConvert.DeserializeObject<List<CatalogFolder>>(result);
+        //        return folders;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, "GetCatalogFoldersBySubscriptionId", subscriptionId);
+        //        return new List<CatalogFolder>();
+        //    }
+        //}
 
-        public static async Task<ProductFolder> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
-        {
-            try
-            {
-                string uri = $"api/v1/productfolders/{subscriptionId}/{createdById}/{displayName}/{parentId}";
-                string result = await Client.Post(uri);
-                ProductFolder folder = JsonConvert.DeserializeObject<ProductFolder>(result);
-                return folder;
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "CreateProductFolder", subscriptionId, createdById, displayName, parentId);
-                return null;
-            }
-        }
+        //public static async Task<CatalogFolder> CreateCatalogFolder(int subscriptionId, int createdById, string displayName, int? parentId)
+        //{
+        //    try
+        //    {
+        //        string uri = $"api/v1/catalogFolders/{subscriptionId}/{createdById}/{displayName}/{parentId}";
+        //        string result = await Client.Post(uri);
+        //        CatalogFolder folder = JsonConvert.DeserializeObject<CatalogFolder>(result);
+        //        return folder;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Log.Error(ex, "CreateCatalogFolder", subscriptionId, createdById, displayName, parentId);
+        //        return null;
+        //    }
+        //}
 
-        #endregion
+        //#endregion
 
     }
 }

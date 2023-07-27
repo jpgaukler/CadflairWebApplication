@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[spProductFolder_Insert]
+﻿CREATE PROCEDURE [dbo].[spCatalogFolder_Insert]
 	@SubscriptionId int,
 	@ParentId int,
 	@DisplayName nvarchar(50),
@@ -8,7 +8,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	INSERT INTO [dbo].[ProductFolder]
+	INSERT INTO [dbo].[CatalogFolder]
 			   (SubscriptionId
 			   ,ParentId
 			   ,DisplayName
@@ -18,7 +18,7 @@ BEGIN
 			   ,@ParentId
 			   ,@DisplayName
 			   ,@CreatedById)
-		   SELECT * FROM [dbo].[ProductFolder] WHERE Id = SCOPE_IDENTITY();
+		   SELECT * FROM [dbo].[CatalogFolder] WHERE Id = SCOPE_IDENTITY();
 
 END
 

@@ -11,6 +11,7 @@ namespace CadflairBlazorServer.Pages
         [Inject] EmailService _emailService { get; set; } = default!;
 
         // fields
+        private User? _loggedInUser;
         private SubscriptionType? _subscriptionType;
         private List<SubscriptionType> _subscriptionTypes = new();
         private bool _validInputs;
@@ -18,13 +19,15 @@ namespace CadflairBlazorServer.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            if (await _authenticationService.IsLoggedInUserValid() == false)
+            _loggedInUser = await _authenticationService.GetUser();
+
+            if (_loggedInUser == null)
             {
                 _navigationManager.NavigateTo("/");
                 return;
             }
 
-            if (_authenticationService.LoggedInUser?.SubscriptionId != null)
+            if (_loggedInUser.SubscriptionId != null)
             {
                 _navigationManager.NavigateTo("/dashboard");
                 return;
@@ -35,7 +38,7 @@ namespace CadflairBlazorServer.Pages
 
         private async Task Submit_OnClick()
         {
-            if (_authenticationService.LoggedInUser == null) 
+            if (_loggedInUser == null) 
                 return;
 
             if (!_validInputs) 
@@ -44,16 +47,16 @@ namespace CadflairBlazorServer.Pages
             // create new subscription record
             Subscription newSubscription = await _dataServicesManager.SubscriptionService.CreateSubscription(subscriptionTypeId: _subscriptionType!.Id,
                                                                                                              companyName: _companyName, 
-                                                                                                             ownerId: _authenticationService.LoggedInUser.Id, 
-                                                                                                             createdById: _authenticationService.LoggedInUser.Id);
+                                                                                                             ownerId: _loggedInUser.Id, 
+                                                                                                             createdById: _loggedInUser.Id);
 
             // update the user
-            _authenticationService.LoggedInUser.SubscriptionId = newSubscription.Id;
-            await _dataServicesManager.UserService.UpdateUser(_authenticationService.LoggedInUser);
+            _loggedInUser.SubscriptionId = newSubscription.Id;
+            await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
 
             // create 'Products' folder to act as the root directory
-            await _dataServicesManager.ProductService.CreateProductFolder(subscriptionId: newSubscription.Id, 
-                                                                          createdById: _authenticationService.LoggedInUser.Id, 
+            await _dataServicesManager.CatalogService.CreateCatalogFolder(subscriptionId: newSubscription.Id, 
+                                                                          createdById: _loggedInUser.Id, 
                                                                           displayName: "Products", 
                                                                           parentId: null);
 
@@ -61,10 +64,10 @@ namespace CadflairBlazorServer.Pages
             // send welcome email
             WelcomeEmailModel model = new()
             {
-                Name = _authenticationService.LoggedInUser.FullName
+                Name = _loggedInUser.FullName
             };
 
-            _ = _emailService.SendEmailUsingTemplate(toAddress: _authenticationService.LoggedInUser.EmailAddress,
+            _ = _emailService.SendEmailUsingTemplate(toAddress: _loggedInUser.EmailAddress,
                                                      subject: "Welcome to Cadflair!",
                                                      emailTemplatePath: model.Path,
                                                      emailModel: model);

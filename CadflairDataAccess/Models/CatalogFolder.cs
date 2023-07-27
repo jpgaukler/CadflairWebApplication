@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CadflairDataAccess.Models
 {
-    public class ProductFolder : IComparable
+    public class CatalogFolder : IComparable
     {
         /// <summary>
         /// Primary key.
@@ -11,12 +11,12 @@ namespace CadflairDataAccess.Models
         public int Id { get; set; } 
 
         /// <summary>
-        /// Foreign key to <b>Subscription</b> table. Represents the Subscription that the ProductFolder belongs to.
+        /// Foreign key to <b>Subscription</b> table. Represents the Subscription that the CatalogFolder belongs to.
         /// </summary>
         public int SubscriptionId { get; set; } 
 
         /// <summary>
-        /// Foreign key to <b>ProductFolder</b> table. Represents the parent ProductFolder in the nested structure.
+        /// Foreign key to <b>CatalogFolder</b> table. Represents the parent CatalogFolder in the nested structure.
         /// </summary>
         public int? ParentId { get; set; } 
 
@@ -26,7 +26,7 @@ namespace CadflairDataAccess.Models
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Foreign key to <b>User</b> table. Represents the id of the User that created the ProductFolder.
+        /// Foreign key to <b>User</b> table. Represents the id of the User that created the CatalogFolder.
         /// </summary>
         public int CreatedById { get; set; } 
 
@@ -35,12 +35,12 @@ namespace CadflairDataAccess.Models
         /// </summary>
         public DateTimeOffset CreatedOn { get; set; }
 
-        public List<ProductFolder> ChildFolders { get; set; } = new List<ProductFolder>();
-        public ProductFolder ParentFolder { get; set; }
+        public List<CatalogFolder> ChildFolders { get; set; } = new List<CatalogFolder>();
+        public CatalogFolder ParentFolder { get; set; }
 
         public int CompareTo(object obj)
         {
-            return DisplayName.CompareTo(((ProductFolder)obj).DisplayName);
+            return DisplayName.CompareTo(((CatalogFolder)obj).DisplayName);
         }
     }
 }

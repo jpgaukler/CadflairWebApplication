@@ -5,9 +5,8 @@ namespace CadflairBlazorServer.Shared
     public partial class AppBar
     {
         // services
-        [Inject] NavigationManager _navManager { get; set; } = default!;
-        [Inject] ISnackbar _snackbar { get; set; } = default!;
-        [Inject] IJSRuntime _js { get; set; } = default!;
+        [Inject] NavigationManager NavManager { get; set; } = default!;
+        [Inject] IJSRuntime JSRuntime { get; set; } = default!;
 
         // fields 
         private bool _navDrawerOpen = false;
@@ -16,13 +15,13 @@ namespace CadflairBlazorServer.Shared
         {
             _navDrawerOpen = false;
             // navgate back to home page
-            if (_navManager.BaseUri != _navManager.Uri)
+            if (NavManager.BaseUri != NavManager.Uri)
             {
-                _navManager.NavigateTo("/");
+                NavManager.NavigateTo("/");
                 await Task.Delay(500);
             }
 
-            await _js.InvokeVoidAsync("anchorLink.scrollIntoView", "contact-us-tag");
+            await JSRuntime.InvokeVoidAsync("anchorLink.scrollIntoView", "contact-us-tag");
         }
     }
 }

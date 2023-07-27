@@ -5,9 +5,6 @@ using CadflairInventorLibrary.Helpers;
 using Inventor;
 using Microsoft.Identity.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -53,8 +50,8 @@ namespace CadflairInventorAddin.Commands.Upload
             AuthenticationResult auth = await Authentication.GetAuthenticationResult();
             if (auth != null) _loggedInUser = await UserApi.GetUserByObjectIdentifier(auth.UniqueId);
 
-            // load product folders into the UI
-            await LoadProductFolders();
+            //// load product folders into the UI
+            //await LoadProductFolders();
 
             // load iLogic form data into UI
             ILogicFormsComboBox.ItemsSource = UploadToCadflair.GetILogicFormElements(_doc);
@@ -68,80 +65,80 @@ namespace CadflairInventorAddin.Commands.Upload
             ParametersDataGrid.ItemsSource = iLogicForm.GetParameterList();
         }
 
-        private async Task LoadProductFolders()
-        {
-            if (_loggedInUser == null || _loggedInUser.SubscriptionId == null) return;
+        //private async Task LoadProductFolders()
+        //{
+        //    if (_loggedInUser == null || _loggedInUser.SubscriptionId == null) return;
 
-            List<ProductFolder> folderList = await ProductApi.GetProductFoldersBySubscriptionId((int)_loggedInUser.SubscriptionId);
+        //    List<CatalogFolder> folderList = await ProductApi.GetProductFoldersBySubscriptionId((int)_loggedInUser.SubscriptionId);
 
-            RecurseFolders(ProductFolderTreeView.Items, folderList);
+        //    RecurseFolders(ProductFolderTreeView.Items, folderList);
 
-            void RecurseFolders(ItemCollection collection, IEnumerable<ProductFolder> folders)
-            {
-                foreach (ProductFolder folder in folders)
-                {
-                    TreeViewItem treeViewItem = new TreeViewItem
-                    {
-                        DataContext = folder,
-                        Header = folder.DisplayName,
-                    };
+        //    void RecurseFolders(ItemCollection collection, IEnumerable<CatalogFolder> folders)
+        //    {
+        //        foreach (CatalogFolder folder in folders)
+        //        {
+        //            TreeViewItem treeViewItem = new TreeViewItem
+        //            {
+        //                DataContext = folder,
+        //                Header = folder.DisplayName,
+        //            };
 
-                    collection.Add(treeViewItem);
+        //            collection.Add(treeViewItem);
 
-                    if (folder.ChildFolders.Any())
-                        RecurseFolders(treeViewItem.Items, folder.ChildFolders);
-                }
-            }
+        //            if (folder.ChildFolders.Any())
+        //                RecurseFolders(treeViewItem.Items, folder.ChildFolders);
+        //        }
+        //    }
 
-        }
+        //}
 
-        private async void CreateProductFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(ProductFolderTextBox.Text))
-            {
-                MessageBox.Show("Please enter a folder name.", "Folder Name Not Provided", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+        //private async void CreateProductFolderButton_Click(object sender, RoutedEventArgs e)
+        //{
+        //    if (string.IsNullOrWhiteSpace(ProductFolderTextBox.Text))
+        //    {
+        //        MessageBox.Show("Please enter a folder name.", "Folder Name Not Provided", MessageBoxButton.OK, MessageBoxImage.Warning);
+        //        return;
+        //    }
 
-            if (_loggedInUser == null)
-            {
-                MessageBox.Show("A valid user profile could not be found. Please verify that user is signed in to Cadflair.", "User Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
-                return;
-            }
+        //    if (_loggedInUser == null)
+        //    {
+        //        MessageBox.Show("A valid user profile could not be found. Please verify that user is signed in to Cadflair.", "User Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
+        //        return;
+        //    }
 
-            if (_loggedInUser.SubscriptionId == null)
-            {
-                MessageBox.Show("A valid Cadflair subscription could not be found.", "Subscription Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
-                return;
-            }
+        //    if (_loggedInUser.SubscriptionId == null)
+        //    {
+        //        MessageBox.Show("A valid Cadflair subscription could not be found.", "Subscription Not Found", MessageBoxButton.OK, MessageBoxImage.Stop);
+        //        return;
+        //    }
 
-            int? parentId = null;
-            ItemCollection treeViewItems;
+        //    int? parentId = null;
+        //    ItemCollection treeViewItems;
 
-            if (ProductFolderTreeView.SelectedItem == null)
-            {
-                treeViewItems = ProductFolderTreeView.Items;
-            }
-            else
-            {
-                TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
-                treeViewItems = selectedItem.Items;
-                parentId = ((ProductFolder)selectedItem.DataContext).Id; 
-            }
+        //    if (ProductFolderTreeView.SelectedItem == null)
+        //    {
+        //        treeViewItems = ProductFolderTreeView.Items;
+        //    }
+        //    else
+        //    {
+        //        TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
+        //        treeViewItems = selectedItem.Items;
+        //        parentId = ((CatalogFolder)selectedItem.DataContext).Id; 
+        //    }
 
-            ProductFolder folder = await ProductApi.CreateProductFolder((int)_loggedInUser.SubscriptionId, _loggedInUser.Id, ProductFolderTextBox.Text, parentId);
+        //    CatalogFolder folder = await ProductApi.CreateProductFolder((int)_loggedInUser.SubscriptionId, _loggedInUser.Id, ProductFolderTextBox.Text, parentId);
 
-            if (folder == null) 
-                return;
+        //    if (folder == null) 
+        //        return;
 
-            TreeViewItem treeViewItem = new TreeViewItem
-            {
-                DataContext = folder,
-                Header = folder.DisplayName,
-            };
+        //    TreeViewItem treeViewItem = new TreeViewItem
+        //    {
+        //        DataContext = folder,
+        //        Header = folder.DisplayName,
+        //    };
 
-            treeViewItems.Add(treeViewItem);
-        }
+        //    treeViewItems.Add(treeViewItem);
+        //}
 
         private async void CreateProductButton_Click(object sender, RoutedEventArgs e)
         {
@@ -170,11 +167,11 @@ namespace CadflairInventorAddin.Commands.Upload
                 return;
             }
 
-            if (ProductFolderTreeView.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a destination folder.", "No Folder Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            //if (ProductFolderTreeView.SelectedItem == null)
+            //{
+            //    MessageBox.Show("Please select a destination folder.", "No Folder Selected", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
 
             Product existingProduct = await ProductApi.GetProductBySubscriptionIdAndDisplayName((int)_loggedInUser.SubscriptionId, DisplayNameTextBox.Text);
             if (existingProduct != null)
@@ -203,8 +200,8 @@ namespace CadflairInventorAddin.Commands.Upload
 
             // NEED TO ADD CHECK FOR DUPLICATE DISPLAY NAME AND OTHER DATA VALIDATION!!!!
 
-            TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
-            int productFolderId = ((ProductFolder)selectedItem.DataContext).Id; 
+            //TreeViewItem selectedItem = (TreeViewItem)ProductFolderTreeView.SelectedItem;
+            //int productFolderId = ((CatalogFolder)selectedItem.DataContext).Id; 
 
             // save model to zipfile
             string inventorZipName = UploadToCadflair.ZipInventorFiles(_doc, true);
@@ -222,7 +219,6 @@ namespace CadflairInventorAddin.Commands.Upload
             // Upload to Cadflair
             Product product = await ProductApi.CreateProduct(userId: _loggedInUser.Id,
                                                              subscriptionId: (int)_loggedInUser.SubscriptionId,
-                                                             productFolderId: productFolderId,
                                                              displayName: DisplayNameTextBox.Text,
                                                              rootFileName: System.IO.Path.GetFileName(_doc.FullFileName),
                                                              iLogicFormJson: iLogicForm.GetFormJson(),

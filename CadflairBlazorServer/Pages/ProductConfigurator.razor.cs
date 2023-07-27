@@ -61,12 +61,14 @@ namespace CadflairBlazorServer.Pages
         protected override async Task OnInitializedAsync()
         {
             // get data
-            _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
-            _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
-            _productVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(_product.Id);
-            _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(_productVersion.Id);
-
-            if (_subscription == null || _product == null || _productVersion == null || _defaultConfiguration == null)
+            try
+            {
+                _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
+                _product = await _dataServicesManager.ProductService.GetProductBySubscriptionIdAndSubdirectoryName(_subscription.Id, ProductName);
+                _productVersion = await _dataServicesManager.ProductService.GetLatestProductVersionByProductId(_product.Id);
+                _defaultConfiguration = await _dataServicesManager.ProductService.GetDefaultProductConfigurationByProductVersionId(_productVersion.Id);
+            }
+            catch
             {
                 _navigationManager.NavigateTo("/notfound");
                 return;
@@ -80,7 +82,6 @@ namespace CadflairBlazorServer.Pages
             _hubConnection.On<string>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnProgress), CreateProductConfigurationModel_OnProgress);
             _hubConnection.On<int, bool>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), CreateProductConfigurationModel_OnComplete);
             _hubConnection.On<int, bool>(nameof(ForgeCallbackController.CreateProductConfigurationModel_OnComplete), CreateProductConfigurationModel_OnComplete);
-            //_hubConnection.On<string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ShowProductConfiguration);
 
             // construct UI
             if(_productVersion.ILogicFormJson != null)

@@ -63,9 +63,9 @@ namespace CadflairDataAccess.Services
             return _db.SaveDataAsync("[dbo].[spUser_UpdateById]", values);
         }
 
-        public Task DeleteUser(User user)
+        public Task DeleteUserById(int id)
         {
-            return _db.SaveDataAsync("[dbo].[spUser_DeleteById]", new { user.Id });
+            return _db.SaveDataAsync("[dbo].[spUser_DeleteById]", new { Id = id });
         }
 
         #endregion

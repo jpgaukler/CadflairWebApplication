@@ -1,14 +1,6 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using CadflairForgeAccess.Helpers;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace CadflairForgeAccess.Services
 {
@@ -17,8 +9,6 @@ namespace CadflairForgeAccess.Services
 
         private readonly AuthorizationService _authService;
         private readonly ObjectStorageService _objectStorageService;
-
-        //private readonly HttpClient _httpClient = new();
 
         public ModelDerivativeService(AuthorizationService authService, ObjectStorageService objectStorageService)
         {
@@ -34,41 +24,41 @@ namespace CadflairForgeAccess.Services
             return derivative;
         }
 
-
-        public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, string rootFileName, string? connectionId = null)
+        public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, bool isZip = false, string? rootFileName = null, string? connectionId = null)
         {
             var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
 
-            // prepare the payload
+            // configure output
+            JobPayloadDestination destination = new(JobPayloadDestination.RegionEnum.US);
+            JobPayloadItem.TypeEnum jobType = JobPayloadItem.TypeEnum.Svf;
             List<JobPayloadItem.ViewsEnum> views = new()
             {
                 JobPayloadItem.ViewsEnum._2d,
                 JobPayloadItem.ViewsEnum._3d
             };
-
-            List<JobPayloadItem> payloadList = new()
+            List<JobPayloadItem> formats = new()
             {
-                new(JobPayloadItem.TypeEnum.Svf, views)
+                new JobPayloadItem(jobType, views)
             };
-
-            JobPayloadMisc? misc = null;
-            if (connectionId != null)
-            {
-                // set up attributes for webhook (to provide a callback when the translation is complete)
-                dynamic workflowAttributes = new
-                {
-                    connectionId,
-                };
-
-                misc = new JobPayloadMisc("ProductConfigurationWorkflow", workflowAttributes);
-            }
 
             JobPayload job = new()
             {
-                Input = new JobPayloadInput(objectDetails.encoded_urn, true, rootFileName),
-                Output = new JobPayloadOutput(payloadList),
-                Misc = misc
+                Input = new JobPayloadInput(objectDetails.encoded_urn, isZip, rootFileName),
+                Output = new JobPayloadOutput(formats, destination)
             };
+
+            if (connectionId != null)
+            {
+                // set up attributes for webhook (to provide a callback when the translation is complete)
+                dynamic attribute = new
+                {
+                    connectionId,
+                    bucketKey,
+                    objectKey
+                };
+
+                job.Misc = new JobPayloadMisc("TranslationCompleted", attribute);
+            }
 
             // start the translation
             DerivativesApi derivative = await GetDerivativesApi();
@@ -136,7 +126,7 @@ namespace CadflairForgeAccess.Services
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex.ToString());
+                //Debug.WriteLine(ex.ToString());
                 return string.Empty;
             }
         }

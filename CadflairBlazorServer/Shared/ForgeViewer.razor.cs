@@ -27,7 +27,7 @@ namespace CadflairBlazorServer.Shared
                 };
 
                 //invoke the viewer
-                await _js.InvokeVoidAsync("launchViewer", parameters);
+                await _js.InvokeVoidAsync("loadModelFromOss", parameters);
             }
             catch (Exception ex)
             {
@@ -36,51 +36,51 @@ namespace CadflairBlazorServer.Shared
             }
         }
 
-        //public async Task ViewDocument(string encodedUrn)
-        //{
-        //    _modelNotFound = false;
+        public async Task ViewDocument(string encodedUrn)
+        {
+            _modelNotFound = false;
 
-        //    try
-        //    {
-        //        //get public token for viewables
-        //        var token = await _forgeServicesManager.AuthorizationService.GetPublic();
+            try
+            {
+                //get public token for viewables
+                var token = await _forgeServicesManager.AuthorizationService.GetPublic();
 
-        //        if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(encodedUrn))
-        //        {
-        //            //define input parameters as JSON
-        //            var parameters = new
-        //            {
-        //                Token = token.access_token,
-        //                Urn = encodedUrn,
-        //            };
+                if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(encodedUrn))
+                {
+                    //define input parameters as JSON
+                    var parameters = new
+                    {
+                        Token = token.access_token,
+                        Urn = encodedUrn,
+                    };
 
-        //            //invoke the viewer
-        //            await _js.InvokeVoidAsync("launchViewer", parameters);
-        //        }
-        //        else
-        //        {
-        //            _logger.LogWarning($"ForgeViewer: Model derivative not found - Urn (base64): {encodedUrn}");
-        //            _modelNotFound = true;
+                    //invoke the viewer
+                    await _js.InvokeVoidAsync("loadModelFromUrn", parameters);
+                }
+                else
+                {
+                    _logger.LogWarning($"ForgeViewer: Model derivative not found - Urn (base64): {encodedUrn}");
+                    _modelNotFound = true;
 
-        //            //need to translate object
-        //            //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex, $"Failed to load model - urn: {encodedUrn}");
-        //        _modelNotFound = true;
-        //    }
-        //}
+                    //need to translate object
+                    //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to load model - urn: {encodedUrn}");
+                _modelNotFound = true;
+            }
+        }
 
-        //public async Task ViewDocument(string bucketKey, string objectKey)
-        //{
-        //    _modelNotFound = false;
+        public async Task ViewDocument(string bucketKey, string objectKey)
+        {
+            _modelNotFound = false;
 
-        //    //get forge object id
-        //    dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
-        //    ViewDocument(forgeObject.encoded_urn);
-        //}
+            //get forge object id
+            dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
+            ViewDocument(forgeObject.encoded_urn);
+        }
 
     }
 }

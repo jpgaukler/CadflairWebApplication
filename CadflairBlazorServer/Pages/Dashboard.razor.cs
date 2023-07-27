@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace CadflairBlazorServer.Pages
 {
-    public partial class Dashboard : IDisposable
+    public partial class Dashboard
     {
         // services
         [Inject] AuthenticationService _authenticationService { get; set; } = default!;
@@ -15,27 +15,29 @@ namespace CadflairBlazorServer.Pages
 
         // fields
         private List<ProductQuoteRequest> _productQuoteRequests = new();
+        private User? _loggedInUser;
         private Subscription _subscription = new();
         private bool _showGetStarted = false;
 
         protected override async Task OnInitializedAsync()
         {
-            _authenticationService.OnImpersonateUserSet += UpdateUI;
 
-            if (await _authenticationService.IsLoggedInUserValid() == false)
+            _loggedInUser = await _authenticationService.GetUser();
+
+            if (_loggedInUser == null)
             {
                 _navigationManager.NavigateTo("/notauthorized");
                 return;
             }
 
-            if (_authenticationService.LoggedInUser?.SubscriptionId == null)
+            if (_loggedInUser.SubscriptionId == null)
             {
                 _showGetStarted = true;
                 return;
             }
 
             // get data
-            _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionById((int)_authenticationService.LoggedInUser?.SubscriptionId!);
+            _subscription = await _dataServicesManager.SubscriptionService.GetSubscriptionById((int)_loggedInUser.SubscriptionId!);
             _productQuoteRequests = await _dataServicesManager.ProductService.GetProductQuoteRequestsBySubscriptionId(_subscription.Id);
         }
 
@@ -49,6 +51,5 @@ namespace CadflairBlazorServer.Pages
             Debug.WriteLine($"{args.Item.FirstName} {args.Item.LastName}");
         }
 
-        public void Dispose() => _authenticationService.OnImpersonateUserSet -= UpdateUI;
     }
 }

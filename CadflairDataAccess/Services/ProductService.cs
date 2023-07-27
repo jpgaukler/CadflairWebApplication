@@ -20,12 +20,11 @@ namespace CadflairDataAccess.Services
 
         #region "Product"
 
-        public Task<Product> CreateProduct(int subscriptionId, int productFolderId, string displayName, bool isPublic, int createdById)
+        public Task<Product> CreateProduct(int subscriptionId, string displayName, bool isPublic, int createdById)
         {
             dynamic values = new
             {
                 SubscriptionId = subscriptionId,
-                ProductFolderId = productFolderId,
                 DisplayName = displayName,
                 SubdirectoryName =  Regex.Replace(displayName, "[^a-zA-Z0-9_.]+", string.Empty).ToLower(),
                 IsPublic = isPublic,
@@ -57,12 +56,6 @@ namespace CadflairDataAccess.Services
             return _db.LoadSingleAsync<Product, dynamic>("[dbo].[spProduct_GetBySubscriptionIdAndDisplayName]", values);
         }
 
-        public Task<List<Product>> GetProductsByProductFolderId(int productFolderId)
-        {
-            return _db.LoadDataAsync<Product, dynamic>("[dbo].[spProduct_GetByProductFolderId]", new { ProductFolderId = productFolderId });
-        }
-
-
         #endregion
 
         #region "ProductVersion"
@@ -84,49 +77,6 @@ namespace CadflairDataAccess.Services
         public Task<ProductVersion> GetLatestProductVersionByProductId(int productId)
         {
             return _db.LoadSingleAsync<ProductVersion, dynamic>("[dbo].[spProductVersion_GetLatestByProductId]", new { ProductId = productId });
-        }
-
-        #endregion
-
-        #region "ProductFolder"
-
-        public Task<ProductFolder> CreateProductFolder(int subscriptionId, int createdById, string displayName, int? parentId)
-        {
-            dynamic values = new
-            {
-                SubscriptionId = subscriptionId,
-                CreatedById = createdById,
-                DisplayName = displayName,
-                ParentId = parentId,
-            };
-
-            return _db.SaveSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_Insert]", values);
-        }
-
-        public Task<ProductFolder> GetProductFolderById(int id)
-        {
-            return _db.LoadSingleAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetById]", new { Id = id });
-        }
-
-        public async Task<List<ProductFolder>> GetProductFoldersBySubscriptionId(int subscriptionId)
-        {
-            var folders = await _db.LoadDataAsync<ProductFolder, dynamic>("[dbo].[spProductFolder_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
-
-            if (folders == null || folders.Any() == false)
-                return new List<ProductFolder>();
-
-            foreach (ProductFolder folder in folders)
-            {
-                folder.ChildFolders = folders.Where(child => child.ParentId == folder.Id).ToList();
-                folder.ParentFolder = folders.FirstOrDefault(parent => parent.Id == folder.ParentId);
-            }
-
-            return folders.Where(i => i.ParentId == null).ToList();
-        }
-
-        public Task DeleteProductFolder(ProductFolder productFolder)
-        {
-            return _db.SaveDataAsync("[dbo].[spProductFolder_DeleteById]", new { productFolder.Id });
         }
 
         #endregion

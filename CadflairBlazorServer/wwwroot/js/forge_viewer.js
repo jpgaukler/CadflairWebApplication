@@ -1,6 +1,6 @@
 ﻿var viewer;
 
-async function launchViewer(params) {
+async function loadModelFromUrn(params) {
     var options = {
         env: 'AutodeskProduction',
         accessToken: params.token
@@ -13,7 +13,21 @@ async function launchViewer(params) {
         viewer.start();
 
         // load from a model derivative manifest using a urn, urn must be Base64 encoded
-        //Autodesk.Viewing.Document.load(`urn:${params.urn}`, onDocumentLoadSuccess, onDocumentLoadFailure);
+        Autodesk.Viewing.Document.load(`urn:${params.urn}`, onDocumentLoadSuccess, onDocumentLoadFailure);
+    });
+}
+
+async function loadModelFromOss(params) {
+    var options = {
+        env: 'AutodeskProduction',
+        accessToken: params.token
+    };
+
+    Autodesk.Viewing.Initializer(options, () => {
+        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['Autodesk.DocumentBrowser'] });
+        viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, onExtensionLoaded);
+        viewer.addEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, onToolbarCreated);
+        viewer.start();
 
         // load from a url (this call redirects the viewer to a location on Forge OSS)
         Autodesk.Viewing.Document.load(`./api/v1/viewer_proxy/${params.bucketKey}/${params.objectKey}`, onDocumentLoadSuccess, onDocumentLoadFailure);

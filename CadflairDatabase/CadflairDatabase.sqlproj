@@ -70,14 +70,13 @@
     <Build Include="dbo\Tables\Product.sql" />
     <Build Include="dbo\Tables\ProductConfiguration.sql" />
     <Build Include="dbo\Tables\ProductQuoteRequest.sql" />
-    <Build Include="dbo\Tables\ProductFolder.sql" />
+    <Build Include="dbo\Tables\CatalogFolder.sql" />
     <Build Include="dbo\Stored Procedures\spProduct_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spProductConfiguration_Insert.sql" />
-    <Build Include="dbo\Stored Procedures\spProduct_GetByProductFolderId.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFolder_GetBySubscriptionId.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFolder_Insert.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFolder_GetById.sql" />
-    <Build Include="dbo\Stored Procedures\spProductFolder_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogFolder_GetBySubscriptionId.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogFolder_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogFolder_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogFolder_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spUser_GetByObjectIdentifier.sql" />
     <Build Include="dbo\Stored Procedures\spUser_GetBySubscriptionId.sql" />
     <Build Include="dbo\Stored Procedures\spUser_DeleteById.sql" />
@@ -107,9 +106,11 @@
     <Build Include="dbo\Stored Procedures\spProductQuoteRequest_GetBySubscriptionId.sql" />
     <Build Include="dbo\Tables\ContactRequest.sql" />
     <Build Include="dbo\Stored Procedures\spContactRequest_Insert.sql" />
-    <Build Include="dbo\Tables\CadModel.sql" />
-    <Build Include="dbo\Stored Procedures\spCadModel_Insert.sql" />
-    <Build Include="dbo\Stored Procedures\spCadModel_GetByProductFolderId.sql" />
+    <Build Include="dbo\Tables\CatalogModel.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogModel_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogModel_GetByCatalogFolderId.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogModel_GetByGuid.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogModel_DeleteById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

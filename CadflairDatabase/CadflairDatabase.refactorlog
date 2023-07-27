@@ -273,4 +273,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[ProductVersionId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d7854fa1-e6dd-433a-be3e-8262127debe2" ChangeDateTime="07/27/2023 11:30:52">
+    <Property Name="ElementName" Value="[dbo].[ProductFolder]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CatalogFolder]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="408d5203-3345-4695-8f06-324fb9a6e4c6" ChangeDateTime="07/27/2023 11:43:19">
+    <Property Name="ElementName" Value="[dbo].[CadModel]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[dbo]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[CatalogModel]" />
+  </Operation>
 </Operations>

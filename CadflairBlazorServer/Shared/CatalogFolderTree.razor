@@ -1,0 +1,10 @@
+﻿<MudStack Class="mud-height-full overflow-auto">
+    <MudTreeView T="CatalogFolder" Items="CatalogFolders.ToHashSet()" Hover ExpandOnDoubleClick>
+        <ItemTemplate>
+            <MudTreeViewItem Items="@context.ChildFolders.ToHashSet()" OnClick="() => CatalogFolder_OnClick(context)"
+                             Value="@context" Activated="SelectedCatalogFolder == context"
+                             Text="@context.DisplayName" Icon="@Icons.Material.Filled.Folder" />
+        </ItemTemplate>
+    </MudTreeView>
+</MudStack>
+

@@ -153,14 +153,17 @@ namespace CadflairBlazorServer.Controllers
         {
             try
             {
+                //Debug.WriteLine((string)body.ToString());
                 JObject response = JObject.Parse((string)body.ToString());
                 JObject payload = (JObject)response["payload"]!;
                 JObject workflowAttributes = (JObject)payload["WorkflowAttributes"]!;
                 string resourceUrn = (string)response["resourceUrn"]!;
                 string connectionId = (string)workflowAttributes["connectionId"]!;
+                string bucketKey = (string)workflowAttributes["bucketKey"]!;
+                string objectKey = (string)workflowAttributes["objectKey"]!;
 
                 // send message to client
-                await _hubContext.Clients.Client(connectionId).SendAsync(nameof(ModelDerivativeTranslation_OnComplete), resourceUrn);
+                await _hubContext.Clients.Client(connectionId).SendAsync(nameof(ModelDerivativeTranslation_OnComplete), bucketKey, objectKey);
             }
             catch (Exception ex)
             {

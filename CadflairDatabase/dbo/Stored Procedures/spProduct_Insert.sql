@@ -1,6 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[spProduct_Insert]
 	@SubscriptionId int,
-	@ProductFolderId int,
 	@DisplayName nvarchar(50),
 	@SubdirectoryName varchar(50),
 	@IsPublic bit,
@@ -12,14 +11,12 @@ BEGIN
 
 	INSERT INTO [dbo].[Product]
 			   (SubscriptionId
-			   ,ProductFolderId
 			   ,DisplayName
 			   ,SubdirectoryName
 			   ,IsPublic
 			   ,CreatedById)
 		   VALUES
 			   (@SubscriptionId
-			   ,@ProductFolderId
 			   ,@DisplayName
 			   ,@SubdirectoryName
 			   ,@IsPublic

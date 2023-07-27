@@ -279,7 +279,7 @@
                     <Label Content="Display Name" MinWidth="150"/>
                     <TextBox x:Name="DisplayNameTextBox" Margin="0,5" d:Text="Sample text"/>
                 </DockPanel>
-                <DockPanel>
+                <!--<DockPanel>
                     <Label Content="Folder Name" MinWidth="150"/>
                     <TextBox x:Name="ProductFolderTextBox" Margin="0,5" d:Text="Sample text"/>
                 </DockPanel>
@@ -301,7 +301,7 @@
                         <d:TreeViewItem Header="Tables"/>
                         <d:TreeViewItem Header="Cabinets"/>
                     </d:TreeViewItem>
-                </TreeView>
+                </TreeView>-->
             </StackPanel>
         </StackPanel>
 

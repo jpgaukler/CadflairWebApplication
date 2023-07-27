@@ -2,7 +2,7 @@
 
 namespace CadflairDataAccess.Models
 {
-    public class CadModel
+    public class CatalogModel :IComparable
     {
         /// <summary>
         /// Primary key.
@@ -20,9 +20,9 @@ namespace CadflairDataAccess.Models
         public int SubscriptionId { get; set; }
 
         /// <summary>
-        /// Foreign key to <b>ProductFolder</b> table. Represents the ProductFolder that the Product belongs to.
+        /// Foreign key to <b>CatalogFolder</b> table. Represents the CatalogFolder that the Product belongs to.
         /// </summary>
-        public int ProductFolderId { get; set; }
+        public int CatalogFolderId { get; set; }
 
         /// <summary>
         /// Foreign key to <b>User</b> table. Represents the id of the User that created the Product.
@@ -64,6 +64,9 @@ namespace CadflairDataAccess.Models
         /// </summary>
         public DateTimeOffset CreatedOn { get; set; }
 
-
+        public int CompareTo(object obj)
+        {
+            return DisplayName.CompareTo(((CatalogModel)obj).DisplayName);
+        }
     }
 }

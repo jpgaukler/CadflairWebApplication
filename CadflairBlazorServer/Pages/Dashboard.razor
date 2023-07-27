@@ -17,7 +17,7 @@
 </MudPopover>
 
 <MudText Typo="Typo.h1">Dashboard</MudText>
-<MudText Typo="Typo.h6">@_authenticationService.LoggedInUser?.FullName</MudText>
+<MudText Typo="Typo.h6">@_loggedInUser?.FullName</MudText>
 
 <!-- product list view -->
 <MudDataGrid Items="_productQuoteRequests"
