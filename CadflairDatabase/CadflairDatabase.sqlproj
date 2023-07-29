@@ -111,6 +111,7 @@
     <Build Include="dbo\Stored Procedures\spCatalogModel_GetByCatalogFolderId.sql" />
     <Build Include="dbo\Stored Procedures\spCatalogModel_GetByGuid.sql" />
     <Build Include="dbo\Stored Procedures\spCatalogModel_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spCatalogFolder_UpdateById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

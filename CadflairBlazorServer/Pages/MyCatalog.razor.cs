@@ -162,6 +162,40 @@ namespace CadflairBlazorServer.Pages
             _showNewCatalogFolderDialog = false;
         }
 
+        private async Task RenameCatalogFolder_OnClick(CatalogFolder catalogFolder)
+        {
+            DialogParameters parameters = new()
+            {
+                { nameof(RenameDialog.MaxLength), 50 }
+            };
+
+            DialogResult result = await DialogService.Show<RenameDialog>("Rename", parameters).Result;
+
+            if (result.Canceled)
+                return;
+
+            // TO DO: make sure the name is not a duplicate name so that no database errors occur
+
+            catalogFolder.DisplayName = (string)result.Data;
+            await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
+
+            Snackbar.Add("Folder renamed successfully!", Severity.Success);
+        }
+
+        private async Task MoveCatalogFolder_OnClick(CatalogFolder catalogFolder)
+        {
+            //// set new parent id
+
+            //int newParentId = 1;
+
+            // TO DO: make sure the name is not a duplicate name so that no database errors occur
+
+            //catalogFolder.ParentId = newParentId;
+            //await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
+
+            //Snackbar.Add("Folder moved successfully!", Severity.Success);
+        }
+
         private async Task DeleteCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
             bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Folder",

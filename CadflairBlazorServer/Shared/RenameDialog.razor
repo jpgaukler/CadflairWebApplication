@@ -1,0 +1,9 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudTextField @bind-Value="_newName" MaxLength="MaxLength" Variant="Variant.Outlined" Immediate/>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+        <MudButton OnClick="Ok_OnClick" Disabled="string.IsNullOrWhiteSpace(_newName)" Color="Color.Primary">Ok</MudButton>
+    </DialogActions>
+</MudDialog>

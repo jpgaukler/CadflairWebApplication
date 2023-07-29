@@ -31,7 +31,7 @@
         </MudDrawer>
     </MudHidden>
 
-    <MudStack Spacing="0" Class="mud-height-full px-5 pt-3 overflow-auto relative">
+    <MudStack Class="mud-height-full px-5 pt-3 overflow-auto relative">
         <MudOverlay Visible="_initializing" Absolute Class="mud-background">
             <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
         </MudOverlay>
@@ -91,60 +91,94 @@
         </div>
 
 
-        @if (_catalogModels.Count == 0)
+        @if (_displayListView)
         {
-            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
-                    <MudText>No models found.</MudText>
-                </MudStack>
-            </MudStack>
-        }
-        else
-        {
-            @if (_displayListView)
-            {
-                <MudDataGrid T="CatalogModel" Items="_catalogModels"
+            <MudDataGrid T="CatalogModel" Items="_catalogModels"
                      RowClick="CatalogModelsGrid_OnRowClick"
                      ColumnResizeMode="ResizeMode.Column"
                      Elevation="0" Height="100%" Class="overflow-auto"
                      Dense Hover FixedHeader Square>
-                    <Columns>
-                        <TemplateColumn>
-                            <CellTemplate>
-                                <CatalogModelThumbnail CatalogModel="@context.Item" Height="140" Width="140" />
-                            </CellTemplate>
-                        </TemplateColumn>
-                        <PropertyColumn Property="x => x!.DisplayName" Title="Display Name" />
-                        <TemplateColumn>
-                            <CellTemplate>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteCatalogModel_OnClick(context.Item!)" />
-                            </CellTemplate>
-                        </TemplateColumn>
-                    </Columns>
-                </MudDataGrid>
-            }
-            else
-            {
-                <MudGrid Justify="Justify.FlexStart" Class="my-0 overflow-auto" Style="max-height: 100%">
-                    @foreach (CatalogModel catalogModel in _catalogModels)
-                    {
-                        <MudItem>
-                            <MudPaper>
-                                <MudButton Variant="Variant.Text" Href=@($"catalog/{_subscription?.SubdirectoryName}/{catalogModel.Guid}")>
-                                    <MudStack Style="width:140px">
-                                        <CatalogModelThumbnail CatalogModel="@catalogModel" Height="140" Width="140" />
-                                        <MudText Typo="Typo.button" Style="text-overflow: ellipsis; overflow:hidden; white-space:nowrap;">@catalogModel.DisplayName</MudText>
-                                    </MudStack>
-                                </MudButton>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteCatalogModel_OnClick(catalogModel)" />
-                                @*<MudIconButton Icon="@Icons.Material.Filled.Code" OnClick="() => Embed(catalogModel)"/>*@
-                            </MudPaper>
-                        </MudItem>
-                    }
-                </MudGrid>
-            }
+                <Columns>
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <CatalogModelThumbnail CatalogModel="@context.Item" Height="140" Width="140" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <PropertyColumn Property="x => x!.DisplayName" Title="Display Name" />
+                    <TemplateColumn>
+                        <CellTemplate>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteCatalogModel_OnClick(context.Item!)" />
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+            </MudDataGrid>
         }
+        else
+        {
+            <MudStack Class="flex-grow-1 overflow-auto">
+                <MudText Typo="Typo.body2" Class="mx-2" Style="font-weight:500">Folders</MudText>
+                @if(_selectedCatalogFolder == null)
+                {
+                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
+                            <MudText>Select a folder.</MudText>
+                        </MudStack>
+                    </MudStack>
+                }
+                else
+                {
+                    <MudGrid Justify="Justify.FlexStart" Class="ma-0" Spacing="0">
+                        @foreach (CatalogFolder catalogFolder in _selectedCatalogFolder.ChildFolders)
+                        {
+                            <MudItem Class="pa-2">
+                                <MudPaper Width="140px">
+                                    <MudButton OnClick="() => CatalogFolder_OnClick(catalogFolder)" StartIcon="@Icons.Material.Filled.Folder" Variant="Variant.Text">@catalogFolder.DisplayName</MudButton>
+                                </MudPaper>
+                                <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft">
+                                    <MudMenuItem OnClick="() => DeleteCatalogFolder_OnClick(catalogFolder)" Icon="@Icons.Material.Filled.Delete">Delete</MudMenuItem>
+                                    <MudMenuItem OnClick="() => RenameCatalogFolder_OnClick(catalogFolder)" Icon="@Icons.Material.Filled.DriveFileRenameOutline">Rename</MudMenuItem>
+                                </MudMenu>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+                <MudText Typo="Typo.body2" Class="mx-2" Style="font-weight:500">Models</MudText>
+                @if (_catalogModels.Count == 0)
+                {
+                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                        <MudStack AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" Size="Size.Large" />
+                            <MudText>No models found.</MudText>
+                        </MudStack>
+                    </MudStack>
+                }
+                else
+                {
+                    <MudGrid Justify="Justify.FlexStart" Class="ma-0" Spacing="0">
+                        @foreach (CatalogModel catalogModel in _catalogModels)
+                        {
+                            <MudItem Class="pa-2">
+                                <MudPaper>
+                                    <MudButton Variant="Variant.Text" Href=@($"catalog/{_subscription?.SubdirectoryName}/{catalogModel.Guid}")>
+                                        <MudStack Style="width:140px">
+                                            <CatalogModelThumbnail CatalogModel="@catalogModel" Height="140" Width="140" />
+                                            <MudText Typo="Typo.button" Style="text-overflow: ellipsis; overflow:hidden; white-space:nowrap;">@catalogModel.DisplayName</MudText>
+                                        </MudStack>
+                                    </MudButton>
+                                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft">
+                                        <MudMenuItem OnClick="() => DeleteCatalogModel_OnClick(catalogModel)" Icon="@Icons.Material.Filled.Delete">Delete</MudMenuItem>
+                                        @*<MudMenuItem OnClick="() => MoveCatalogModel_OnClick(catalogModel)"  Icon="@Icons.Material.Filled.DriveFileMove">Move</MudMenuItem>*@
+                                        @*<MudMenuItem OnClick="() => Embed_OnClick(catalogModel)"  Icon="@Icons.Material.Filled.Code">Embed</MudMenuItem>*@
+                                    </MudMenu>
+                                </MudPaper>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+            </MudStack>
+        }
+
     </MudStack>
 </MudDrawerContainer>
 

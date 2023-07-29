@@ -52,6 +52,18 @@ namespace CadflairDataAccess.Services
             return folders.Where(i => i.ParentId == null).ToList();
         }
 
+        public Task UpdateCatalogFolder(CatalogFolder catalogFolder)
+        {
+            dynamic values = new
+            {
+                catalogFolder.Id,
+                catalogFolder.ParentId,
+                catalogFolder.DisplayName,
+            };
+
+            return _db.SaveDataAsync("[dbo].[spCatalogFolder_UpdateById]", values);
+        }
+
         public Task DeleteCatalogFolderById(int catalogFolderId)
         {
             return _db.SaveDataAsync("[dbo].[spCatalogFolder_DeleteById]", new { Id = catalogFolderId });
