@@ -1,9 +1,23 @@
 ﻿<MudStack Class="mud-height-full overflow-auto">
-    <MudTreeView T="CatalogFolder" Items="CatalogFolders.ToHashSet()" Hover ExpandOnDoubleClick>
+    <MudTreeView T="CatalogFolder" Items="CatalogFolders.Where(_filter).ToHashSet()" Hover ExpandOnDoubleClick>
         <ItemTemplate>
-            <MudTreeViewItem Items="@context.ChildFolders.ToHashSet()" OnClick="() => CatalogFolder_OnClick(context)"
+            <MudTreeViewItem Items="@context.ChildFolders.Where(_filter).ToHashSet()" OnClick="() => CatalogFolder_OnClick(context)"
                              Value="@context" Activated="SelectedCatalogFolder == context"
-                             Text="@context.DisplayName" Icon="@Icons.Material.Filled.Folder" />
+                             Text="@context.DisplayName" Icon="@Icons.Material.Filled.Folder">
+                <BodyContent Context="body">
+                    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mud-width-full">
+                        <MudText>@body.Text</MudText>
+                        @if (ShowMoreMenu)
+                        {
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" AnchorOrigin="Origin.BottomLeft">
+                                <MudMenuItem OnClick="() => MoveCatalogFolder_OnClick(context)" Icon="@Icons.Material.Filled.DriveFileMove">Move</MudMenuItem>
+                                <MudMenuItem OnClick="() => RenameCatalogFolder_OnClick(context)" Icon="@Icons.Material.Filled.DriveFileRenameOutline">Rename</MudMenuItem>
+                                <MudMenuItem OnClick="() => DeleteCatalogFolder_OnClick(context)" Icon="@Icons.Material.Filled.Delete">Delete</MudMenuItem>
+                            </MudMenu>
+                        }
+                    </MudStack>
+                </BodyContent>
+            </MudTreeViewItem>
         </ItemTemplate>
     </MudTreeView>
 </MudStack>

@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Components;
 
-namespace CadflairBlazorServer.Shared
+namespace CadflairBlazorServer.Dialogs
 {
     public partial class RenameDialog
     {
         // parameters
         [CascadingParameter] public MudDialogInstance MudDialogInstance { get; set; } = default!;
         [Parameter] public int MaxLength { get; set; }
+        [Parameter] public string? NewName { get; set; }
 
-        // fields
-        private string? _newName { get; set; }
+        // fields 
+        private MudTextField<string?> _mudTextField = default!;
+
 
         protected override void OnInitialized()
         {
@@ -25,7 +27,13 @@ namespace CadflairBlazorServer.Shared
             MudDialogInstance.SetOptions(options);
         }
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+                await _mudTextField.SelectAsync();
+        }
+
         private void Cancel_OnClick() => MudDialogInstance.Cancel();
-        private void Ok_OnClick() => MudDialogInstance.Close(_newName);
+        private void Ok_OnClick() => MudDialogInstance.Close(NewName);
     }
 }

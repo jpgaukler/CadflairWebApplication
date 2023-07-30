@@ -9,7 +9,8 @@
     CONSTRAINT [PK_CatalogFolder] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_CatalogFolder_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([Id]),
     CONSTRAINT [FK_CatalogFolder_CatalogFolder] FOREIGN KEY ([ParentId]) REFERENCES [dbo].[CatalogFolder] ([Id]),
-    CONSTRAINT [UC_CatalogFolder_SubscriptionId_ParentId_DisplayName] UNIQUE([SubscriptionId],[ParentId],[DisplayName]),
+    CONSTRAINT [CK_CatalogFolder_Id_ParentId] CHECK ([Id] <> [ParentId]),
+    CONSTRAINT [UC_CatalogFolder_SubscriptionId_ParentId_DisplayName] UNIQUE([SubscriptionId],[ParentId],[DisplayName])
 )
 
 GO

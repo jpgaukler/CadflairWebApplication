@@ -15,6 +15,6 @@
     CONSTRAINT [FK_CatalogModel_CatalogFolder] FOREIGN KEY ([CatalogFolderId]) REFERENCES [dbo].[CatalogFolder] ([Id]),
     CONSTRAINT [FK_CatalogModel_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([Id]),
     CONSTRAINT [FK_CatalogModel_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
-    CONSTRAINT [UC_CatalogModel_CatalogFolderId_DisplayName] UNIQUE([CatalogFolderId],[DisplayName])
+    CONSTRAINT [UC_CatalogModel_SubscriptionId_CatalogFolderId_DisplayName] UNIQUE([SubscriptionId],[CatalogFolderId],[DisplayName])
 );
 

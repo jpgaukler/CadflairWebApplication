@@ -36,17 +36,6 @@ namespace CadflairBlazorServer.Pages
         private string _uploadProgressMessage = string.Empty;
 
 
-        // new folder dialog
-        private DialogOptions _newCatalogFolderDialogOptions = new() 
-        { 
-            FullWidth = true, 
-            MaxWidth = MaxWidth.ExtraSmall, 
-            DisableBackdropClick = true,
-            CloseOnEscapeKey = false
-        };
-        private bool _showNewCatalogFolderDialog = false;
-        private string? _newCatalogFolderName;
-
         // new cad model dialog
         private DialogOptions _newCatalogModelDialogOptions = new() 
         { 
@@ -107,39 +96,48 @@ namespace CadflairBlazorServer.Pages
             }
         }
 
-        private async Task CatalogFolder_OnClick(CatalogFolder? selectedFolder)
-        {
-            _selectedCatalogFolder = selectedFolder;
-            _catalogModels.Clear();
-
-            if (_selectedCatalogFolder == null)
-                return;
-
-            _catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(_selectedCatalogFolder.Id);
-        }
-
-        private void CatalogModelsGrid_OnRowClick(DataGridRowClickEventArgs<CatalogModel> args)
-        {
-            NavigationManager.NavigateTo($"catalog/{_subscription!.SubdirectoryName}/{args.Item.Guid}");
-        }
-
         private async Task ToggleView_OnClick()
         {
             _displayListView = !_displayListView;
             await ProtectedSessionStorage.SetAsync(_displayListViewSettingKey, _displayListView);
         }
 
-        private async Task NewCatalogFolder_OnSubmit()
+
+
+        #region "catalog folders"
+
+        private async Task CatalogFolder_OnClick(CatalogFolder? selectedFolder)
         {
-            if (_newCatalogFolderName == null)
+            _selectedCatalogFolder = selectedFolder;
+
+            if (_selectedCatalogFolder == null)
+            {
+                _catalogModels.Clear();
+                return;
+            }
+
+            _catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(_selectedCatalogFolder.Id);
+        }
+
+        private async Task NewCatalogFolder_OnClick()
+        {
+            DialogResult result = await DialogService.Show<NewCatalogFolderDialog>("New Folder").Result;
+
+            if (result.Canceled)
                 return;
 
+            string newCatalogFolderName = (string)result.Data;
+
+            if (CatalogFolderNameIsDuplicate(_selectedCatalogFolder, newCatalogFolderName))
+            {
+                Snackbar.Add("Folder name already used!", Severity.Warning);
+                return;
+            }
 
             CatalogFolder newFolder = await DataServicesManager.CatalogService.CreateCatalogFolder(subscriptionId: _subscription!.Id,
                                                                                                    createdById: _loggedInUser!.Id,
-                                                                                                   displayName: _newCatalogFolderName,
+                                                                                                   displayName: newCatalogFolderName,
                                                                                                    parentId: _selectedCatalogFolder?.Id);
-
 
             if (_selectedCatalogFolder == null)
             {
@@ -152,31 +150,30 @@ namespace CadflairBlazorServer.Pages
                 _selectedCatalogFolder.ChildFolders.Add(newFolder);
                 _selectedCatalogFolder.ChildFolders.Sort();
             }
-
-            NewCatalogFolder_OnClose();
-        }
-
-        private void NewCatalogFolder_OnClose()
-        {
-            _newCatalogFolderName = null;
-            _showNewCatalogFolderDialog = false;
         }
 
         private async Task RenameCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
             DialogParameters parameters = new()
             {
+                { nameof(RenameDialog.NewName), catalogFolder.DisplayName },
                 { nameof(RenameDialog.MaxLength), 50 }
             };
 
-            DialogResult result = await DialogService.Show<RenameDialog>("Rename", parameters).Result;
+            DialogResult result = await DialogService.Show<RenameDialog>("Rename Folder", parameters).Result;
 
             if (result.Canceled)
                 return;
 
-            // TO DO: make sure the name is not a duplicate name so that no database errors occur
+            string newDisplayName = (string)result.Data;
 
-            catalogFolder.DisplayName = (string)result.Data;
+            if (CatalogFolderNameIsDuplicate(catalogFolder.ParentFolder, newDisplayName))
+            {
+                Snackbar.Add("Folder name already used!", Severity.Warning);
+                return;
+            }
+
+            catalogFolder.DisplayName = newDisplayName;
             await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
 
             Snackbar.Add("Folder renamed successfully!", Severity.Success);
@@ -184,20 +181,55 @@ namespace CadflairBlazorServer.Pages
 
         private async Task MoveCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
-            //// set new parent id
+            DialogParameters parameters = new()
+            {
+                { nameof(MoveCatalogFolderDialog.CatalogFolders), _catalogFolders },
+                { nameof(MoveCatalogFolderDialog.FolderToMove), catalogFolder },
+            };
 
-            //int newParentId = 1;
+            DialogResult result = await DialogService.Show<MoveCatalogFolderDialog>($"Move \"{catalogFolder.DisplayName}\"", parameters).Result;
 
-            // TO DO: make sure the name is not a duplicate name so that no database errors occur
+            if (result.Canceled)
+                return;
 
-            //catalogFolder.ParentId = newParentId;
-            //await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
+            CatalogFolder newParentFolder = (CatalogFolder)result.Data;
 
-            //Snackbar.Add("Folder moved successfully!", Severity.Success);
+            if (newParentFolder == catalogFolder.ParentFolder)
+                return;
+
+            if (CatalogFolderNameIsDuplicate(newParentFolder, catalogFolder.DisplayName))
+            {
+                Snackbar.Add("Folder name already used!", Severity.Warning);
+                return;
+            }
+
+            // update database
+            catalogFolder.ParentId = newParentFolder.Id;
+            await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
+
+            // refresh UI
+            newParentFolder.ChildFolders.Add(catalogFolder);
+            catalogFolder.ParentFolder?.ChildFolders.Remove(catalogFolder);
+            catalogFolder.ParentFolder = newParentFolder;
+
+            //// TO DO: figure out how to update the UI if the selected folder was moved
+            //if(_selectedCatalogFolder == catalogFolder)
+            //    await CatalogFolder_OnClick(catalogFolder.ParentFolder);
+
+            Snackbar.Add("Folder moved successfully!", Severity.Success);
         }
 
         private async Task DeleteCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
+            // make sure folder is empty
+            var catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(catalogFolder.Id);
+
+            if (catalogFolder.ChildFolders.Any() || catalogModels.Any())
+            {
+                Snackbar.Add("Folder must be empty!", Severity.Warning);
+                return;
+            }
+
             bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Folder",
                                                                      message: "Are you sure you want to delete this folder?",
                                                                      yesText: "Yes",
@@ -206,9 +238,9 @@ namespace CadflairBlazorServer.Pages
                 return;
 
             // delete record from database
-            // TO DO: this will fail if the folder has any models or child folders in it
             await DataServicesManager.CatalogService.DeleteCatalogFolderById(catalogFolder.Id);
 
+            // refresh UI
             if(catalogFolder.ParentFolder == null)
             {
                 _catalogFolders.Remove(catalogFolder);
@@ -218,10 +250,31 @@ namespace CadflairBlazorServer.Pages
                 catalogFolder.ParentFolder.ChildFolders.Remove(catalogFolder);
             }
 
-            _selectedCatalogFolder = null; 
+            // move up one folder level 
+            if(_selectedCatalogFolder == catalogFolder)
+                await CatalogFolder_OnClick(catalogFolder.ParentFolder);
+
             Snackbar.Add("Folder deleted successfully!", Severity.Success);
         }
 
+        private bool CatalogFolderNameIsDuplicate(CatalogFolder? parentFolder, string displayName)
+        {
+            if(parentFolder == null)
+                return _catalogFolders.Any(i => i.DisplayName.Equals(displayName, StringComparison.OrdinalIgnoreCase));
+
+            return parentFolder.ChildFolders.Any(i => i.DisplayName.Equals(displayName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        #endregion
+
+
+
+        #region "catalog models"
+
+        private void CatalogModelsGrid_OnRowClick(DataGridRowClickEventArgs<CatalogModel> args)
+        {
+            NavigationManager.NavigateTo($"catalog/{_subscription!.SubdirectoryName}/{args.Item.Guid}");
+        }
 
         private async Task NewCatalogModelDialog_OnSubmit()
         {
@@ -281,6 +334,15 @@ namespace CadflairBlazorServer.Pages
                 File.Delete(tempFilename);
         }
 
+        private void NewCatalogModelDialog_OnClose()
+        {
+            _uploadInProgress = false;
+            _newCatalogModelDisplayName = null;
+            _newCatalogModelDescription = null;
+            _attachedFile = null;
+            _showNewCatalogModelDialog = false;
+        }
+
         private async Task ModelDerivativeTranslation_OnComplete(string bucketKey, string objectKey)
         {
             // create database record
@@ -301,15 +363,6 @@ namespace CadflairBlazorServer.Pages
             await InvokeAsync(StateHasChanged);
         }
 
-        private void NewCatalogModelDialog_OnClose()
-        {
-            _uploadInProgress = false;
-            _newCatalogModelDisplayName = null;
-            _newCatalogModelDescription = null;
-            _attachedFile = null;
-            _showNewCatalogModelDialog = false;
-        }
-
         private async Task DeleteCatalogModel_OnClick(CatalogModel catalogModel)
         {
             bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Model",
@@ -328,6 +381,11 @@ namespace CadflairBlazorServer.Pages
             _catalogModels.Remove(catalogModel);
             Snackbar.Add("Model deleted successfully!", Severity.Success);
         }
+
+        #endregion
+
+
+
 
         public async ValueTask DisposeAsync()
         {

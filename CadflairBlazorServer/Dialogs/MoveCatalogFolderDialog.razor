@@ -1,0 +1,24 @@
+﻿<MudDialog >
+    <DialogContent>
+        <MudStack Style="height: 400px;">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <MudText>Current location:</MudText>
+                @if (FolderToMove.ParentFolder == null)
+                {
+                    <MudChip Icon="@Icons.Material.Filled.FolderSpecial">My Catalog</MudChip>
+                }
+                else
+                {
+                    <MudChip Icon="@Icons.Material.Filled.Folder">@FolderToMove.ParentFolder.DisplayName</MudChip>
+                }
+            </MudStack>
+            <MudDivider />
+            <MudText Typo="Typo.body1">Select new location:</MudText>
+            <CatalogFolderTree CatalogFolders="CatalogFolders" FolderToHide="FolderToMove" @bind-SelectedCatalogFolder="_selectedCatalogFolder" />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok_OnClick" Disabled="_selectedCatalogFolder == null || _selectedCatalogFolder == FolderToMove.ParentFolder">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
