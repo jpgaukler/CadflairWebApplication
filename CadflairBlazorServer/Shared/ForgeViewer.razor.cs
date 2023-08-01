@@ -5,8 +5,8 @@ namespace CadflairBlazorServer.Shared
     public partial class ForgeViewer
     {
         [Inject] IJSRuntime _js { get; set; } = default!;
-        [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
         [Inject] ILogger<ForgeViewer> _logger { get; set; } = default!;
+        [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
 
         private bool _modelNotFound = false;
 
@@ -36,7 +36,7 @@ namespace CadflairBlazorServer.Shared
             }
         }
 
-        public async Task ViewDocument(string encodedUrn)
+        public async Task ViewDocument(string bucketKey, string objectKey)
         {
             _modelNotFound = false;
 
@@ -45,13 +45,16 @@ namespace CadflairBlazorServer.Shared
                 //get public token for viewables
                 var token = await _forgeServicesManager.AuthorizationService.GetPublic();
 
-                if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(encodedUrn))
+                //get forge object id
+                dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
+
+                if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
                 {
                     //define input parameters as JSON
                     var parameters = new
                     {
                         Token = token.access_token,
-                        Urn = encodedUrn,
+                        Urn = forgeObject.encoded_urn,
                     };
 
                     //invoke the viewer
@@ -59,27 +62,15 @@ namespace CadflairBlazorServer.Shared
                 }
                 else
                 {
-                    _logger.LogWarning($"ForgeViewer: Model derivative not found - Urn (base64): {encodedUrn}");
+                    _logger.LogWarning($"Model derivative not found - bucketKey: {bucketKey}, objectKey: {objectKey}");
                     _modelNotFound = true;
-
-                    //need to translate object
-                    //await _forgeServicesManager.ModelDerivativeService.TranslateObject(forgeObject.encoded_urn, "Dresser Configurator.ipt");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to load model - urn: {encodedUrn}");
+                _logger.LogWarning(ex, $"Failed to load model from derivative - bucketKey: {bucketKey}, objectKey: {objectKey}");
                 _modelNotFound = true;
             }
-        }
-
-        public async Task ViewDocument(string bucketKey, string objectKey)
-        {
-            _modelNotFound = false;
-
-            //get forge object id
-            dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
-            ViewDocument(forgeObject.encoded_urn);
         }
 
     }

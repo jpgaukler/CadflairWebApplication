@@ -106,6 +106,25 @@ namespace CadflairDataAccess.Services
             return _db.SaveDataAsync("[dbo].[spCatalogModel_DeleteById]", new { Id = id });
         }
 
+        public Task UpdateCatalogModel(CatalogModel catalogModel)
+        {
+            dynamic values = new
+            {
+                catalogModel.Id,
+                catalogModel.SubscriptionId,
+                catalogModel.CatalogFolderId,
+                catalogModel.DisplayName,
+                catalogModel.Description,
+                catalogModel.BucketKey,
+                catalogModel.ObjectKey,
+                catalogModel.IsZip,
+                catalogModel.RootFileName,
+            };
+
+            return _db.SaveDataAsync("[dbo].[spCatalogModel_UpdateById]", values);
+        }
+
+
         #endregion
 
     }

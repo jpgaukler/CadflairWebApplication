@@ -24,6 +24,20 @@ namespace CadflairForgeAccess.Services
             return derivative;
         }
 
+        public async Task<bool> TranslationExists(string encodedUrn)
+        {
+            try
+            {
+                DerivativesApi derivative = await GetDerivativesApi();
+                dynamic manifest = await derivative.GetManifestAsync(encodedUrn);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, bool isZip = false, string? rootFileName = null, string? connectionId = null)
         {
             var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
@@ -67,34 +81,12 @@ namespace CadflairForgeAccess.Services
             return jobPosted;
         }
 
-        public async Task<bool> TranslationExists(string bucketKey, string objectKey)
+        public async Task DeleteTranslation(string encodedUrn)
         {
-            try
-            {
-                DerivativesApi derivative = await GetDerivativesApi();
-                var forgeObject = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
-                dynamic manifest = await derivative.GetManifestAsync(forgeObject.encoded_urn);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            DerivativesApi derivative = await GetDerivativesApi();
+            await derivative.DeleteManifestAsync(encodedUrn);
         }
 
-        public async Task<bool> TranslationExists(string encodedUrn)
-        {
-            try
-            {
-                DerivativesApi derivative = await GetDerivativesApi();
-                dynamic manifest = await derivative.GetManifestAsync(encodedUrn);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
 
         /// <summary>

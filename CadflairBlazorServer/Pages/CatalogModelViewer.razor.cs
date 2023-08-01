@@ -63,10 +63,14 @@ namespace CadflairBlazorServer.Pages
             _qrCodeImageAsBase64 = qrCode.GetGraphic(20);
 
             _initializing = false;
-
-            // load default model in viewer
-            await _forgeViewer!.ViewDocument(_catalogModel!.BucketKey, _catalogModel!.ObjectKey);
             StateHasChanged();
+        }
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            // need to make sure the component is rendered before javascript calls can be made
+            if (firstRender)
+                await _forgeViewer!.ViewDocument(_catalogModel!.BucketKey, _catalogModel!.ObjectKey);
         }
 
         private async Task RequestQuote_OnClick()

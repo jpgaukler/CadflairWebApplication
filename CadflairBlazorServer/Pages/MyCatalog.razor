@@ -6,6 +6,7 @@
 <PageTitle>Cadflair - My Catalog</PageTitle>
 
 @*<iframe src="https://cadflair.com/demo/products" title="Cadflair model viewer" />*@
+@*<iframe src="https://localhost:7269/catalog/demo/40a34855-3317-408f-a6b7-d2e77bdfd1ed" title="Cadflair model viewer" />*@
 
 <MudDrawerContainer Class="mud-height-full relative">
 
@@ -151,7 +152,8 @@
                                         </MudButton>
                                         <MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomLeft">
                                             <MudMenuItem OnClick="() => DeleteCatalogModel_OnClick(catalogModel)" Icon="@Icons.Material.Filled.Delete">Delete</MudMenuItem>
-                                            @*<MudMenuItem OnClick="() => MoveCatalogModel_OnClick(catalogModel)"  Icon="@Icons.Material.Filled.DriveFileMove">Move</MudMenuItem>*@
+                                            <MudMenuItem OnClick="() => MoveCatalogModel_OnClick(catalogModel)"  Icon="@Icons.Material.Filled.DriveFileMove">Move</MudMenuItem>
+                                            <MudMenuItem OnClick="() => RegenerateCatalogModelDerivative_OnClick(catalogModel)"  Icon="@Icons.Material.Filled.Preview">Regenerate preview</MudMenuItem>
                                             @*<MudMenuItem OnClick="() => Embed_OnClick(catalogModel)"  Icon="@Icons.Material.Filled.Code">Embed</MudMenuItem>*@
                                         </MudMenu>
                                     </MudPaper>

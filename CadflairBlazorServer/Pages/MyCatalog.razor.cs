@@ -1,3 +1,4 @@
+using CadflairDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -8,7 +9,6 @@ namespace CadflairBlazorServer.Pages
     public partial class MyCatalog : IAsyncDisposable
     {
         // services
-
         [Inject] AuthenticationService AuthenticationService { get; set; } = default!;
         [Inject] ProtectedSessionStorage ProtectedSessionStorage { get; set; } = default!;
         [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
@@ -17,6 +17,7 @@ namespace CadflairBlazorServer.Pages
         [Inject] ForgeServicesManager ForgeServicesManager { get; set; } = default!;
         [Inject] ISnackbar Snackbar { get; set; } = default!;
         [Inject] IDialogService DialogService { get; set; } = default!;
+        [Inject] ILogger<MyCatalog> Logger { get; set; } = default!;
 
         // parameters
         [Parameter] public string CompanyName { get; set; } = string.Empty;
@@ -56,33 +57,41 @@ namespace CadflairBlazorServer.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            // get data
-            _loggedInUser = await AuthenticationService.GetUser();
-
-            if (_loggedInUser == null || _loggedInUser.SubscriptionId == null)
+            try
             {
-                NavigationManager.NavigateTo("/notauthorized");
-                return;
+                // get data
+                _loggedInUser = await AuthenticationService.GetUser();
+
+                if (_loggedInUser == null || _loggedInUser.SubscriptionId == null)
+                {
+                    NavigationManager.NavigateTo("/notauthorized");
+                    return;
+                }
+
+                _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionById((int)_loggedInUser.SubscriptionId!);
+                _catalogFolders = await DataServicesManager.CatalogService.GetCatalogFoldersBySubscriptionId(_subscription!.Id);
+
+                // setup signal R hub connection for model derivative callback
+                _hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/forgecallbackhub"))
+                                                           .WithAutomaticReconnect()
+                                                           .Build();
+
+                _hubConnection.On<string, string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ModelDerivativeTranslation_OnComplete);
+
+                _progress = new Progress<string>(message =>
+                {
+                    _uploadInProgress = true;
+                    _uploadProgressMessage = message;
+                    StateHasChanged();
+                });
+
+                _initializing = false;
             }
-
-            _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionById((int)_loggedInUser.SubscriptionId!);
-            _catalogFolders = await DataServicesManager.CatalogService.GetCatalogFoldersBySubscriptionId(_subscription!.Id);
-
-            // setup signal R hub connection for model derivative callback
-            _hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri("/forgecallbackhub"))
-                                                       .WithAutomaticReconnect()
-                                                       .Build();
-
-            _hubConnection.On<string, string>(nameof(ForgeCallbackController.ModelDerivativeTranslation_OnComplete), ModelDerivativeTranslation_OnComplete);
-
-            _progress = new Progress<string>(message =>
+            catch (Exception ex)
             {
-                _uploadInProgress = true;
-                _uploadProgressMessage = message;
-                StateHasChanged();
-            });
-
-            _initializing = false;
+                Logger.LogError(ex, $"Error occurred while initializing MyCatalog page!");
+                Snackbar.Add("An error occurred!", Severity.Error);
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -108,158 +117,199 @@ namespace CadflairBlazorServer.Pages
 
         private async Task CatalogFolder_OnClick(CatalogFolder? selectedFolder)
         {
-            _selectedCatalogFolder = selectedFolder;
-
-            if (_selectedCatalogFolder == null)
+            try
             {
-                _catalogModels.Clear();
-                return;
-            }
+                _selectedCatalogFolder = selectedFolder;
 
-            _catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(_selectedCatalogFolder.Id);
+                if (_selectedCatalogFolder == null)
+                {
+                    _catalogModels.Clear();
+                    return;
+                }
+
+                _catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(_selectedCatalogFolder.Id);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error occurred on CatalogFolder click - Id: {selectedFolder?.Id}");
+                Snackbar.Add("An error occurred!", Severity.Error);
+            }
         }
 
         private async Task NewCatalogFolder_OnClick()
         {
-            DialogResult result = await DialogService.Show<NewCatalogFolderDialog>("New Folder").Result;
-
-            if (result.Canceled)
-                return;
-
-            string newCatalogFolderName = (string)result.Data;
-
-            if (CatalogFolderNameIsDuplicate(_selectedCatalogFolder, newCatalogFolderName))
+            try
             {
-                Snackbar.Add("Folder name already used!", Severity.Warning);
-                return;
+                DialogResult result = await DialogService.Show<NewCatalogFolderDialog>("New Folder").Result;
+
+                if (result.Canceled)
+                    return;
+
+                string newCatalogFolderName = (string)result.Data;
+
+                if (CatalogFolderNameIsDuplicate(_selectedCatalogFolder, newCatalogFolderName))
+                {
+                    Snackbar.Add("Folder name already used!", Severity.Warning);
+                    return;
+                }
+
+                CatalogFolder newFolder = await DataServicesManager.CatalogService.CreateCatalogFolder(subscriptionId: _subscription!.Id,
+                                                                                                       createdById: _loggedInUser!.Id,
+                                                                                                       displayName: newCatalogFolderName,
+                                                                                                       parentId: _selectedCatalogFolder?.Id);
+
+                if (_selectedCatalogFolder == null)
+                {
+                    _catalogFolders.Add(newFolder);
+                    _catalogFolders.Sort();
+                }
+                else
+                {
+                    newFolder.ParentFolder = _selectedCatalogFolder;
+                    _selectedCatalogFolder.ChildFolders.Add(newFolder);
+                    _selectedCatalogFolder.ChildFolders.Sort();
+                }
             }
-
-            CatalogFolder newFolder = await DataServicesManager.CatalogService.CreateCatalogFolder(subscriptionId: _subscription!.Id,
-                                                                                                   createdById: _loggedInUser!.Id,
-                                                                                                   displayName: newCatalogFolderName,
-                                                                                                   parentId: _selectedCatalogFolder?.Id);
-
-            if (_selectedCatalogFolder == null)
+            catch (Exception ex)
             {
-                _catalogFolders.Add(newFolder);
-                _catalogFolders.Sort();
-            }
-            else
-            {
-                newFolder.ParentFolder = _selectedCatalogFolder;
-                _selectedCatalogFolder.ChildFolders.Add(newFolder);
-                _selectedCatalogFolder.ChildFolders.Sort();
+                Logger.LogError(ex, $"Error occurred while creating new CatalogFolder!");
+                Snackbar.Add("An error occurred!", Severity.Error);
             }
         }
 
         private async Task RenameCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
-            DialogParameters parameters = new()
+            try
             {
-                { nameof(RenameDialog.NewName), catalogFolder.DisplayName },
-                { nameof(RenameDialog.MaxLength), 50 }
-            };
+                DialogParameters parameters = new()
+                {
+                    { nameof(RenameDialog.NewName), catalogFolder.DisplayName },
+                    { nameof(RenameDialog.MaxLength), 50 }
+                };
 
-            DialogResult result = await DialogService.Show<RenameDialog>("Rename Folder", parameters).Result;
+                DialogResult result = await DialogService.Show<RenameDialog>("Rename Folder", parameters).Result;
 
-            if (result.Canceled)
-                return;
+                if (result.Canceled)
+                    return;
 
-            string newDisplayName = (string)result.Data;
+                string newDisplayName = (string)result.Data;
 
-            if (CatalogFolderNameIsDuplicate(catalogFolder.ParentFolder, newDisplayName))
-            {
-                Snackbar.Add("Folder name already used!", Severity.Warning);
-                return;
+                if (CatalogFolderNameIsDuplicate(catalogFolder.ParentFolder, newDisplayName))
+                {
+                    Snackbar.Add("Folder name already used!", Severity.Warning);
+                    return;
+                }
+
+                catalogFolder.DisplayName = newDisplayName;
+                await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
+
+                Snackbar.Add("Folder renamed successfully!", Severity.Success);
             }
-
-            catalogFolder.DisplayName = newDisplayName;
-            await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
-
-            Snackbar.Add("Folder renamed successfully!", Severity.Success);
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error occurred while renaming CatalogFolder - Id: {catalogFolder.Id}");
+                Snackbar.Add("An error occurred!", Severity.Error);
+            }
         }
 
         private async Task MoveCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
-            DialogParameters parameters = new()
+            try
             {
-                { nameof(MoveCatalogFolderDialog.CatalogFolders), _catalogFolders },
-                { nameof(MoveCatalogFolderDialog.FolderToMove), catalogFolder },
-            };
+                DialogParameters parameters = new()
+                {
+                    { nameof(SelectCatalogFolderDialog.CatalogFolders), _catalogFolders },
+                    { nameof(SelectCatalogFolderDialog.CurrentLocation), catalogFolder.ParentFolder },
+                    { nameof(SelectCatalogFolderDialog.FolderToHide), catalogFolder },
+                };
 
-            DialogResult result = await DialogService.Show<MoveCatalogFolderDialog>($"Move \"{catalogFolder.DisplayName}\"", parameters).Result;
+                DialogResult result = await DialogService.Show<SelectCatalogFolderDialog>($"Move \"{catalogFolder.DisplayName}\"", parameters).Result;
 
-            if (result.Canceled)
-                return;
+                if (result.Canceled)
+                    return;
 
-            CatalogFolder newParentFolder = (CatalogFolder)result.Data;
+                CatalogFolder newParentFolder = (CatalogFolder)result.Data;
 
-            if (newParentFolder == catalogFolder.ParentFolder)
-                return;
+                if (newParentFolder.Id == catalogFolder.ParentFolder.Id)
+                    return;
 
-            if (CatalogFolderNameIsDuplicate(newParentFolder, catalogFolder.DisplayName))
-            {
-                Snackbar.Add("Folder name already used!", Severity.Warning);
-                return;
+                if (CatalogFolderNameIsDuplicate(newParentFolder, catalogFolder.DisplayName))
+                {
+                    Snackbar.Add("Folder name already used!", Severity.Warning);
+                    return;
+                }
+
+                // update database
+                catalogFolder.ParentId = newParentFolder.Id;
+                await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
+
+                // refresh UI
+                newParentFolder.ChildFolders.Add(catalogFolder);
+                catalogFolder.ParentFolder?.ChildFolders.Remove(catalogFolder);
+                catalogFolder.ParentFolder = newParentFolder;
+
+                // refresh the UI if the selected folder was moved
+                if (_selectedCatalogFolder == catalogFolder)
+                    await CatalogFolder_OnClick(catalogFolder);
+
+                Snackbar.Add("Folder moved successfully!", Severity.Success);
             }
-
-            // update database
-            catalogFolder.ParentId = newParentFolder.Id;
-            await DataServicesManager.CatalogService.UpdateCatalogFolder(catalogFolder);
-
-            // refresh UI
-            newParentFolder.ChildFolders.Add(catalogFolder);
-            catalogFolder.ParentFolder?.ChildFolders.Remove(catalogFolder);
-            catalogFolder.ParentFolder = newParentFolder;
-
-            //// TO DO: figure out how to update the UI if the selected folder was moved
-            //if(_selectedCatalogFolder == catalogFolder)
-            //    await CatalogFolder_OnClick(catalogFolder.ParentFolder);
-
-            Snackbar.Add("Folder moved successfully!", Severity.Success);
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error occurred while moving CatalogFolder - Id: {catalogFolder.Id}");
+                Snackbar.Add("An error occurred!", Severity.Error);
+            }
         }
 
         private async Task DeleteCatalogFolder_OnClick(CatalogFolder catalogFolder)
         {
-            // make sure folder is empty
-            var catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(catalogFolder.Id);
-
-            if (catalogFolder.ChildFolders.Any() || catalogModels.Any())
+            try
             {
-                Snackbar.Add("Folder must be empty!", Severity.Warning);
-                return;
+                // make sure folder is empty
+                var catalogModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(catalogFolder.Id);
+
+                if (catalogFolder.ChildFolders.Any() || catalogModels.Any())
+                {
+                    Snackbar.Add("Folder must be empty!", Severity.Warning);
+                    return;
+                }
+
+                bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Folder",
+                                                                         message: "Are you sure you want to delete this folder?",
+                                                                         yesText: "Yes",
+                                                                         cancelText: "Cancel");
+                if (confirmDelete != true)
+                    return;
+
+                // delete record from database
+                await DataServicesManager.CatalogService.DeleteCatalogFolderById(catalogFolder.Id);
+
+                // refresh UI
+                if (catalogFolder.ParentFolder == null)
+                {
+                    _catalogFolders.Remove(catalogFolder);
+                }
+                else
+                {
+                    catalogFolder.ParentFolder.ChildFolders.Remove(catalogFolder);
+                }
+
+                // move up one folder level 
+                if (_selectedCatalogFolder == catalogFolder)
+                    await CatalogFolder_OnClick(catalogFolder.ParentFolder);
+
+                Snackbar.Add("Folder deleted successfully!", Severity.Success);
             }
-
-            bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Folder",
-                                                                     message: "Are you sure you want to delete this folder?",
-                                                                     yesText: "Yes",
-                                                                     cancelText: "Cancel");
-            if (confirmDelete != true)
-                return;
-
-            // delete record from database
-            await DataServicesManager.CatalogService.DeleteCatalogFolderById(catalogFolder.Id);
-
-            // refresh UI
-            if(catalogFolder.ParentFolder == null)
+            catch (Exception ex)
             {
-                _catalogFolders.Remove(catalogFolder);
+                Logger.LogError(ex, $"Error occurred while deleting CatalogFolder - Id: {catalogFolder.Id}");
+                Snackbar.Add("An error occurred!", Severity.Error);
             }
-            else
-            {
-                catalogFolder.ParentFolder.ChildFolders.Remove(catalogFolder);
-            }
-
-            // move up one folder level 
-            if(_selectedCatalogFolder == catalogFolder)
-                await CatalogFolder_OnClick(catalogFolder.ParentFolder);
-
-            Snackbar.Add("Folder deleted successfully!", Severity.Success);
         }
 
         private bool CatalogFolderNameIsDuplicate(CatalogFolder? parentFolder, string displayName)
         {
-            if(parentFolder == null)
+            if (parentFolder == null)
                 return _catalogFolders.Any(i => i.DisplayName.Equals(displayName, StringComparison.OrdinalIgnoreCase));
 
             return parentFolder.ChildFolders.Any(i => i.DisplayName.Equals(displayName, StringComparison.OrdinalIgnoreCase));
@@ -334,15 +384,6 @@ namespace CadflairBlazorServer.Pages
                 File.Delete(tempFilename);
         }
 
-        private void NewCatalogModelDialog_OnClose()
-        {
-            _uploadInProgress = false;
-            _newCatalogModelDisplayName = null;
-            _newCatalogModelDescription = null;
-            _attachedFile = null;
-            _showNewCatalogModelDialog = false;
-        }
-
         private async Task ModelDerivativeTranslation_OnComplete(string bucketKey, string objectKey)
         {
             // create database record
@@ -363,29 +404,111 @@ namespace CadflairBlazorServer.Pages
             await InvokeAsync(StateHasChanged);
         }
 
+        private void NewCatalogModelDialog_OnClose()
+        {
+            _uploadInProgress = false;
+            _newCatalogModelDisplayName = null;
+            _newCatalogModelDescription = null;
+            _attachedFile = null;
+            _showNewCatalogModelDialog = false;
+        }
+
+        private async Task MoveCatalogModel_OnClick(CatalogModel catalogModel)
+        {
+            try
+            {
+                DialogParameters parameters = new()
+                {
+                    { nameof(SelectCatalogFolderDialog.CatalogFolders), _catalogFolders },
+                    { nameof(SelectCatalogFolderDialog.CurrentLocation), _selectedCatalogFolder },
+                };
+
+                DialogResult result = await DialogService.Show<SelectCatalogFolderDialog>($"Move \"{catalogModel.DisplayName}\"", parameters).Result;
+
+                if (result.Canceled)
+                    return;
+
+                CatalogFolder selectedFolder = (CatalogFolder)result.Data;
+
+                if (selectedFolder.Id == catalogModel.CatalogFolderId)
+                    return;
+
+                // check for duplicate model name in the selected folder
+                var existingModels = await DataServicesManager.CatalogService.GetCatalogModelsByCatalogFolderId(selectedFolder.Id);
+                if (existingModels.Any(i => i.DisplayName == catalogModel.DisplayName))
+                {
+                    Snackbar.Add("Model name already used!", Severity.Warning);
+                    return;
+                }
+
+                // update database
+                catalogModel.CatalogFolderId = selectedFolder.Id;
+                await DataServicesManager.CatalogService.UpdateCatalogModel(catalogModel);
+
+                // refresh UI
+                _catalogModels.Remove(catalogModel);
+
+                Snackbar.Add("Model moved successfully!", Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error occurred while moving CatalogModel - Id: {catalogModel.Id}");
+                Snackbar.Add("An error occurred!", Severity.Error);
+            }
+        }
+
+        //private async Task RegenerateCatalogModelDerivative_OnClick(CatalogModel catalogModel)
+        //{
+        //    try
+        //    {
+        //        dynamic forgeObject = await ForgeServicesManager.ObjectStorageService.GetObjectDetails(catalogModel.BucketKey, catalogModel.ObjectKey);
+
+        //        if (await ForgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
+        //            await ForgeServicesManager.ModelDerivativeService.DeleteTranslation(forgeObject.encoded_urn);
+
+        //        // connect to Signal R hub
+        //        if (_hubConnection?.State != HubConnectionState.Connected)
+        //            await _hubConnection?.StartAsync()!;
+
+        //        await ForgeServicesManager.ModelDerivativeService.TranslateObject(catalogModel.BucketKey, catalogModel.BucketKey, catalogModel.IsZip, catalogModel.RootFileName, _hubConnection.ConnectionId);
+        //        Snackbar.Add("Generating new preview...", Severity.Success);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogError(ex, $"Error occurred while regenerating new model derivative - CatalogModel Id: {catalogModel.Id}");
+        //        Snackbar.Add("An error occurred!", Severity.Error);
+        //    }
+        //}
+
+
         private async Task DeleteCatalogModel_OnClick(CatalogModel catalogModel)
         {
-            bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Model",
-                                                                     message: "Are you sure you want to delete this model?",
-                                                                     yesText: "Yes",
-                                                                     cancelText: "Cancel");
-            if (confirmDelete != true)
-                return;
+            try
+            {
+                bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Model",
+                                                                         message: "Are you sure you want to delete this model?",
+                                                                         yesText: "Yes",
+                                                                         cancelText: "Cancel");
+                if (confirmDelete != true)
+                    return;
 
-            // delete file from Autodesk OSS
-            await ForgeServicesManager.ObjectStorageService.DeleteBucket(catalogModel.BucketKey);
+                // delete file from Autodesk OSS
+                await ForgeServicesManager.ObjectStorageService.DeleteBucket(catalogModel.BucketKey);
 
-            // delete record from database
-            await DataServicesManager.CatalogService.DeleteCatalogModelById(catalogModel.Id);
+                // delete record from database
+                await DataServicesManager.CatalogService.DeleteCatalogModelById(catalogModel.Id);
 
-            _catalogModels.Remove(catalogModel);
-            Snackbar.Add("Model deleted successfully!", Severity.Success);
+                _catalogModels.Remove(catalogModel);
+                Snackbar.Add("Model deleted successfully!", Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error occurred while deleting catalog model - CatalogModel Id: {catalogModel.Id}");
+                Snackbar.Add("An error occurred!", Severity.Error);
+            }
         }
 
         #endregion
-
-
-
 
         public async ValueTask DisposeAsync()
         {

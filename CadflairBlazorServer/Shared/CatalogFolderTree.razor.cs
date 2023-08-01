@@ -24,7 +24,7 @@ namespace CadflairBlazorServer.Shared
             if (FolderToHide == null)
                 return true;
 
-            if (folder == FolderToHide)
+            if (folder.Id == FolderToHide.Id)
                 return false;
 
             return true;

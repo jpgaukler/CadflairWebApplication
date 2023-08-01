@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Components;
 
 namespace CadflairBlazorServer.Dialogs
 {
-    public partial class MoveCatalogFolderDialog
+    public partial class SelectCatalogFolderDialog
     {
         // parameters
         [CascadingParameter] public MudDialogInstance MudDialogInstance { get; set; } = default!;
         [Parameter] public List<CatalogFolder> CatalogFolders { get; set; } = new();
-        [Parameter] public CatalogFolder FolderToMove { get; set; } = default!;
+        [Parameter] public CatalogFolder CurrentLocation { get; set; } = default!;
+        [Parameter] public CatalogFolder? FolderToHide { get; set; } = default!;
 
         // fields
         private CatalogFolder? _selectedCatalogFolder;
