@@ -18,13 +18,13 @@ namespace CadflairBlazorServer.Shared
 
         protected override async Task OnParametersSetAsync()
         {
-            if (CatalogModel == null)
-                return;
-
             _loading = true;
-            StateHasChanged();
+            //_thumbnailStringBase64 = string.Empty;
+            //StateHasChanged();
 
-            _thumbnailStringBase64 = await ForgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(CatalogModel.BucketKey, CatalogModel.ObjectKey, 400, 400);
+            if (CatalogModel != null)
+                _thumbnailStringBase64 = await ForgeServicesManager.ModelDerivativeService.GetThumbnailBase64String(CatalogModel.BucketKey, CatalogModel.ObjectKey, 400, 400);
+
             _loading = false;
         }
 

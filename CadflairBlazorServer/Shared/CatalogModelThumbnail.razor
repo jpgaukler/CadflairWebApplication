@@ -1,18 +1,18 @@
-﻿<MudPaper Height="@($"{Height}px")" Width="@($"{Width}px")" Elevation="0" Class="d-flex align-center justify-center">
-    @if (string.IsNullOrWhiteSpace(_thumbnailStringBase64))
-    {
+﻿@if (string.IsNullOrWhiteSpace(_thumbnailStringBase64))
+{
+    <MudPaper Height="@($"{Height}px")" Width="@($"{Width}px")" Elevation="0" Class="d-flex align-center justify-center">
         @if (_loading)
         {
-            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            <MudProgressCircular Size="Size.Small" Indeterminate />
         }
         else
         {
             <MudIcon Icon="@Icons.Material.Filled.ImageNotSupported" Size="Size.Large" />
         }
-    }
-    else
-    {
-        <MudImage Src="@($"data:image/png;base64,{_thumbnailStringBase64}")" Alt="thumbnail image" Height="Height" Width="Width" />
-    }
-</MudPaper>
+    </MudPaper>
+}
+else
+{
+    <MudImage Src="@($"data:image/png;base64,{_thumbnailStringBase64}")" Alt="thumbnail image" Height="Height" Width="Width" Style="transform: rotate(-120deg);" />
+}
 

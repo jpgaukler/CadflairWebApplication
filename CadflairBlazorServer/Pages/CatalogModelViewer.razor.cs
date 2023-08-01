@@ -41,36 +41,38 @@ namespace CadflairBlazorServer.Pages
         private string? _messageText;
         private bool _validRequestInputs;
 
-
-        protected override async Task OnInitializedAsync()
-        {
-            try
-            {
-                _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(SubdirectoryName);
-                _catalogModel = await DataServicesManager.CatalogService.GetCatalogModelByGuid(System.Guid.Parse(Guid));
-            }
-            catch
-            {
-                NavigationManager.NavigateTo("/notfound");
-                return;
-            }
-
-            // TO DO: may want to create a sharable link for each specific configuration
-            _shareLink = $"{NavigationManager.BaseUri}catalog/{_subscription?.SubdirectoryName}/{_catalogModel?.Guid}";
-            QRCodeGenerator qrGenerator = new();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(_shareLink, QRCodeGenerator.ECCLevel.Q);
-            Base64QRCode qrCode = new(qrCodeData);
-            _qrCodeImageAsBase64 = qrCode.GetGraphic(20);
-
-            _initializing = false;
-            StateHasChanged();
-        }
+        //protected override async Task OnInitializedAsync()
+        //{
+        //}
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             // need to make sure the component is rendered before javascript calls can be made
             if (firstRender)
+            {
+                try
+                {
+                    _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(SubdirectoryName);
+                    _catalogModel = await DataServicesManager.CatalogService.GetCatalogModelByGuid(System.Guid.Parse(Guid));
+                }
+                catch
+                {
+                    NavigationManager.NavigateTo("/notfound");
+                    return;
+                }
+
+                // TO DO: may want to create a sharable link for each specific configuration
+                _shareLink = $"{NavigationManager.BaseUri}catalog/{_subscription?.SubdirectoryName}/{_catalogModel?.Guid}";
+                QRCodeGenerator qrGenerator = new();
+                QRCodeData qrCodeData = qrGenerator.CreateQrCode(_shareLink, QRCodeGenerator.ECCLevel.Q);
+                Base64QRCode qrCode = new(qrCodeData);
+                _qrCodeImageAsBase64 = qrCode.GetGraphic(20);
+
                 await _forgeViewer!.ViewDocument(_catalogModel!.BucketKey, _catalogModel!.ObjectKey);
+
+                _initializing = false;
+                StateHasChanged();
+            }
         }
 
         private async Task RequestQuote_OnClick()

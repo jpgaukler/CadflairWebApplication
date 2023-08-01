@@ -1,6 +1,7 @@
 ﻿using Autodesk.Forge;
 using Autodesk.Forge.Model;
 using CadflairForgeAccess.Helpers;
+using System.Diagnostics;
 
 namespace CadflairForgeAccess.Services
 {
@@ -30,12 +31,13 @@ namespace CadflairForgeAccess.Services
             {
                 DerivativesApi derivative = await GetDerivativesApi();
                 dynamic manifest = await derivative.GetManifestAsync(encodedUrn);
-                return true;
+
+                if ((string)manifest.status == "success")
+                    return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { }
+
+            return false;
         }
 
         public async Task<dynamic> TranslateObject(string bucketKey, string objectKey, bool isZip = false, string? rootFileName = null, string? connectionId = null)
@@ -87,8 +89,6 @@ namespace CadflairForgeAccess.Services
             await derivative.DeleteManifestAsync(encodedUrn);
         }
 
-
-
         /// <summary>
         /// Get the thumbnail for a model in Forge OSS storage
         /// </summary>
@@ -104,6 +104,12 @@ namespace CadflairForgeAccess.Services
                 var objectDetails = await _objectStorageService.GetObjectDetails(bucketKey, objectKey);
 
                 DerivativesApi derivative = await GetDerivativesApi();
+                dynamic manifest = await derivative.GetManifestAsync(objectDetails.encoded_urn);
+                bool hasThumbnail = Convert.ToBoolean((string)manifest.hasThumbnail);
+
+                if (!hasThumbnail)
+                    return string.Empty;
+
                 Stream thumbnailStream = await derivative.GetThumbnailAsync(objectDetails.encoded_urn, width, height);
 
                 byte[] byteArray;
@@ -116,9 +122,8 @@ namespace CadflairForgeAccess.Services
 
                 return byteArray.ToBase64String();
             }
-            catch (Exception ex)
+            catch 
             {
-                //Debug.WriteLine(ex.ToString());
                 return string.Empty;
             }
         }

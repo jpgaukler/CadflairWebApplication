@@ -34,6 +34,8 @@ namespace CadflairBlazorServer.Shared
                 _logger.LogError(ex, $"Failed to load model from OSS - bucketKey: {bucketKey}, objectKey: {objectKey}");
                 _modelNotFound = true;
             }
+
+            StateHasChanged();
         }
 
         public async Task ViewDocument(string bucketKey, string objectKey)
@@ -62,7 +64,7 @@ namespace CadflairBlazorServer.Shared
                 }
                 else
                 {
-                    _logger.LogWarning($"Model derivative not found - bucketKey: {bucketKey}, objectKey: {objectKey}");
+                    _logger.LogWarning($"Model derivative manifest not found - bucketKey: {bucketKey}, objectKey: {objectKey}");
                     _modelNotFound = true;
                 }
             }
@@ -71,6 +73,8 @@ namespace CadflairBlazorServer.Shared
                 _logger.LogWarning(ex, $"Failed to load model from derivative - bucketKey: {bucketKey}, objectKey: {objectKey}");
                 _modelNotFound = true;
             }
+
+            StateHasChanged();
         }
 
     }
