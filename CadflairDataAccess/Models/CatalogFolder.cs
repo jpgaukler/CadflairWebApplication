@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CadflairDataAccess.Models
 {
-    public class CatalogFolder : IComparable
+    public class CatalogFolder : IComparable<CatalogFolder>
     {
         /// <summary>
         /// Primary key.
@@ -38,9 +38,9 @@ namespace CadflairDataAccess.Models
         public List<CatalogFolder> ChildFolders { get; set; } = new List<CatalogFolder>();
         public CatalogFolder ParentFolder { get; set; }
 
-        public int CompareTo(object obj)
+        public int CompareTo(CatalogFolder other)
         {
-            return DisplayName.CompareTo(((CatalogFolder)obj).DisplayName);
+            return DisplayName.CompareTo(other.DisplayName);
         }
     }
 }

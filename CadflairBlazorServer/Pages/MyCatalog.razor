@@ -40,7 +40,7 @@
                             <MudText Typo="Typo.h6">Upload</MudText>
                         </TitleContent>
                         <DialogContent>
-                            <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="CatalogModelUpload_FilesChanged" Accept=".stp, .ipt"
+                            <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="CatalogModelUpload_FilesChanged" Accept=".stp, .ipt" MaximumFileCount="999"
                                        InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0;" Hidden="_uploadList.Any()"
                                        @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">
                                 <ButtonTemplate>

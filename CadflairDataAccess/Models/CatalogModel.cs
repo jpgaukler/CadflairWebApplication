@@ -2,7 +2,7 @@
 
 namespace CadflairDataAccess.Models
 {
-    public class CatalogModel :IComparable
+    public class CatalogModel : IComparable<CatalogModel>
     {
         /// <summary>
         /// Primary key.
@@ -64,9 +64,9 @@ namespace CadflairDataAccess.Models
         /// </summary>
         public DateTimeOffset CreatedOn { get; set; }
 
-        public int CompareTo(object obj)
+        public int CompareTo(CatalogModel other)
         {
-            return DisplayName.CompareTo(((CatalogModel)obj).DisplayName);
+            return DisplayName.CompareTo(other.DisplayName);
         }
     }
 }
