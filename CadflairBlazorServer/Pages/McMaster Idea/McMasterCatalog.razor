@@ -1,0 +1,159 @@
+﻿@page "/catalog/mcmaster-catalog"
+@layout ConfiguratorLayout
+
+<PageTitle>McMaster Style Catalog Idea</PageTitle>
+
+<MudDrawerContainer Class="mud-height-full relative">
+
+    <!-- sidebar -->
+    <MudHidden Breakpoint="Breakpoint.MdAndDown">
+        <MudDrawer @bind-Open="@_drawerOpen" Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
+            @if (_selectedProductDefinition != null)
+            {
+                <!-- filters -->
+                <MudStack Class="pa-3">
+                    <MudText Typo="Typo.h6">Filter</MudText>
+                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                    {
+                        <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(columnDefinition, values)" 
+                                   Label="@columnDefinition.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection >
+                            @foreach (var columnValue in _products.Select(i => i.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id)).Distinct())
+                            {
+                                <MudSelectItem Value="columnValue.Value">@columnValue.Value</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                </MudStack>
+            }
+            else
+            {
+                <!-- product categories -->
+                <MudStack Spacing="0" Class="pa-1">
+                    <MudText Typo="Typo.body1" Class="pb-1">Choose a category</MudText>
+                    <MudList Clickable>
+                        @foreach (var category in _productCategories)
+                        {
+                            <MudListItem OnClick="() => ProductCategory_OnClick(category)" Variant="Variant.Outlined">@category.Name</MudListItem>
+                        }
+                    </MudList>
+                </MudStack>
+            }
+        </MudDrawer>
+    </MudHidden>
+
+    <MudStack Class="mud-height-full px-5 pt-3 overflow-auto relative">
+        <MudOverlay Visible="_initializing" Absolute Class="mud-background">
+            <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
+        </MudOverlay>
+
+        <!-- header toolbar -->
+        <div>
+            <MudToolBar DisableGutters Dense>
+                <CategoryBreadcrumbs ProductCategory="_selectedProductCategory" ProductCategoryClicked="ProductCategory_OnClick" />
+            </MudToolBar>
+            <MudDivider />
+        </div>
+
+        <MudStack Class="flex-grow-1 overflow-auto">
+            @if (_selectedProductCategory == null)
+            {
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-grow-1">
+                    <MudStack AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.Folder" Size="Size.Large" />
+                        <MudText Typo="Typo.body2">Select a category.</MudText>
+                    </MudStack>
+                </MudStack>
+            }
+            else
+            {
+                <MudGrid Justify="Justify.FlexStart" Class="ma-0" Spacing="0">
+                    @if (_selectedProductDefinition != null)
+                    {
+                        <!-- products -->
+                        <MudStack>
+                            <MudText Typo="Typo.h4" Align="Align.Left" Color="Color.Primary">PRODUCT RECORDS</MudText>
+                            <MudText Typo="Typo.body1" Align="Align.Left">Count: @_products.Count</MudText>
+                            <MudTable T="Product" Items="_products.Where(_filter)">
+                                <HeaderContent>
+                                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                                    {
+                                        <MudTh><MudTableSortLabel SortBy="new Func<Product, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">@columnDefinition.Header</MudTableSortLabel></MudTh>
+                                    }
+                                    <MudTh>Buy</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                                    {
+                                        <MudTd DataLabel="@columnDefinition.Header">@context.ColumnValues.FirstOrDefault(i => i.ColumnDefinitionId == columnDefinition.Id)?.Value</MudTd>
+                                    }
+                                    <MudTd>
+                                        <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="() => Preview_OnClick(context.BucketKey, context.ObjectKey)">Preview</MudButton>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(context.BucketKey, context.ObjectKey)" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+
+                            <MudDataGrid T="Product" Items="_products.Where(_filter)" EditMode="DataGridEditMode.Cell" Dense>
+                                <Columns>
+                                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                                    {
+                                        <TemplateColumn Title="@columnDefinition.Header" SortBy="new Func<Product, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">
+                                            <CellTemplate>
+                                                @context.Item?.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value
+                                            </CellTemplate>
+                                        </TemplateColumn>
+                                    }
+                                </Columns>
+                            </MudDataGrid>
+                        </MudStack>
+                    }
+                    else if (_selectedProductCategory.ChildCategories.Any())
+                    {
+                        <!-- child catagores -->
+                        @foreach (var category in _selectedProductCategory.ChildCategories)
+                        {
+                            <MudItem Class="pa-2">
+                                <MudButton OnClick="() => ProductCategory_OnClick(category)" Variant="Variant.Outlined">
+                                    <MudStack Row AlignItems="AlignItems.Center">
+                                        <MudPaper Height="50px" Width="50px" Elevation="0" Class="d-flex align-center justify-center">
+                                            <MudImage Src="/images/no-image.png" Alt="thumbnail image" Height="50" Width="50" />
+                                        </MudPaper>
+                                        <MudStack Spacing="0">
+                                            <MudText Typo="Typo.h4" Align="Align.Left" Color="Color.Primary">PRODUCT CATEGORY</MudText>
+                                            <MudText Typo="Typo.h6" Align="Align.Left">Id: @category.Id</MudText>
+                                            <MudText Typo="Typo.h6" Align="Align.Left">@category.Name</MudText>
+                                            <MudText Typo="Typo.body2" Align="Align.Left">@category.Description</MudText>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudButton>
+                            </MudItem>
+                        }
+                    }
+                    else if (_selectedProductCategory.ProductDefinitions.Any())
+                    {
+                        <!-- product definitions -->
+                        @foreach (var productDefinition in _selectedProductCategory.ProductDefinitions)
+                        {
+                            <MudItem Class="pa-2">
+                                <MudButton OnClick="() => ProductDefinition_OnClick(productDefinition)" Variant="Variant.Outlined">
+                                    <MudStack Row AlignItems="AlignItems.Center">
+                                        <MudPaper Height="50px" Width="50px" Elevation="0" Class="d-flex align-center justify-center">
+                                            <MudImage Src="/images/no-image.png" Alt="thumbnail image" Height="50" Width="50" />
+                                        </MudPaper>
+                                        <MudStack Spacing="0">
+                                            <MudText Typo="Typo.h4" Align="Align.Left" Color="Color.Primary">PRODUCT DEFINITION</MudText>
+                                            <MudText Typo="Typo.h6" Align="Align.Left">Id: @productDefinition.Id</MudText>
+                                            <MudText Typo="Typo.h6" Align="Align.Left">@productDefinition.Name</MudText>
+                                            <MudText Typo="Typo.body2" Align="Align.Left">@productDefinition.Description</MudText>
+                                        </MudStack>
+                                    </MudStack>
+                                </MudButton>
+                            </MudItem>
+                        }
+                    }
+                </MudGrid>
+            }
+        </MudStack>
+    </MudStack>
+</MudDrawerContainer>
+

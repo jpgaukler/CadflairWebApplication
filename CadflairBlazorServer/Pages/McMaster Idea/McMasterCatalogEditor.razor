@@ -1,0 +1,200 @@
+﻿@page "/catalog/mcmaster-catalog-editor"
+@layout ConfiguratorLayout
+
+<PageTitle>McMaster Style Catalog Editor</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mud-height-full">
+    <MudDrawerContainer Class="mud-height-full relative">
+        <MudDrawer @bind-Open="@_drawerOpen" Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
+            <MudNavMenu Rounded>
+                <MudText Typo="Typo.h6" Class="px-4">Edit Store</MudText>
+                <MudText Typo="Typo.body2" Class="px-4 mud-text-secondary">Company Name</MudText>
+                <MudDivider Class="my-2" />
+                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Product Categories</MudNavLink>
+                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Subscription</MudNavLink>
+                <MudNavLink Href="/dashboard" Icon="@Icons.Material.Filled.Dashboard">Billing</MudNavLink>
+                <MudNavGroup Title="Settings" Expanded>
+                    <MudNavLink Href="/users">Users</MudNavLink>
+                    <MudNavLink Href="/security">Security</MudNavLink>
+                </MudNavGroup>
+                <MudNavLink OnClick="() => _drawerOpen = true">Home</MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+
+@*        <div class="d-flex justify-center align-center mud-height-full">
+            <MudButton OnClick="() => _drawerOpen = !_drawerOpen" Color="Color.Primary">Toggle</MudButton>
+        </div>
+*@
+
+        <MudStack Class="pa-3 mud-height-full overflow-auto">
+
+            <MudCarousel Class="mud-height-full" ShowArrows="true" ShowBullets="false" EnableSwipeGesture="false" AutoCycle="false" TData="object">
+                <MudCarouselItem Class="d-flex flex-column overflow-auto">
+                    <MudText Typo="Typo.h4">Product Categories</MudText>
+                    <MudTextField T="string" Label="Name" Variant="Variant.Outlined" />
+                    <MudTextField T="string" Label="Description" Variant="Variant.Outlined" />
+                    <MudButton StartIcon="@Icons.Material.Filled.Add" Disabled="string.IsNullOrWhiteSpace(_newColumnHeader)">Add Category</MudButton>
+
+                    @foreach (var category in _productCategories)
+                    {
+                        <MudStack Row>
+                            <MudTextField T="string" @bind-Value="category.Name" Label="Name" Variant="Variant.Outlined" MaxLength="100" />
+                            <MudTextField T="string" @bind-Value="category.Description" Label="Name" Variant="Variant.Outlined" Lines="4" MaxLength="500" />
+                        </MudStack>
+                    }
+                </MudCarouselItem>
+                <MudCarouselItem Class="d-flex flex-column overflow-auto">
+                    <MudText Typo="Typo.h4">Product Definition</MudText>
+                    <MudTabs Position="Position.Left" Class="flex-grow-1 flex-shrink-1 overflow-auto" PanelClass="overflow-auto flex-column pa-3 gap-3" Border>
+                        <MudTabPanel Text="Details" Icon="@Icons.Material.Filled.Info">
+                            <MudText Typo="Typo.h6">Edit Details</MudText>
+                            <MudStack>
+                                <MudTextField T="string" @bind-Value="_productDefinition.Name" Label="Name" Variant="Variant.Outlined" />
+                                <MudTextField T="string" @bind-Value="_productDefinition.Description" Label="Description" Variant="Variant.Outlined" />
+                            </MudStack>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Columns" Icon="@Icons.Material.Filled.ViewColumn">
+                            <MudStack Row Justify="Justify.SpaceBetween">
+                                <MudPaper Class="pa-3">
+                                    <MudText Typo="Typo.h6">Columns</MudText>
+                                    <MudCheckBox T="bool">Is Filterable</MudCheckBox>
+                                    <MudCheckBox T="bool">Is Visible</MudCheckBox>
+                                    <MudTextField @bind-Value="_newColumnHeader" Label="Name" Immediate Variant="Variant.Outlined" />
+                                    <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddColumnDefinition_OnClick" Disabled="string.IsNullOrWhiteSpace(_newColumnHeader)">Add Column</MudButton>
+                                </MudPaper>
+                            </MudStack>
+                            <MudList Class="flex-grow-1">
+                                @foreach (var columnDef in _productDefinition.ColumnDefinitions)
+                                {
+                                    <MudStack Row>
+                                        <MudTextField Value="columnDef.Header" Variant="Variant.Outlined" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" />
+                                    </MudStack>
+                                }
+                            </MudList>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Products" Icon="@Icons.Material.Filled.Category" Disabled="!_productDefinition.ColumnDefinitions.Any()" ToolTip="@(_productDefinition.ColumnDefinitions.Any() ? string.Empty : "Add columns to begin editing products.")">
+                            <MudTable T="Product" Items="_products"
+                                      OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))"
+                                      RowEditPreview="(product) => BackupItem((Product)product)"
+                                      RowEditCancel="(product) => ResetItemToOriginalValues((Product)product)"
+                                      RowEditCommit="(product) => UpdateProduct_OnClick((Product)product)"
+                                      IsEditRowSwitchingBlocked="false" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.RowClick"
+                                      FixedHeader HorizontalScrollbar Height="100%" Class="flex-grow-1 flex-shrink-1 overflow-auto">
+                                <NoRecordsContent>
+                                    @if (_productDefinition.ColumnDefinitions.Any())
+                                    {
+                                        <MudText>No Records</MudText>
+                                        <MudText>Click <strong>New Record</strong> to get started.</MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText>No Columns</MudText>
+                                        <MudText>Click <strong>Add Column</strong> to get started.</MudText>
+                                    }
+                                </NoRecordsContent>
+                                <HeaderContent>
+                                    @foreach (var columnDefinition in _productDefinition.ColumnDefinitions)
+                                    {
+                                        <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Product, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">@columnDefinition.Header</MudTableSortLabel></MudTh>
+                                    }
+                                </HeaderContent>
+                                <RowTemplate>
+                                    @foreach (var columnDefinition in _productDefinition.ColumnDefinitions)
+                                    {
+                                        <MudTd DataLabel="@columnDefinition.Header">@context.ColumnValues.FirstOrDefault(i => i.ColumnDefinitionId == columnDefinition.Id)?.Value</MudTd>
+                                    }
+                                </RowTemplate>
+                                <RowEditingTemplate>
+                                    @foreach (var columnDefinition in _productDefinition.ColumnDefinitions)
+                                    {
+                                        <MudTd DataLabel="@columnDefinition.Header">
+                                            <MudTextField @bind-Value="@context.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value" Required />
+                                        </MudTd>
+                                    }
+                                </RowEditingTemplate>
+                            </MudTable>
+
+
+                            <MudPaper Class="pa-3 relative">
+                                <MudStack Row>
+                                    <MudText Typo="Typo.h6">Add Product</MudText>
+                                    <MudSpacer />
+                                    <MudButton StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="AddProduct_OnClick" Variant="Variant.Text">Add Product</MudButton>
+                                    <MudButton StartIcon="@Icons.Material.Filled.Clear" Size="Size.Small" OnClick="ResetNewProduct_OnClick" Variant="Variant.Text">Reset</MudButton>
+                                    @*<MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="AddProduct_OnClick" Variant="Variant.Text" />*@
+                                    @*<MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="ResetNewProduct_OnClick" Variant="Variant.Text" />*@
+                                </MudStack>
+                                <MudStack Row Class="overflow-auto">
+                                    @foreach (var columnDefinition in _productDefinition.ColumnDefinitions)
+                                    {
+                                        <MudTextField @bind-Value="_newProduct.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value" Label="@columnDefinition.Header" Required Class="py-5" Style="min-width:15ch;" />
+                                    }
+                                </MudStack>
+                                <MudOverlay Visible="!_productDefinition.ColumnDefinitions.Any()" Absolute DarkBackground />
+                            </MudPaper>
+
+                            @*                    <MudDataGrid T="ProductRecord" Items="_productRecords"
+                            ReadOnly="false" EditMode="DataGridEditMode.Cell" EditTrigger="DataGridEditTrigger.OnRowClick"
+                            Class="mud-height-full" Dense>
+                            <NoRecordsContent>
+                            <MudText>No Records</MudText>
+                            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="NewColumnDefinition_OnClick">Add Record</MudButton>
+                            </NoRecordsContent>
+                            <ToolBarContent>
+                            <MudText Typo="Typo.h6">Product Records</MudText>
+                            <MudSpacer />
+                            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="NewColumnDefinition_OnClick">Add Column</MudButton>
+                            </ToolBarContent>
+                            <Columns>
+                            @foreach (var columnDefinition in _productDefinition.ColumnDefinitions)
+                            {
+                            <PropertyColumn Property="x => x.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value"
+                            SortBy="new Func<ProductRecord, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">
+                            <EditTemplate>
+
+                            </EditTemplate>
+                            </PropertyColumn>
+                            }
+                            </Columns>
+                            <PagerContent>
+                            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="NewProductRecord_OnClick" Variant="Variant.Outlined">Add Record</MudButton>
+                            </PagerContent>
+                            </MudDataGrid>
+
+                            *@
+                        </MudTabPanel>
+                        <MudTabPanel Text="Attachments" Icon="@Icons.Material.Filled.Attachment">
+                            <MudText Typo="Typo.h5">Upload Attachments</MudText>
+                            <MudText Typo="Typo.body1">Drag and drop files to upload attachments. Files will be linked to products with matching part numbers.</MudText>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Security" Icon="@Icons.Material.Filled.Security">
+                            <MudText Typo="Typo.h5">Upload Attachments</MudText>
+                            <MudCheckBox T="bool">Allow attachment downloads.</MudCheckBox>
+                            <MudCheckBox T="bool">Require email address.</MudCheckBox>
+                        </MudTabPanel>
+                    </MudTabs>
+                    <MudPaper Height="350px" Class="d-flex flex-column pa-3 mud-background-gray flex-shrink-0">
+                        <MudText Typo="Typo.h6">Events</MudText>
+                        <MudStack Class="flex-grow-1 overflow-auto">
+                            @foreach (var message in _events)
+                            {
+                                <MudText Typo="@Typo.body2">@message</MudText>
+                            }
+                        </MudStack>
+                        @if (_events.Count > 0)
+                        {
+                            <div class="d-flex">
+                                <MudSpacer />
+                                <MudButton Variant="Variant.Filled" OnClick="() => _events.Clear()">Clear</MudButton>
+                            </div>
+                        }
+                    </MudPaper>
+                </MudCarouselItem>
+            </MudCarousel>
+        </MudStack>
+    </MudDrawerContainer>
+</MudContainer>
+
+
