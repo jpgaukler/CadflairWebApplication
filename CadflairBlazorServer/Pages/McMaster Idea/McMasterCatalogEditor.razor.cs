@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea
 {
@@ -17,18 +18,31 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private bool _drawerOpen = true;
         private bool _initializing = true;
         private string _newColumnHeader = string.Empty;
-        private ProductDefinition _productDefinition = new();
+
         private List<ProductCategory> _productCategories = new();
+        private ProductCategory? _selectedProductCategory;
+
+        private List<ProductDefinition> _productDefinitions = new();
+        private ProductDefinition? _selectedProductDefinition;
+
+        private ProductDefinition _productDefinition = new();
         private List<Product> _products = new();
         private List<string> _events = new();
 
         private Product _newProduct= new();
 
 
+        private string _dragStyle = string.Empty;
+        private void SetDragStyle() => _dragStyle = "border-color: var(--mud-palette-primary)!important";
+        private void ClearDragStyle() => _dragStyle = string.Empty;
+
+
         protected override async Task OnInitializedAsync()
         {
             try
             {
+                _productCategories = DummyData.GetProductCategories();
+                _productDefinitions = DummyData.GetProductDefinitions();
                 await Task.Delay(1000);
                 _initializing = false;
             }
@@ -37,6 +51,37 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
                 Logger.LogError(ex, $"Error occurred while initializing MyCatalog page!");
                 Snackbar.Add("An error occurred!", Severity.Error);
             }
+        }
+
+        private void AddProductCategory_OnClick(ProductCategory? parentCategory)
+        {
+            ProductCategory newCategory = new()
+            {
+                Name = "New Category",
+            };
+
+            if (parentCategory == null)
+                _productCategories.Add(newCategory);
+            else
+                parentCategory.ChildCategories.Add(newCategory);
+        }
+
+        private void DeleteProductCategory_OnClick(ProductCategory? parentCategory)
+        {
+            // TO DO: delete product category and update linked entities (other categories and product definitions)
+        }
+
+        private void MoveProductCategory_OnClick(ProductCategory? parentCategory)
+        {
+            // TO DO: change parent id for the category
+        }
+
+        private void AddProductDefinition_OnClick()
+        {
+            _productDefinitions.Add(new()
+            {
+                Name = "New product definition"
+            });
         }
 
         private void AddColumnDefinition_OnClick()
@@ -131,6 +176,12 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             _events.Insert(0, message);
             StateHasChanged();
         }
+
+        private void UploadThumbnailImage(IBrowserFile file)
+        {
+            //TODO upload the files to the server
+        }
+
 
     }
 }

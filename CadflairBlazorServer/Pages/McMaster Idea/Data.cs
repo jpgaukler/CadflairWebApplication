@@ -151,6 +151,132 @@
             },
         };
 
+        private static List<ProductDefinition> _productDefinitions = new()
+        {
+            new ProductDefinition()
+            {
+                Id = 1,
+                Name = "304 Standard Corrosion Resistant Blind Flange",
+                Description = "This is a flange that is coated in black oxide for mild corrosion resistance.",
+                ColumnDefinitions = new()
+                {
+                    new ColumnDefinition()
+                    {
+                        Id = 1,
+                        Header = "Diameter",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 2,
+                        Header = "Length",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 3,
+                        Header = "Bolt Hole Qty",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                }
+            },
+            new ProductDefinition()
+            {
+                Id = 2,
+                Name = "316 Super Corrosion Resistant Blind Flange",
+                Description = "This is a flange that is coated in black oxide for mild corrosion resistance.",
+                ColumnDefinitions = new()
+                {
+                    new ColumnDefinition()
+                    {
+                        Id = 4,
+                        Header = "Diameter",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 5,
+                        Header = "Length",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 6,
+                        Header = "Bolt Hole Qty",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                }
+            },
+            new ProductDefinition()
+            {
+                Id = 3,
+                Name = "Black Oxide Blind Flange",
+                Description = "This is a flange that is coated in black oxide for mild corrosion resistance.",
+                ColumnDefinitions = new()
+                {
+                    new ColumnDefinition()
+                    {
+                        Id = 7,
+                        Header = "Diameter",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 8,
+                        Header = "Length",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 9,
+                        Header = "Bolt Hole Qty",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                }
+            },
+            new ProductDefinition()
+            {
+                Id = 4,
+                Name = "Black Oxide Raised Flange",
+                Description = "This is a flange that is coated in black oxide for mild corrosion resistance.",
+                ColumnDefinitions = new()
+                {
+                    new ColumnDefinition()
+                    {
+                        Id = 10,
+                        Header = "Diameter",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 11,
+                        Header = "Length",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                    new ColumnDefinition()
+                    {
+                        Id = 12,
+                        Header = "Bolt Hole Qty",
+                        IsFilterable = true,
+                        IsVisible = true,
+                    },
+                }
+            },
+        };
+
+
+
         private static List<Product> _product1 = new()
         {
             new Product()
@@ -224,6 +350,11 @@
         public static List<ProductCategory> GetProductCategories()
         {
             return _productCategories;
+        }
+
+        public static List<ProductDefinition> GetProductDefinitions()
+        {
+            return _productDefinitions;
         }
 
         public static List<Product> GetProductByProductDefinitionId(int productDefinitionId)
