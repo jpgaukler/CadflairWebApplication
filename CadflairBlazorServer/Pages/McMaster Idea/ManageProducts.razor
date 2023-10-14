@@ -1,0 +1,207 @@
+﻿@if (_selectedProductDefinition == null)
+{
+    <MudPaper Class="d-flex flex-column gap-3 pa-3">
+        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">Select A Product</MudText>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddProductDefinition_OnClick">Add Product</MudButton>
+        </MudStack>
+        <MudPaper Outlined MinHeight="300px" MaxHeight="600px" Class="d-flex flex-column overflow-auto">
+            @if (ProductDefinitions.Any())
+            {
+                <MudList Clickable>
+                    @foreach (var productDefinition in ProductDefinitions)
+                    {
+                        <MudListItem Text="@productDefinition.Name" OnClick="() => ProductDefinition_OnClick(productDefinition)" />
+                    }
+                </MudList>
+            }
+            else
+            {
+                <div class="flex-grow-1 d-flex flex-column justify-center align-center">
+                    <MudText>Click <strong>Add Product</strong> to add a new product</MudText>
+                </div>
+            }
+        </MudPaper>
+    </MudPaper>
+}
+else
+{
+    <!-- product details -->
+    <MudPaper Class="pa-3 d-flex flex-column gap-3">
+        <div>
+            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="() => _selectedProductDefinition = null">Back</MudButton>
+        </div>
+
+        <MudText Typo="Typo.h6">Edit Product Details</MudText>
+        <MudStack Row>
+            @if (_selectedProductDefinition.Thumbnail == null)
+            {
+                <div class="relative">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadThumbnail" Hidden="false" Class="flex-1"
+                               InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20 cursor-pointer" InputStyle="opacity:0"
+                               @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">
+                        <ButtonTemplate>
+                            <MudPaper Height="150px" Width="150px" Class="d-flex flex-column justify-center align-center gap-1" Style="@_dragStyle" Outlined>
+                            <MudIcon Icon="@Icons.Material.Filled.AddAPhoto" Size="Size.Large" />
+                            <MudText Typo="Typo.caption" Align="Align.Center">Click or Drop to add thumbnail</MudText>
+                        </MudPaper>
+                    </ButtonTemplate>
+                </MudFileUpload>
+            </div>
+            }
+            else
+            {
+                <MudPaper Height="150px" Width="150px" Outlined Class="d-flex align-center justify-center">
+                <MudImage Src="/images/no-image.png" Alt="thumbnail image" Height="150" Width="150" />
+                </MudPaper>
+            }
+            <MudStack Class="flex-grow-1">
+                <MudTextField T="string" @bind-Value="_selectedProductDefinition.Name" Label="Name" Variant="Variant.Outlined" />
+                <MudTextField T="string" @bind-Value="_selectedProductDefinition.Description" Label="Description" Variant="Variant.Outlined" Lines="3" />
+            </MudStack>
+        </MudStack>
+        <MudToolBar>
+            <MudButton Variant="Variant.Outlined">Delete Product</MudButton>
+            <MudSpacer />
+            <MudButton Variant="Variant.Outlined" Color="Color.Primary">Save Changes</MudButton>
+        </MudToolBar>
+    </MudPaper>
+
+    <!-- columns definitions -->
+    <MudPaper Class="pa-3 d-flex flex-column gap-3">
+        <MudText Typo="Typo.h6">Columns</MudText>
+        <MudCheckBox T="bool">Is Filterable</MudCheckBox>
+        <MudCheckBox T="bool">Is Visible</MudCheckBox>
+        <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddColumnDefinition_OnClick">Add Column</MudButton>
+        <MudList Class="flex-grow-1">
+            @foreach (var columnDef in _selectedProductDefinition.ProductTable.ColumnDefinitions)
+            {
+                <MudStack Row>
+                <MudTextField Value="columnDef.Header" Variant="Variant.Outlined" />
+                <MudSelect T="int" Variant="Variant.Outlined">
+                    <MudSelectItem Value="1">Text</MudSelectItem>
+                    <MudSelectItem Value="2">Decimal</MudSelectItem>
+                    <MudSelectItem Value="3">Integer</MudSelectItem>
+                    <MudSelectItem Value="4">True/False</MudSelectItem>
+                </MudSelect>
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" />
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" />
+            </MudStack>
+            }
+        </MudList>
+    </MudPaper>
+
+    <!-- product table -->
+    <MudPaper Class="pa-3 d-flex flex-column gap-3">
+        <MudTable T="Product" Items="_products"
+                  OnCommitEditClick="@(() => Snackbar.Add("Commit Edit Handler Invoked"))"
+                  RowEditPreview="(product) => BackupItem((Product)product)"
+                  RowEditCancel="(product) => ResetItemToOriginalValues((Product)product)"
+                  RowEditCommit="(product) => UpdateProduct_OnClick((Product)product)"
+                  IsEditRowSwitchingBlocked="false" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.RowClick"
+                  FixedHeader HorizontalScrollbar Height="100%" Class="flex-grow-1 flex-shrink-1 overflow-auto">
+            <NoRecordsContent>
+                @if (_productTable.ColumnDefinitions.Any())
+                {
+                    <MudText>No Records</MudText>
+                    <MudText>Click <strong>New Record</strong> to get started.</MudText>
+                }
+                else
+                {
+                    <MudText>No Columns</MudText>
+                    <MudText>Click <strong>Add Column</strong> to get started.</MudText>
+                }
+            </NoRecordsContent>
+            <HeaderContent>
+                @*<MudTh Style="min-width:15ch;">Part Number</MudTh>*@
+                @foreach (var columnDefinition in _productTable.ColumnDefinitions)
+                {
+                    <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Product, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">@columnDefinition.Header</MudTableSortLabel></MudTh>
+                }
+            </HeaderContent>
+            <RowTemplate>
+                @*<MudTd DataLabel="Part Number">123</MudTd>*@
+                @foreach (var columnDefinition in _productTable.ColumnDefinitions)
+                {
+                    <MudTd DataLabel="@columnDefinition.Header">@context.ColumnValues.FirstOrDefault(i => i.ColumnDefinitionId == columnDefinition.Id)?.Value</MudTd>
+                }
+            </RowTemplate>
+            <RowEditingTemplate>
+@*                <MudTd DataLabel="Part Number">
+                    <MudTextField T="string" Required />
+                </MudTd>
+*@
+                @foreach (var columnDefinition in _productTable.ColumnDefinitions)
+                {
+                    <MudTd DataLabel="@columnDefinition.Header">
+                        <MudTextField @bind-Value="@context.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value" Required />
+                    </MudTd>
+                }
+            </RowEditingTemplate>
+        </MudTable>
+
+        <!-- new row form -->
+        <MudPaper Class="pa-3 relative">
+            <MudStack Row>
+                <MudText Typo="Typo.h6">Add Product</MudText>
+                <MudSpacer />
+                <MudButton StartIcon="@Icons.Material.Filled.Add" Size="Size.Small" OnClick="AddProduct_OnClick" Variant="Variant.Text">Add Product</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Clear" Size="Size.Small" OnClick="ResetNewProduct_OnClick" Variant="Variant.Text">Reset</MudButton>
+                @*<MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="AddProduct_OnClick" Variant="Variant.Text" />*@
+                @*<MudIconButton Icon="@Icons.Material.Filled.Close" Size="Size.Small" OnClick="ResetNewProduct_OnClick" Variant="Variant.Text" />*@
+            </MudStack>
+            <MudStack Row Class="overflow-auto">
+                @foreach (var columnDefinition in _productTable.ColumnDefinitions)
+                {
+                    <MudTextField @bind-Value="_newProduct.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value" Label="@columnDefinition.Header" Required Class="py-5" Style="min-width:15ch;" />
+                }
+            </MudStack>
+            <MudOverlay Visible="!_productTable.ColumnDefinitions.Any()" Absolute DarkBackground />
+        </MudPaper>
+
+        <!-- events -->
+        <MudPaper Height="350px" Class="d-flex flex-column pa-3 mud-background-gray flex-shrink-0">
+            <MudText Typo="Typo.h6">Events</MudText>
+            <MudStack Class="flex-grow-1 overflow-auto">
+                @foreach (var message in _events)
+                {
+                    <MudText Typo="@Typo.body2">@message</MudText>
+                }
+            </MudStack>
+            @if (_events.Count > 0)
+            {
+                <div class="d-flex">
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Filled" OnClick="() => _events.Clear()">Clear</MudButton>
+                </div>
+            }
+        </MudPaper>
+    </MudPaper>
+
+    <!-- attachments -->
+    <MudPaper Class="pa-3 d-flex flex-column gap-3">
+        <MudText Typo="Typo.h5">Upload Attachments</MudText>
+        <MudText Typo="Typo.body1">Drag and drop files to upload attachments. Files will be linked to products with matching part numbers.</MudText>
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Attachments_FilesChanged" Accept=".stp, .ipt" MaximumFileCount="999"
+                       InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0;"
+                       @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">
+            <ButtonTemplate>
+                <MudPaper Height="400px" Outlined Class="overflow-auto" Style="@_dragStyle">
+                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
+                        <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Large" Color="Color.Default" />
+                        <MudText Typo="Typo.body1">Drop files or click</MudText>
+                    </MudStack>
+                </MudPaper>
+            </ButtonTemplate>
+        </MudFileUpload>
+    </MudPaper>
+
+    <!-- security -->
+    <MudPaper Class="pa-3 d-flex flex-column gap-3">
+        <MudText Typo="Typo.h5">Security</MudText>
+        <MudCheckBox T="bool">Allow attachment downloads.</MudCheckBox>
+        <MudCheckBox T="bool">Require email address.</MudCheckBox>
+    </MudPaper>
+
+}
+
