@@ -1,4 +1,6 @@
-﻿@page "/catalog/mcmaster-catalog"
+﻿@using Row = CadflairEntityFrameworkDataAccess.Models.Row;
+
+@page "/catalog/mcmaster-catalog"
 @layout ConfiguratorLayout
 
 <PageTitle>McMaster Style Catalog Idea</PageTitle>
@@ -13,13 +15,13 @@
                 <!-- filters -->
                 <MudStack Class="pa-3">
                     <MudText Typo="Typo.h6">Filter</MudText>
-                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                    @foreach (var column in _productTable.Columns)
                     {
-                        <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(columnDefinition, values)" 
-                                   Label="@columnDefinition.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection >
-                            @foreach (var columnValue in _products.Select(i => i.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id)).Distinct())
+                        <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(column, values)" 
+                                   Label="@column.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection >
+                            @foreach (var tableValue in _rows.Select(i => i.TableValues.First(i => i.ColumnId == column.Id)).Distinct())
                             {
-                                <MudSelectItem Value="columnValue.Value">@columnValue.Value</MudSelectItem>
+                                <MudSelectItem Value="tableValue.Value">@tableValue.Value</MudSelectItem>
                             }
                         </MudSelect>
                     }
@@ -31,9 +33,9 @@
                 <MudStack Spacing="0" Class="pa-1">
                     <MudText Typo="Typo.body1" Class="pb-1">Choose a category</MudText>
                     <MudList Clickable>
-                        @foreach (var category in _productCategories)
+                        @foreach (var category in _categories)
                         {
-                            <MudListItem OnClick="() => ProductCategory_OnClick(category)" Variant="Variant.Outlined">@category.Name</MudListItem>
+                            <MudListItem OnClick="() => Category_OnClick(category)" Variant="Variant.Outlined">@category.Name</MudListItem>
                         }
                     </MudList>
                 </MudStack>
@@ -49,13 +51,13 @@
         <!-- header toolbar -->
         <div>
             <MudToolBar DisableGutters Dense>
-                <CategoryBreadcrumbs ProductCategory="_selectedProductCategory" ProductCategoryClicked="ProductCategory_OnClick" />
+                @*<CategoryBreadcrumbs ProductCategory="_selectedProductCategory" ProductCategoryClicked="ProductCategory_OnClick" />*@
             </MudToolBar>
             <MudDivider />
         </div>
 
         <MudStack Class="flex-grow-1 overflow-auto">
-            @if (_selectedProductCategory == null)
+            @if (_selectedCategory == null)
             {
                 <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-grow-1">
                     <MudStack AlignItems="AlignItems.Center">
@@ -72,48 +74,35 @@
                         <!-- products -->
                         <MudStack>
                             <MudText Typo="Typo.h4" Align="Align.Left" Color="Color.Primary">PRODUCT RECORDS</MudText>
-                            <MudText Typo="Typo.body1" Align="Align.Left">Count: @_products.Count</MudText>
-                            <MudTable T="Product" Items="_products.Where(_filter)">
+                            <MudText Typo="Typo.body1" Align="Align.Left">Count: @_rows.Count</MudText>
+                            <MudTable Items="_rows.Where(_filter)">
                                 <HeaderContent>
-                                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                                    @foreach (var column in _productTable.Columns)
                                     {
-                                        <MudTh><MudTableSortLabel SortBy="new Func<Product, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">@columnDefinition.Header</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortBy="new Func<Row, object>(x=>x.TableValues.First(i => i.ColumnId == column.Id).Value)">@column.Header</MudTableSortLabel></MudTh>
                                     }
                                     <MudTh>Buy</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+                                    @foreach (var column in _productTable.Columns)
                                     {
-                                        <MudTd DataLabel="@columnDefinition.Header">@context.ColumnValues.FirstOrDefault(i => i.ColumnDefinitionId == columnDefinition.Id)?.Value</MudTd>
+                                        <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
                                     }
                                     <MudTd>
-                                        <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="() => Preview_OnClick(context.BucketKey, context.ObjectKey)">Preview</MudButton>
-                                        <MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(context.BucketKey, context.ObjectKey)" />
+                                        @*<MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="() => Preview_OnClick(context.BucketKey, context.ObjectKey)">Preview</MudButton>*@
+                                        @*<MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(context.BucketKey, context.ObjectKey)" />*@
                                     </MudTd>
                                 </RowTemplate>
                             </MudTable>
-
-                            <MudDataGrid T="Product" Items="_products.Where(_filter)" EditMode="DataGridEditMode.Cell" Dense>
-                                <Columns>
-                                    @foreach (var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
-                                    {
-                                        <TemplateColumn Title="@columnDefinition.Header" SortBy="new Func<Product, object>(x=>x.ColumnValues.First(i=>i.ColumnDefinitionId == columnDefinition.Id).Value)">
-                                            <CellTemplate>
-                                                @context.Item?.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id).Value
-                                            </CellTemplate>
-                                        </TemplateColumn>
-                                    }
-                                </Columns>
-                            </MudDataGrid>
                         </MudStack>
                     }
-                    else if (_selectedProductCategory.ChildCategories.Any())
+                    else if (_selectedCategory.ChildCategories.Any())
                     {
                         <!-- child catagores -->
-                        @foreach (var category in _selectedProductCategory.ChildCategories)
+                        @foreach (var category in _selectedCategory.ChildCategories)
                         {
                             <MudItem Class="pa-2">
-                                <MudButton OnClick="() => ProductCategory_OnClick(category)" Variant="Variant.Outlined">
+                                <MudButton OnClick="() => Category_OnClick(category)" Variant="Variant.Outlined">
                                     <MudStack Row AlignItems="AlignItems.Center">
                                         <MudPaper Height="50px" Width="50px" Elevation="0" Class="d-flex align-center justify-center">
                                             <MudImage Src="/images/no-image.png" Alt="thumbnail image" Height="50" Width="50" />
@@ -129,10 +118,10 @@
                             </MudItem>
                         }
                     }
-                    else if (_selectedProductCategory.ProductDefinitions.Any())
+                    else if (_selectedCategory.ProductDefinitions.Any())
                     {
                         <!-- product definitions -->
-                        @foreach (var productDefinition in _selectedProductCategory.ProductDefinitions)
+                        @foreach (var productDefinition in _selectedCategory.ProductDefinitions)
                         {
                             <MudItem Class="pa-2">
                                 <MudButton OnClick="() => ProductDefinition_OnClick(productDefinition)" Variant="Variant.Outlined">

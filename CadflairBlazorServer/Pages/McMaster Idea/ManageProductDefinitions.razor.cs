@@ -1,10 +1,11 @@
-using CadflairBlazorServer.Pages.McMaster_Idea.Models;
+using CadflairEntityFrameworkDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Row = CadflairEntityFrameworkDataAccess.Models.Row;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea;
 
-public partial class ManageProducts
+public partial class ManageProductDefinitions
 {
     // services
     [Inject] ISnackbar Snackbar { get; set; } = default!;
@@ -15,8 +16,8 @@ public partial class ManageProducts
     // fields
     private ProductDefinition? _selectedProductDefinition;
     private ProductTable _productTable = new();
-    private List<Product> _products = new();
-    private Product _newProduct= new();
+    private List<Row> _rows = new();
+    private Row _newRow= new();
     private List<string> _events = new();
 
 
@@ -26,8 +27,8 @@ public partial class ManageProducts
     private void ProductDefinition_OnClick(ProductDefinition productDefinition)
     {
         _selectedProductDefinition = productDefinition;
-        _productTable = DummyData.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
-        ResetNewProduct_OnClick();
+        //_productTable = DummyData.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
+        ResetNewRow_OnClick();
 
         // TO DO: load the product table
     }
@@ -40,47 +41,47 @@ public partial class ManageProducts
         });
     }
 
-    private void AddColumnDefinition_OnClick()
+    private void AddColumn_OnClick()
     {
         if (_selectedProductDefinition == null)
             return;
 
-        _productTable.ColumnDefinitions.Add(new()
+        _productTable.Columns.Add(new()
         {
-            Id = _productTable.ColumnDefinitions.Count + 1,
+            Id = _productTable.Columns.Count + 1,
             Header = "New Column",
         });
 
-        ResetNewProduct_OnClick();
+        ResetNewRow_OnClick();
 
         AddEvent($"Event = NewColumnDefinition");
     }
 
-    private void ResetNewProduct_OnClick()
+    private void ResetNewRow_OnClick()
     {
         if (_selectedProductDefinition == null) 
             return;
         
-        _newProduct = new()
+        _newRow = new()
         {
-            ColumnValues = _selectedProductDefinition.ProductTable.ColumnDefinitions.Select(i => new ColumnValue()
+            TableValues = _productTable.Columns.Select(i => new TableValue()
             {
-                ColumnDefinitionId = i.Id,
+                ColumnId = i.Id,
             }).ToList()
         };
 
         //StateHasChanged();
     }
 
-    private void AddProduct_OnClick()
+    private void AddRow_OnClick()
     {
-        _products.Add(_newProduct);
-        ResetNewProduct_OnClick();
+        _rows.Add(_newRow);
+        ResetNewRow_OnClick();
 
         AddEvent($"Event = NewProductRecord");
     }
 
-    private void BackupItem(Product product)
+    private void RowEditPreview(Row row)
     {
         // TO DO: create a backup copy of the item in memory
         //elementBeforeEdit = new()
@@ -91,23 +92,23 @@ public partial class ManageProducts
         //    Position = ((Element)element).Position
         //};
 
-        AddEvent($"RowEditPreview event: made a backup of record {product.Id}");
+        AddEvent($"RowEditPreview event: made a backup of record {row.Id}");
         StateHasChanged();
     }
 
-    private void UpdateProduct_OnClick(Product product)
+    private void RowEditCommit(Row row)
     {
         // TO DO: save changes to database
 
-        AddEvent($"RowEditCommit event: Changes to record: {product.Id} values: {string.Join(", ", product.ColumnValues.Select(i => i.Value))} committed");
+        AddEvent($"RowEditCommit event: Changes to record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
     }
 
-    private void ResetItemToOriginalValues(Product product)
+    private void RowEditCancel(Row row)
     {
         // TO DO: reset to original values
 
         
-        AddEvent($"RowEditCancel event: Editing of record: {product.Id} values: {string.Join(", ", product.ColumnValues.Select(i => i.Value))} canceled");
+        AddEvent($"RowEditCancel event: Editing of record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
         StateHasChanged();
     }
 

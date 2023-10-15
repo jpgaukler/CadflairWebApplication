@@ -1,4 +1,4 @@
-using CadflairBlazorServer.Pages.McMaster_Idea.Models;
+using CadflairEntityFrameworkDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea;
@@ -23,8 +23,8 @@ public partial class McMasterCatalogEditor
     {
         try
         {
-            _categories = DummyData.GetCategories();
-            _productDefinitions = DummyData.GetProductDefinitions();
+            //_categories = DummyData.GetCategories();
+            //_productDefinitions = DummyData.GetProductDefinitions();
             await Task.Delay(1000);
             _initializing = false;
         }

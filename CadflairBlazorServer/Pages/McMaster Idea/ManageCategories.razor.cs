@@ -1,4 +1,4 @@
-using CadflairBlazorServer.Pages.McMaster_Idea.Models;
+using CadflairEntityFrameworkDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 

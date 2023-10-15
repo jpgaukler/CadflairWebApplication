@@ -22,6 +22,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
+		<ProjectReference Include="..\CadflairEntityFrameworkDataAccess\CadflairEntityFrameworkDataAccess.csproj" />
 		<ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
 	</ItemGroup>
 
@@ -35,12 +36,6 @@
 		<EmbeddedResource Include="Emails\ProductQuoteRequestEmail.cshtml">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</EmbeddedResource>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="Pages\McMaster Idea\CategoryBreadcrumbs.razor">
-	    <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-	  </Content>
 	</ItemGroup>
 
 	<ProjectExtensions>

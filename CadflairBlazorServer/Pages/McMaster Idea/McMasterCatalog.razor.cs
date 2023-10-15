@@ -1,5 +1,7 @@
+using CadflairEntityFrameworkDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Row = CadflairEntityFrameworkDataAccess.Models.Row;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea
 {
@@ -19,28 +21,29 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private bool _drawerOpen = true;
         private bool _initializing = true;
         private bool _loadingCatalogModels = false;
-        private List<ProductCategory> _productCategories = new();
-        private ProductCategory? _selectedProductCategory;
+        private List<Category> _categories = new();
+        private Category? _selectedCategory;
         private ProductDefinition? _selectedProductDefinition;
-        private List<Product> _products = new();
-        private Dictionary<ColumnDefinition, HashSet<string>> _columnFilters = new();
+        private ProductTable _productTable = new();
+        private List<Row> _rows = new();
+        private Dictionary<int, HashSet<string>> _columnFilters = new();
 
-        private Func<Product, bool> _filter => product =>
+        private Func<Row, bool> _filter => row =>
         {
             if (_selectedProductDefinition == null)
                 return true;
 
-            foreach(var columnDefinition in _selectedProductDefinition.ColumnDefinitions)
+            foreach(var column in _productTable.Columns)
             {
                 // if no filter value selected then continue to next column
-                if (_columnFilters.ContainsKey(columnDefinition) == false)
+                if (_columnFilters.ContainsKey(column.Id) == false)
                     continue;
 
                 // if one or more filter values selected, then exclude products that do not match visible values
-                ColumnValue columnValue = product.ColumnValues.First(i => i.ColumnDefinitionId == columnDefinition.Id);
+                TableValue value = row.TableValues.First(i => i.ColumnId == column.Id);
 
-                // I WILL PROBABLY WANT TO UPDATE THIS TO LOOK AT THE COLUMNVALUE.ID RATHER THAN THE STRING VALUE
-                if (_columnFilters[columnDefinition].Contains(columnValue.Value) == false)
+                // check to see if this value is selected in the column filters
+                if (_columnFilters[column.Id].Contains(value.Value) == false)
                     return false;
             }
 
@@ -52,7 +55,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             try
             {
                 await Task.Delay(2000);
-                _productCategories = DummyData.GetProductCategories();
+                //_categories = DummyData.GetProductCategories();
 
                 _initializing = false;
             }
@@ -63,9 +66,9 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             }
         }
 
-        private void ProductCategory_OnClick(ProductCategory? selectedCategory)
+        private void Category_OnClick(Category? selectedCategory)
         {
-            _selectedProductCategory = selectedCategory;
+            _selectedCategory = selectedCategory;
             _selectedProductDefinition = null;
         }
 
@@ -77,18 +80,18 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             if (_selectedProductDefinition == null)
                 return;
 
-            _products = DummyData.GetProductByProductDefinitionId(_selectedProductDefinition.Id);
+            //_products = DummyData.GetProductByProductDefinitionId(_selectedProductDefinition.Id);
         }
 
-        private void ColumnFilter_OnSelect(ColumnDefinition columnDefinition, IEnumerable<string> values)
+        private void ColumnFilter_OnSelect(Column column, IEnumerable<string> values)
         {
-            if (_columnFilters.ContainsKey(columnDefinition))
-                _columnFilters.Remove(columnDefinition);
+            if (_columnFilters.ContainsKey(column.Id))
+                _columnFilters.Remove(column.Id);
 
             if (!values.Any())
                 return;
 
-            _columnFilters.Add(columnDefinition, values.ToHashSet());
+            _columnFilters.Add(column.Id, values.ToHashSet());
         }
 
         private void Preview_OnClick(string bucketKey, string objectKey)

@@ -1,9 +1,14 @@
-﻿namespace CadflairBlazorServer.Pages.McMaster_Idea.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-public class ColumnDefinition
+namespace CadflairEntityFrameworkDataAccess.Models;
+
+public class Column
 {
     public int Id { get; set; }
     public int ProductTableId { get; set; }
+    public ProductTable ProductTable { get; set; } = null!;
+
+    [Column(TypeName = "nvarchar(50)")]
     public string Header { get; set; } = string.Empty;
 
     //public int ValueTypeId { get; set; }
