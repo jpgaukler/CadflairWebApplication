@@ -118,10 +118,10 @@
                             </MudItem>
                         }
                     }
-                    else if (_selectedCategory.ProductDefinitions.Any())
+                    else if (_productDefinitions.Any())
                     {
                         <!-- product definitions -->
-                        @foreach (var productDefinition in _selectedCategory.ProductDefinitions)
+                        @foreach (var productDefinition in _productDefinitions)
                         {
                             <MudItem Class="pa-2">
                                 <MudButton OnClick="() => ProductDefinition_OnClick(productDefinition)" Variant="Variant.Outlined">

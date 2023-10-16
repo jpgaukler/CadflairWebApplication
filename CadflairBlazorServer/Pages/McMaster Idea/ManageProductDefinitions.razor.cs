@@ -1,4 +1,3 @@
-using CadflairEntityFrameworkDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Row = CadflairEntityFrameworkDataAccess.Models.Row;
@@ -8,9 +7,12 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea;
 public partial class ManageProductDefinitions
 {
     // services
+    [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
     [Inject] ISnackbar Snackbar { get; set; } = default!;
 
     // parameters
+    [CascadingParameter] public User LoggedInUser { get; set; } = default!;
+    [CascadingParameter] public Subscription Subscription { get; set; } = default!;
     [Parameter] public List<ProductDefinition> ProductDefinitions { get; set; } = new();
 
     // fields
@@ -23,6 +25,8 @@ public partial class ManageProductDefinitions
 
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
+    private string? _newName;
+    private string? _newDescription;
 
     private void ProductDefinition_OnClick(ProductDefinition productDefinition)
     {
@@ -33,12 +37,17 @@ public partial class ManageProductDefinitions
         // TO DO: load the product table
     }
 
-    private void AddProductDefinition_OnClick()
+    private async Task AddProductDefinition_OnClick()
     {
-        ProductDefinitions.Add(new()
-        {
-            Name = "New product definition"
-        });
+        ProductDefinition newProductDefinition = await DataServicesManager.McMasterService.CreateProductDefinition(subscriptionId: Subscription.Id,
+                                                                                                                   categoryId: null,
+                                                                                                                   name: _newName,
+                                                                                                                   description: _newDescription,
+                                                                                                                   thumbnailId: null,
+                                                                                                                   forgeBucketKey: null,
+                                                                                                                   createdById: LoggedInUser.Id);
+
+        ProductDefinitions.Add(newProductDefinition);
     }
 
     private void AddColumn_OnClick()
@@ -62,13 +71,13 @@ public partial class ManageProductDefinitions
         if (_selectedProductDefinition == null) 
             return;
         
-        _newRow = new()
-        {
-            TableValues = _productTable.Columns.Select(i => new TableValue()
-            {
-                ColumnId = i.Id,
-            }).ToList()
-        };
+        //_newRow = new()
+        //{
+        //    TableValues = _productTable.Columns.Select(i => new TableValue()
+        //    {
+        //        ColumnId = i.Id,
+        //    }).ToList()
+        //};
 
         //StateHasChanged();
     }

@@ -1,10 +1,16 @@
-﻿@if (_selectedCategory == null)
+﻿<MudPaper Class="d-flex flex-column gap-3 pa-3">
+    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h6">Add Category</MudText>
+        <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddCategory_OnClick(null)">Add Category</MudButton>
+    </MudStack>
+    <MudTextField @bind-Value="_newName" Label="Name" Variant="Variant.Outlined" MaxLength="50" />
+    <MudTextField @bind-Value="_newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" MaxLength="500" />
+</MudPaper>
+
+@if (_selectedCategory == null)
 {
     <MudPaper Class="d-flex flex-column gap-3 pa-3">
-        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-            <MudText Typo="Typo.h6">Select A Category</MudText>
-            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddCategory_OnClick(null)">Add Category</MudButton>
-        </MudStack>
+        <MudText Typo="Typo.h6">Select A Category</MudText>
         <MudPaper Outlined MinHeight="300px" MaxHeight="600px" Class="d-flex flex-column overflow-auto">
             @if (Categories.Any())
             {
@@ -34,7 +40,7 @@ else
         <!-- category details -->
         <MudText Typo="Typo.h6">Edit Product Category</MudText>
         <MudStack Row>
-            @if (_selectedCategory.Thumbnail == null)
+            @if (_selectedCategory.ThumbnailId == null)
             {
                 <div class="relative">
                     <MudFileUpload T="IBrowserFile" FilesChanged="UploadThumbnail" Hidden="false" Class="flex-1"

@@ -113,6 +113,26 @@
     <Build Include="dbo\Stored Procedures\spCatalogModel_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spCatalogFolder_UpdateById.sql" />
     <Build Include="dbo\Stored Procedures\spCatalogModel_UpdateById.sql" />
+    <Build Include="dbo\Tables\Category.sql" />
+    <Build Include="dbo\Tables\ProductDefinition.sql" />
+    <Build Include="dbo\Tables\Thumbnail.sql" />
+    <Build Include="dbo\Tables\ProductTable.sql" />
+    <Build Include="dbo\Tables\Row.sql" />
+    <Build Include="dbo\Tables\Column.sql" />
+    <Build Include="dbo\Tables\TableValue.sql" />
+    <Build Include="dbo\Tables\Attachment.sql" />
+    <Build Include="dbo\Stored Procedures\spCategory_GetBySubscriptionId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductDefinition_GetBySubscriptionId.sql" />
+    <Build Include="dbo\Stored Procedures\spCategory_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductDefinition_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductTable_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spColumn_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spRow_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spTableValue_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spProductTable_GetByProductDefinitionId.sql" />
+    <Build Include="dbo\Stored Procedures\spColumn_GetByProductTableId.sql" />
+    <Build Include="dbo\Stored Procedures\spRow_GetByProductTableId.sql" />
+    <Build Include="dbo\Stored Procedures\spTableValue_GetByProductTableId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

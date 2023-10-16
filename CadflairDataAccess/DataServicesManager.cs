@@ -13,6 +13,7 @@ namespace CadflairDataAccess
         public ProductService ProductService { get; }
         public CatalogService CatalogService { get; }
         public NotificationService NotificationService { get; }
+        public McMasterService McMasterService { get; }
 
         public DataServicesManager(IConfiguration configuration)
         {
@@ -23,6 +24,7 @@ namespace CadflairDataAccess
             UserService = new UserService(_dataAccess, NotificationService);
             ProductService = new ProductService(_dataAccess);
             CatalogService = new CatalogService(_dataAccess);
+            McMasterService = new McMasterService(_dataAccess);
         }
     }
 }

@@ -1,4 +1,3 @@
-using CadflairEntityFrameworkDataAccess.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Row = CadflairEntityFrameworkDataAccess.Models.Row;
@@ -23,6 +22,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private bool _loadingCatalogModels = false;
         private List<Category> _categories = new();
         private Category? _selectedCategory;
+        private List<ProductDefinition> _productDefinitions = new();
         private ProductDefinition? _selectedProductDefinition;
         private ProductTable _productTable = new();
         private List<Row> _rows = new();
@@ -33,19 +33,19 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             if (_selectedProductDefinition == null)
                 return true;
 
-            foreach(var column in _productTable.Columns)
-            {
-                // if no filter value selected then continue to next column
-                if (_columnFilters.ContainsKey(column.Id) == false)
-                    continue;
+            //foreach(var column in _productTable.Columns)
+            //{
+            //    // if no filter value selected then continue to next column
+            //    if (_columnFilters.ContainsKey(column.Id) == false)
+            //        continue;
 
-                // if one or more filter values selected, then exclude products that do not match visible values
-                TableValue value = row.TableValues.First(i => i.ColumnId == column.Id);
+            //    // if one or more filter values selected, then exclude products that do not match visible values
+            //    TableValue value = row.TableValues.First(i => i.ColumnId == column.Id);
 
-                // check to see if this value is selected in the column filters
-                if (_columnFilters[column.Id].Contains(value.Value) == false)
-                    return false;
-            }
+            //    // check to see if this value is selected in the column filters
+            //    if (_columnFilters[column.Id].Contains(value.Value) == false)
+            //        return false;
+            //}
 
             return true;
         };
