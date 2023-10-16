@@ -10,6 +10,7 @@ public class Column
 
     [Column(TypeName = "nvarchar(50)")]
     public string Header { get; set; } = string.Empty;
+    public ICollection<TableValue> TableValues { get; set; } = null!;
 
     //public int ValueTypeId { get; set; }
     //public ValueTypeEnum ValueTypeEnum => (ValueTypeEnum)ValueTypeId;

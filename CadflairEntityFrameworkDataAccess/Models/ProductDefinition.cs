@@ -14,7 +14,7 @@ public class ProductDefinition
     public string Name { get; set; } = string.Empty;
 
     [Column(TypeName = "nvarchar(500)")]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; } 
 
     [Column(TypeName = "varchar(50)")]
     public string? ForgeBucketKey { get; set; } 
