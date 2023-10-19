@@ -11,7 +11,8 @@ namespace CadflairDataAccess.Models
         public string Description { get; set; }
         public int? ThumbnailId { get; set; }
         public string ForgeBucketKey { get; set; }
-        public int CreatedById { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public int CreatedById { get; }
+        public DateTimeOffset CreatedOn { get; }
+
     }
 }

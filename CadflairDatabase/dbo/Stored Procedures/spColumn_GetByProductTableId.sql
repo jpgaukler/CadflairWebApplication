@@ -2,6 +2,6 @@
 	@ProductTableId int
 AS
 
-SELECT * FROM [dbo].[Column] WHERE [ProductTableId] = @ProductTableId
+SELECT * FROM [dbo].[Column] WHERE [ProductTableId] = @ProductTableId ORDER BY [SortOrder]
 
 GO

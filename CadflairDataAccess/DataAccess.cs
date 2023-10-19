@@ -70,7 +70,7 @@ namespace CadflairDataAccess
         }
 
         /// <summary>
-        /// Saves data for a single row in a table. Use this method to insert a new row, or modify a single row in a table.
+        /// Saves data for a single row in a table. Use this method to insert a new row in a table.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="storedProcedure"></param>

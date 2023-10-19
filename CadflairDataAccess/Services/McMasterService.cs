@@ -160,6 +160,9 @@ namespace CadflairDataAccess.Services
             foreach(var row in productTable.Rows)
                 row.TableValues = values.Where(i => i.RowId == row.Id).ToList();
 
+            foreach(var column in productTable.Columns)
+                column.TableValues = values.Where(i => i.ColumnId == column.Id).ToList();
+
             return productTable;
         }
 
@@ -180,12 +183,13 @@ namespace CadflairDataAccess.Services
 
         #region "Column"
 
-        public Task<Column> CreateColumn(int productTableId, string header, int createdById)
+        public Task<Column> CreateColumn(int productTableId, string header, int sortOrder, int createdById)
         {
             dynamic values = new
             {
                 ProductTableId = productTableId,
                 Header = header,
+                SortOrder = sortOrder,
                 CreatedById = createdById,
             };
 
@@ -195,6 +199,23 @@ namespace CadflairDataAccess.Services
         private Task<List<Column>> GetColumnsByProductTableId(int productTableId)
         {
             return _db.LoadDataAsync<Column, dynamic>("[dbo].[spColumn_GetByProductTableId]", new { ProductTableId  = productTableId });
+        }
+
+        public Task UpdateColumn(Column column)
+        {
+            dynamic values = new
+            {
+                column.Id,
+                column.Header,
+                column.SortOrder,
+            };
+
+            return _db.SaveDataAsync("[dbo].[spColumn_UpdateById]", values);
+        }
+
+        public Task DeleteColumnById(int columnId)
+        {
+            return _db.SaveDataAsync("[dbo].[spColumn_DeleteById]", new { Id = columnId });
         }
 
         #endregion
@@ -217,11 +238,17 @@ namespace CadflairDataAccess.Services
             return _db.LoadDataAsync<Row, dynamic>("[dbo].[spRow_GetByProductTableId]", new { ProductTableId  = productTableId });
         }
 
+        public Task DeleteRowById(int rowId)
+        {
+            return _db.SaveDataAsync("[dbo].[spRow_DeleteById]", new { Id = rowId });
+        }
+
+
         #endregion
 
         #region "TableValue"
 
-        public Task<TableValue> CreateTableValue(int productTableId, int columnId, int rowId, string value)
+        public Task<TableValue> CreateTableValue(int productTableId, int columnId, int rowId, string value, int createdById)
         {
             dynamic values = new
             {
@@ -229,15 +256,30 @@ namespace CadflairDataAccess.Services
                 ColumnId = columnId,
                 RowId = rowId,
                 Value = value,
+                CreatedById = createdById,
             };
 
             return _db.SaveSingleAsync<TableValue, dynamic>("[dbo].[spTableValue_Insert]", values);
+        }
+
+        public Task UpdateTableValue(TableValue tableValue)
+        {
+            dynamic values = new
+            {
+                tableValue.Id,
+                tableValue.RowId,
+                tableValue.ColumnId,
+                tableValue.Value,
+            };
+
+            return _db.SaveDataAsync("[dbo].[spTableValue_UpdateById]", values);
         }
 
         private Task<List<TableValue>> GetTableValuesByProductTableId(int productTableId)
         {
             return _db.LoadDataAsync<TableValue, dynamic>("[dbo].[spTableValue_GetByProductTableId]", new { ProductTableId  = productTableId });
         }
+
 
         #endregion
 

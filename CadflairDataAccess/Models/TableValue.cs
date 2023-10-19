@@ -5,7 +5,7 @@ namespace CadflairDataAccess.Models
     public class TableValue
     {
         public int Id { get; set; }
-        public int ProductTableId { get; set; }
+        public int ProductTableId { get; }
         public int ColumnId { get; set; }
         public int RowId { get; set; }
 
@@ -13,8 +13,8 @@ namespace CadflairDataAccess.Models
         /// starting with only string values for the demo
         /// </summary>
         public string Value { get; set; } = string.Empty;
-        public int CreatedById { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public int CreatedById { get; }
+        public DateTimeOffset CreatedOn { get; }
 
         //public int ValueTypeId { get; set; }
         //public ValueTypeEnum ValueTypeEnum => (ValueTypeEnum)ValueTypeId; 

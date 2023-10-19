@@ -11,8 +11,9 @@ namespace CadflairDataAccess.Models
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; }
         public int? ThumbnailId { get; set; }
-        public int CreatedById { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public int CreatedById { get; }
+        public DateTimeOffset CreatedOn { get; }
+
         public Category ParentCategory { get; set; }
         public List<Category> ChildCategories { get; set; } = new List<Category>();
 

@@ -7,7 +7,8 @@ namespace CadflairDataAccess.Models
         public int Id { get; set; }
         public int RowId { get; set; }
         public string ForgeObjectKey { get; set; } = string.Empty;
-        public int CreatedById { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public int CreatedById { get; }
+        public DateTimeOffset CreatedOn { get; }
+
     }
 }

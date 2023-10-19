@@ -7,8 +7,8 @@ namespace CadflairDataAccess.Models
     {
         public int Id { get; set; }
         public int ProductTableId { get; set; }
-        public int CreatedById { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
-        public List<TableValue> TableValues { get; set; }
+        public int CreatedById { get; }
+        public DateTimeOffset CreatedOn { get; }
+        public List<TableValue> TableValues { get; set; } = new List<TableValue>();
     }
 }

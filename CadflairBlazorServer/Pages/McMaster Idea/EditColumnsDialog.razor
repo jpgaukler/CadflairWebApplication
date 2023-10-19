@@ -1,0 +1,43 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">Edit Columns</MudText>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddColumn_OnClick">Add Column</MudButton>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <!-- columns definitions -->
+        @if (ProductTable.Columns.Any())
+        {
+            <MudList Class="flex-grow-1">
+                @foreach (var column in ProductTable.Columns)
+                {
+                    <MudStack Row>
+                        <MudText>@column.SortOrder</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Size="Size.Small" OnClick="() => DecreaseSortOrder_OnClick(column)" />
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" Size="Size.Small" OnClick="() => IncreaseSortOrder_OnClick(column)"  />
+                        <MudTextField Value="column.Header" Variant="Variant.Outlined" />
+@*                        <MudSelect T="int" Variant="Variant.Outlined">
+                            <MudSelectItem Value="1">Text</MudSelectItem>
+                            <MudSelectItem Value="2">Decimal</MudSelectItem>
+                            <MudSelectItem Value="3">Integer</MudSelectItem>
+                            <MudSelectItem Value="4">True/False</MudSelectItem>
+                        </MudSelect>
+*@
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteColumn_OnClick(column)" />
+                    </MudStack>
+                }
+            </MudList>
+        }
+        else
+        {
+            <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="0">
+                <MudText Typo="Typo.body2">No Columns</MudText>
+                <MudText Typo="Typo.body2">Click <strong>Add Column</strong> to add columns.</MudText>
+            </MudStack>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Ok_OnClick" Color="Color.Primary">Ok</MudButton>
+    </DialogActions>
+</MudDialog>

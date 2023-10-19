@@ -1,0 +1,14 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudStack Class="overflow-auto">
+            @foreach (var column in Columns)
+            {
+                <MudTextField @bind-Value="NewRowValues.First(i => i.ColumnId == column.Id).Value" Label="@column.Header" Required Variant="Variant.Outlined" />
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+        <MudButton OnClick="Ok_OnClick" Disabled="NewRowValues.Any(i => string.IsNullOrEmpty(i.Value))" Color="Color.Primary">Ok</MudButton>
+    </DialogActions>
+</MudDialog>

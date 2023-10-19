@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Row = CadflairEntityFrameworkDataAccess.Models.Row;
+using Row = CadflairDataAccess.Models.Row;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea;
 
@@ -9,6 +9,7 @@ public partial class ManageProductDefinitions
     // services
     [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
     [Inject] ISnackbar Snackbar { get; set; } = default!;
+    [Inject] IDialogService DialogService { get; set; } = default!;
 
     // parameters
     [CascadingParameter] public User LoggedInUser { get; set; } = default!;
@@ -17,32 +18,44 @@ public partial class ManageProductDefinitions
 
     // fields
     private ProductDefinition? _selectedProductDefinition;
-    private ProductTable _productTable = new();
-    private List<Row> _rows = new();
-    private Row _newRow= new();
+    private ProductTable? _productTable;
+    private Row _rowBeforeEdit = new();
     private List<string> _events = new();
 
 
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
-    private string? _newName;
-    private string? _newDescription;
 
-    private void ProductDefinition_OnClick(ProductDefinition productDefinition)
+    private async Task ProductDefinition_OnClick(ProductDefinition productDefinition)
     {
         _selectedProductDefinition = productDefinition;
-        //_productTable = DummyData.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
-        ResetNewRow_OnClick();
+        _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(productDefinition.Id);
+        //ResetNewRow_OnClick();
+    }
 
-        // TO DO: load the product table
+    private async Task DeleteProductDefinition_OnClick()
+    {
+        if (_selectedProductDefinition == null)
+            return;
+
+        await DataServicesManager.McMasterService.DeleteProductDefinitionById(_selectedProductDefinition.Id);
+        ProductDefinitions.Remove(_selectedProductDefinition);
+        _selectedProductDefinition = null;
     }
 
     private async Task AddProductDefinition_OnClick()
     {
+        DialogResult result = await DialogService.Show<AddProductDefinitionDialog>("Add Product Definition").Result;
+
+        if (result.Canceled)
+            return;
+
+        AddProductDefinitionDialog dialog = (AddProductDefinitionDialog)result.Data;
+
         ProductDefinition newProductDefinition = await DataServicesManager.McMasterService.CreateProductDefinition(subscriptionId: Subscription.Id,
                                                                                                                    categoryId: null,
-                                                                                                                   name: _newName,
-                                                                                                                   description: _newDescription,
+                                                                                                                   name: dialog.Name,
+                                                                                                                   description: dialog.Description,
                                                                                                                    thumbnailId: null,
                                                                                                                    forgeBucketKey: null,
                                                                                                                    createdById: LoggedInUser.Id);
@@ -50,76 +63,93 @@ public partial class ManageProductDefinitions
         ProductDefinitions.Add(newProductDefinition);
     }
 
-    private void AddColumn_OnClick()
+    private async Task EditColumns_OnClick()
     {
-        if (_selectedProductDefinition == null)
+        if (_productTable == null)
             return;
 
-        _productTable.Columns.Add(new()
+        DialogParameters parameters = new()
         {
-            Id = _productTable.Columns.Count + 1,
-            Header = "New Column",
-        });
+            { nameof(EditColumnsDialog.ProductTable), _productTable},
+            { nameof(EditColumnsDialog.LoggedInUser), LoggedInUser},
+        };
 
-        ResetNewRow_OnClick();
-
-        AddEvent($"Event = NewColumnDefinition");
+        await DialogService.Show<EditColumnsDialog>("Edit Columns", parameters).Result;
     }
 
-    private void ResetNewRow_OnClick()
+    private async Task AddRow_OnClick()
     {
-        if (_selectedProductDefinition == null) 
+        if (_productTable == null) 
             return;
-        
-        //_newRow = new()
-        //{
-        //    TableValues = _productTable.Columns.Select(i => new TableValue()
-        //    {
-        //        ColumnId = i.Id,
-        //    }).ToList()
-        //};
 
-        //StateHasChanged();
-    }
+        DialogParameters parameters = new()
+        {
+            { nameof(AddRowDialog.Columns), _productTable.Columns },
+        };
 
-    private void AddRow_OnClick()
-    {
-        _rows.Add(_newRow);
-        ResetNewRow_OnClick();
+        DialogResult result = await DialogService.Show<AddRowDialog>("Add Product", parameters).Result;
 
-        AddEvent($"Event = NewProductRecord");
+        if (result.Canceled)
+            return;
+
+        AddRowDialog dialog = (AddRowDialog)result.Data;
+
+        Row newRow = await DataServicesManager.McMasterService.CreateRow(productTableId: _productTable.Id,
+                                                                         createdById: LoggedInUser.Id);
+
+        // add an new table value for each column 
+        foreach(var tableValue in dialog.NewRowValues)
+        {
+            TableValue newTableValue = await DataServicesManager.McMasterService.CreateTableValue(productTableId: _productTable.Id,
+                                                                                                  rowId: newRow.Id,
+                                                                                                  columnId: tableValue.ColumnId,
+                                                                                                  value: tableValue.Value,
+                                                                                                  createdById: LoggedInUser.Id);
+            newRow.TableValues.Add(newTableValue);
+        }
+
+        _productTable.Rows.Add(newRow);
+
+        //ResetNewRow_OnClick();
+        //AddEvent($"Event = NewProductRecord");
     }
 
     private void RowEditPreview(Row row)
     {
-        // TO DO: create a backup copy of the item in memory
-        //elementBeforeEdit = new()
-        //{
-        //    Sign = ((Element)element).Sign,
-        //    Name = ((Element)element).Name,
-        //    Molar = ((Element)element).Molar,
-        //    Position = ((Element)element).Position
-        //};
+        // create a backup copy of the values in memory
+        _rowBeforeEdit = new()
+        {
+            TableValues = row.TableValues.Select(i => new TableValue()
+            {
+                Id = i.Id,
+                RowId = i.RowId,
+                ColumnId = i.ColumnId,
+                Value = i.Value,
+            }).ToList()
+        };
 
         AddEvent($"RowEditPreview event: made a backup of record {row.Id}");
-        StateHasChanged();
-    }
-
-    private void RowEditCommit(Row row)
-    {
-        // TO DO: save changes to database
-
-        AddEvent($"RowEditCommit event: Changes to record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
     }
 
     private void RowEditCancel(Row row)
     {
-        // TO DO: reset to original values
-
+        // reset to original values
+        foreach (var tableValue in row.TableValues)
+            tableValue.Value = _rowBeforeEdit.TableValues.First(i => i.Id == tableValue.Id).Value;
         
         AddEvent($"RowEditCancel event: Editing of record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
         StateHasChanged();
     }
+
+    private async Task RowEditCommit(Row row)
+    {
+        foreach(var tableValue in row.TableValues)
+            await DataServicesManager.McMasterService.UpdateTableValue(tableValue);
+
+        AddEvent($"RowEditCommit event: Changes to record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
+    }
+
+
 
     private void AddEvent(string message)
     {

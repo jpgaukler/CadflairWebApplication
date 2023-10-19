@@ -133,6 +133,12 @@
     <Build Include="dbo\Stored Procedures\spColumn_GetByProductTableId.sql" />
     <Build Include="dbo\Stored Procedures\spRow_GetByProductTableId.sql" />
     <Build Include="dbo\Stored Procedures\spTableValue_GetByProductTableId.sql" />
+    <Build Include="dbo\Stored Procedures\spTableValue_UpdateById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductDefinition_UpdateById.sql" />
+    <Build Include="dbo\Stored Procedures\spRow_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spColumn_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spProductDefinition_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\spColumn_UpdateById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />

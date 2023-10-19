@@ -7,6 +7,7 @@ public partial class ManageCategories
 {
     // services
     [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
+    [Inject] IDialogService DialogService { get; set; } = default!;
     [Inject] ISnackbar Snackbar { get; set; } = default!;
 
     // parameters
@@ -18,28 +19,31 @@ public partial class ManageCategories
     private Category? _selectedCategory;
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
-    private string? _newName;
-    private string? _newDescription; 
 
 
     private async Task AddCategory_OnClick(Category? parentCategory)
     {
-        if (string.IsNullOrWhiteSpace(_newName))
+
+        DialogResult result = await DialogService.Show<AddCategoryDialog>("Add Category").Result;
+
+        if (result.Canceled)
             return;
 
+        AddCategoryDialog dialog = (AddCategoryDialog)result.Data;
+
         // check for duplicate category name
-        if (!IsCategoryNameUnique())
+        if (!IsCategoryNameUnique(dialog.Name!))
         {
             Snackbar.Add("Category name already used!", Severity.Warning);
             return;
         }
 
         Category newCategory = await DataServicesManager.McMasterService.CreateCategory(subscriptionId: Subscription.Id,
-                                                                                     parentId: _selectedCategory?.Id,
-                                                                                     name: _newName,
-                                                                                     description: _newDescription,
-                                                                                     thumbnailId: null,
-                                                                                     createdById: LoggedInUser.Id);
+                                                                                        parentId: _selectedCategory?.Id,
+                                                                                        name: dialog.Name,
+                                                                                        description: dialog.Description,
+                                                                                        thumbnailId: null,
+                                                                                        createdById: LoggedInUser.Id);
 
 
         if (_selectedCategory == null)
@@ -53,17 +57,14 @@ public partial class ManageCategories
             _selectedCategory.ChildCategories.Add(newCategory);
             _selectedCategory.ChildCategories.Sort();
         }
-
-        _newName = null;
-        _newDescription = null;
     }
 
-    private bool IsCategoryNameUnique()
+    private bool IsCategoryNameUnique(string name)
     {
         if (_selectedCategory == null)
-            return !Categories.Any(i => i.Name.Equals(_newName, StringComparison.OrdinalIgnoreCase));
+            return !Categories.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
-        return !_selectedCategory.ChildCategories.Any(i => i.Name.Equals(_newName, StringComparison.OrdinalIgnoreCase));
+        return !_selectedCategory.ChildCategories.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
     private void DeleteCategory_OnClick(Category? parentCategory)
