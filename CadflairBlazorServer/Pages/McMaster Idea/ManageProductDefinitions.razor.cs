@@ -18,24 +18,97 @@ public partial class ManageProductDefinitions
 
     // fields
     private ProductDefinition? _selectedProductDefinition;
+    private Category? _category;
     private ProductTable? _productTable;
     private Row _rowBeforeEdit = new();
     private List<string> _events = new();
+    private string _nameField = string.Empty;
+    private string? _descriptionField; 
+    private bool _isDirty;
 
 
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
 
-    private async Task ProductDefinition_OnClick(ProductDefinition productDefinition)
+    private async Task ProductDefinition_OnClick(ProductDefinition? productDefinition)
     {
         _selectedProductDefinition = productDefinition;
-        _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(productDefinition.Id);
-        //ResetNewRow_OnClick();
+
+        if (_selectedProductDefinition == null)
+            return;
+
+        _nameField = _selectedProductDefinition.Name;
+        _descriptionField = _selectedProductDefinition.Description;
+        _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
+        _category = _selectedProductDefinition.CategoryId == null ? null : await DataServicesManager.McMasterService.GetCategoryById((int)_selectedProductDefinition.CategoryId);
+    }
+
+    private void Name_ValueChanged(string value)
+    {
+        _isDirty = true;
+        _nameField = value;
+    }
+
+    private void Description_ValueChanged(string? value)
+    {
+        _isDirty = true;
+        _descriptionField = value;
+    }
+
+    private async Task UpdateProductDefinition_OnClick()
+    {
+        if (_selectedProductDefinition == null)
+            return;
+
+        if (_isDirty == false)
+            return;
+
+        if (string.IsNullOrWhiteSpace(_nameField))
+            return;
+
+        _selectedProductDefinition.Name = _nameField;
+        _selectedProductDefinition.Description = _descriptionField;
+        _selectedProductDefinition.CategoryId = _category?.Id;
+        await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+        _isDirty = false;
+
+        Snackbar.Add("Changes saved!", Severity.Success);
+    }
+
+    private async Task UpdateCategory_OnClick()
+    {
+        if (_selectedProductDefinition == null)
+            return;
+
+        DialogParameters parameters = new()
+        {
+            { nameof(SelectCategoryDialog.SubscriptionId), Subscription.Id },
+        };
+
+        DialogResult result = await DialogService.Show<SelectCategoryDialog>($"Select Category", parameters).Result;
+
+        if (result.Canceled)
+            return;
+
+        SelectCategoryDialog dialog = (SelectCategoryDialog)result.Data;
+
+        if (dialog.SelectedCategory?.Id == _selectedProductDefinition.CategoryId)
+            return;
+
+        _category = dialog.SelectedCategory;
+        _isDirty = true;
     }
 
     private async Task DeleteProductDefinition_OnClick()
     {
         if (_selectedProductDefinition == null)
+            return;
+
+        bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Product Definition",
+                                                                 message: "Are you sure you want to delete this Product Definition?",
+                                                                 yesText: "Yes",
+                                                                 cancelText: "Cancel");
+        if (confirmDelete != true)
             return;
 
         await DataServicesManager.McMasterService.DeleteProductDefinitionById(_selectedProductDefinition.Id);
@@ -49,6 +122,9 @@ public partial class ManageProductDefinitions
 
         if (result.Canceled)
             return;
+
+
+        // TO DO: CHECK FOR DUPLICATE PRODUCT DEFINITION NAME SO UNIQUE CONSTRAINT IS NOT VIOLATED
 
         AddProductDefinitionDialog dialog = (AddProductDefinitionDialog)result.Data;
 
@@ -79,7 +155,7 @@ public partial class ManageProductDefinitions
 
     private async Task AddRow_OnClick()
     {
-        if (_productTable == null) 
+        if (_productTable == null)
             return;
 
         DialogParameters parameters = new()
@@ -98,7 +174,7 @@ public partial class ManageProductDefinitions
                                                                          createdById: LoggedInUser.Id);
 
         // add an new table value for each column 
-        foreach(var tableValue in dialog.NewRowValues)
+        foreach (var tableValue in dialog.NewRowValues)
         {
             TableValue newTableValue = await DataServicesManager.McMasterService.CreateTableValue(productTableId: _productTable.Id,
                                                                                                   rowId: newRow.Id,
@@ -136,14 +212,14 @@ public partial class ManageProductDefinitions
         // reset to original values
         foreach (var tableValue in row.TableValues)
             tableValue.Value = _rowBeforeEdit.TableValues.First(i => i.Id == tableValue.Id).Value;
-        
+
         AddEvent($"RowEditCancel event: Editing of record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
         StateHasChanged();
     }
 
     private async Task RowEditCommit(Row row)
     {
-        foreach(var tableValue in row.TableValues)
+        foreach (var tableValue in row.TableValues)
             await DataServicesManager.McMasterService.UpdateTableValue(tableValue);
 
         AddEvent($"RowEditCommit event: Changes to record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");

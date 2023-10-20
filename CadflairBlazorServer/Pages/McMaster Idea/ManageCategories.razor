@@ -11,7 +11,7 @@
                 <MudList Clickable>
                     @foreach (var category in Categories)
                     {
-                        <MudListItem Text="@category.Name" OnClick="() => _selectedCategory = category" />
+                        <MudListItem Text="@category.Name" OnClick="() => Category_OnClick(category)" />
                     }
                 </MudList>
             }
@@ -28,11 +28,14 @@ else
 {
     <MudPaper Class="d-flex flex-column gap-3 pa-3">
         <div>
-            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="() => _selectedCategory = _selectedCategory.ParentCategory">Back</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="() => Category_OnClick(_selectedCategory.ParentCategory)">Back</MudButton>
         </div>
 
         <!-- category details -->
-        <MudText Typo="Typo.h6">Edit Product Category</MudText>
+        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">Edit Category</MudText>
+            <MudButton OnClick="DeleteCategory_OnClick" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
+        </MudStack>
         <MudStack Row>
             @if (_selectedCategory.ThumbnailId == null)
             {
@@ -56,28 +59,27 @@ else
                 </MudPaper>
             }
             <MudStack Class="flex-grow-1">
-                <MudTextField T="string" @bind-Value="_selectedCategory.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudTextField T="string" @bind-Value="_selectedCategory.Description" Label="Description" Variant="Variant.Outlined" Lines="4" />
+                <MudTextField T="string" Value="_nameField" ValueChanged="Name_ValueChanged" Label="Name" Variant="Variant.Outlined" MaxLength="50" Immediate Required />
+                <MudTextField T="string" Value="_descriptionField" ValueChanged="Description_ValueChanged" Label="Description" Variant="Variant.Outlined" Lines="3" Immediate MaxLength="500" />
             </MudStack>
         </MudStack>
         <MudToolBar>
-            <MudButton Variant="Variant.Outlined">Delete Category</MudButton>
             <MudSpacer />
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary">Save Changes</MudButton>
+            <MudButton OnClick="UpdateCategory_OnClick" Variant="Variant.Filled" Color="Color.Primary" Disabled="_isDirty == false">Save Changes</MudButton>
         </MudToolBar>
 
         <!-- child categories -->
         <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mt-10">
-        <MudText Typo="Typo.h6">Child Categories</MudText>
-        <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddCategory_OnClick(_selectedCategory)">Add Category</MudButton>
+            <MudText Typo="Typo.h6">Child Categories</MudText>
+            <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="() => AddCategory_OnClick(_selectedCategory)">Add Category</MudButton>
         </MudStack>
         <MudPaper Outlined MinHeight="300px" MaxHeight="600px" Class="d-flex flex-column overflow-auto">
-        @if (_selectedCategory.ChildCategories.Any())
+            @if (_selectedCategory.ChildCategories.Any())
             {
                 <MudList Clickable>
-                @foreach (var category in _selectedCategory.ChildCategories)
+                    @foreach (var category in _selectedCategory.ChildCategories)
                     {
-                        <MudListItem Text="@category.Name" OnClick="() => _selectedCategory = category" />
+                        <MudListItem Text="@category.Name" OnClick="() => Category_OnClick(category)" />
                     }
                 </MudList>
             }

@@ -1,0 +1,66 @@
+﻿@using Row = CadflairDataAccess.Models.Row;
+
+@page "/{CompanyName}/products/{ProductDefinitionName}"
+@layout ConfiguratorLayout
+
+<PageTitle>@CompanyName - Categories</PageTitle>
+
+<MudDrawerContainer Class="mud-height-full relative">
+
+    <!-- sidebar -->
+    <MudHidden Breakpoint="Breakpoint.MdAndDown">
+        <MudDrawer @bind-Open="@_drawerOpen" Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
+            <!-- filters -->
+            <MudStack Class="pa-3">
+                <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
+                @foreach (var column in _productTable.Columns)
+                {
+                    <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(column, values)"
+                           Label="@column.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection>
+                        @foreach (var tableValue in _productTable.Rows.Select(i => i.TableValues.First(i => i.ColumnId == column.Id)).DistinctBy(i => i.Value))
+                        {
+                            <MudSelectItem Value="tableValue.Value">@tableValue.Value</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+            </MudStack>
+        </MudDrawer>
+    </MudHidden>
+
+    <MudStack Class="mud-height-full px-5 pt-3 overflow-auto relative">
+        <MudOverlay Visible="_initializing" Absolute Class="mud-background">
+            <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
+        </MudOverlay>
+
+        <MudStack Class="flex-grow-1 overflow-auto">
+            <!-- products -->
+            <MudStack>
+                <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
+                <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
+                <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
+                <MudTable Items="_productTable.Rows.Where(_filter)" Outlined>
+                    <NoRecordsContent>
+                        <MudText>No products.</MudText>
+                    </NoRecordsContent>
+                    <HeaderContent>
+                        @foreach (var column in _productTable.Columns)
+                        {
+                            <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>
+                        }
+                    </HeaderContent>
+                    <RowTemplate>
+                        @foreach (var column in _productTable.Columns)
+                        {
+                            <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
+                        }
+                        <MudTd>
+                            @*<MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="() => Preview_OnClick(context.BucketKey, context.ObjectKey)">Preview</MudButton>*@
+                            @*<MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(context.BucketKey, context.ObjectKey)" />*@
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudStack>
+        </MudStack>
+    </MudStack>
+</MudDrawerContainer>
+

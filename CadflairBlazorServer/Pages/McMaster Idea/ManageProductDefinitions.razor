@@ -32,10 +32,13 @@ else
     <!-- product details -->
     <MudPaper Class="pa-3 d-flex flex-column gap-3">
         <div>
-            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="() => _selectedProductDefinition = null">Back</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="() => ProductDefinition_OnClick(null)">Back</MudButton>
         </div>
 
-        <MudText Typo="Typo.h6">Edit Product Details</MudText>
+        <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h6">Edit Product Definition</MudText>
+            <MudButton OnClick="DeleteProductDefinition_OnClick" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
+        </MudStack>
         <MudStack Row>
             @if (_selectedProductDefinition.ThumbnailId == null)
             {
@@ -59,14 +62,14 @@ else
                 </MudPaper>
             }
             <MudStack Class="flex-grow-1">
-                <MudTextField T="string" @bind-Value="_selectedProductDefinition.Name" Label="Name" Variant="Variant.Outlined" />
-                <MudTextField T="string" @bind-Value="_selectedProductDefinition.Description" Label="Description" Variant="Variant.Outlined" Lines="3" />
+                <MudTextField T="string" Value="_nameField" ValueChanged="Name_ValueChanged" Label="Name" Variant="Variant.Outlined" Immediate Required MaxLength="50" />
+                <MudTextField T="string" Value="_descriptionField" ValueChanged="Description_ValueChanged" Label="Description" Variant="Variant.Outlined" Lines="3" MaxLength="500" Immediate />
+                <MudTextField Value="_category?.Name" Label="Category" Placeholder="Select category" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Edit" OnAdornmentClick="UpdateCategory_OnClick"/>
             </MudStack>
         </MudStack>
         <MudToolBar>
-            <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="DeleteProductDefinition_OnClick" Variant="Variant.Outlined" Color="Color.Error">Delete</MudButton>
             <MudSpacer />
-            <MudButton Variant="Variant.Outlined" Color="Color.Primary">Save Changes</MudButton>
+            <MudButton OnClick="UpdateProductDefinition_OnClick" Variant="Variant.Filled" Color="Color.Primary" Disabled="_isDirty == false">Save Changes</MudButton>
         </MudToolBar>
     </MudPaper>
 
@@ -78,8 +81,8 @@ else
             <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.h6">Product Table</MudText>
                 <MudSpacer/>
-                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="EditColumns_OnClick">Edit Columns</MudButton>
                 <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddRow_OnClick" Disabled="!_productTable.Columns.Any()">Add Product</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="EditColumns_OnClick">Edit Columns</MudButton>
             </MudStack>
 
             <MudTable Items="_productTable.Rows"

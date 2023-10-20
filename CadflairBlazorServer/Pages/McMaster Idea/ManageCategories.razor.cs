@@ -17,8 +17,54 @@ public partial class ManageCategories
 
     // fields
     private Category? _selectedCategory;
+    private string _nameField = string.Empty;
+    private string? _descriptionField; 
+    private bool _isDirty;
+
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
+
+    private void Category_OnClick(Category? category)
+    {
+        _selectedCategory = category;
+
+        if (_selectedCategory == null)
+            return;
+
+        _nameField = _selectedCategory.Name;
+        _descriptionField = _selectedCategory?.Description;
+    }
+
+    private void Name_ValueChanged(string value)
+    {
+        _isDirty = true;
+        _nameField = value;
+    }
+
+    private void Description_ValueChanged(string? value)
+    {
+        _isDirty = true;
+        _descriptionField = value;
+    }
+
+    private async Task UpdateCategory_OnClick()
+    {
+        if (_selectedCategory == null)
+            return;
+
+        if (_isDirty == false)
+            return;
+
+        if (string.IsNullOrWhiteSpace(_nameField))
+            return;
+
+        _selectedCategory.Name = _nameField;
+        _selectedCategory.Description = _descriptionField;
+        await DataServicesManager.McMasterService.UpdateCategory(_selectedCategory);
+        _isDirty = false;
+
+        Snackbar.Add("Changes saved!", Severity.Success);
+    }
 
 
     private async Task AddCategory_OnClick(Category? parentCategory)
@@ -67,9 +113,37 @@ public partial class ManageCategories
         return !_selectedCategory.ChildCategories.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
-    private void DeleteCategory_OnClick(Category? parentCategory)
+    private async Task DeleteCategory_OnClick()
     {
         // TO DO: delete product category and update linked entities (other categories and product definitions)
+        if (_selectedCategory == null)
+            return;
+
+        if (_selectedCategory.ChildCategories.Any())
+        {
+            Snackbar.Add("Selected category contains sub-categories!", Severity.Warning);
+            return;
+        }
+
+        bool? confirmDelete = await DialogService.ShowMessageBox(title: "Delete Category",
+                                                                 message: "Are you sure you want to delete this Category?",
+                                                                 yesText: "Yes",
+                                                                 cancelText: "Cancel");
+        if (confirmDelete != true)
+            return;
+
+        await DataServicesManager.McMasterService.DeleteCategoryById(_selectedCategory.Id);
+
+        if(_selectedCategory.ParentCategory == null)
+        {
+            Categories.Remove(_selectedCategory);
+            _selectedCategory = null;
+        }
+        else
+        {
+            _selectedCategory.ParentCategory.ChildCategories.Remove(_selectedCategory);
+            Category_OnClick(_selectedCategory.ParentCategory);
+        }
     }
 
     private void UploadThumbnail(IBrowserFile file)

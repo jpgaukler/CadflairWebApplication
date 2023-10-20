@@ -1,0 +1,19 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudPaper Outlined Height="300px" Class="overflow-auto">
+            <MudTreeView T="Category" Items="_categories.ToHashSet()" Hover ExpandOnDoubleClick>
+                <ItemTemplate>
+                    <MudTreeViewItem Items="@context.ChildCategories.ToHashSet()"
+                                     Value="@context" Text="@context.Name"
+                                     OnClick="() => SelectedCategory = context"
+                                     Activated="SelectedCategory == context">
+                    </MudTreeViewItem>
+                </ItemTemplate>
+            </MudTreeView>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Ok_OnClick">Ok</MudButton>
+    </DialogActions>
+</MudDialog>

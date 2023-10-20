@@ -69,8 +69,6 @@ namespace CadflairDataAccess.Services
 
         public Task DeleteCategoryById(int categoryId)
         {
-            // TO DO: SET CATEGORY ID TO NULL FOR ALL CHILD CATEGORIES AND PRODUCTDEFINITIONS
-
             return _db.SaveDataAsync("[dbo].[spCategory_DeleteById]", new { Id = categoryId });
         }
 
@@ -98,19 +96,20 @@ namespace CadflairDataAccess.Services
             return newProductDefinition;
         }
 
-        public Task<ProductDefinition> GetProductDefinitionById(int id)
-        {
-            return _db.LoadSingleAsync<ProductDefinition, dynamic>("[dbo].[spProductDefinition_GetById]", new { Id = id });
+        public Task<ProductDefinition> GetProductDefinitionByNameAndSubscriptionId(string name, int subscriptionId)
+        { 
+            dynamic values = new
+            {
+                SubscriptionId = subscriptionId,
+                Name = name,
+            };
+
+            return _db.LoadSingleAsync<ProductDefinition, dynamic>("[dbo].[spProductDefinition_GetByNameAndSubscriptionId]", values);
         }
 
         public Task<List<ProductDefinition>> GetProductDefinitionsBySubscriptionId(int subscriptionId)
         {
             return _db.LoadDataAsync<ProductDefinition, dynamic>("[dbo].[spProductDefinition_GetBySubscriptionId]", new { SubscriptionId = subscriptionId });
-        }
-
-        public Task<List<ProductDefinition>> GetProductDefinitionsByCategoryId(int categoryId)
-        {
-            return _db.LoadDataAsync<ProductDefinition, dynamic>("[dbo].[spProductDefinition_GetByCategoryId]", new { CategoryId = categoryId });
         }
 
         public Task UpdateProductDefinition(ProductDefinition productDefinition)
@@ -165,18 +164,6 @@ namespace CadflairDataAccess.Services
 
             return productTable;
         }
-
-
-        public Task DeleteProductTableById(int productTableId)
-        {
-            // TO DO: delete table rows 
-            // TO DO: delete table row attachments
-            // TO DO: delete table columns 
-            // TO DO: delete table values 
-
-            return _db.SaveDataAsync("[dbo].[spProductTable_DeleteById]", new { Id = productTableId });
-        }
-
 
         #endregion
 

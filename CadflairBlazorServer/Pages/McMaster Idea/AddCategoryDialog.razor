@@ -1,7 +1,7 @@
 ﻿<MudDialog>
     <DialogContent>
-        <MudTextField @bind-Value="Name" Label="Name" Variant="Variant.Outlined" MaxLength="50" />
-        <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Outlined" Lines="3" MaxLength="500" />
+        <MudTextField @bind-Value="Name" Label="Name" Variant="Variant.Outlined" MaxLength="50" Immediate Required />
+        <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Outlined" Lines="3" MaxLength="500" Immediate />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>

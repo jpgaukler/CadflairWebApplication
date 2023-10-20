@@ -14,7 +14,7 @@
     CONSTRAINT [FK_ProductDefinition_Category] FOREIGN KEY ([CategoryId]) REFERENCES [dbo].[Category] ([Id]),
     CONSTRAINT [FK_ProductDefinition_Thumbnail] FOREIGN KEY ([ThumbnailId]) REFERENCES [dbo].[Thumbnail] ([Id]),
     CONSTRAINT [FK_ProductDefinition_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
-    CONSTRAINT [UC_ProductDefinition_CategoryId_Name] UNIQUE([CategoryId],[Name])
+    CONSTRAINT [UC_ProductDefinition_SubscriptionId_Name] UNIQUE([SubscriptionId],[Name])
 )
 
 GO
