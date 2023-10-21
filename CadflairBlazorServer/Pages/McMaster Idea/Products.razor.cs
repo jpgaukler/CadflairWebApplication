@@ -72,11 +72,11 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             _columnFilters.Add(column.Id, values.ToHashSet());
         }
 
-        private void Preview_OnClick(string bucketKey, string objectKey)
+        private void Preview_OnClick(string objectKey)
         {
             DialogParameters parameters = new()
             {
-                { nameof(PreviewDialog.BucketKey), bucketKey },
+                { nameof(PreviewDialog.BucketKey), _productDefinition!.ForgeBucketKey },
                 { nameof(PreviewDialog.ObjectKey), objectKey },
             };
 

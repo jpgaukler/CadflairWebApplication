@@ -7,6 +7,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         // parameters
         [CascadingParameter] public MudDialogInstance MudDialogInstance { get; set; } = default!;
         [Parameter] public string? Header { get; set; }
+        [Parameter] public string? PartNumber { get; set; } 
         [Parameter] public List<Column> Columns { get; set; } = default!;
         [Parameter] public List<TableValue> NewRowValues { get; set; } = new(); 
 

@@ -8,6 +8,7 @@
     CONSTRAINT [PK_Attachment] PRIMARY KEY CLUSTERED ([Id] ASC),
     CONSTRAINT [FK_Attachment_Row] FOREIGN KEY ([RowId]) REFERENCES [dbo].[Row] ([Id]),
     CONSTRAINT [FK_Attachment_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
+    CONSTRAINT [UC_Attachment_RowId_ForgeObjectKey] UNIQUE([RowId],[ForgeObjectKey])
 )
 
 GO

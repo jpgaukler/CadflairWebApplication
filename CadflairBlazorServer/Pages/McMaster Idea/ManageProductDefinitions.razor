@@ -104,24 +104,32 @@ else
                     }
                 </NoRecordsContent>
                 <HeaderContent>
+                    <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>
                     @foreach (var column in _productTable.Columns)
                     {
                         <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>
                     }
+                    <MudTh>Attachments</MudTh>
                 </HeaderContent>
                 <RowTemplate>
+                    <MudTd DataLabel="Part Number">@context.PartNumber</MudTd>
                     @foreach (var column in _productTable.Columns)
                     {
                         <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
                     }
+                    <MudTd DataLabel="Attachments">@context.Attachments.FirstOrDefault()?.ForgeObjectKey</MudTd>
                 </RowTemplate>
                 <RowEditingTemplate>
+                    <MudTd DataLabel="Part Number">
+                        <MudTextField @bind-Value="@context.PartNumber" Required />
+                    </MudTd>
                     @foreach (var column in _productTable.Columns)
                     {
                         <MudTd DataLabel="@column.Header">
                             <MudTextField @bind-Value="@context.TableValues.First(i => i.ColumnId == column.Id).Value" Required />
                         </MudTd>
                     }
+                    <MudTd DataLabel="Attachments">@context.Attachments.FirstOrDefault()?.ForgeObjectKey</MudTd>
                 </RowEditingTemplate>
             </MudTable>
 
@@ -150,15 +158,56 @@ else
     <MudPaper Class="pa-3 d-flex flex-column gap-3">
         <MudText Typo="Typo.h5">Upload Attachments</MudText>
         <MudText Typo="Typo.body1">Drag and drop files to upload attachments. Files will be linked to products with matching part numbers.</MudText>
-        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Attachments_FilesChanged" Accept=".stp, .ipt" MaximumFileCount="999"
-                   InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0;"
+        <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Attachments_FilesChanged" Accept=".stp, .step, .pdf, .ipt" MaximumFileCount="999"
+                   InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0;" Hidden="_fileUploads.Any()"
                    @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">
             <ButtonTemplate>
-                <MudPaper Height="400px" Outlined Class="overflow-auto" Style="@_dragStyle">
-                    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
-                        <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Large" Color="Color.Default" />
-                        <MudText Typo="Typo.body1">Drop files or click</MudText>
-                    </MudStack>
+                <MudPaper Height="400px" Outlined Class="overflow-auto" Style="@($"border-color: var(--mud-palette-lines-inputs); {_dragStyle}")">
+                    @if (_fileUploads.Any())
+                    {
+                        <div class="flex-grow-1 overflow-auto">
+                            @foreach (FileUpload upload in _fileUploads)
+                            {
+                                <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="pa-3">
+                                    <MudText Style="text-overflow: ellipsis; overflow:hidden; white-space:nowrap;">@upload.File.Name</MudText>
+                                    <MudTooltip Text="@upload.Status" Placement="Placement.Left" RootClass="d-flex ma-0 pa-0">
+                                        @switch (upload.Status)
+                                        {
+                                            case "Not started":
+                                                <MudIcon Icon="@Icons.Material.Filled.HourglassTop" Color="Color.Default" Size="Size.Small" />
+                                                break;
+
+                                            case "Processing":
+                                                <MudProgressCircular Indeterminate Size="Size.Small" />
+                                                break;
+
+                                            case "Success":
+                                                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Small" />
+                                                break;
+
+                                            case "Part number not found":
+                                            case "Invalid file extension":
+                                            case "Invalid file name":
+                                                <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Warning" Size="Size.Small" />
+                                                break;
+
+                                            case "Error":
+                                                <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" Size="Size.Small" />
+                                                break;
+                                        }
+                                    </MudTooltip>
+                                </MudStack>
+                                <MudDivider />
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center" Class="mud-height-full">
+                            <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Large" Color="Color.Default" />
+                            <MudText Typo="Typo.body1">Drop files or click</MudText>
+                        </MudStack>
+                    }
                 </MudPaper>
             </ButtonTemplate>
         </MudFileUpload>

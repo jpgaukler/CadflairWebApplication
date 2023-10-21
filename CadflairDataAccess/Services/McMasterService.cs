@@ -152,15 +152,21 @@ namespace CadflairDataAccess.Services
         public async Task<ProductTable> GetProductTableByProductDefinitionId(int productDefinitionId)
         {
             ProductTable productTable =  await _db.LoadSingleAsync<ProductTable, dynamic>("[dbo].[spProductTable_GetByProductDefinitionId]", new { ProductDefinitionId = productDefinitionId });
-            List<TableValue> values = await GetTableValuesByProductTableId(productTable.Id);
             productTable.Rows = await GetRowsByProductTableId(productTable.Id);
             productTable.Columns = await GetColumnsByProductTableId(productTable.Id);
-
-            foreach(var row in productTable.Rows)
-                row.TableValues = values.Where(i => i.RowId == row.Id).ToList();
+            List<TableValue> values = await GetTableValuesByProductTableId(productTable.Id);
+            List<Attachment> attachments = await GetAttachmentsByProductTableId(productTable.Id);
 
             foreach(var column in productTable.Columns)
+            {
                 column.TableValues = values.Where(i => i.ColumnId == column.Id).ToList();
+            }
+
+            foreach(var row in productTable.Rows)
+            {
+                row.TableValues = values.Where(i => i.RowId == row.Id).ToList();
+                row.Attachments = attachments.Where(i => i.RowId == row.Id).ToList();
+            }
 
             return productTable;
         }
@@ -209,11 +215,12 @@ namespace CadflairDataAccess.Services
 
         #region "Row"
 
-        public Task<Row> CreateRow(int productTableId, int createdById)
+        public Task<Row> CreateRow(int productTableId, string partNumber, int createdById)
         {
             dynamic values = new
             {
                 ProductTableId = productTableId,
+                PartNumber = partNumber,
                 CreatedById = createdById,
             };
 
@@ -223,6 +230,20 @@ namespace CadflairDataAccess.Services
         private Task<List<Row>> GetRowsByProductTableId(int productTableId)
         {
             return _db.LoadDataAsync<Row, dynamic>("[dbo].[spRow_GetByProductTableId]", new { ProductTableId  = productTableId });
+        }
+
+        public async Task UpdateRow(Row row)
+        {
+            foreach (var tableValue in row.TableValues)
+                await UpdateTableValue(tableValue);
+
+            dynamic values = new
+            {
+                row.Id,
+                row.PartNumber,
+            };
+
+            await _db.SaveDataAsync("[dbo].[spRow_UpdateById]", values);
         }
 
         public Task DeleteRowById(int rowId)
@@ -249,7 +270,7 @@ namespace CadflairDataAccess.Services
             return _db.SaveSingleAsync<TableValue, dynamic>("[dbo].[spTableValue_Insert]", values);
         }
 
-        public Task UpdateTableValue(TableValue tableValue)
+        private Task UpdateTableValue(TableValue tableValue)
         {
             dynamic values = new
             {
@@ -265,6 +286,28 @@ namespace CadflairDataAccess.Services
         private Task<List<TableValue>> GetTableValuesByProductTableId(int productTableId)
         {
             return _db.LoadDataAsync<TableValue, dynamic>("[dbo].[spTableValue_GetByProductTableId]", new { ProductTableId  = productTableId });
+        }
+
+
+        #endregion
+
+        #region "Attachment"
+
+        public Task<Attachment> CreateAttachment(int rowId, string forgeObjectKey, int createdById)
+        {
+            dynamic values = new
+            {
+                RowId = rowId,
+                ForgeObjectKey = forgeObjectKey,
+                CreatedById = createdById,
+            };
+
+            return _db.SaveSingleAsync<Attachment, dynamic>("[dbo].[spAttachment_Insert]", values);
+        }
+
+        private Task<List<Attachment>> GetAttachmentsByProductTableId(int productTableId)
+        {
+            return _db.LoadDataAsync<Attachment, dynamic>("[dbo].[spAttachment_GetByProductTableId]", new { ProductTableId  = productTableId });
         }
 
 

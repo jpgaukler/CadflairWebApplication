@@ -8,8 +8,11 @@ public partial class ManageProductDefinitions
 {
     // services
     [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
+    [Inject] ForgeServicesManager ForgeServicesManager { get; set; } = default!;
+    [Inject] FileHandlingService FileHandlingService { get; set; } = default!;
     [Inject] ISnackbar Snackbar { get; set; } = default!;
     [Inject] IDialogService DialogService { get; set; } = default!;
+    [Inject] ILogger<ManageProductDefinitions> Logger { get; set; } = default!;
 
     // parameters
     [CascadingParameter] public User LoggedInUser { get; set; } = default!;
@@ -25,8 +28,15 @@ public partial class ManageProductDefinitions
     private string _nameField = string.Empty;
     private string? _descriptionField; 
     private bool _isDirty;
+    private List<FileUpload> _fileUploads = new();
 
+    private class FileUpload
+    {
+        public IBrowserFile File { get; set; } = default!;
+        public string Status { get; set; } = string.Empty;
+    }
 
+    private readonly string[] _validExtensions = { ".ipt", ".stp", ".step", ".pdf" };
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
 
@@ -171,6 +181,7 @@ public partial class ManageProductDefinitions
         AddRowDialog dialog = (AddRowDialog)result.Data;
 
         Row newRow = await DataServicesManager.McMasterService.CreateRow(productTableId: _productTable.Id,
+                                                                         partNumber: dialog.PartNumber,
                                                                          createdById: LoggedInUser.Id);
 
         // add an new table value for each column 
@@ -195,6 +206,7 @@ public partial class ManageProductDefinitions
         // create a backup copy of the values in memory
         _rowBeforeEdit = new()
         {
+            PartNumber = row.PartNumber,
             TableValues = row.TableValues.Select(i => new TableValue()
             {
                 Id = i.Id,
@@ -204,28 +216,26 @@ public partial class ManageProductDefinitions
             }).ToList()
         };
 
-        AddEvent($"RowEditPreview event: made a backup of record {row.Id}");
+        AddEvent($"RowEditPreview event: made a backup of record {row.PartNumber}");
     }
 
     private void RowEditCancel(Row row)
     {
         // reset to original values
+        row.PartNumber = _rowBeforeEdit.PartNumber;
+
         foreach (var tableValue in row.TableValues)
             tableValue.Value = _rowBeforeEdit.TableValues.First(i => i.Id == tableValue.Id).Value;
 
-        AddEvent($"RowEditCancel event: Editing of record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
+        AddEvent($"RowEditCancel event: Editing of record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
         StateHasChanged();
     }
 
     private async Task RowEditCommit(Row row)
     {
-        foreach (var tableValue in row.TableValues)
-            await DataServicesManager.McMasterService.UpdateTableValue(tableValue);
-
-        AddEvent($"RowEditCommit event: Changes to record: {row.Id} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
+        await DataServicesManager.McMasterService.UpdateRow(row);
+        AddEvent($"RowEditCommit event: Changes to record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
     }
-
-
 
     private void AddEvent(string message)
     {
@@ -240,8 +250,90 @@ public partial class ManageProductDefinitions
 
     private async Task Attachments_FilesChanged(IReadOnlyList<IBrowserFile> files)
     {
+        if (_selectedProductDefinition == null)
+            return;
 
+        // create bucket for CAD files
+        if (string.IsNullOrWhiteSpace(_selectedProductDefinition.ForgeBucketKey))
+        {
+            _selectedProductDefinition.ForgeBucketKey = Guid.NewGuid().ToString();
+            await ForgeServicesManager.ObjectStorageService.CreateBucket(_selectedProductDefinition.ForgeBucketKey);
+            await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+        }
+
+        _fileUploads = files.Select(file => new FileUpload
+        {
+            File = file,
+            Status = "Not started",
+        }).ToList();
+
+
+        foreach (var upload in _fileUploads)
+        {
+            string? tempFilename = null;
+
+            IProgress<string> progress = new Progress<string>(message =>
+            {
+                upload.Status = message; 
+                StateHasChanged();
+            });
+
+            if (!_validExtensions.Any(i => i == Path.GetExtension(upload.File.Name)))
+            {
+                progress.Report("Invalid file extension");
+                continue;
+            }
+
+            // find row to link this file to
+            Row? matchingRow = _productTable.Rows.FirstOrDefault(i => i.PartNumber.Equals(Path.GetFileNameWithoutExtension(upload.File.Name), StringComparison.OrdinalIgnoreCase));
+
+            if (matchingRow == null)
+            {
+                progress.Report("Part number not found");
+                continue;
+            }
+
+            // check for duplicate attachment
+            string objectKey = upload.File.Name;
+            if (matchingRow.Attachments.Any(i => i.ForgeObjectKey.Equals(objectKey, StringComparison.OrdinalIgnoreCase)))
+            {
+                progress.Report("Invalid file name");
+                continue;
+            }
+
+            progress.Report("Processing");
+
+            try
+            {
+                // save file to server
+                tempFilename = await FileHandlingService.UploadBrowserFileToTempFolder(upload.File);
+
+                bool uploadSuccessful = await ForgeServicesManager.ObjectStorageService.UploadFile(_selectedProductDefinition.ForgeBucketKey, objectKey, tempFilename);
+
+                if (!uploadSuccessful)
+                    throw new Exception("Could not upload to Autodesk OSS!");
+
+                // start the model translation
+                await ForgeServicesManager.ModelDerivativeService.TranslateObject(_selectedProductDefinition.ForgeBucketKey, objectKey, false, null);
+
+                // create database record
+                Attachment attachment = await DataServicesManager.McMasterService.CreateAttachment(rowId: matchingRow.Id, forgeObjectKey: objectKey, createdById: LoggedInUser.Id);
+                matchingRow.Attachments.Add(attachment);
+
+                progress.Report("Success");
+            }
+            catch (Exception ex)
+            {
+                progress.Report("Error");
+                Logger.LogError(ex, $"Error occurred while creating CatalogModel!");
+            }
+
+            // clean up
+            if (tempFilename != null)
+                File.Delete(tempFilename);
+        }
     }
+
 
     private void SetDragStyle() => _dragStyle = "border-color: var(--mud-palette-primary)!important";
     private void ClearDragStyle() => _dragStyle = _initialDragStyle;

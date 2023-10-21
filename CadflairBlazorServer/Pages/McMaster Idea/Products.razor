@@ -33,11 +33,11 @@
         </MudOverlay>
 
         <MudStack Class="flex-grow-1 overflow-auto">
+            <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
+            <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
+            <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
             <!-- products -->
             <MudStack>
-                <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
-                <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
-                <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
                 <MudTable Items="_productTable.Rows.Where(_filter)" Outlined>
                     <NoRecordsContent>
                         <MudText>No products.</MudText>
@@ -54,8 +54,8 @@
                             <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
                         }
                         <MudTd>
-                            @*<MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="() => Preview_OnClick(context.BucketKey, context.ObjectKey)">Preview</MudButton>*@
-                            @*<MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(context.BucketKey, context.ObjectKey)" />*@
+                            <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="() => Preview_OnClick(context.Attachments.First().ForgeObjectKey)">Preview</MudButton>
+                            @*<MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(_productDefinition!.ForgeBucketKey, context.Attachments.First().ForgeObjectKey)" />*@
                         </MudTd>
                     </RowTemplate>
                 </MudTable>

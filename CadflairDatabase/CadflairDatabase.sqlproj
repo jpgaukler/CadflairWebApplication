@@ -143,6 +143,9 @@
     <Build Include="dbo\Stored Procedures\spCategory_UpdateById.sql" />
     <Build Include="dbo\Stored Procedures\spCategory_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\spProductDefinition_GetByNameAndSubscriptionId.sql" />
+    <Build Include="dbo\Stored Procedures\spRow_UpdateById.sql" />
+    <Build Include="dbo\Stored Procedures\spAttachment_Insert.sql" />
+    <Build Include="dbo\Stored Procedures\spAttachment_GetByProductTableId.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />
