@@ -40,27 +40,7 @@ else
             <MudButton OnClick="DeleteProductDefinition_OnClick" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
         </MudStack>
         <MudStack Row>
-            @if (_selectedProductDefinition.ThumbnailId == null)
-            {
-                <div class="relative">
-                    <MudFileUpload T="IBrowserFile" FilesChanged="UploadThumbnail" Hidden="false" Class="flex-1"
-                               InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20 cursor-pointer" InputStyle="opacity:0"
-                               @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">
-                        <ButtonTemplate>
-                            <MudPaper Height="150px" Width="150px" Class="d-flex flex-column justify-center align-center gap-1" Style="@_dragStyle" Outlined>
-                            <MudIcon Icon="@Icons.Material.Filled.AddAPhoto" Size="Size.Large" />
-                            <MudText Typo="Typo.caption" Align="Align.Center">Click or Drop to add thumbnail</MudText>
-                        </MudPaper>
-                    </ButtonTemplate>
-                </MudFileUpload>
-            </div>
-            }
-            else
-            {
-                <MudPaper Height="150px" Width="150px" Outlined Class="d-flex align-center justify-center">
-                <MudImage Src="/images/no-image.png" Alt="thumbnail image" Height="150" Width="150" />
-                </MudPaper>
-            }
+            <ThumbnailImage Uri="@_selectedProductDefinition.ThumbnailUri" UriUpdated="UpdateThumbnail" Height="200" Width="200" EditMode/>
             <MudStack Class="flex-grow-1">
                 <MudTextField T="string" Value="_nameField" ValueChanged="Name_ValueChanged" Label="Name" Variant="Variant.Outlined" Immediate Required MaxLength="50" />
                 <MudTextField T="string" Value="_descriptionField" ValueChanged="Description_ValueChanged" Label="Description" Variant="Variant.Outlined" Lines="3" MaxLength="500" Immediate />

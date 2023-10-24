@@ -3,7 +3,7 @@
 	@SubscriptionId int,
 	@Name nvarchar(50),
 	@Description nvarchar(500),
-	@ThumbnailId int,
+	@ThumbnailUri varchar(200),
 	@CreatedById int
 AS
 
@@ -15,14 +15,14 @@ BEGIN
 			   ,[SubscriptionId]
 			   ,[Name]
 			   ,[Description]
-			   ,[ThumbnailId]
+			   ,[ThumbnailUri]
 			   ,[CreatedById])
 		   VALUES
 			   (@ParentId
 			   ,@SubscriptionId
 			   ,@Name
 			   ,@Description
-			   ,@ThumbnailId
+			   ,@ThumbnailUri
 			   ,@CreatedById)
 		   SELECT * FROM [dbo].[Category] WHERE Id = SCOPE_IDENTITY();
 

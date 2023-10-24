@@ -3,7 +3,7 @@
 	@CategoryId int, 
 	@Name nvarchar(50),
 	@Description nvarchar(500),
-	@ThumbnailId int,
+	@ThumbnailUri varchar(200),
 	@ForgeBucketKey varchar(50),
 	@CreatedById int
 AS
@@ -16,7 +16,7 @@ BEGIN
 				,[CategoryId]
 				,[Name]
 				,[Description]
-				,[ThumbnailId]
+				,[ThumbnailUri]
 				,[ForgeBucketKey]
 				,[CreatedById])
            VALUES
@@ -24,7 +24,7 @@ BEGIN
 				,@CategoryId
 				,@Name
 				,@Description
-				,@ThumbnailId
+				,@ThumbnailUri
 				,@ForgeBucketKey
 				,@CreatedById)
 		   SELECT * FROM [dbo].[ProductDefinition] WHERE Id = SCOPE_IDENTITY();

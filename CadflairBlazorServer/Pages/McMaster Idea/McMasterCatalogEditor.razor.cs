@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Graph.Models.Security;
 
@@ -6,10 +7,11 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea;
 public partial class McMasterCatalogEditor
 {
     // services
-    [Inject] ISnackbar Snackbar { get; set; } = default!;
+    [Inject] BlobServiceClient BlobServiceClient { get; set; } = default!;
     [Inject] AuthenticationService AuthenticationService { get; set; } = default!;
     [Inject] NavigationManager NavigationManager { get; set; } = default!;
     [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
+    [Inject] ISnackbar Snackbar { get; set; } = default!;
     [Inject] ILogger<McMasterCatalogEditor> Logger { get; set; } = default!;
 
     // parameters
@@ -42,6 +44,7 @@ public partial class McMasterCatalogEditor
             _categories = await DataServicesManager.McMasterService.GetCategoriesBySubscriptionId(_subscription.Id);
             _productDefinitions = await DataServicesManager.McMasterService.GetProductDefinitionsBySubscriptionId(_subscription.Id);
             _initializing = false;
+
         }
         catch (Exception ex)
         {

@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using FluentEmail.Graph;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -34,6 +35,9 @@ builder.Services.AddResponseCompression(options =>
     options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
 });
 
+// Azure blob storage (used for thumbnail images) 
+builder.Services.AddSingleton(x => new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage")));
+
 // Fluent Email
 builder.Services.AddFluentEmail("donotreply@cadflair.com")
                 .AddGraphSender(new GraphSenderOptions()
@@ -43,6 +47,13 @@ builder.Services.AddFluentEmail("donotreply@cadflair.com")
                     Secret = builder.Configuration["MailCredentials:Secret"],
                 })
                 .AddRazorRenderer();
+
+// Cadflair services
+builder.Services.AddScoped<DataServicesManager>();
+builder.Services.AddScoped<AuthenticationService>();
+builder.Services.AddScoped<ForgeServicesManager>();
+builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<FileHandlingService>();
 
 // MudBlazor
 builder.Services.AddMudServices(config =>
@@ -57,12 +68,6 @@ builder.Services.AddMudServices(config =>
     config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
 });
 
-// Cadflair services
-builder.Services.AddScoped<DataServicesManager>();
-builder.Services.AddScoped<AuthenticationService>();
-builder.Services.AddScoped<ForgeServicesManager>();
-builder.Services.AddScoped<EmailService>();
-builder.Services.AddScoped<FileHandlingService>();
 
 var app = builder.Build();
 

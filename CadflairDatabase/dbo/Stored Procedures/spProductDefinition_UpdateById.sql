@@ -3,7 +3,7 @@
 	@CategoryId int, 
 	@Name nvarchar(50),
 	@Description nvarchar(500),
-	@ThumbnailId int, 
+	@ThumbnailUri varchar(200),
 	@ForgeBucketKey varchar(50)
 AS
 
@@ -15,7 +15,7 @@ BEGIN
 	SET [CategoryId] = @CategoryId,
 		[Name] = @Name,
 		[Description] = @Description,
-		[ThumbnailId] = @ThumbnailId,
+		[ThumbnailUri] = @ThumbnailUri,
 		[ForgeBucketKey] = @ForgeBucketKey
 
 	WHERE [Id] = @Id;

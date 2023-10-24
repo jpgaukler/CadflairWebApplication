@@ -17,7 +17,7 @@ namespace CadflairDataAccess.Services
 
         #region "Category"
 
-        public Task<Category> CreateCategory(int subscriptionId, int? parentId, string name, string description, int? thumbnailId, int createdById)
+        public Task<Category> CreateCategory(int subscriptionId, int? parentId, string name, string description, string thumbnailUri, int createdById)
         {
             dynamic values = new
             {
@@ -25,7 +25,7 @@ namespace CadflairDataAccess.Services
                 SubscriptionId = subscriptionId,
                 Name = name,
                 Description = description,
-                ThumbnailId = thumbnailId,
+                ThumbnailUri = thumbnailUri,
                 CreatedById = createdById,
             };
 
@@ -61,7 +61,7 @@ namespace CadflairDataAccess.Services
                 category.ParentId,
                 category.Name,
                 category.Description,
-                category.ThumbnailId,
+                category.ThumbnailUri,
             };
 
             return _db.SaveDataAsync("[dbo].[spCategory_UpdateById]", values);
@@ -76,7 +76,7 @@ namespace CadflairDataAccess.Services
 
         #region "ProductDefinition"
 
-        public async Task<ProductDefinition> CreateProductDefinition(int subscriptionId, int? categoryId, string name, string description, int? thumbnailId, string forgeBucketKey, int createdById)
+        public async Task<ProductDefinition> CreateProductDefinition(int subscriptionId, int? categoryId, string name, string description, string thumbnailUri, string forgeBucketKey, int createdById)
         {
             dynamic values = new
             {
@@ -84,7 +84,7 @@ namespace CadflairDataAccess.Services
                 CategoryId = categoryId,
                 Name = name,
                 Description = description,
-                ThumbnailId = thumbnailId,
+                ThumbnailUri = thumbnailUri,
                 ForgeBucketKey = forgeBucketKey,
                 CreatedById = createdById,
             };
@@ -120,7 +120,7 @@ namespace CadflairDataAccess.Services
                 productDefinition.CategoryId,
                 productDefinition.Name,
                 productDefinition.Description,
-                productDefinition.ThumbnailId,
+                productDefinition.ThumbnailUri,
                 productDefinition.ForgeBucketKey,
             };
 

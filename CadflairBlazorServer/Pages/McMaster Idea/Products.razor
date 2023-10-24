@@ -33,9 +33,14 @@
         </MudOverlay>
 
         <MudStack Class="flex-grow-1 overflow-auto">
-            <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
-            <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
-            <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
+            <MudStack Row AlignItems="AlignItems.Center">
+                <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
+                    <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
+                    <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
+                </MudStack>
+            </MudStack>
             <!-- products -->
             <MudStack>
                 <MudTable Items="_productTable.Rows.Where(_filter)" Outlined>

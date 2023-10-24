@@ -9,7 +9,7 @@ namespace CadflairDataAccess.Models
         public int? CategoryId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; }
-        public int? ThumbnailId { get; set; }
+        public string ThumbnailUri { get; set; }
         public string ForgeBucketKey { get; set; }
         public int CreatedById { get; }
         public DateTimeOffset CreatedOn { get; }

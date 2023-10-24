@@ -1,3 +1,5 @@
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Row = CadflairDataAccess.Models.Row;
@@ -7,6 +9,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea;
 public partial class ManageProductDefinitions
 {
     // services
+    [Inject] BlobServiceClient BlobServiceClient { get; set; } = default!;
     [Inject] DataServicesManager DataServicesManager { get; set; } = default!;
     [Inject] ForgeServicesManager ForgeServicesManager { get; set; } = default!;
     [Inject] FileHandlingService FileHandlingService { get; set; } = default!;
@@ -121,6 +124,8 @@ public partial class ManageProductDefinitions
         if (confirmDelete != true)
             return;
 
+        // TO DO: need to delete the thumbnail from blob storage if there is one
+
         await DataServicesManager.McMasterService.DeleteProductDefinitionById(_selectedProductDefinition.Id);
         ProductDefinitions.Remove(_selectedProductDefinition);
         _selectedProductDefinition = null;
@@ -142,7 +147,7 @@ public partial class ManageProductDefinitions
                                                                                                                    categoryId: null,
                                                                                                                    name: dialog.Name,
                                                                                                                    description: dialog.Description,
-                                                                                                                   thumbnailId: null,
+                                                                                                                   thumbnailUri: null,
                                                                                                                    forgeBucketKey: null,
                                                                                                                    createdById: LoggedInUser.Id);
 
@@ -243,9 +248,15 @@ public partial class ManageProductDefinitions
         StateHasChanged();
     }
 
-    private void UploadThumbnail(IBrowserFile file)
+    private async Task UpdateThumbnail(string? thumbnailUri)
     {
-        //TODO upload the files to the server
+        if(_selectedProductDefinition == null)
+            return;
+
+        _selectedProductDefinition.ThumbnailUri = thumbnailUri;
+        await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+
+        Snackbar.Add($"Thumbnail updated!", Severity.Success);
     }
 
     private async Task Attachments_FilesChanged(IReadOnlyList<IBrowserFile> files)
@@ -285,7 +296,7 @@ public partial class ManageProductDefinitions
             }
 
             // find row to link this file to
-            Row? matchingRow = _productTable.Rows.FirstOrDefault(i => i.PartNumber.Equals(Path.GetFileNameWithoutExtension(upload.File.Name), StringComparison.OrdinalIgnoreCase));
+            Row? matchingRow = _productTable?.Rows.FirstOrDefault(i => i.PartNumber.Equals(Path.GetFileNameWithoutExtension(upload.File.Name), StringComparison.OrdinalIgnoreCase));
 
             if (matchingRow == null)
             {

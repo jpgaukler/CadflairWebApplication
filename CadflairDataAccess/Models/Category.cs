@@ -10,7 +10,7 @@ namespace CadflairDataAccess.Models
         public int SubscriptionId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; }
-        public int? ThumbnailId { get; set; }
+        public string ThumbnailUri { get; set; }
         public int CreatedById { get; }
         public DateTimeOffset CreatedOn { get; }
 

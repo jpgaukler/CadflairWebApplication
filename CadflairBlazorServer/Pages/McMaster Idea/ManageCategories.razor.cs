@@ -21,9 +21,6 @@ public partial class ManageCategories
     private string? _descriptionField; 
     private bool _isDirty;
 
-    private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
-    private string _dragStyle = _initialDragStyle;
-
     private void Category_OnClick(Category? category)
     {
         _selectedCategory = category;
@@ -66,7 +63,6 @@ public partial class ManageCategories
         Snackbar.Add("Changes saved!", Severity.Success);
     }
 
-
     private async Task AddCategory_OnClick(Category? parentCategory)
     {
 
@@ -88,7 +84,7 @@ public partial class ManageCategories
                                                                                         parentId: _selectedCategory?.Id,
                                                                                         name: dialog.Name,
                                                                                         description: dialog.Description,
-                                                                                        thumbnailId: null,
+                                                                                        thumbnailUri: null,
                                                                                         createdById: LoggedInUser.Id);
 
 
@@ -132,6 +128,8 @@ public partial class ManageCategories
         if (confirmDelete != true)
             return;
 
+        // TO DO: need to delete the thumbnail from blob storage if there is one
+
         await DataServicesManager.McMasterService.DeleteCategoryById(_selectedCategory.Id);
 
         if(_selectedCategory.ParentCategory == null)
@@ -146,11 +144,15 @@ public partial class ManageCategories
         }
     }
 
-    private void UploadThumbnail(IBrowserFile file)
+    private async Task UpdateThumbnail(string? thumbnailUri)
     {
-        //TODO upload the files to the server
+        if(_selectedCategory == null)
+            return;
+
+        _selectedCategory.ThumbnailUri = thumbnailUri;
+        await DataServicesManager.McMasterService.UpdateCategory(_selectedCategory);
+
+        Snackbar.Add($"Thumbnail updated!", Severity.Success);
     }
-    private void SetDragStyle() => _dragStyle = "border-color: var(--mud-palette-primary)!important";
-    private void ClearDragStyle() => _dragStyle = _initialDragStyle;
 
 }

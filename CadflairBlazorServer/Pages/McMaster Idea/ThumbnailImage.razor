@@ -1,0 +1,49 @@
+﻿@if (EditMode)
+{
+    @if (Uri == null)
+    {
+        <div class="relative">
+            <MudFileUpload T="IBrowserFile" FilesChanged="UploadThumbnail" Hidden="_loading" Accept="@($"{string.Join(", ", _validExtensions)}")"
+                   Class="flex-1" InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20 cursor-pointer" InputStyle="opacity:0"
+                   @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">
+                <ButtonTemplate>
+                    <MudPaper Height="@($"{Height}px")" Width="@($"{Width}px")" Class="d-flex flex-column justify-center align-center gap-1" Style="@_dragStyle" Outlined>
+                        @if (_loading)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.AddAPhoto" Size="Size.Large" />
+                            <MudText Typo="Typo.caption" Align="Align.Center">Click or Drop to add thumbnail</MudText>
+                        }
+                    </MudPaper>
+                </ButtonTemplate>
+            </MudFileUpload>
+        </div>
+    }
+    else
+    {
+        <div class="relative">
+            <div class="absolute" style="right:0; top:0;">
+                <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="DeleteThumbnail" Size="Size.Small" />
+            </div>
+            <MudImage Src="@Uri" Alt="thumbnail image" Height="@Height" Width="@Width" />
+        </div>
+    }
+}
+else
+{
+    @if (Uri == null)
+    {
+        <MudPaper Height="@($"{Height}px")" Width="@($"{Width}px")" Elevation="0" Class="d-flex align-center justify-center">
+            <MudIcon Icon="@Icons.Material.Filled.ImageNotSupported" Size="Size.Large" />
+        </MudPaper>
+    }
+    else
+    {
+        <MudImage Src="@Uri" Alt="thumbnail image" Height="@Height" Width="@Width" />
+    }
+}
+
+

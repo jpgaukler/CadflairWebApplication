@@ -115,7 +115,6 @@
     <Build Include="dbo\Stored Procedures\spCatalogModel_UpdateById.sql" />
     <Build Include="dbo\Tables\Category.sql" />
     <Build Include="dbo\Tables\ProductDefinition.sql" />
-    <Build Include="dbo\Tables\Thumbnail.sql" />
     <Build Include="dbo\Tables\ProductTable.sql" />
     <Build Include="dbo\Tables\Row.sql" />
     <Build Include="dbo\Tables\Column.sql" />

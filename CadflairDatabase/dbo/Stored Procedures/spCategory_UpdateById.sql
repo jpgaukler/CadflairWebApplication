@@ -3,7 +3,7 @@
 	@ParentId int, 
 	@Name nvarchar(50),
 	@Description nvarchar(500),
-	@ThumbnailId int
+	@ThumbnailUri varchar(200)
 AS
 
 BEGIN
@@ -14,7 +14,7 @@ BEGIN
 	SET [ParentId] = @ParentId,
 		[Name] = @Name,
 		[Description] = @Description,
-		[ThumbnailId] = @ThumbnailId
+		[ThumbnailUri] = @ThumbnailUri
 
 	WHERE [Id] = @Id;
 
