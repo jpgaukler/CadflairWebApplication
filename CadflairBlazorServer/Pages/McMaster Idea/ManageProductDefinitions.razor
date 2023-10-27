@@ -56,31 +56,59 @@ else
     @if(_productTable != null)
     {
         <!-- product table -->
-        <MudPaper Class="pa-3 d-flex flex-column gap-3">
+        <MudPaper Class="pa-3 d-flex flex-column gap-3 relative">
+            <MudOverlay Visible="_importingExcel" Class="mud-background" Style="z-index:1400;" Absolute>
+                <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+                    <MudText Typo="Typo.button">Importing Excel data...</MudText>
+                    <MudProgressCircular Color="Color.Default" Size="Size.Medium" Indeterminate />
+                </MudStack>
+            </MudOverlay>
 
-            <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                <MudText Typo="Typo.h6">Product Table</MudText>
-                <MudSpacer/>
+            <MudText Typo="Typo.h6">Product Table</MudText>
+            <MudPaper Outlined Class="d-flex flex-row">
                 <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddRow_OnClick" Disabled="!_productTable.Columns.Any()">Add Product</MudButton>
                 <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="EditColumns_OnClick">Edit Columns</MudButton>
-            </MudStack>
+                @if (_productTable.Columns.Any())
+                {
+                    <MudButton StartIcon="@Icons.Material.Filled.Clear" OnClick="ResetProductTable_OnClick">Clear All</MudButton>
+                }
+                <MudSpacer />
+                <div style="max-width:300px;" class="pr-3">
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search" Immediate Clearable
+                          Variant="Variant.Text" Margin="Margin.Dense" 
+                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" />
+                </div>
+            </MudPaper>
 
-            <MudTable Items="_productTable.Rows"
-              RowEditPreview="(row) => RowEditPreview((Row)row)"
-              RowEditCancel="(row) => RowEditCancel((Row)row)"
-              RowEditCommit="async(row) => await RowEditCommit((Row)row)"
-              IsEditRowSwitchingBlocked="true" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.RowClick"
-              FixedHeader HorizontalScrollbar Height="65dvh" Class="flex-grow-1 flex-shrink-1 overflow-auto" Outlined>
+            <MudTable Items="_productTable.Rows" Filter="_searchFilter"
+                      RowEditPreview="(row) => RowEditPreview((Row)row)"
+                      RowEditCancel="(row) => RowEditCancel((Row)row)"
+                      RowEditCommit="async(row) => await RowEditCommit((Row)row)"
+                      IsEditRowSwitchingBlocked="true" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.RowClick"
+                      FixedHeader HorizontalScrollbar Height="65dvh" Class="flex-grow-1 flex-shrink-1 overflow-auto" Outlined>
                 <NoRecordsContent>
-                    @if (_productTable.Columns.Any())
+                    @if(string.IsNullOrWhiteSpace(_searchString))
                     {
-                        <MudText>No products.</MudText>
-                        <MudText>Click <strong>Add Product</strong> to create a new product.</MudText>
+                        @if (_productTable.Columns.Any())
+                        {
+                            <MudText>No products.</MudText>
+                            <MudText>Click <strong>Add Product</strong> to create a new product.</MudText>
+                        }
+                        else
+                        {
+                            <MudText>Click <strong>Edit Columns</strong> to get started.</MudText>
+                            <MudText Class="my-5"><strong>OR</strong></MudText>
+                            <MudText>Import data from and Excel file:</MudText>
+                            <MudFileUpload T="IBrowserFile" FilesChanged="ImportExcel_OnClick" Accept=".xls, .xlsx">
+                                <ButtonTemplate>
+                                    <MudButton StartIcon="@Icons.Material.Filled.UploadFile" Variant="Variant.Filled" Color="Color.Primary" HtmlTag="label" for="@context">Import Excel</MudButton>
+                                </ButtonTemplate>
+                            </MudFileUpload>
+                        }
                     }
                     else
                     {
-                        <MudText>No Columns</MudText>
-                        <MudText>Click <strong>Edit Columns</strong> to get started.</MudText>
+                        <MudText>No results.</MudText>
                     }
                 </NoRecordsContent>
                 <HeaderContent>
@@ -114,23 +142,23 @@ else
             </MudTable>
 
             <!-- events -->
-@*            <MudPaper Height="350px" Class="d-flex flex-column pa-3 mud-background-gray flex-shrink-0">
-                <MudText Typo="Typo.h6">Events</MudText>
-                <MudStack Class="flex-grow-1 overflow-auto">
-                    @foreach (var message in _events)
-                    {
-                        <MudText Typo="@Typo.body2">@message</MudText>
-                    }
-                </MudStack>
-                @if (_events.Count > 0)
-                {
-                    <div class="d-flex">
-                        <MudSpacer />
-                        <MudButton Variant="Variant.Filled" OnClick="() => _events.Clear()">Clear</MudButton>
-                    </div>
-                }
-            </MudPaper>
-*@
+            @*            <MudPaper Height="350px" Class="d-flex flex-column pa-3 mud-background-gray flex-shrink-0">
+    <MudText Typo="Typo.h6">Events</MudText>
+    <MudStack Class="flex-grow-1 overflow-auto">
+    @foreach (var message in _events)
+    {
+    <MudText Typo="@Typo.body2">@message</MudText>
+    }
+    </MudStack>
+    @if (_events.Count > 0)
+    {
+    <div class="d-flex">
+    <MudSpacer />
+    <MudButton Variant="Variant.Filled" OnClick="() => _events.Clear()">Clear</MudButton>
+    </div>
+    }
+    </MudPaper>
+    *@
         </MudPaper>
     }
 

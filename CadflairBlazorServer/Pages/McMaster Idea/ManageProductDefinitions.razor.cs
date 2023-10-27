@@ -1,7 +1,9 @@
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
+using ClosedXML.Excel;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Category = CadflairDataAccess.Models.Category;
+using Column = CadflairDataAccess.Models.Column;
 using Row = CadflairDataAccess.Models.Row;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea;
@@ -22,23 +24,39 @@ public partial class ManageProductDefinitions
     [CascadingParameter] public Subscription Subscription { get; set; } = default!;
     [Parameter] public List<ProductDefinition> ProductDefinitions { get; set; } = new();
 
-    // fields
+    // product data
     private ProductDefinition? _selectedProductDefinition;
     private Category? _category;
     private ProductTable? _productTable;
+    private string? _searchString; 
+    private Func<Row, bool> _searchFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.PartNumber.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.TableValues.Select(i => i.Value).Any(i => i.Contains(_searchString, StringComparison.OrdinalIgnoreCase)))
+            return true;
+
+        return false;
+    };
+
+    // product table
     private Row _rowBeforeEdit = new();
-    private List<string> _events = new();
+    private bool _isDirty;
     private string _nameField = string.Empty;
     private string? _descriptionField; 
-    private bool _isDirty;
-    private List<FileUpload> _fileUploads = new();
+    private bool _importingExcel;
 
+    // attachment uploads
     private class FileUpload
     {
         public IBrowserFile File { get; set; } = default!;
         public string Status { get; set; } = string.Empty;
     }
-
+    private List<FileUpload> _fileUploads = new();
     private readonly string[] _validExtensions = { ".ipt", ".stp", ".step", ".pdf" };
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
@@ -206,6 +224,26 @@ public partial class ManageProductDefinitions
         //AddEvent($"Event = NewProductRecord");
     }
 
+    private async Task ResetProductTable_OnClick()
+    {
+        if (_selectedProductDefinition == null)
+            return;
+
+        if (_productTable == null)
+            return;
+
+        bool? confirmDelete = await DialogService.ShowMessageBox(title: "Clear Product Table",
+                                                                 message: "Are you sure you want to continue? All table data will be lost.",
+                                                                 yesText: "Yes",
+                                                                 cancelText: "Cancel");
+        if (confirmDelete != true)
+            return;
+
+        await DataServicesManager.McMasterService.DeleteProductTableById(_productTable.Id);
+        await DataServicesManager.McMasterService.CreateProductTable(_selectedProductDefinition.Id, LoggedInUser.Id);
+        _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
+    }
+
     private void RowEditPreview(Row row)
     {
         // create a backup copy of the values in memory
@@ -242,6 +280,112 @@ public partial class ManageProductDefinitions
         AddEvent($"RowEditCommit event: Changes to record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
     }
 
+    private async Task ImportExcel_OnClick(IBrowserFile browserFile)
+    {
+        if (_productTable == null)
+            return;
+
+        string[] validExtensions = { ".xlsx", ".xls"};
+
+        if (!validExtensions.Any(i => i == Path.GetExtension(browserFile.Name)))
+        {
+            Snackbar.Add("Invalid file extension!", Severity.Warning);
+            return;
+        }
+
+        _importingExcel = true;
+        string? tempFilename = null;
+
+        try
+        {
+            tempFilename = await FileHandlingService.UploadBrowserFileToTempFolder(browserFile);
+
+            XLWorkbook workbook;
+            using (FileStream fs = File.Open(tempFilename, FileMode.Open, FileAccess.Read))
+            {
+                workbook = new(fs);
+            }
+
+            var worksheet = workbook.Worksheets.First();
+            int partNumberColumnIndex = 1;
+
+            Dictionary<int, int> columnMappings = new();
+
+            // add columns
+            foreach (var xlCell in worksheet.FirstRowUsed().Cells())
+            {
+                int columnIndex = xlCell.Address.ColumnNumber;
+                string? columnHeader = xlCell.Value.ToString();
+
+                if (string.IsNullOrWhiteSpace(columnHeader))
+                    break;
+
+                if (columnHeader.Contains("Part Number", StringComparison.OrdinalIgnoreCase))
+                {
+                    partNumberColumnIndex = columnIndex;
+                    continue;
+                }
+
+                Column newColumn = await DataServicesManager.McMasterService.CreateColumn(productTableId: _productTable.Id,
+                                                                                          header: columnHeader,
+                                                                                          sortOrder: _productTable.Columns.Count + 1,
+                                                                                          createdById: LoggedInUser.Id);
+                columnMappings.Add(columnIndex, newColumn.Id);
+                _productTable.Columns.Add(newColumn);
+            }
+
+            // add rows
+            foreach (var xlRow in worksheet.RowsUsed())
+            {
+                // skip the header row
+                if (xlRow == worksheet.FirstRowUsed())
+                    continue;
+
+                string? partNumber = xlRow.Cell(partNumberColumnIndex).Value.ToString();
+
+                if (string.IsNullOrWhiteSpace(partNumber))
+                    break;
+
+                Row newRow = await DataServicesManager.McMasterService.CreateRow(productTableId: _productTable.Id,
+                                                                                 partNumber: partNumber,
+                                                                                 createdById: LoggedInUser.Id);
+
+
+                // add an new table value for each column 
+                foreach (var columnMapping in columnMappings)
+                {
+                    int columnId = columnMapping.Value;
+                    string value = xlRow.Cell(columnMapping.Key).Value.ToString();
+
+                    TableValue newTableValue = await DataServicesManager.McMasterService.CreateTableValue(productTableId: _productTable.Id,
+                                                                                                          rowId: newRow.Id,
+                                                                                                          columnId: columnId,
+                                                                                                          value: value,
+                                                                                                          createdById: LoggedInUser.Id);
+
+                    newRow.TableValues.Add(newTableValue);
+                }
+
+                _productTable.Rows.Add(newRow);
+            }
+
+
+            Snackbar.Add("Data imported successfully!", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Import Excel data failed!");
+            Snackbar.Add("Data import failed!", Severity.Error);
+        }
+
+        // clean up
+        if (tempFilename != null)
+            File.Delete(tempFilename);
+
+        _importingExcel = false;
+    }
+
+    private List<string> _events = new();
     private void AddEvent(string message)
     {
         _events.Insert(0, message);
@@ -250,7 +394,7 @@ public partial class ManageProductDefinitions
 
     private async Task UpdateThumbnail(string? thumbnailUri)
     {
-        if(_selectedProductDefinition == null)
+        if (_selectedProductDefinition == null)
             return;
 
         _selectedProductDefinition.ThumbnailUri = thumbnailUri;
@@ -285,7 +429,7 @@ public partial class ManageProductDefinitions
 
             IProgress<string> progress = new Progress<string>(message =>
             {
-                upload.Status = message; 
+                upload.Status = message;
                 StateHasChanged();
             });
 

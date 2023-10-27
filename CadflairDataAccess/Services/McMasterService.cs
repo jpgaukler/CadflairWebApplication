@@ -129,8 +129,6 @@ namespace CadflairDataAccess.Services
 
         public Task DeleteProductDefinitionById(int productDefinitionId)
         {
-            // TO DO: delete product table
-
             return _db.SaveDataAsync("[dbo].[spProductDefinition_DeleteById]", new { Id = productDefinitionId });
         }
 
@@ -170,6 +168,12 @@ namespace CadflairDataAccess.Services
 
             return productTable;
         }
+
+        public Task DeleteProductTableById(int productTableId)
+        {
+            return _db.SaveDataAsync("[dbo].[spProductTable_DeleteById]", new { Id = productTableId });
+        }
+
 
         #endregion
 

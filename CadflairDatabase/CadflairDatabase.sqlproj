@@ -145,6 +145,7 @@
     <Build Include="dbo\Stored Procedures\spRow_UpdateById.sql" />
     <Build Include="dbo\Stored Procedures\spAttachment_Insert.sql" />
     <Build Include="dbo\Stored Procedures\spAttachment_GetByProductTableId.sql" />
+    <Build Include="dbo\Stored Procedures\spProductTable_DeleteById.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish Scripts\cadflairlocaldb.publish.xml" />
