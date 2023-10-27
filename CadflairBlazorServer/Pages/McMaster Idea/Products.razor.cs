@@ -20,6 +20,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         // fields
         private Subscription? _subscription;
         private ProductDefinition? _productDefinition;
+        private Row? _selectedRow;
         private ProductTable _productTable = new();
         private Dictionary<int, HashSet<string>> _columnFilters = new();
         private bool _drawerOpen = true;

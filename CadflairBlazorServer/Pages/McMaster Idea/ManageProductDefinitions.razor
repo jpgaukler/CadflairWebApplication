@@ -112,10 +112,12 @@ else
                     }
                 </NoRecordsContent>
                 <HeaderContent>
-                    <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>
+                    <MudTh Style="min-width:15ch;">Part Number</MudTh>
+                    @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>*@
                     @foreach (var column in _productTable.Columns)
                     {
-                        <MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>
+                        <MudTh Style="min-width:15ch;">@column.Header</MudTh>
+                        @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>*@
                     }
                     <MudTh>Attachments</MudTh>
                 </HeaderContent>
