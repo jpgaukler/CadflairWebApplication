@@ -1,3 +1,4 @@
+using CadflairBlazorServer.Pages.McMaster_Idea;
 using Microsoft.AspNetCore.Components;
 
 namespace CadflairBlazorServer.Pages
@@ -5,7 +6,15 @@ namespace CadflairBlazorServer.Pages
     public partial class Index
     {
         // services
+        [Inject] DataServicesManager  DataServicesManager { get; set; } = default!;
+        [Inject] ForgeServicesManager  ForgeServicesManager { get; set; } = default!;
+        [Inject] NavigationManager NavigationManager { get; set; } = default!;
+        [Inject] ISnackbar Snackbar { get; set; } = default!;
+        [Inject] IDialogService DialogService { get; set; } = default!;
         [Inject] IJSRuntime JSRuntime { get; set; } = default!;
+
+        // fields
+        private ForgeViewer? _forgeViewer;
 
         //protected override async Task OnInitializedAsync()
         //{
@@ -50,6 +59,12 @@ namespace CadflairBlazorServer.Pages
         private async Task LearnMore_OnClick()
         {
             await JSRuntime.InvokeVoidAsync("anchorLink.scrollIntoView", "learn-more-tag");
+        }
+
+        private async Task Preview_OnClick()
+        {
+            string url = "https://cadflairblobstorage.blob.core.windows.net/svf/result.svf";
+            await _forgeViewer!.ViewDocument(url);
         }
 
     }

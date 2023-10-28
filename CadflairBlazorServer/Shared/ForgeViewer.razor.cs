@@ -4,10 +4,12 @@ namespace CadflairBlazorServer.Shared
 {
     public partial class ForgeViewer
     {
-        [Inject] IJSRuntime _js { get; set; } = default!;
-        [Inject] ILogger<ForgeViewer> _logger { get; set; } = default!;
-        [Inject] ForgeServicesManager  _forgeServicesManager { get; set; } = default!;
+        // services
+        [Inject] IJSRuntime Js { get; set; } = default!;
+        [Inject] ILogger<ForgeViewer> Logger { get; set; } = default!;
+        [Inject] ForgeServicesManager  ForgeServicesManager { get; set; } = default!;
 
+        // fields
         private bool _modelNotFound = false;
 
         public async Task ViewDocumentInOss(string bucketKey, string objectKey = "bubble.json")
@@ -17,7 +19,7 @@ namespace CadflairBlazorServer.Shared
             try
             {
                 //get public token for viewables
-                var token = await _forgeServicesManager.AuthorizationService.GetPublic();
+                var token = await ForgeServicesManager.AuthorizationService.GetPublic();
 
                 var parameters = new
                 {
@@ -27,11 +29,11 @@ namespace CadflairBlazorServer.Shared
                 };
 
                 //invoke the viewer
-                await _js.InvokeVoidAsync("loadModelFromOss", parameters);
+                await Js.InvokeVoidAsync("loadModelFromOss", parameters);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Failed to load model from OSS - bucketKey: {bucketKey}, objectKey: {objectKey}");
+                Logger.LogError(ex, $"Failed to load model from OSS - bucketKey: {bucketKey}, objectKey: {objectKey}");
                 _modelNotFound = true;
             }
 
@@ -45,12 +47,12 @@ namespace CadflairBlazorServer.Shared
             try
             {
                 //get public token for viewables
-                var token = await _forgeServicesManager.AuthorizationService.GetPublic();
+                var token = await ForgeServicesManager.AuthorizationService.GetPublic();
 
                 //get forge object id
-                dynamic forgeObject = await _forgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
+                dynamic forgeObject = await ForgeServicesManager.ObjectStorageService.GetObjectDetails(bucketKey, objectKey);
 
-                if (await _forgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
+                if (await ForgeServicesManager.ModelDerivativeService.TranslationExists(forgeObject.encoded_urn))
                 {
                     //define input parameters as JSON
                     var parameters = new
@@ -60,22 +62,48 @@ namespace CadflairBlazorServer.Shared
                     };
 
                     //invoke the viewer
-                    await _js.InvokeVoidAsync("loadModelFromUrn", parameters);
+                    await Js.InvokeVoidAsync("loadModelFromUrn", parameters);
                 }
                 else
                 {
-                    _logger.LogWarning($"Model derivative manifest not found - bucketKey: {bucketKey}, objectKey: {objectKey}");
+                    Logger.LogWarning($"Model derivative manifest not found - bucketKey: {bucketKey}, objectKey: {objectKey}");
                     _modelNotFound = true;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, $"Failed to load model from derivative - bucketKey: {bucketKey}, objectKey: {objectKey}");
+                Logger.LogWarning(ex, $"Failed to load model from derivative - bucketKey: {bucketKey}, objectKey: {objectKey}");
                 _modelNotFound = true;
             }
 
             StateHasChanged();
         }
 
+        public async Task ViewDocument(string url)
+        {
+            _modelNotFound = false;
+
+            try
+            {
+                //get public token for viewables
+                var token = await ForgeServicesManager.AuthorizationService.GetPublic();
+
+                var parameters = new
+                {
+                    Token = token.access_token,
+                    Url = url,
+                };
+
+                //invoke the viewer
+                await Js.InvokeVoidAsync("loadModelFromUrl", parameters);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning(ex, $"Failed to load model from url: {url}");
+                _modelNotFound = true;
+            }
+
+            StateHasChanged();
+        }
     }
 }
