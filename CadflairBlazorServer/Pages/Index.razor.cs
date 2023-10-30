@@ -13,9 +13,6 @@ namespace CadflairBlazorServer.Pages
         [Inject] IDialogService DialogService { get; set; } = default!;
         [Inject] IJSRuntime JSRuntime { get; set; } = default!;
 
-        // fields
-        private ForgeViewer? _forgeViewer;
-
         //protected override async Task OnInitializedAsync()
         //{
         //    //if (await _authenticationService.IsLoggedInUserValid() == false)
@@ -59,12 +56,6 @@ namespace CadflairBlazorServer.Pages
         private async Task LearnMore_OnClick()
         {
             await JSRuntime.InvokeVoidAsync("anchorLink.scrollIntoView", "learn-more-tag");
-        }
-
-        private async Task Preview_OnClick()
-        {
-            string url = "https://cadflairblobstorage.blob.core.windows.net/svf/result.svf";
-            await _forgeViewer!.ViewDocument(url);
         }
 
     }

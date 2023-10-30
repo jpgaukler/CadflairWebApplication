@@ -79,31 +79,5 @@ namespace CadflairBlazorServer.Shared
             StateHasChanged();
         }
 
-        public async Task ViewDocument(string url)
-        {
-            _modelNotFound = false;
-
-            try
-            {
-                //get public token for viewables
-                var token = await ForgeServicesManager.AuthorizationService.GetPublic();
-
-                var parameters = new
-                {
-                    Token = token.access_token,
-                    Url = url,
-                };
-
-                //invoke the viewer
-                await Js.InvokeVoidAsync("loadModelFromUrl", parameters);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning(ex, $"Failed to load model from url: {url}");
-                _modelNotFound = true;
-            }
-
-            StateHasChanged();
-        }
     }
 }

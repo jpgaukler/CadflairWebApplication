@@ -1,22 +1,5 @@
 ﻿var viewer;
 
-async function loadModelFromUrl(params) {
-    var options = {
-        env: 'AutodeskProduction',
-        accessToken: params.token
-    };
-
-    Autodesk.Viewing.Initializer(options, () => {
-        viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: ['Autodesk.DocumentBrowser'] });
-        viewer.addEventListener(Autodesk.Viewing.EXTENSION_LOADED_EVENT, onExtensionLoaded);
-        viewer.addEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, onToolbarCreated);
-        viewer.start();
-
-        // load an file (svf or other supported format) from any url
-        viewer.loadModel(params.url, onDocumentLoadSuccess, onDocumentLoadFailure);
-    });
-}
-
 async function loadModelFromUrn(params) {
     var options = {
         env: 'AutodeskProduction',
