@@ -57,7 +57,7 @@ public partial class ManageProductDefinitions
         public string Status { get; set; } = string.Empty;
     }
     private List<FileUpload> _fileUploads = new();
-    private readonly string[] _validExtensions = { ".ipt", ".stp", ".step", ".pdf" };
+    private readonly string[] _validExtensions = { ".ipt", ".stp", ".step", ".pdf", ".dwg", ".idw" };
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
 

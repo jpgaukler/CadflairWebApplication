@@ -1,12 +1,26 @@
-﻿<MudDialog Class="overflow-hidden">
+﻿@using Row = CadflairDataAccess.Models.Row;
+
+<MudDialog Class="overflow-hidden">
     <DialogContent>
         <MudPaper Class="relative" Height="75dvh">
             <ForgeViewer @ref="_forgeViewer" />
         </MudPaper>
+        @if (Row.Attachments.Any())
+        {
+            <MudText Typo="Typo.body2">Product Detail</MudText>
+            <MudSelect T="Attachment" @bind-Value="_selectedAttachment">
+                @foreach (var attachment in Row.Attachments)
+                {
+                    <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
+                }
+            </MudSelect>
+            <MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="PreviewAttachment_OnClick" />
+        }
     </DialogContent>
-@*    <DialogActions>
-        <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Ok_OnClick">Ok</MudButton>
+
+    @*    <DialogActions>
+    <MudButton OnClick="Cancel_OnClick">Cancel</MudButton>
+    <MudButton Color="Color.Primary" OnClick="Ok_OnClick">Ok</MudButton>
     </DialogActions>
-*@
+    *@
 </MudDialog>

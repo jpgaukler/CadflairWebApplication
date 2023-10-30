@@ -1,0 +1,57 @@
+﻿@using Row = CadflairDataAccess.Models.Row;
+
+@page "/{CompanyName}/products/{ProductDefinitionName}/{PartNumber}"
+@layout ConfiguratorLayout
+
+<PageTitle>@CompanyName - Categories</PageTitle>
+
+<MudStack Class="mud-height-full px-5 pt-3 overflow-auto relative">
+    <MudOverlay Visible="_initializing" Absolute Class="mud-background">
+        <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
+    </MudOverlay>
+    <MudGrid>
+        <MudItem xs="4">
+            <MudPaper Class="relative" Height="50dvh">
+                <ForgeViewer @ref="_forgeViewer" />
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudStack Row AlignItems="AlignItems.Center">
+                <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
+                    <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
+                    <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
+                </MudStack>
+            </MudStack>
+
+            <!-- product details -->
+            @if (_row?.Attachments.Any() == true)
+            {
+                <MudText Typo="Typo.body2">Product Detail</MudText>
+                <MudStack Row AlignItems="AlignItems.Center">
+                    <MudSelect T="Attachment" @bind-Value="_selectedAttachment" Variant="Variant.Outlined">
+                        @foreach (var attachment in _row?.Attachments)
+                        {
+                            <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="PreviewAttachment_OnClick">Preview</MudButton>
+                </MudStack>
+            }
+
+            <MudStack Spacing="0">
+                @foreach (var column in _productTable.Columns)
+                {
+                    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center">
+                        <MudText>@column.Header</MudText>
+                        <MudText>@_row?.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudText>
+                    </MudStack>
+                }
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudStack>
+
+

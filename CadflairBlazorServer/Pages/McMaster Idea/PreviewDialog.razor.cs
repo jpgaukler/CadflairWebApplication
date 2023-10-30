@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Row = CadflairDataAccess.Models.Row;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea
 {
@@ -8,9 +9,11 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         [CascadingParameter] public MudDialogInstance MudDialogInstance { get; set; } = default!;
         [Parameter] public string BucketKey { get; set; } = string.Empty;
         [Parameter] public string ObjectKey { get; set; } = string.Empty;
+        [Parameter] public Row Row { get; set; } = default!;
 
         // fields
         private ForgeViewer? _forgeViewer;
+        private Attachment? _selectedAttachment;
 
         protected override void OnInitialized()
         {
@@ -26,10 +29,18 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             MudDialogInstance.SetOptions(options);
         }
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        //protected override async Task OnAfterRenderAsync(bool firstRender)
+        //{
+        //    if (firstRender)
+        //        await _forgeViewer!.ViewDocument(BucketKey, ObjectKey);
+        //}
+
+        private async Task PreviewAttachment_OnClick()
         {
-            if (firstRender)
-                await _forgeViewer!.ViewDocument(BucketKey, ObjectKey);
+            if (_selectedAttachment == null)
+                return;
+
+            await _forgeViewer!.ViewDocument(BucketKey, _selectedAttachment.ForgeObjectKey);
         }
 
         //private void Cancel_OnClick() => MudDialogInstance.Cancel();

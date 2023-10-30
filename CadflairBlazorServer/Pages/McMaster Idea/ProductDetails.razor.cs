@@ -3,7 +3,7 @@ using Row = CadflairDataAccess.Models.Row;
 
 namespace CadflairBlazorServer.Pages.McMaster_Idea
 {
-    public partial class Products
+    public partial class ProductDetails
     {
         // services
         [Inject] DataServicesManager  DataServicesManager { get; set; } = default!;
@@ -16,34 +16,16 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         // parameters
         [Parameter] public string CompanyName { get; set; } = string.Empty;
         [Parameter] public string ProductDefinitionName { get; set; } = string.Empty;
+        [Parameter] public string PartNumber { get; set; } = string.Empty;
 
         // fields
         private Subscription? _subscription;
         private ProductDefinition? _productDefinition;
-        private Row? _selectedRow;
         private ProductTable _productTable = new();
-        private Dictionary<int, HashSet<string>> _columnFilters = new();
-        private bool _drawerOpen = true;
+        private Row? _row;
+        private ForgeViewer? _forgeViewer;
+        private Attachment? _selectedAttachment;
         private bool _initializing = true;
-
-        private Func<Row, bool> _filter => row =>
-        {
-            foreach (var column in _productTable.Columns)
-            {
-                // if no filter value selected then continue to next column
-                if (_columnFilters.ContainsKey(column.Id) == false)
-                    continue;
-
-                // if one or more filter values selected, then exclude products that do not match visible values
-                TableValue value = row.TableValues.First(i => i.ColumnId == column.Id);
-
-                // check to see if this value is selected in the column filters
-                if (_columnFilters[column.Id].Contains(value.Value) == false)
-                    return false;
-            }
-
-            return true;
-        };
 
         protected override async Task OnInitializedAsync()
         {
@@ -52,6 +34,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
                 _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
                 _productDefinition = await DataServicesManager.McMasterService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
                 _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_productDefinition.Id);
+                _row = _productTable.Rows.First(i => i.PartNumber == PartNumber);
                 _initializing = false;
             }
             catch (Exception ex)
@@ -62,35 +45,12 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             }
         }
 
-        private void ColumnFilter_OnSelect(Column column, IEnumerable<string> values)
+        private async Task PreviewAttachment_OnClick()
         {
-            if (_columnFilters.ContainsKey(column.Id))
-                _columnFilters.Remove(column.Id);
-
-            if (!values.Any())
+            if (_selectedAttachment == null)
                 return;
 
-            _columnFilters.Add(column.Id, values.ToHashSet());
-        }
-
-        private void RowLink_OnClick(Row row)
-        {
-            NavigationManager.NavigateTo($"/{CompanyName}/products/{ProductDefinitionName}/{row.PartNumber}");
-        }
-
-        private void Preview_OnClick()
-        {
-            if (_selectedRow == null)
-                return;
-
-            DialogParameters parameters = new()
-            {
-                { nameof(PreviewDialog.BucketKey), _productDefinition!.ForgeBucketKey },
-                //{ nameof(PreviewDialog.ObjectKey), objectKey },
-                { nameof(PreviewDialog.Row), _selectedRow },
-            };
-
-            DialogService.Show<PreviewDialog>($"Preview", parameters);
+            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _selectedAttachment.ForgeObjectKey);
         }
 
         private async Task Download_OnClick(string bucketKey, string objectKey)
