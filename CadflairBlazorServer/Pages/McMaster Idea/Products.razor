@@ -59,36 +59,12 @@
                     <RowTemplate>
                         <MudTd DataLabel="Part Number">
                             <MudLink OnClick="() => RowLink_OnClick(context)">@context.PartNumber</MudLink>
-@*                            <MudLink OnClick="() => _selectedRow = context">@context.PartNumber</MudLink>
-                            <MudPopover Open="_selectedRow == context" AnchorOrigin="Origin.TopLeft" TransformOrigin="Origin.TopLeft" Class="ma-2">
-                                <div class="d-flex flex-column pa-3" style="min-width:400px;">
-                                    <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-                                        <MudText><strong>@context.PartNumber</strong></MudText>
-                                        <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => _selectedRow = null" Size="Size.Small" />
-                                    </MudStack>
-                                    @if (context.Attachments.Any())
-                                    {
-                                        <MudText Typo="Typo.body2">Product Detail</MudText>
-                                        <MudSelect T="Attachment">
-                                            @foreach(var attachment in context.Attachments)
-                                            {
-                                                <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
-                                            }
-                                            <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(_productDefinition!.ForgeBucketKey, context.Attachments.First().ForgeObjectKey)" />
-                                        </MudSelect>
-                                    }
-                                </div>
-                            </MudPopover>
-*@                        </MudTd>
+                        </MudTd>
                         @foreach (var column in _productTable.Columns)
                         {
                             <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
                         }
-@*                        <MudTd>
-                            <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="Preview_OnClick">Preview</MudButton>
-                            <MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="() => Download_OnClick(_productDefinition!.ForgeBucketKey, context.Attachments.First().ForgeObjectKey)" />
-                        </MudTd>
-*@                    </RowTemplate>
+                    </RowTemplate>
                 </MudTable>
             </MudStack>
         </MudStack>

@@ -75,28 +75,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
 
         private void RowLink_OnClick(Row row)
         {
-            NavigationManager.NavigateTo($"/{CompanyName}/products/{ProductDefinitionName}/{row.PartNumber}");
-        }
-
-        private void Preview_OnClick()
-        {
-            if (_selectedRow == null)
-                return;
-
-            DialogParameters parameters = new()
-            {
-                { nameof(PreviewDialog.BucketKey), _productDefinition!.ForgeBucketKey },
-                //{ nameof(PreviewDialog.ObjectKey), objectKey },
-                { nameof(PreviewDialog.Row), _selectedRow },
-            };
-
-            DialogService.Show<PreviewDialog>($"Preview", parameters);
-        }
-
-        private async Task Download_OnClick(string bucketKey, string objectKey)
-        {
-            string url = await ForgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(bucketKey, objectKey);
-            NavigationManager.NavigateTo(url);
+            NavigationManager.NavigateTo($"{CompanyName}/products/{ProductDefinitionName}/{row.PartNumber}");
         }
 
     }

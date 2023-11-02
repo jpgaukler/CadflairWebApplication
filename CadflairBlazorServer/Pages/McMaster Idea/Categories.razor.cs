@@ -44,5 +44,10 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         {
             _selectedCategory = selectedCategory;
         }
+
+        private void ProductDefinition_OnClick(ProductDefinition productDefinition)
+        {
+            NavigationManager.NavigateTo($"{CompanyName}/products/{productDefinition.Name}");
+        }
     }
 }

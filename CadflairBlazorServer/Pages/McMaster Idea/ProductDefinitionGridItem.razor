@@ -1,0 +1,12 @@
+﻿<MudItem Class="pa-2 d-flex flex-column" sm="12" md="6" lg="4">
+    <MudButton OnClick="ProductDefinition_OnClick" Variant="Variant.Text" Class="d-flex flex-column">
+        <MudStack Row Class="mud-width-full">
+            <ThumbnailImage Uri="@ProductDefinition.ThumbnailUri" Height="150" Width="150" />
+            <MudStack Spacing="0" Style="height:150px;" Class="pa-1 flex-shrink-1 flex-grow-1 overflow-auto">
+                @*<MudChip Color="Color.Secondary">Product Definition</MudChip>*@
+                <MudText Typo="Typo.h6" Align="Align.Left" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden;">@ProductDefinition.Name</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Left" Style="display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:5; overflow:hidden;">@ProductDefinition.Description</MudText>
+            </MudStack>
+        </MudStack>
+    </MudButton>
+</MudItem>
