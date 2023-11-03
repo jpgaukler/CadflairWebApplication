@@ -11,6 +11,9 @@ namespace CadflairInventorAddin.Commands
     internal static class DrawingAttributesCommand
     {
 
+        public static ButtonDefinition AddDimensionAttributesButton { get; set; }
+        public static ButtonDefinition RefreshDimensionsButton { get; set; }
+
         //button handlers
         public static void AddDimensionAttributesButton_OnExecute(NameValueMap Context)
         {
@@ -266,7 +269,7 @@ namespace CadflairInventorAddin.Commands
             }
         }
 
-        private static void RefreshAutomatedDrawingObjects(DrawingDocument doc, Inventor.Application app = null)
+        public static void RefreshAutomatedDrawingObjects(DrawingDocument doc, Inventor.Application app = null)
         {
             if (Globals.InventorApplication == null)
             {

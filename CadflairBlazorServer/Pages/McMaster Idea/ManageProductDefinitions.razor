@@ -68,6 +68,7 @@ else
             <MudPaper Outlined Class="d-flex flex-row">
                 <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddRow_OnClick" Disabled="!_productTable.Columns.Any()">Add Product</MudButton>
                 <MudButton StartIcon="@Icons.Material.Filled.Edit" OnClick="EditColumns_OnClick">Edit Columns</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Delete" OnClick="DeleteRow_OnClick" Disabled="_selectedRow == null">Delete Row</MudButton>
                 @if (_productTable.Columns.Any())
                 {
                     <MudButton StartIcon="@Icons.Material.Filled.Clear" OnClick="ResetProductTable_OnClick">Clear All</MudButton>
@@ -80,12 +81,14 @@ else
                 </div>
             </MudPaper>
 
-            <MudTable Items="_productTable.Rows" Filter="_searchFilter"
+            <MudTable T="Row" Items="_productTable.Rows" Filter="_searchFilter"
+                      @bind-SelectedItem="_selectedRow"
+                      RowStyleFunc="RowStyleFunc"
                       RowEditPreview="(row) => RowEditPreview((Row)row)"
                       RowEditCancel="(row) => RowEditCancel((Row)row)"
                       RowEditCommit="async(row) => await RowEditCommit((Row)row)"
-                      IsEditRowSwitchingBlocked="true" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.RowClick"
-                      FixedHeader HorizontalScrollbar Height="65dvh" Class="flex-grow-1 flex-shrink-1 overflow-auto" Outlined>
+                      IsEditRowSwitchingBlocked="true" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.EditButton"
+                      FixedHeader HorizontalScrollbar Hover SelectOnRowClick Height="65dvh" Class="flex-grow-1 flex-shrink-1 overflow-auto" Outlined>
                 <NoRecordsContent>
                     @if(string.IsNullOrWhiteSpace(_searchString))
                     {
@@ -127,7 +130,14 @@ else
                     {
                         <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
                     }
-                    <MudTd DataLabel="Attachments">@context.Attachments.FirstOrDefault()?.ForgeObjectKey</MudTd>
+                    <MudTd DataLabel="Attachments">
+                        <MudSelect T="Attachment" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var attachment in context.Attachments)
+                            {
+                                <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudTd>
                 </RowTemplate>
                 <RowEditingTemplate>
                     <MudTd DataLabel="Part Number">
@@ -139,8 +149,18 @@ else
                             <MudTextField @bind-Value="@context.TableValues.First(i => i.ColumnId == column.Id).Value" Required />
                         </MudTd>
                     }
-                    <MudTd DataLabel="Attachments">@context.Attachments.FirstOrDefault()?.ForgeObjectKey</MudTd>
+                    <MudTd DataLabel="Attachments">
+                        <MudSelect T="Attachment" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var attachment in context.Attachments)
+                            {
+                                <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudTd>
                 </RowEditingTemplate>
+                <EditButtonContent Context="button">
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Filled.Edit" Class="pa-0" OnClick="@button.ButtonAction" Disabled="@button.ButtonDisabled" />
+                </EditButtonContent>
             </MudTable>
 
             <!-- events -->

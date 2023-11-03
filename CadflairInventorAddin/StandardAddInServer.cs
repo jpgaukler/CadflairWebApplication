@@ -9,6 +9,7 @@ using System.Diagnostics;
 using CadflairInventorAddin.Api;
 using CadflairInventorLibrary.Helpers;
 using System.Reflection;
+using CadflairInventorAddin.Commands.iParts;
 
 namespace CadflairInventorAddin
 {
@@ -28,9 +29,6 @@ namespace CadflairInventorAddin
 
         private UserInterfaceManager _userInterfaceManager;
         private string _outputLogPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "output.log");
-
-        //private ButtonDefinition _addDimensionAttributesButton;
-        //private ButtonDefinition _refreshDimensionsButton;
 
 
         /// <summary>
@@ -98,16 +96,51 @@ namespace CadflairInventorAddin
                                                                            StandardIcon: Resources.SignOutSmall.ToIPictureDisp(),
                                                                            LargeIcon: Resources.SignOutLarge.ToIPictureDisp());
 
-            //_addDimensionAttributesButton = controlDefs.AddButtonDefinition("Add Automation\nAttributes", "Add Automation Attributes Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Add AttributeSets to automate drawing elements.", "Save drawing data to AttributeSets for drawing automation.", PictureDispConverter.ToIPictureDisp(Resources.LockSmall), PictureDispConverter.ToIPictureDisp(Resources.LockLarge));
-            //_refreshDimensionsButton = controlDefs.AddButtonDefinition("Refresh\nLinear Dimensions", "Refresh Linear Dimensions Command", CommandTypesEnum.kShapeEditCmdType, Globals.AddInCLSIDString, "Repositions linear dimesions based on their attributes.", "Repositions all inear dimesions that have 'TextPosition' attributes assigned.", PictureDispConverter.ToIPictureDisp(Resources.TopAttributeSmall));
+            DrawingAttributesCommand.AddDimensionAttributesButton = controlDefs.AddButtonDefinition(DisplayName: "Add Automation\nAttributes", 
+                                                                                                   InternalName: "Add Automation Attributes Command", 
+                                                                                                   Classification:CommandTypesEnum.kShapeEditCmdType, 
+                                                                                                   ClientId: Globals.AddInCLSIDString, 
+                                                                                                   DescriptionText: "Add AttributeSets to automate drawing elements.", 
+                                                                                                   ToolTipText: "Save drawing data to AttributeSets for drawing automation.",
+                                                                                                   StandardIcon: Resources.LockSmall.ToIPictureDisp(),
+                                                                                                   LargeIcon: Resources.LockLarge.ToIPictureDisp());
+
+            DrawingAttributesCommand.RefreshDimensionsButton = controlDefs.AddButtonDefinition(DisplayName: "Refresh\nLinear Dimensions", 
+                                                                                               InternalName: "Refresh Linear Dimensions Command", 
+                                                                                               Classification:CommandTypesEnum.kShapeEditCmdType, 
+                                                                                               ClientId: Globals.AddInCLSIDString, 
+                                                                                               DescriptionText: "Repositions linear dimesions based on their attributes.", 
+                                                                                               ToolTipText: "Repositions all inear dimesions that have 'TextPosition' attributes assigned.",
+                                                                                               StandardIcon: Resources.LockSmall.ToIPictureDisp(),
+                                                                                               LargeIcon: Resources.LockLarge.ToIPictureDisp());
+
+            iPartExport.ExportiPartsStpsButton= controlDefs.AddButtonDefinition(DisplayName: "iPart - Export Stps", 
+                                                                               InternalName: "iPart - Export Stps", 
+                                                                               Classification:CommandTypesEnum.kShapeEditCmdType, 
+                                                                               ClientId: Globals.AddInCLSIDString, 
+                                                                               DescriptionText: "Export stp file for all iPart configurations.", 
+                                                                               ToolTipText: "Export stp file for all iPart configurations.",
+                                                                               StandardIcon: Resources.ExportSvfSmall.ToIPictureDisp(),
+                                                                               LargeIcon: Resources.ExportSvfLarge.ToIPictureDisp());
+
+            iPartExport.ExportiPartsPdfsButton= controlDefs.AddButtonDefinition(DisplayName: "iPart - Export Pdfs", 
+                                                                               InternalName: "iPart - Export Pdfs", 
+                                                                               Classification:CommandTypesEnum.kShapeEditCmdType, 
+                                                                               ClientId: Globals.AddInCLSIDString, 
+                                                                               DescriptionText: "Export drawing pdf for all iPart configurations.", 
+                                                                               ToolTipText: "Export drawing pdf for all iPart configurations.",
+                                                                               StandardIcon: Resources.ExportSvfSmall.ToIPictureDisp(),
+                                                                               LargeIcon: Resources.ExportSvfLarge.ToIPictureDisp());
 
             // add button handlers
             UploadToCadflair.UploadToCadflairButton.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
             ExportSvf.ExportSvfButton.OnExecute += ExportSvf.ExportSvfButton_OnExecute;
             Authentication.SignInButton.OnExecute += Authentication.SignInButton_OnExecute;
             Authentication.SignOutButton.OnExecute += Authentication.SignOutButton_OnExecute;
-            //_addDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
-            //_refreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+            DrawingAttributesCommand.AddDimensionAttributesButton.OnExecute += DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
+            DrawingAttributesCommand.RefreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+            iPartExport.ExportiPartsStpsButton.OnExecute += iPartExport.ExportiPartStpsButton_OnExecute;
+            iPartExport.ExportiPartsPdfsButton.OnExecute += iPartExport.ExportiPartPdfsButton_OnExecute;
 
             // set up azure b2c authentication provider
             Authentication.InitializeAzureB2C();
@@ -147,10 +180,12 @@ namespace CadflairInventorAddin
             //partPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
             partPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             partPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
+            partPanel.CommandControls.AddButton(iPartExport.ExportiPartsStpsButton, false);
 
             //add components drawing ribbon 
-            //drawingPanel.CommandControls.AddButton(_addDimensionAttributesButton, true);
-            //drawingPanel.CommandControls.AddButton(_refreshDimensionsButton, true);
+            drawingPanel.CommandControls.AddButton(DrawingAttributesCommand.AddDimensionAttributesButton, true);
+            drawingPanel.CommandControls.AddButton(DrawingAttributesCommand.RefreshDimensionsButton, true);
+            drawingPanel.CommandControls.AddButton(iPartExport.ExportiPartsPdfsButton, true);
 
         }
 
@@ -172,8 +207,10 @@ namespace CadflairInventorAddin
             ExportSvf.ExportSvfButton.OnExecute -= ExportSvf.ExportSvfButton_OnExecute;
             Authentication.SignInButton.OnExecute -= Authentication.SignInButton_OnExecute;
             Authentication.SignOutButton.OnExecute -= Authentication.SignOutButton_OnExecute;
-            //_addDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
-            //_refreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+            DrawingAttributesCommand.AddDimensionAttributesButton.OnExecute -= DrawingAttributesCommand.AddDimensionAttributesButton_OnExecute;
+            DrawingAttributesCommand.RefreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
+            iPartExport.ExportiPartsStpsButton.OnExecute -= iPartExport.ExportiPartStpsButton_OnExecute;
+            iPartExport.ExportiPartsPdfsButton.OnExecute -= iPartExport.ExportiPartPdfsButton_OnExecute;
 
             // Release objects.
             Globals.InventorApplication = null;
@@ -183,8 +220,10 @@ namespace CadflairInventorAddin
             UploadToCadflair.UploadToCadflairButton = null;
             Authentication.SignInButton = null;
             Authentication.SignOutButton = null;
-            //_addDimensionAttributesButton = null;
-            //_refreshDimensionsButton = null;
+            DrawingAttributesCommand.AddDimensionAttributesButton = null;
+            DrawingAttributesCommand.RefreshDimensionsButton = null;
+            iPartExport.ExportiPartsStpsButton = null;
+            iPartExport.ExportiPartsPdfsButton = null;
 
             GC.Collect();
             GC.WaitForPendingFinalizers();

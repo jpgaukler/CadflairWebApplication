@@ -171,6 +171,7 @@
     <Compile Include="Api\Client.cs" />
     <Compile Include="Api\ProductApi.cs" />
     <Compile Include="Api\UserApi.cs" />
+    <Compile Include="Commands\iPartExport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

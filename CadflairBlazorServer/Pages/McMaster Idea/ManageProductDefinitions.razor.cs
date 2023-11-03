@@ -26,6 +26,14 @@ public partial class ManageProductDefinitions
 
     // product data
     private ProductDefinition? _selectedProductDefinition;
+    private Row? _selectedRow;
+    private Func<Row, int, string> RowStyleFunc => (row, i) =>
+    {
+        if (row == _selectedRow)
+            return "background-color: var(--mud-palette-background-grey);";
+
+        return "";
+    };
     private Category? _category;
     private ProductTable? _productTable;
     private string? _searchString; 
@@ -60,6 +68,8 @@ public partial class ManageProductDefinitions
     private readonly string[] _validExtensions = { ".ipt", ".stp", ".step", ".pdf", ".dwg", ".idw" };
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
+    private void SetDragStyle() => _dragStyle = "border-color: var(--mud-palette-primary)!important";
+    private void ClearDragStyle() => _dragStyle = _initialDragStyle;
 
     private async Task ProductDefinition_OnClick(ProductDefinition? productDefinition)
     {
@@ -144,6 +154,15 @@ public partial class ManageProductDefinitions
 
         // TO DO: need to delete the thumbnail from blob storage if there is one
 
+        // delete attachments bucket
+        if (_selectedProductDefinition.ForgeBucketKey != null)
+        {
+            await ForgeServicesManager.ObjectStorageService.DeleteBucket(_selectedProductDefinition.ForgeBucketKey);
+            _selectedProductDefinition.ForgeBucketKey = null;
+            await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+        }
+
+        // delete data from database
         await DataServicesManager.McMasterService.DeleteProductDefinitionById(_selectedProductDefinition.Id);
         ProductDefinitions.Remove(_selectedProductDefinition);
         _selectedProductDefinition = null;
@@ -224,6 +243,20 @@ public partial class ManageProductDefinitions
         //AddEvent($"Event = NewProductRecord");
     }
 
+    private async Task DeleteRow_OnClick()
+    {
+        if (_selectedRow == null)
+            return;
+
+        // delete attachments from forge
+        foreach (var attachment in _selectedRow.Attachments)
+            await ForgeServicesManager.ObjectStorageService.DeleteObject(_selectedProductDefinition!.ForgeBucketKey, attachment.ForgeObjectKey);
+
+        // delete row from table
+        await DataServicesManager.McMasterService.DeleteRowById(_selectedRow.Id);
+        _productTable!.Rows.Remove(_selectedRow);
+    }
+
     private async Task ResetProductTable_OnClick()
     {
         if (_selectedProductDefinition == null)
@@ -233,12 +266,21 @@ public partial class ManageProductDefinitions
             return;
 
         bool? confirmDelete = await DialogService.ShowMessageBox(title: "Clear Product Table",
-                                                                 message: "Are you sure you want to continue? All table data will be lost.",
+                                                                 message: "Are you sure you want to continue? All table data and attachments will be lost.",
                                                                  yesText: "Yes",
                                                                  cancelText: "Cancel");
         if (confirmDelete != true)
             return;
 
+        // delete attachments bucket
+        if(_selectedProductDefinition.ForgeBucketKey != null)
+        {
+            await ForgeServicesManager.ObjectStorageService.DeleteBucket(_selectedProductDefinition.ForgeBucketKey);
+            _selectedProductDefinition.ForgeBucketKey = null;
+            await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+        }
+
+        // delete product table and recreate it
         await DataServicesManager.McMasterService.DeleteProductTableById(_productTable.Id);
         await DataServicesManager.McMasterService.CreateProductTable(_selectedProductDefinition.Id, LoggedInUser.Id);
         _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
@@ -259,7 +301,7 @@ public partial class ManageProductDefinitions
             }).ToList()
         };
 
-        AddEvent($"RowEditPreview event: made a backup of record {row.PartNumber}");
+        //AddEvent($"RowEditPreview event: made a backup of record {row.PartNumber}");
     }
 
     private void RowEditCancel(Row row)
@@ -270,14 +312,14 @@ public partial class ManageProductDefinitions
         foreach (var tableValue in row.TableValues)
             tableValue.Value = _rowBeforeEdit.TableValues.First(i => i.Id == tableValue.Id).Value;
 
-        AddEvent($"RowEditCancel event: Editing of record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
+        //AddEvent($"RowEditCancel event: Editing of record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} canceled");
         StateHasChanged();
     }
 
     private async Task RowEditCommit(Row row)
     {
         await DataServicesManager.McMasterService.UpdateRow(row);
-        AddEvent($"RowEditCommit event: Changes to record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
+        //AddEvent($"RowEditCommit event: Changes to record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
     }
 
     private async Task ImportExcel_OnClick(IBrowserFile browserFile)
@@ -285,7 +327,7 @@ public partial class ManageProductDefinitions
         if (_productTable == null)
             return;
 
-        string[] validExtensions = { ".xlsx", ".xls"};
+        string[] validExtensions = { ".xlsx", ".xls" };
 
         if (!validExtensions.Any(i => i == Path.GetExtension(browserFile.Name)))
         {
@@ -385,13 +427,6 @@ public partial class ManageProductDefinitions
         _importingExcel = false;
     }
 
-    private List<string> _events = new();
-    private void AddEvent(string message)
-    {
-        _events.Insert(0, message);
-        StateHasChanged();
-    }
-
     private async Task UpdateThumbnail(string? thumbnailUri)
     {
         if (_selectedProductDefinition == null)
@@ -489,8 +524,11 @@ public partial class ManageProductDefinitions
         }
     }
 
-
-    private void SetDragStyle() => _dragStyle = "border-color: var(--mud-palette-primary)!important";
-    private void ClearDragStyle() => _dragStyle = _initialDragStyle;
+    //private List<string> _events = new();
+    //private void AddEvent(string message)
+    //{
+    //    _events.Insert(0, message);
+    //    StateHasChanged();
+    //}
 
 }

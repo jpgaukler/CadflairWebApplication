@@ -170,5 +170,11 @@ namespace CadflairForgeAccess.Services
             }
         }
 
+        public async Task DeleteObject(string bucketKey, string objectKey)
+        {
+            ObjectsApi objects = await GetObjectsApi();
+            await objects.DeleteObjectAsync(bucketKey, objectKey);
+        }
+
     }
 }
