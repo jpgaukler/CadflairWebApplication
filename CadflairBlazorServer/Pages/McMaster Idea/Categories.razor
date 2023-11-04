@@ -1,6 +1,7 @@
 ﻿@using Row = CadflairDataAccess.Models.Row;
 
-@page "/{CompanyName}/categories"
+@page "/{CompanyName}/categories/"
+@page "/{CompanyName}/categories/{CategoryName}/"
 @layout ConfiguratorLayout
 
 <PageTitle>@CompanyName - Categories</PageTitle>
@@ -30,37 +31,30 @@
 
         <!-- header toolbar -->
         <div>
-            <MudToolBar DisableGutters Dense>
-                @*<CategoryBreadcrumbs ProductCategory="_selectedProductCategory" ProductCategoryClicked="ProductCategory_OnClick" />*@
-            </MudToolBar>
+            <MudBreadcrumbs Items="_breadcrumbItems">
+                <ItemTemplate Context="item">
+                    <MudLink Href="@item.Href">@item.Text</MudLink>
+                </ItemTemplate>
+            </MudBreadcrumbs>
             <MudDivider />
         </div>
 
         <MudStack Class="flex-grow-1 overflow-auto">
             <MudGrid Justify="Justify.FlexStart" Class="ma-0" Spacing="0">
-                @if (_selectedCategory == null)
+                @if (_category == null)
                 {
                     @foreach (var category in _categories)
                     {
-                        <CategoryGridItem Category="category" CategoryClicked="Category_OnClick"/>
+                        <CategoryGridItem Category="category" CategoryClicked="Category_OnClick" />
                     }
                 }
                 else
                 {
-                    <!-- child catagores -->
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h6">Categories</MudText>
-                    </MudItem>
-                    @foreach (var category in _selectedCategory.ChildCategories)
+                    @foreach (var category in _category.ChildCategories)
                     {
                         <CategoryGridItem Category="category" CategoryClicked="Category_OnClick" />
                     }
-
-                    <!-- product definitions-->
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.h6">Products</MudText>
-                    </MudItem>
-                    @foreach (var productDefinition in _productDefinitions.Where(i => i.CategoryId == _selectedCategory.Id))
+                    @foreach (var productDefinition in _productDefinitions.Where(i => i.CategoryId == _category.Id))
                     {
                         <ProductDefinitionGridItem ProductDefinition="productDefinition" ProductDefinitionClicked="ProductDefinition_OnClick" />
                     }

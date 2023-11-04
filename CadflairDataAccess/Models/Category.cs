@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CadflairDataAccess.Models
 {
@@ -21,6 +22,13 @@ namespace CadflairDataAccess.Models
         {
             return Name.CompareTo(other.Name);
         }
+    }
 
+    public static class CategoryHelpers
+    {
+        public static List<Category> ToFlatList(this IEnumerable<Category> categories)
+        {
+            return categories.SelectMany(i => i.ChildCategories.ToFlatList()).Concat(categories).ToList();
+        } 
     }
 }

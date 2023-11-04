@@ -74,7 +74,7 @@ public partial class ManageCategories
         AddCategoryDialog dialog = (AddCategoryDialog)result.Data;
 
         // check for duplicate category name
-        if (!IsCategoryNameUnique(dialog.Name!))
+        if (Categories.ToFlatList().Any(i => i.Name.Equals(dialog.Name, StringComparison.OrdinalIgnoreCase)))
         {
             Snackbar.Add("Category name already used!", Severity.Warning);
             return;
@@ -99,14 +99,6 @@ public partial class ManageCategories
             _selectedCategory.ChildCategories.Add(newCategory);
             _selectedCategory.ChildCategories.Sort();
         }
-    }
-
-    private bool IsCategoryNameUnique(string name)
-    {
-        if (_selectedCategory == null)
-            return !Categories.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-        return !_selectedCategory.ChildCategories.Any(i => i.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
     private async Task DeleteCategory_OnClick()

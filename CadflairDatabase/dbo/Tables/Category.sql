@@ -13,7 +13,7 @@
     CONSTRAINT [FK_Category_Subscription] FOREIGN KEY ([SubscriptionId]) REFERENCES [dbo].[Subscription] ([Id]),
     CONSTRAINT [FK_Category_User] FOREIGN KEY ([CreatedById]) REFERENCES [dbo].[User] ([Id]),
     CONSTRAINT [CK_Category_Id_ParentId] CHECK ([Id] <> [ParentId]),
-    CONSTRAINT [UC_Category_SubscriptionId_ParentId_DisplayName] UNIQUE([SubscriptionId],[ParentId],[Name])
+    CONSTRAINT [UC_Category_SubscriptionId_Name] UNIQUE([SubscriptionId],[Name])
 )
 
 GO

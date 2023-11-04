@@ -75,7 +75,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
 
         private void RowLink_OnClick(Row row)
         {
-            NavigationManager.NavigateTo($"{CompanyName}/products/{ProductDefinitionName}/{row.PartNumber}");
+            NavigationManager.NavigateTo($"{CompanyName}/products/{ProductDefinitionName}/{row.PartNumber}/");
         }
 
     }
