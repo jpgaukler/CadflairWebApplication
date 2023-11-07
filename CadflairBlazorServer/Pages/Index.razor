@@ -48,7 +48,7 @@
         <MudItem xs="12" md="4">
             <MudStack>
                 <h1 class="mud-typography-h1" style="font-size:3.5rem;">
-                    <span class="fade-opacity-in delay-1">Configuration</span><br />
+                    <span class="fade-opacity-in delay-1">3D Catalog</span><br />
                     <span class="fade-opacity-in delay-2">Made</span><br />
                     <span class="fade-opacity-in delay-3"><strong>Easy</strong></span><br />
                 </h1>
@@ -56,23 +56,17 @@
                     <path d="M3 23C89.445 5.91642 175.379 -4.33371 203 9.33313" stroke-width="6" stroke-linecap="round" />
                 </svg>
                 <div class="fade-opacity-in delay-5 my-10">
-                    <p class="mud-typography mud-typography-body1 my-3">Use CAD to enhance your sales process.</p>
-                    <MudButton Href="/configurator/demo/awwac20718classdclasseflanges" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
-                        Configurator Demo
-                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-                    </MudButton>
-                    <MudButton Href="/catalog/my-catalog" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
-                        Catalog Demo
-                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-                    </MudButton>
-                    <MudButton Href="/demo/categories/" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
-                        McMaster Demo
-                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-                    </MudButton>
-                    <MudButton Href="/catalog/mcmaster-catalog-editor" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
-                        McMaster Demo Editor
-                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
-                    </MudButton>
+                    <p class="mud-typography mud-typography-body1 my-3">Empower your customers. Revolutionize your CAD library today.</p>
+
+                    <!-- configurator demos -->
+                    @*<MudButton Href="/configurator/demo/dresser" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Dresser Demo</MudButton>*@
+                    @*<MudButton Href="/configurator/demo/silo" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Silo Demo</MudButton>*@
+                    @*<MudButton Href="/configurator/demo/awwac20718classdclasseflanges" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Flange Demo</MudButton>*@
+
+                    <!-- mcmaster demo -->
+                    <MudButton Href="/demo/categories/" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Demo</MudButton>
+                    @*<MudButton Href="/catalog/mcmaster-catalog-editor" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">McMaster Editor</MudButton>*@
+
                 </div>
             </MudStack>
         </MudItem>
@@ -115,7 +109,25 @@
                         <MudText Typo="Typo.h3" Align="Align.Center">?</MudText>
                     </MudStack>
                     <MudText Class="mx-15 my-5">
-                        Cadflair is an online, CAD-based product configurator for industrial manufacturing companies. Our goal is to make it simple for companies 
+                        Cadflair is an online, CAD-based product catalog for industrial manufacturing companies. Our goal is to make it simple for companies 
+                        to share CAD data with their customers, so they can purchase with confidence. We believe that CAD data is not just for manufacturing, 
+                        but that it can be used to supplement the sales and quoting process. Cadflair makes it easy to 
+                        share your CAD library on the web. No programming skills required. 
+                        <br /><br />
+                        Why waste valuable time creating detailed solid models and boring PDFs... only to have a customer go silent? 
+                        By automating pre-sales modeling work and sharing CAD data earlier in the product design process, you can <strong>save time AND 
+                        provide greater value to your customers.</strong> Cadflair leverages the latest tools and technologies provided by Autodesk to bring
+                        your CAD data to life.
+                    </MudText>
+                    <MudList>
+                        <MudListItem Text="View 3D CAD models on any device" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
+                        <MudListItem Text="Share models with a click" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
+                        <MudListItem Text="Get notified when a customer downloads your models" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
+                        <MudListItem Text="Streamline customer communication" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
+                        <MudListItem Text="Improve lead generation and conversion" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
+                    </MudList>
+                    @*MudText Class="mx-15 my-5">
+                        Cadflair is an online, CAD-based product catalog for industrial manufacturing companies. Our goal is to make it simple for companies 
                         to implement a product configurator that can be used as a pre-sales communication tool. We believe that CAD data is not just for manufacturing, 
                         but that it should be used to supplement the entire product design process, including pre-sales and quoting phases. Cadflair makes it easy to 
                         create a custom configurator for designed-to-order products. No programming skills required. 
@@ -132,8 +144,8 @@
                         <MudListItem Text="Get notified when a customer views your products" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
                         <MudListItem Text="Share models with a click" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
                         <MudListItem Text="Improve lead generation and conversion" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                    </MudList>
-                </MudStack>
+                    </MudList>*@                
+                    </MudStack>
             </MudItem>
 
             <!-- how it works -->

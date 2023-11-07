@@ -27,7 +27,7 @@
         </MudDrawer>
     </MudHidden>
 
-    <MudStack Class="mud-height-full px-5 pt-3 overflow-auto relative">
+    <MudStack Class="mud-height-full pa-5 overflow-auto relative">
         <MudOverlay Visible="_initializing" Absolute Class="mud-background">
             <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
         </MudOverlay>
@@ -41,32 +41,31 @@
                     <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
                 </MudStack>
             </MudStack>
+
             <!-- products -->
-            <MudStack>
-                <MudTable Items="_productTable.Rows.Where(_filter)" Outlined>
-                    <NoRecordsContent>
-                        <MudText>No products.</MudText>
-                    </NoRecordsContent>
-                    <HeaderContent>
-                        <MudTh Style="min-width:15ch;">Part Number</MudTh>
-                        @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>*@
-                        @foreach (var column in _productTable.Columns)
-                        {
-                            <MudTh Style="min-width:15ch;">@column.Header</MudTh>
-                            @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>*@
-                        }
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Part Number">
-                            <MudLink OnClick="() => RowLink_OnClick(context)">@context.PartNumber</MudLink>
-                        </MudTd>
-                        @foreach (var column in _productTable.Columns)
-                        {
-                            <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
-                        }
-                    </RowTemplate>
-                </MudTable>
-            </MudStack>
+            <MudTable Items="_productTable.Rows.Where(_filter)" Outlined FixedHeader Class="flex-grow-1 overflow-auto" Height="100%">
+                <NoRecordsContent>
+                    <MudText>No products.</MudText>
+                </NoRecordsContent>
+                <HeaderContent>
+                    <MudTh Style="min-width:15ch;">Part Number</MudTh>
+                    @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>*@
+                    @foreach (var column in _productTable.Columns)
+                    {
+                        <MudTh Style="min-width:15ch;">@column.Header</MudTh>
+                        @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>*@
+                    }
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Part Number">
+                        <MudLink OnClick="() => RowLink_OnClick(context)">@context.PartNumber</MudLink>
+                    </MudTd>
+                    @foreach (var column in _productTable.Columns)
+                    {
+                        <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
+                    }
+                </RowTemplate>
+            </MudTable>
         </MudStack>
     </MudStack>
 </MudDrawerContainer>
