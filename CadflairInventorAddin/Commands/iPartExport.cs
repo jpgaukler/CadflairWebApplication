@@ -8,7 +8,7 @@ using System.Windows;
 using Path = System.IO.Path;
 using ProgressBar = Inventor.ProgressBar;
 
-namespace CadflairInventorAddin.Commands.iParts
+namespace CadflairInventorAddin.Commands
 {
     internal static class iPartExport
     {

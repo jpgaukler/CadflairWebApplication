@@ -9,7 +9,6 @@ using System.Diagnostics;
 using CadflairInventorAddin.Api;
 using CadflairInventorLibrary.Helpers;
 using System.Reflection;
-using CadflairInventorAddin.Commands.iParts;
 
 namespace CadflairInventorAddin
 {
@@ -132,6 +131,15 @@ namespace CadflairInventorAddin
                                                                                StandardIcon: Resources.ExportSvfSmall.ToIPictureDisp(),
                                                                                LargeIcon: Resources.ExportSvfLarge.ToIPictureDisp());
 
+            ExportThumbnail.ExportThumbnailButton = controlDefs.AddButtonDefinition(DisplayName: "Export Thumbnail", 
+                                                                               InternalName: "Export Thumbnail", 
+                                                                               Classification:CommandTypesEnum.kNonShapeEditCmdType, 
+                                                                               ClientId: Globals.AddInCLSIDString, 
+                                                                               DescriptionText: "Export a thumbnail image for the active document.", 
+                                                                               ToolTipText: "Export a thumbnail image for the active document.", 
+                                                                               StandardIcon: Resources.ExportSvfSmall.ToIPictureDisp(),
+                                                                               LargeIcon: Resources.ExportSvfLarge.ToIPictureDisp());
+
             // add button handlers
             UploadToCadflair.UploadToCadflairButton.OnExecute += UploadToCadflair.UploadToCadflairButton_OnExecute;
             ExportSvf.ExportSvfButton.OnExecute += ExportSvf.ExportSvfButton_OnExecute;
@@ -141,6 +149,7 @@ namespace CadflairInventorAddin
             DrawingAttributesCommand.RefreshDimensionsButton.OnExecute += DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             iPartExport.ExportiPartsStpsButton.OnExecute += iPartExport.ExportiPartStpsButton_OnExecute;
             iPartExport.ExportiPartsPdfsButton.OnExecute += iPartExport.ExportiPartPdfsButton_OnExecute;
+            ExportThumbnail.ExportThumbnailButton.OnExecute += ExportThumbnail.ExportThumbnailButton_OnExecute;
 
             // set up azure b2c authentication provider
             Authentication.InitializeAzureB2C();
@@ -174,6 +183,7 @@ namespace CadflairInventorAddin
             //assemblyPanel.CommandControls.AddButton(ExportSvf.ExportSvfButton, true);
             assemblyPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             assemblyPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
+            assemblyPanel.CommandControls.AddButton(ExportThumbnail.ExportThumbnailButton, false);
 
             //add components part ribbon 
             partPanel.CommandControls.AddButton(UploadToCadflair.UploadToCadflairButton, true);
@@ -181,6 +191,7 @@ namespace CadflairInventorAddin
             partPanel.CommandControls.AddButton(Authentication.SignInButton, false);
             partPanel.CommandControls.AddButton(Authentication.SignOutButton, false);
             partPanel.CommandControls.AddButton(iPartExport.ExportiPartsStpsButton, false);
+            partPanel.CommandControls.AddButton(ExportThumbnail.ExportThumbnailButton, false);
 
             //add components drawing ribbon 
             drawingPanel.CommandControls.AddButton(DrawingAttributesCommand.AddDimensionAttributesButton, true);
@@ -211,6 +222,7 @@ namespace CadflairInventorAddin
             DrawingAttributesCommand.RefreshDimensionsButton.OnExecute -= DrawingAttributesCommand.RefreshDimensionsButton_OnExecute;
             iPartExport.ExportiPartsStpsButton.OnExecute -= iPartExport.ExportiPartStpsButton_OnExecute;
             iPartExport.ExportiPartsPdfsButton.OnExecute -= iPartExport.ExportiPartPdfsButton_OnExecute;
+            ExportThumbnail.ExportThumbnailButton.OnExecute -= ExportThumbnail.ExportThumbnailButton_OnExecute;
 
             // Release objects.
             Globals.InventorApplication = null;
@@ -224,6 +236,7 @@ namespace CadflairInventorAddin
             DrawingAttributesCommand.RefreshDimensionsButton = null;
             iPartExport.ExportiPartsStpsButton = null;
             iPartExport.ExportiPartsPdfsButton = null;
+            ExportThumbnail.ExportThumbnailButton = null;
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
