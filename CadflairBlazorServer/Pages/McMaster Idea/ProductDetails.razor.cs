@@ -26,6 +26,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private ForgeViewer? _forgeViewer;
         private Attachment? _selectedAttachment;
         private bool _initializing = true;
+        private string _selectedOption = "3D";
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -66,6 +67,35 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
 
             await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _selectedAttachment.ForgeObjectKey);
         }
+
+        private async Task Preview2D_OnClick()
+        {
+            await Attachment_ValueChanged(_row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf")));
+        }
+
+        private async Task Preview3D_OnClick()
+        {
+            await Attachment_ValueChanged(_row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp")));
+        }
+
+        private async Task SelectedOption_OnChange(string option)
+        {
+            _selectedOption = option;
+
+            Attachment? attachment = null;
+
+            if (option == "3D")
+                attachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp"));
+
+            if (option == "2D")
+                attachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf"));
+
+            if (attachment == null)
+                return;
+
+            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, attachment.ForgeObjectKey);
+        }
+
 
         private async Task Download_OnClick()
         {

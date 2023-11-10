@@ -5,49 +5,63 @@
 
 <PageTitle>@CompanyName - Categories</PageTitle>
 
-<MudStack Class="mud-height-full px-5 pt-3 overflow-auto relative">
+<MudStack Class="mud-height-full overflow-auto relative">
     <MudOverlay Visible="_initializing" Absolute Class="mud-background">
         <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
     </MudOverlay>
 
-    <MudStack Spacing="0" Class="mb-5">
-        <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
-        <MudText Typo="Typo.body1">Part Number: @_row.PartNumber</MudText>
+    <MudStack>
+        <MudStack Style="position: sticky; top:0;" Spacing="0" Class="mud-background pa-3 z-10">
+            <MudText Typo="Typo.h5" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;">@_productDefinition?.Name</MudText>
+            <MudText Typo="Typo.body1">Part Number: @_row.PartNumber</MudText>
+        </MudStack>
+
+        <MudGrid Spacing="0" Class="px-5">
+            <MudItem xs="12" sm="6">
+                <MudPaper Class="relative" MinHeight="50dvh" Height="100%" MaxHeight="65dvh">
+                    <ForgeViewer @ref="_forgeViewer" />
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" Class="pa-5">
+                <MudButton StartIcon="@Icons.Material.Filled.IosShare">Share</MudButton>
+                <MudText>View Model:</MudText>
+
+                <MudRadioGroup T="string" SelectedOption="_selectedOption" SelectedOptionChanged="SelectedOption_OnChange">
+                    <MudRadio Option="@("2D")" Size="Size.Large">2D</MudRadio>
+                    <MudRadio Option="@("3D")" Size="Size.Large">3D</MudRadio>
+                </MudRadioGroup>
+                <!-- product details -->
+                <MudButtonGroup Variant="Variant.Outlined">
+                    <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="Preview2D_OnClick">View 2D</MudButton>
+                    <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="Preview3D_OnClick">View 3D</MudButton>
+                </MudButtonGroup>
+                @if (_row.Attachments.Any() == true)
+                {
+                    <MudText Typo="Typo.body2">Downloads</MudText>
+                    <MudStack Row AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" />
+                        <MudSelect T="Attachment" Value="_selectedAttachment" ValueChanged="Attachment_ValueChanged" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var attachment in _row.Attachments)
+                            {
+                                <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
+                            }
+                        </MudSelect>
+                        <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="Download_OnClick" Variant="Variant.Filled">Download</MudButton>
+                    </MudStack>
+                }
+                <MudTable Items="_row.TableValues" Elevation="0" Class="my-5">
+                    <RowTemplate>
+                        <MudTd>@_productTable.Columns.FirstOrDefault(i => i.Id == context.ColumnId)?.Header</MudTd>
+                        <MudTd>@context.Value</MudTd>
+                    </RowTemplate>
+                </MudTable>
+                <MudText Typo="Typo.body1" Class="mt-5">@_productDefinition?.Description</MudText>
+            </MudItem>
+        </MudGrid>
+
     </MudStack>
 
-    <MudGrid>
-        <MudItem xs="6">
-            <MudPaper Class="relative" MinHeight="50dvh" Height="100%" MaxHeight="65dvh">
-                <ForgeViewer @ref="_forgeViewer" />
-                @*<MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="PreviewAttachment_OnClick">Preview</MudButton>*@
-            </MudPaper>
-        </MudItem>
-
-        <MudItem xs="6">
-            <!-- product details -->
-            @if (_row.Attachments.Any() == true)
-            {
-                <MudText Typo="Typo.body2">Downloads</MudText>
-                <MudStack Row AlignItems="AlignItems.Center">
-                    <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" />
-                    <MudSelect T="Attachment" Value="_selectedAttachment" ValueChanged="Attachment_ValueChanged" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
-                        @foreach (var attachment in _row.Attachments)
-                        {
-                            <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="Download_OnClick" Variant="Variant.Filled">Download</MudButton>
-                </MudStack>
-            }
-            <MudTable Items="_row.TableValues" Elevation="0" Class="my-5">
-                <RowTemplate>
-                    <MudTd>@_productTable.Columns.FirstOrDefault(i => i.Id == context.ColumnId)?.Header</MudTd>
-                    <MudTd>@context.Value</MudTd>
-                </RowTemplate>
-            </MudTable>
-            <MudText Typo="Typo.body1" Class="mt-5">@_productDefinition?.Description</MudText>
-        </MudItem>
-    </MudGrid>
 </MudStack>
 
 

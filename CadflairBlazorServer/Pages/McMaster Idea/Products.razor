@@ -5,11 +5,10 @@
 
 <PageTitle>@CompanyName - @ProductDefinitionName</PageTitle>
 
-<MudDrawerContainer Class="mud-height-full relative">
-
-    <!-- sidebar -->
+<MudDrawerContainer Class="mud-height-full overflow-hidden relative">
+    <!-- filter desktop -->
     <MudHidden Breakpoint="Breakpoint.MdAndDown">
-        <MudDrawer @bind-Open="@_drawerOpen" Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
+        <MudDrawer Open Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
             <!-- filters -->
             <MudStack Class="pa-3">
                 <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
@@ -27,23 +26,24 @@
         </MudDrawer>
     </MudHidden>
 
-    <MudStack Class="mud-height-full pa-5 overflow-auto relative">
+
+    <MudStack Class="mud-height-full px-5 overflow-auto relative">
         <MudOverlay Visible="_initializing" Absolute Class="mud-background">
             <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
         </MudOverlay>
 
-        <MudStack Class="flex-grow-1 overflow-auto">
-            <MudStack Row AlignItems="AlignItems.Center">
+        <MudStack Class="flex-grow-1">
+            <MudText Typo="Typo.h5" Style="position: sticky; top:0; text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;" Class="mud-background py-3 z-10">@_productDefinition?.Name</MudText>
+            <MudStack Row AlignItems="AlignItems.Start">
                 <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
                 <MudStack Spacing="0">
-                    <MudText Typo="Typo.h4">@_productDefinition?.Name</MudText>
                     <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
                     <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
                 </MudStack>
             </MudStack>
 
             <!-- products -->
-            <MudTable Items="_productTable.Rows.Where(_filter)" Outlined FixedHeader Class="flex-grow-1 overflow-auto" Height="100%">
+            <MudTable Items="_productTable.Rows.Where(_filter)" Elevation="0" Class="mb-16">
                 <NoRecordsContent>
                     <MudText>No products.</MudText>
                 </NoRecordsContent>
@@ -68,5 +68,30 @@
             </MudTable>
         </MudStack>
     </MudStack>
+
+
+    <!-- filter mobile -->
+    <MudHidden Breakpoint="Breakpoint.LgAndUp">
+        <MudPaper Square Class="absolute mud-width-full rounded-t z-20 d-flex flex-column overflow-hidden" Style="@_mobileFilterStyle" Elevation="5" Height="100%">
+            <MudStack Row Justify="Justify.SpaceBetween" Class="pa-3">
+                <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
+                <MudToggleIconButton Toggled="_mobileFilterOpen" ToggledChanged="ToggleMobileFilter_OnClick" Icon="@Icons.Material.Filled.KeyboardArrowUp" ToggledIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Small" ToggledSize="Size.Small"/>
+            </MudStack>
+            <MudStack Class="px-3 flex-grow-1 flex-shrink-1 overflow-auto">
+                @foreach (var column in _productTable.Columns)
+                {
+                    <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(column, values)"
+                           Label="@column.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection>
+                        @foreach (var tableValue in _productTable.Rows.Select(i => i.TableValues.First(i => i.ColumnId == column.Id)).DistinctBy(i => i.Value))
+                        {
+                            <MudSelectItem Value="tableValue.Value">@tableValue.Value</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+            </MudStack>
+            <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ma-3" OnClick="ToggleMobileFilter_OnClick">Apply</MudButton>
+        </MudPaper>
+    </MudHidden>
 </MudDrawerContainer>
+
 

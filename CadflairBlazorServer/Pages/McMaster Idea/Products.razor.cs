@@ -23,8 +23,9 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private Row? _selectedRow;
         private ProductTable _productTable = new();
         private Dictionary<int, HashSet<string>> _columnFilters = new();
-        private bool _drawerOpen = true;
+        private bool _mobileFilterOpen = false;
         private bool _initializing = true;
+        private string _mobileFilterStyle = "top:0; transform: translateY(calc(100% - 1.5rem - 24px)); transition: 225ms cubic-bezier(0,0,.2,1) 0ms;";
 
         private Func<Row, bool> _filter => row =>
         {
@@ -76,6 +77,16 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private void RowLink_OnClick(Row row)
         {
             NavigationManager.NavigateTo($"{CompanyName}/products/{ProductDefinitionName}/{row.PartNumber}/");
+        }
+
+        private void ToggleMobileFilter_OnClick()
+        {
+            _mobileFilterOpen = !_mobileFilterOpen;
+
+            if (_mobileFilterOpen)
+                _mobileFilterStyle = "top:0; transform: translateY(0px); transition: 225ms cubic-bezier(0,0,.2,1) 0ms;";
+            else
+                _mobileFilterStyle = "top:0; transform: translateY(calc(100% - 1.5rem - 24px)); transition: 225ms cubic-bezier(0,0,.2,1) 0ms;";
         }
 
     }
