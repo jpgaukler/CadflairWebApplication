@@ -9,9 +9,11 @@
     <!-- filter desktop -->
     <MudHidden Breakpoint="Breakpoint.MdAndDown">
         <MudDrawer Open Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
-            <!-- filters -->
             <MudStack Class="pa-3">
-                <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
+                <MudStack Row Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
+                    <MudText Typo="Typo.caption">Count: @_productTable.Rows.Count(_filter)</MudText>
+                </MudStack>
                 @foreach (var column in _productTable.Columns)
                 {
                     <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(column, values)"
@@ -34,13 +36,22 @@
 
         <MudStack Class="flex-grow-1">
             <MudText Typo="Typo.h5" Style="position: sticky; top:0; text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;" Class="mud-background py-3 z-10">@_productDefinition?.Name</MudText>
-            <MudStack Row AlignItems="AlignItems.Start">
-                <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
-                <MudStack Spacing="0">
-                    <MudText Typo="Typo.body1">@_productDefinition?.Description</MudText>
-                    <MudText Typo="Typo.caption" Align="Align.Left">Count: @_productTable.Rows.Count</MudText>
+
+            <!-- desktop -->
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <MudStack Row AlignItems="AlignItems.Start">
+                    <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
+                    <MudText Typo="Typo.body1" Style="max-width:80ch;">@_productDefinition?.Description</MudText>
                 </MudStack>
-            </MudStack>
+            </MudHidden>
+
+            <!-- mobile -->
+            <MudHidden Breakpoint="Breakpoint.LgAndUp">
+                <MudStack AlignItems="AlignItems.Start">
+                    <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
+                    <MudText Typo="Typo.body1" Style="max-width:80ch;">@_productDefinition?.Description</MudText>
+                </MudStack>
+            </MudHidden>
 
             <!-- products -->
             <MudTable Items="_productTable.Rows.Where(_filter)" Elevation="0" Class="mb-16">
@@ -73,9 +84,11 @@
     <!-- filter mobile -->
     <MudHidden Breakpoint="Breakpoint.LgAndUp">
         <MudPaper Square Class="absolute mud-width-full rounded-t z-20 d-flex flex-column overflow-hidden" Style="@_mobileFilterStyle" Elevation="5" Height="100%">
-            <MudStack Row Justify="Justify.SpaceBetween" Class="pa-3">
+            <MudStack Row Class="pa-3" AlignItems="AlignItems.Center">
                 <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
-                <MudToggleIconButton Toggled="_mobileFilterOpen" ToggledChanged="ToggleMobileFilter_OnClick" Icon="@Icons.Material.Filled.KeyboardArrowUp" ToggledIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Small" ToggledSize="Size.Small"/>
+                <MudSpacer/>
+                <MudText Typo="Typo.caption">Count: @_productTable.Rows.Count(_filter)</MudText>
+                <MudToggleIconButton Toggled="_mobileFilterOpen" ToggledChanged="ToggleMobileFilter_OnClick" Icon="@Icons.Material.Filled.KeyboardArrowUp" ToggledIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Small" ToggledSize="Size.Small" />
             </MudStack>
             <MudStack Class="px-3 flex-grow-1 flex-shrink-1 overflow-auto">
                 @foreach (var column in _productTable.Columns)

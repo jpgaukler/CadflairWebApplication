@@ -1,0 +1,21 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudStack AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.h4"><strong>Share</strong></MudText>
+            <MudText Typo="Typo.caption">Scan the code or copy the link to share this page with a friend.</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        <MudStack AlignItems="AlignItems.Center" Spacing="0">
+            <MudImage Src="@($"data:image/png;base64,{_qrCodeImageAsBase64}")" Alt="qr code image" Height="200" Width="200" />
+            <MudTextField Value="Link" Variant="Variant.Outlined" ReadOnly FullWidth />
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudStack Row Justify="Justify.SpaceBetween" Class="mud-width-full">
+            <CopyToClipboard Text="@Link" Size="Size.Medium" Label="Copy Link" Icon="@Icons.Material.Filled.Link" Variant="Variant.Outlined" />
+            <MudButton OnClick="Ok_OnClick" Variant="Variant.Filled" Color="Color.Primary" DisableElevation>Done</MudButton>
+        </MudStack>
+    </DialogActions>
+</MudDialog>
+

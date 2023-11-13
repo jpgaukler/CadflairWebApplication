@@ -6,48 +6,74 @@
 <PageTitle>@CompanyName - Categories</PageTitle>
 
 <MudStack Class="mud-height-full overflow-auto relative">
-    <MudOverlay Visible="_initializing" Absolute Class="mud-background">
+    <MudOverlay Visible="_initializing" Absolute Class="mud-background z-60">
         <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
     </MudOverlay>
 
     <MudStack>
-        <MudStack Style="position: sticky; top:0;" Spacing="0" Class="mud-background pa-3 z-10">
-            <MudText Typo="Typo.h5" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;">@_productDefinition?.Name</MudText>
-            <MudText Typo="Typo.body1">Part Number: @_row.PartNumber</MudText>
+        <MudStack Row Style="position: sticky; top:0;" Spacing="0" Class="mud-background mud-width-full pa-3 z-20" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+            <div class="flex-shrink-1 overflow-hidden">
+                <MudText Typo="Typo.h5" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;">@_productDefinition?.Name</MudText>
+                <MudText Typo="Typo.body1" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden;">Part Number: @_row.PartNumber</MudText>
+            </div>
+
+            <!-- desktop -->
+            <MudHidden Breakpoint="Breakpoint.MdAndDown">
+                <MudButton StartIcon="@Icons.Material.Filled.IosShare" OnClick="ShareButton_OnClick">Share</MudButton>
+            </MudHidden>
+
+            <!-- mobile -->
+            <MudHidden Breakpoint="Breakpoint.LgAndUp">
+                <MudIconButton Icon="@Icons.Material.Filled.IosShare" OnClick="ShareButton_OnClick"/>
+            </MudHidden>
         </MudStack>
 
         <MudGrid Spacing="0" Class="px-5">
             <MudItem xs="12" sm="6">
                 <MudPaper Class="relative" MinHeight="50dvh" Height="100%" MaxHeight="65dvh">
                     <ForgeViewer @ref="_forgeViewer" />
+                    @if (_2dAttachment != null && _3dAttachment != null)
+                    {
+                        <div class="absolute pa-3 z-10" style="top:0; left:0;">
+                            @if (_3dAttachment == _activeAttachment)
+                            {
+                                <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 2D" OnClick="Preview2D_OnClick" Color="Color.Primary" Size="Size.Small" />
+                            }
+                            else if (_2dAttachment == _activeAttachment)
+                            {
+                                <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 3D" OnClick="Preview3D_OnClick" Color="Color.Primary" Size="Size.Small" />
+                            }
+                        </div>
+                    }
                 </MudPaper>
             </MudItem>
 
-            <MudItem xs="12" sm="6" Class="pa-5">
-                <MudButton StartIcon="@Icons.Material.Filled.IosShare">Share</MudButton>
-                <MudText>View Model:</MudText>
+            <MudItem xs="12" sm="6" Class="px-5">
 
-                <MudRadioGroup T="string" SelectedOption="_selectedOption" SelectedOptionChanged="SelectedOption_OnChange">
-                    <MudRadio Option="@("2D")" Size="Size.Large">2D</MudRadio>
-                    <MudRadio Option="@("3D")" Size="Size.Large">3D</MudRadio>
-                </MudRadioGroup>
                 <!-- product details -->
-                <MudButtonGroup Variant="Variant.Outlined">
-                    <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="Preview2D_OnClick">View 2D</MudButton>
-                    <MudButton StartIcon="@Icons.Material.Filled.RemoveRedEye" OnClick="Preview3D_OnClick">View 3D</MudButton>
-                </MudButtonGroup>
                 @if (_row.Attachments.Any() == true)
                 {
-                    <MudText Typo="Typo.body2">Downloads</MudText>
+                    <MudText Typo="Typo.body2" Class="pb-2">Downloads</MudText>
                     <MudStack Row AlignItems="AlignItems.Center">
                         <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" />
-                        <MudSelect T="Attachment" Value="_selectedAttachment" ValueChanged="Attachment_ValueChanged" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelect T="Attachment" @bind-Value="_selectedDownload" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
                             @foreach (var attachment in _row.Attachments)
                             {
-                                <MudSelectItem Value="attachment">@attachment.ForgeObjectKey</MudSelectItem>
+                                @switch (Path.GetExtension(attachment.ForgeObjectKey))
+                                {
+                                    case ".pdf":
+                                    case ".dwg":
+                                        <MudSelectItem Value="attachment">2D Drawing - @attachment.ForgeObjectKey</MudSelectItem>
+                                        break;
+                                    case ".stp":
+                                    case ".ipt":
+                                    case ".iam":
+                                        <MudSelectItem Value="attachment">3D Model - @attachment.ForgeObjectKey</MudSelectItem>
+                                        break;
+                                }
                             }
                         </MudSelect>
-                        <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="Download_OnClick" Variant="Variant.Filled">Download</MudButton>
+                        <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="Download_OnClick" Variant="Variant.Outlined" DisableElevation>Download</MudButton>
                     </MudStack>
                 }
                 <MudTable Items="_row.TableValues" Elevation="0" Class="my-5">

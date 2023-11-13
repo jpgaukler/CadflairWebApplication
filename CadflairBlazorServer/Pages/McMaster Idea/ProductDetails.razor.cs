@@ -24,9 +24,13 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private ProductTable _productTable = new();
         private Row _row = new();
         private ForgeViewer? _forgeViewer;
-        private Attachment? _selectedAttachment;
+        private Attachment? _2dAttachment;
+        private Attachment? _3dAttachment;
+        private Attachment? _activeAttachment;
+        private Attachment? _selectedDownload;
+        private bool _disable2dButton = true;
+        private bool _disable3dButton = true;
         private bool _initializing = true;
-        private string _selectedOption = "3D";
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -38,7 +42,19 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
                     _productDefinition = await DataServicesManager.McMasterService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
                     _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_productDefinition.Id);
                     _row = _productTable.Rows.First(i => i.PartNumber == PartNumber);
-                    await Attachment_ValueChanged(_row.Attachments.FirstOrDefault());
+                    _selectedDownload = _row.Attachments.FirstOrDefault();
+                    _2dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf"));
+                    _3dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp"));
+
+                    if(_3dAttachment != null)
+                    {
+                        await Preview3D_OnClick();
+                    }
+                    else if (_2dAttachment != null)
+                    {
+                        await Preview2D_OnClick();
+                    }
+
                     _initializing = false;
                     StateHasChanged();
                 }
@@ -50,59 +66,43 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             }
         }
 
-        //private async Task PreviewAttachment_OnClick()
-        //{
-        //    if (_selectedAttachment == null)
-        //        return;
-
-        //    await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _selectedAttachment.ForgeObjectKey);
-        //}
-
-        private async Task Attachment_ValueChanged(Attachment? attachment)
-        {
-            _selectedAttachment = attachment;
-
-            if (_selectedAttachment == null)
-                return;
-
-            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _selectedAttachment.ForgeObjectKey);
-        }
 
         private async Task Preview2D_OnClick()
         {
-            await Attachment_ValueChanged(_row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf")));
+            if (_2dAttachment == null)
+                return;
+
+            _activeAttachment = _2dAttachment;
+            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _2dAttachment.ForgeObjectKey);
         }
 
         private async Task Preview3D_OnClick()
         {
-            await Attachment_ValueChanged(_row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp")));
-        }
-
-        private async Task SelectedOption_OnChange(string option)
-        {
-            _selectedOption = option;
-
-            Attachment? attachment = null;
-
-            if (option == "3D")
-                attachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp"));
-
-            if (option == "2D")
-                attachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf"));
-
-            if (attachment == null)
+            if (_3dAttachment == null)
                 return;
 
-            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, attachment.ForgeObjectKey);
+            _activeAttachment = _3dAttachment;
+            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _3dAttachment.ForgeObjectKey);
+        }
+
+
+        private void ShareButton_OnClick()
+        {
+            DialogParameters parameters = new()
+            {
+                { nameof(ShareDialog.Link) , NavigationManager.Uri }, 
+            };
+
+            DialogService.Show<ShareDialog>("Share", parameters);
         }
 
 
         private async Task Download_OnClick()
         {
-            if (_selectedAttachment == null)
+            if (_selectedDownload == null)
                 return;
 
-            string url = await ForgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_productDefinition!.ForgeBucketKey, _selectedAttachment.ForgeObjectKey);
+            string url = await ForgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(_productDefinition!.ForgeBucketKey, _selectedDownload.ForgeObjectKey);
             NavigationManager.NavigateTo(url);
         }
 
