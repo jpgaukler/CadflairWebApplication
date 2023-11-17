@@ -49,7 +49,8 @@ builder.Services.AddFluentEmail("donotreply@cadflair.com")
                 .AddRazorRenderer();
 
 // Cadflair services
-builder.Services.AddScoped<DataServicesManager>();
+//builder.Services.AddScoped(i => new DataServicesManager(builder.Configuration.GetConnectionString("LocalHost")));
+builder.Services.AddScoped(i => new DataServicesManager(builder.Configuration.GetConnectionString("CadflairStaging")));
 builder.Services.AddScoped<AuthenticationService>();
 builder.Services.AddScoped<ForgeServicesManager>();
 builder.Services.AddScoped<EmailService>();

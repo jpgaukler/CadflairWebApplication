@@ -1,3 +1,30 @@
 html {
     scroll-behavior: smooth;
 }
+
+.sticky-header {
+    position: sticky;
+    top: var(--mud-appbar-height);
+}
+
+.mud-appbar-padding-top {
+    padding-top: var(--mud-appbar-height) !important;
+}
+.full-screen {
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+
+@media (max-width: 600px) {
+    .sticky-header {
+        top: calc(var(--mud-appbar-height) - var(--mud-appbar-height)/8);
+    }
+
+    .mud-appbar-padding-top {
+        padding-top: calc(var(--mud-appbar-height) - var(--mud-appbar-height)/8) !important;
+    }
+}
+

@@ -28,8 +28,6 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private Attachment? _3dAttachment;
         private Attachment? _activeAttachment;
         private Attachment? _selectedDownload;
-        private bool _disable2dButton = true;
-        private bool _disable3dButton = true;
         private bool _initializing = true;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -48,11 +46,11 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
 
                     if(_3dAttachment != null)
                     {
-                        await Preview3D_OnClick();
+                        await View3D_OnClick();
                     }
                     else if (_2dAttachment != null)
                     {
-                        await Preview2D_OnClick();
+                        await View2D_OnClick();
                     }
 
                     _initializing = false;
@@ -67,30 +65,63 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         }
 
 
-        private async Task Preview2D_OnClick()
+        private async Task View2D_OnClick()
         {
+            if (_forgeViewer == null)
+                return;
+
             if (_2dAttachment == null)
                 return;
 
             _activeAttachment = _2dAttachment;
-            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _2dAttachment.ForgeObjectKey);
+            await _forgeViewer.ViewDocument(_productDefinition!.ForgeBucketKey, _2dAttachment.ForgeObjectKey);
         }
 
-        private async Task Preview3D_OnClick()
+        private async Task View3D_OnClick()
         {
+            if (_forgeViewer == null)
+                return;
+
             if (_3dAttachment == null)
                 return;
 
             _activeAttachment = _3dAttachment;
-            await _forgeViewer!.ViewDocument(_productDefinition!.ForgeBucketKey, _3dAttachment.ForgeObjectKey);
+            await _forgeViewer.ViewDocument(_productDefinition!.ForgeBucketKey, _3dAttachment.ForgeObjectKey);
         }
 
+        private void View2DMobile_OnClick()
+        {
+            if (_2dAttachment == null)
+                return;
+
+            DialogParameters parameters = new()
+            {
+                { nameof(ViewerMobileDialog.BucketKey) , _productDefinition!.ForgeBucketKey },
+                { nameof(ViewerMobileDialog.ObjectKey) , _2dAttachment.ForgeObjectKey },
+            };
+
+            DialogService.Show<ViewerMobileDialog>("View 2D", parameters);
+        }
+
+        private void View3DMobile_OnClick()
+        {
+            if (_3dAttachment == null)
+                return;
+
+            DialogParameters parameters = new()
+            {
+                { nameof(ViewerMobileDialog.BucketKey) , _productDefinition!.ForgeBucketKey },
+                { nameof(ViewerMobileDialog.ObjectKey) , _3dAttachment.ForgeObjectKey },
+            };
+
+            DialogService.Show<ViewerMobileDialog>("View 3D", parameters);
+        }
 
         private void ShareButton_OnClick()
         {
             DialogParameters parameters = new()
             {
-                { nameof(ShareDialog.Link) , NavigationManager.Uri }, 
+                { nameof(ShareDialog.Link) , NavigationManager.Uri },
             };
 
             DialogService.Show<ShareDialog>("Share", parameters);

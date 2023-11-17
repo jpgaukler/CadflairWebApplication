@@ -1,14 +1,19 @@
 ﻿@using Row = CadflairDataAccess.Models.Row;
 
 @page "/{CompanyName}/products/{ProductDefinitionName}/"
-@layout ConfiguratorLayout
+@layout MainLayout
 
 <PageTitle>@CompanyName - @ProductDefinitionName</PageTitle>
 
-<MudDrawerContainer Class="mud-height-full overflow-hidden relative">
-    <!-- filter desktop -->
-    <MudHidden Breakpoint="Breakpoint.MdAndDown">
-        <MudDrawer Open Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px">
+<MudOverlay Visible="_initializing" Class="mud-background" Style="z-index:1200;">
+    <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
+</MudOverlay>
+
+<!-- desktop -->
+<MudHidden Breakpoint="Breakpoint.SmAndDown">
+    <MudDrawerContainer Class="overflow-auto full-screen mud-appbar-padding-top">
+        <!-- filters -->
+        <MudDrawer Open Anchor="Anchor.Left" Elevation="1" Variant="DrawerVariant.Persistent" Width="300px" Style="position:fixed; top:0; bottom:0;" Class="mud-appbar-padding-top">
             <MudStack Class="pa-3">
                 <MudStack Row Justify="Justify.SpaceBetween">
                     <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
@@ -26,85 +31,103 @@
                 }
             </MudStack>
         </MudDrawer>
-    </MudHidden>
 
-
-    <MudStack Class="mud-height-full px-5 overflow-auto relative">
-        <MudOverlay Visible="_initializing" Absolute Class="mud-background">
-            <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
-        </MudOverlay>
-
-        <MudStack Class="flex-grow-1">
-            <MudText Typo="Typo.h5" Style="position: sticky; top:0; text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;" Class="mud-background py-3 z-10">@_productDefinition?.Name</MudText>
-
-            <!-- desktop -->
-            <MudHidden Breakpoint="Breakpoint.MdAndDown">
-                <MudStack Row AlignItems="AlignItems.Start">
-                    <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
-                    <MudText Typo="Typo.body1" Style="max-width:80ch;">@_productDefinition?.Description</MudText>
-                </MudStack>
-            </MudHidden>
-
-            <!-- mobile -->
-            <MudHidden Breakpoint="Breakpoint.LgAndUp">
-                <MudStack AlignItems="AlignItems.Start">
-                    <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
-                    <MudText Typo="Typo.body1" Style="max-width:80ch;">@_productDefinition?.Description</MudText>
-                </MudStack>
-            </MudHidden>
-
-            <!-- products -->
-            <MudTable Items="_productTable.Rows.Where(_filter)" Elevation="0" Class="mb-16">
-                <NoRecordsContent>
-                    <MudText>No products.</MudText>
-                </NoRecordsContent>
-                <HeaderContent>
-                    <MudTh Style="min-width:15ch;">Part Number</MudTh>
-                    @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>*@
-                    @foreach (var column in _productTable.Columns)
-                    {
-                        <MudTh Style="min-width:15ch;">@column.Header</MudTh>
-                        @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>*@
-                    }
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Part Number">
-                        <MudLink OnClick="() => RowLink_OnClick(context)">@context.PartNumber</MudLink>
-                    </MudTd>
-                    @foreach (var column in _productTable.Columns)
-                    {
-                        <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
-                    }
-                </RowTemplate>
-            </MudTable>
+        <!-- header -->
+        <div class="mud-background z-60" style="position:sticky; top:0;">
+            <MudText Typo="Typo.h5" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;" Class="pa-3">@_productDefinition?.Name</MudText>
+            <MudDivider/>
+        </div>
+        <MudStack Row AlignItems="AlignItems.Start">
+            <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="200" Width="200" />
+            <MudText Typo="Typo.body1" Style="max-width:80ch;" Class="py-3">@_productDefinition?.Description</MudText>
         </MudStack>
-    </MudStack>
 
-
-    <!-- filter mobile -->
-    <MudHidden Breakpoint="Breakpoint.LgAndUp">
-        <MudPaper Square Class="absolute mud-width-full rounded-t z-20 d-flex flex-column overflow-hidden" Style="@_mobileFilterStyle" Elevation="5" Height="100%">
-            <MudStack Row Class="pa-3" AlignItems="AlignItems.Center">
-                <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
-                <MudSpacer/>
-                <MudText Typo="Typo.caption">Count: @_productTable.Rows.Count(_filter)</MudText>
-                <MudToggleIconButton Toggled="_mobileFilterOpen" ToggledChanged="ToggleMobileFilter_OnClick" Icon="@Icons.Material.Filled.KeyboardArrowUp" ToggledIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Small" ToggledSize="Size.Small" />
-            </MudStack>
-            <MudStack Class="px-3 flex-grow-1 flex-shrink-1 overflow-auto">
+        <!-- product table -->
+        <MudTable Items="_productTable.Rows.Where(_filter)" Elevation="0" Class="mb-16 px-3">
+            <NoRecordsContent>
+                <MudText>No products.</MudText>
+            </NoRecordsContent>
+            <HeaderContent>
+                <MudTh Style="min-width:15ch;">Part Number</MudTh>
+                @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>*@
                 @foreach (var column in _productTable.Columns)
                 {
-                    <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(column, values)"
-                           Label="@column.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection>
-                        @foreach (var tableValue in _productTable.Rows.Select(i => i.TableValues.First(i => i.ColumnId == column.Id)).DistinctBy(i => i.Value))
-                        {
-                            <MudSelectItem Value="tableValue.Value">@tableValue.Value</MudSelectItem>
-                        }
-                    </MudSelect>
+                    <MudTh Style="min-width:15ch;">@column.Header</MudTh>
+                    @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>*@
                 }
-            </MudStack>
-            <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ma-3" OnClick="ToggleMobileFilter_OnClick">Apply</MudButton>
-        </MudPaper>
-    </MudHidden>
-</MudDrawerContainer>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Part Number">
+                    <MudLink OnClick="() => RowLink_OnClick(context)">@context.PartNumber</MudLink>
+                </MudTd>
+                @foreach (var column in _productTable.Columns)
+                {
+                    <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
+                }
+            </RowTemplate>
+        </MudTable>
+    </MudDrawerContainer>
+</MudHidden>
 
+<!-- mobile -->
+<MudHidden Breakpoint="Breakpoint.MdAndUp" Style="min-height:100vh">
 
+    <!-- filters -->
+    <MudPaper Square Class="fixed mud-width-full rounded-t d-flex flex-column overflow-hidden" Style="@_mobileFilterStyle" Elevation="10" Height="100dvh">
+        <MudStack Row Class="pa-3" AlignItems="AlignItems.Center">
+            <MudText Typo="Typo.body1"><strong>Filter by</strong></MudText>
+            <MudSpacer/>
+            <MudText Typo="Typo.caption">Count: @_productTable.Rows.Count(_filter)</MudText>
+            <MudToggleIconButton Toggled="_mobileFilterOpen" ToggledChanged="ToggleMobileFilter_OnClick" Icon="@Icons.Material.Filled.KeyboardArrowUp" ToggledIcon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Small" ToggledSize="Size.Small" />
+        </MudStack>
+        <MudStack Class="px-3 flex-grow-1 flex-shrink-1 overflow-auto">
+            @foreach (var column in _productTable.Columns)
+            {
+                <MudSelect T="string" SelectedValuesChanged="(values) => ColumnFilter_OnSelect(column, values)"
+                       Label="@column.Header" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Clearable MultiSelection>
+                    @foreach (var tableValue in _productTable.Rows.Select(i => i.TableValues.First(i => i.ColumnId == column.Id)).DistinctBy(i => i.Value))
+                    {
+                        <MudSelectItem Value="tableValue.Value">@tableValue.Value</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+        </MudStack>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" Class="ma-3" OnClick="ToggleMobileFilter_OnClick">Apply</MudButton>
+    </MudPaper>
+
+    <!-- header -->
+    <div class="sticky-header mud-background z-60">
+        <MudText Typo="Typo.h5" Style="text-overflow: ellipsis; white-space:nowrap; overflow:hidden; font-weight:500;" Class="pa-3">@_productDefinition?.Name</MudText>
+        <MudDivider/>
+    </div>
+    <MudStack AlignItems="AlignItems.Center">
+        <ThumbnailImage Uri="@_productDefinition?.ThumbnailUri" Height="150" Width="150" />
+        <MudText Typo="Typo.body1" Style="max-width:80ch;" Class="pa-3">@_productDefinition?.Description</MudText>
+    </MudStack>
+
+    <!-- product table -->
+    <MudTable Items="_productTable.Rows.Where(_filter)" Elevation="0" Class="mb-16 px-3">
+        <NoRecordsContent>
+            <MudText>No products.</MudText>
+        </NoRecordsContent>
+        <HeaderContent>
+            <MudTh Style="min-width:15ch;">Part Number</MudTh>
+            @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.PartNumber)">Part Number</MudTableSortLabel></MudTh>*@
+            @foreach (var column in _productTable.Columns)
+            {
+                <MudTh Style="min-width:15ch;">@column.Header</MudTh>
+                @*<MudTh Style="min-width:15ch;"><MudTableSortLabel SortBy="new Func<Row, object>(x => x.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value!)">@column.Header</MudTableSortLabel></MudTh>*@
+            }
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Part Number">
+                <MudLink OnClick="() => RowLink_OnClick(context)">@context.PartNumber</MudLink>
+            </MudTd>
+            @foreach (var column in _productTable.Columns)
+            {
+                <MudTd DataLabel="@column.Header">@context.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudTd>
+            }
+        </RowTemplate>
+    </MudTable>
+
+</MudHidden>

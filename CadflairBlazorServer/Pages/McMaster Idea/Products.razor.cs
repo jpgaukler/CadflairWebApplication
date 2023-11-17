@@ -84,9 +84,9 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
             _mobileFilterOpen = !_mobileFilterOpen;
 
             if (_mobileFilterOpen)
-                _mobileFilterStyle = "top:0; transform: translateY(0px); transition: 225ms cubic-bezier(0,0,.2,1) 0ms;";
+                _mobileFilterStyle = "top:0; transform: translateY(0px); transition: 225ms cubic-bezier(0,0,.2,1) 0ms; padding-top: calc(var(--mud-appbar-height) - var(--mud-appbar-height)/8); z-index:1200;";
             else
-                _mobileFilterStyle = "top:0; transform: translateY(calc(100% - 1.5rem - 24px)); transition: 225ms cubic-bezier(0,0,.2,1) 0ms;";
+                _mobileFilterStyle = "top:0; transform: translateY(calc(100% - 1.5rem - 24px)); transition: 225ms cubic-bezier(0,0,.2,1) 0ms; z-index:1200;";
         }
 
     }
