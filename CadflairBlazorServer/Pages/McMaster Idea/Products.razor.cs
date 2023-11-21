@@ -11,7 +11,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         [Inject] NavigationManager NavigationManager { get; set; } = default!;
         [Inject] ISnackbar Snackbar { get; set; } = default!;
         [Inject] IDialogService DialogService { get; set; } = default!;
-        [Inject] ILogger<Categories> Logger { get; set; } = default!;
+        [Inject] ILogger<Products> Logger { get; set; } = default!;
 
         // parameters
         [Parameter] public string CompanyName { get; set; } = string.Empty;

@@ -11,7 +11,7 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         [Inject] NavigationManager NavigationManager { get; set; } = default!;
         [Inject] ISnackbar Snackbar { get; set; } = default!;
         [Inject] IDialogService DialogService { get; set; } = default!;
-        [Inject] ILogger<Categories> Logger { get; set; } = default!;
+        [Inject] ILogger<ProductDetails> Logger { get; set; } = default!;
 
         // parameters
         [Parameter] public string CompanyName { get; set; } = string.Empty;
@@ -30,63 +30,82 @@ namespace CadflairBlazorServer.Pages.McMaster_Idea
         private Attachment? _selectedDownload;
         private bool _initializing = true;
 
+        protected override async Task OnInitializedAsync()
+        {
+            try
+            {
+                _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
+                _productDefinition = await DataServicesManager.McMasterService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
+                _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_productDefinition.Id);
+                _row = _productTable.Rows.First(i => i.PartNumber == PartNumber);
+                _selectedDownload = _row.Attachments.FirstOrDefault();
+                _2dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf"));
+                _3dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp"));
+                _initializing = false;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"Error occurred while initializing product details page!");
+                NavigationManager.NavigateTo("/notfound");
+            }
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (firstRender)
+            // load a model into the viewer
+            if (_activeAttachment == null)
             {
-                try
+                if (_3dAttachment != null)
                 {
-                    _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
-                    _productDefinition = await DataServicesManager.McMasterService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
-                    _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_productDefinition.Id);
-                    _row = _productTable.Rows.First(i => i.PartNumber == PartNumber);
-                    _selectedDownload = _row.Attachments.FirstOrDefault();
-                    _2dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf"));
-                    _3dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".stp"));
-
-                    if(_3dAttachment != null)
-                    {
-                        await View3D_OnClick();
-                    }
-                    else if (_2dAttachment != null)
-                    {
-                        await View2D_OnClick();
-                    }
-
-                    _initializing = false;
-                    StateHasChanged();
+                    await View3D_OnClick();
                 }
-                catch (Exception ex)
+                else if (_2dAttachment != null)
                 {
-                    Logger.LogError(ex, $"Error occurred while initializing products page!");
-                    NavigationManager.NavigateTo("/notfound");
+                    await View2D_OnClick();
                 }
             }
         }
 
-
         private async Task View2D_OnClick()
         {
+            //Snackbar.Add("calling 2D viewer load");
+
             if (_forgeViewer == null)
+            {
+                //Snackbar.Add("viewer is null");
                 return;
+            }
 
             if (_2dAttachment == null)
+            {
+                //Snackbar.Add("attachment is null");
                 return;
+            }
 
             _activeAttachment = _2dAttachment;
             await _forgeViewer.ViewDocument(_productDefinition!.ForgeBucketKey, _2dAttachment.ForgeObjectKey);
+            StateHasChanged();
         }
 
         private async Task View3D_OnClick()
         {
+            //Snackbar.Add("calling 3D viewer load");
+
             if (_forgeViewer == null)
+            {
+                //Snackbar.Add("viewer is null");
                 return;
+            }
 
             if (_3dAttachment == null)
+            {
+                //Snackbar.Add("attachment is null");
                 return;
+            }
 
             _activeAttachment = _3dAttachment;
             await _forgeViewer.ViewDocument(_productDefinition!.ForgeBucketKey, _3dAttachment.ForgeObjectKey);
+            StateHasChanged();
         }
 
         private void View2DMobile_OnClick()

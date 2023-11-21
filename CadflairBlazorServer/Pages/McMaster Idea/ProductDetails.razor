@@ -26,7 +26,11 @@
                 @if (_2dAttachment != null && _3dAttachment != null)
                 {
                     <div class="absolute pa-3 z-10" style="top:0; left:0;">
-                        @if (_3dAttachment == _activeAttachment)
+                        @if (_activeAttachment == null)
+                        {
+                            <MudFab StartIcon="@Icons.Material.Filled.ViewInAr" Label="View 3D" OnClick="View3D_OnClick" Color="Color.Primary" Size="Size.Small" />
+                        }
+                        else if (_3dAttachment == _activeAttachment)
                         {
                             <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 2D" OnClick="View2D_OnClick" Color="Color.Primary" Size="Size.Small" />
                         }
