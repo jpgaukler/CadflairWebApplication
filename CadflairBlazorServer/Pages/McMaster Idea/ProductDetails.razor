@@ -23,23 +23,20 @@
         <MudItem xs="12" sm="6">
             <MudPaper Class="relative" MinHeight="50dvh" Height="100%" MaxHeight="65dvh">
                 <ForgeViewer @ref="_forgeViewer" />
-                @if (_2dAttachment != null && _3dAttachment != null)
-                {
-                    <div class="absolute pa-3 z-10" style="top:0; left:0;">
-                        @if (_activeAttachment == null)
-                        {
-                            <MudFab StartIcon="@Icons.Material.Filled.ViewInAr" Label="View 3D" OnClick="View3D_OnClick" Color="Color.Primary" Size="Size.Small" />
-                        }
-                        else if (_3dAttachment == _activeAttachment)
-                        {
-                            <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 2D" OnClick="View2D_OnClick" Color="Color.Primary" Size="Size.Small" />
-                        }
-                        else if (_2dAttachment == _activeAttachment)
-                        {
-                            <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 3D" OnClick="View3D_OnClick" Color="Color.Primary" Size="Size.Small" />
-                        }
-                    </div>
-                }
+                <div class="absolute pa-3 z-10" style="top:0; left:0;">
+                    @if (_3dAttachment != null && _activeAttachment == null)
+                    {
+                        <MudFab StartIcon="@Icons.Material.Filled.ViewInAr" Label="View 3D" OnClick="View3D_OnClick" Color="Color.Primary" Size="Size.Small" />
+                    }
+                    else if (_2dAttachment != null && _3dAttachment == _activeAttachment)
+                    {
+                        <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 2D" OnClick="View2D_OnClick" Color="Color.Primary" Size="Size.Small" />
+                    }
+                    else if (_3dAttachment != null && _2dAttachment == _activeAttachment)
+                    {
+                        <MudFab StartIcon="@Icons.Material.Filled.SwapHoriz" Label="View 3D" OnClick="View3D_OnClick" Color="Color.Primary" Size="Size.Small" />
+                    }
+                </div>
             </MudPaper>
         </MudItem>
 
@@ -50,9 +47,9 @@
             {
                 <MudText Typo="Typo.body2" Class="pb-2">Downloads</MudText>
                 <MudStack Row AlignItems="AlignItems.Center">
-                <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" />
-                <MudSelect T="Attachment" @bind-Value="_selectedDownload" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
-                    @foreach (var attachment in _row.Attachments)
+                    <MudIcon Icon="@Icons.Material.Filled.InsertDriveFile" />
+                    <MudSelect T="Attachment" @bind-Value="_selectedDownload" Variant="Variant.Outlined" Margin="Margin.Dense" AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var attachment in _row.Attachments)
                         {
                             @switch (Path.GetExtension(attachment.ForgeObjectKey))
                             {
@@ -69,7 +66,7 @@
                         }
                     </MudSelect>
                     <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="Download_OnClick" Variant="Variant.Outlined" DisableElevation>Download</MudButton>
-            </MudStack>
+                </MudStack>
             }
             <MudTable Items="_row.TableValues" Elevation="0" Class="my-5">
                 <RowTemplate>
@@ -104,7 +101,7 @@
             <MudText Style="font-weight:500;">@column.Header</MudText>
             <MudText Align="Align.Right">@_row.TableValues.FirstOrDefault(i => i.ColumnId == column.Id)?.Value</MudText>
         </MudStack>
-        <MudDivider/>
+        <MudDivider />
     }
     <MudText Typo="Typo.body1" Class="my-5 pa-3">@_productDefinition?.Description</MudText>
 

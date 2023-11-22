@@ -79,6 +79,7 @@ namespace CadflairForgeAccess.Services
             // start the translation
             DerivativesApi derivative = await GetDerivativesApi();
             dynamic jobPosted = await derivative.TranslateAsync(job);
+            //Debug.WriteLine($@"Translation started: {jobPosted}");
 
             return jobPosted;
         }

@@ -59,7 +59,7 @@ else
         <MudPaper Class="pa-3 d-flex flex-column gap-3 relative">
             <MudOverlay Visible="_importingExcel" Class="mud-background" Style="z-index:1400;" Absolute>
                 <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-                    <MudText Typo="Typo.button">Importing Excel data...</MudText>
+                    <MudText Typo="Typo.button">@_importingExcelProgress</MudText>
                     <MudProgressCircular Color="Color.Default" Size="Size.Medium" Indeterminate />
                 </MudStack>
             </MudOverlay>
@@ -88,7 +88,7 @@ else
                       RowEditCancel="(row) => RowEditCancel((Row)row)"
                       RowEditCommit="async(row) => await RowEditCommit((Row)row)"
                       IsEditRowSwitchingBlocked="true" ApplyButtonPosition="TableApplyButtonPosition.End" CanCancelEdit EditTrigger="TableEditTrigger.EditButton"
-                      FixedHeader HorizontalScrollbar Hover SelectOnRowClick Height="65dvh" Class="flex-grow-1 flex-shrink-1 overflow-auto" Outlined>
+                      FixedHeader HorizontalScrollbar Hover SelectOnRowClick Height="65dvh" Class="flex-grow-1 flex-shrink-1 overflow-auto" Outlined Virtualize>
                 <NoRecordsContent>
                     @if(string.IsNullOrWhiteSpace(_searchString))
                     {
@@ -186,8 +186,16 @@ else
 
     <!-- attachments -->
     <MudPaper Class="pa-3 d-flex flex-column gap-3">
-        <MudText Typo="Typo.h5">Upload Attachments</MudText>
-        <MudText Typo="Typo.body1">Drag and drop files to upload attachments. Files will be linked to products with matching part numbers.</MudText>
+        <MudStack Row Justify="Justify.SpaceBetween">
+            <div>
+                <MudText Typo="Typo.h5">Upload Attachments</MudText>
+                <MudText Typo="Typo.body1">Drag and drop files to upload attachments. Files will be linked to products with matching part numbers.</MudText>
+            </div>
+            @if (_fileUploads.Any() && !_uploadInProgress)
+            {
+                <MudButton StartIcon="@Icons.Material.Filled.Close" OnClick="() => _fileUploads.Clear()">Clear</MudButton>
+            }
+        </MudStack>
         <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="Attachments_FilesChanged" Accept=".stp, .step, .pdf, .ipt" MaximumFileCount="999"
                    InputClass="absolute mud-width-full mud-height-full overflow-hidden z-20" InputStyle="opacity:0;" Hidden="_fileUploads.Any()"
                    @ondragenter="@SetDragStyle" @ondragleave="@ClearDragStyle" @ondrop="@ClearDragStyle">

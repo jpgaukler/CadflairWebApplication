@@ -95,7 +95,7 @@ namespace CadflairForgeAccess.Services
                 // Method to report progress during the file upload
                 void onUploadProgress(float progress, TimeSpan elapsed, List<UploadItemDesc> objects)
                 {
-                    Debug.WriteLine($"File Upload Progress: {progress} Elapsed: {elapsed} Objects: {string.Join(", ", objects)}");
+                    //Debug.WriteLine($"File Upload Progress: {progress} Elapsed: {elapsed} Objects: {string.Join(", ", objects)}");
                 }
 
                 // Method to refresh the token if it expires during upload

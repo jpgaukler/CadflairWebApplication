@@ -57,6 +57,7 @@ public partial class ManageProductDefinitions
     private string _nameField = string.Empty;
     private string? _descriptionField; 
     private bool _importingExcel;
+    private string _importingExcelProgress = string.Empty;
 
     // attachment uploads
     private class FileUpload
@@ -65,6 +66,7 @@ public partial class ManageProductDefinitions
         public string Status { get; set; } = string.Empty;
     }
     private List<FileUpload> _fileUploads = new();
+    private bool _uploadInProgress;
     private readonly string[] _validExtensions = { ".ipt", ".stp", ".step", ".pdf", ".dwg", ".idw" };
     private const string _initialDragStyle = $"border-color: var(--mud-palette-lines-inputs);";
     private string _dragStyle = _initialDragStyle;
@@ -335,7 +337,6 @@ public partial class ManageProductDefinitions
             return;
         }
 
-        _importingExcel = true;
         string? tempFilename = null;
 
         try
@@ -376,9 +377,20 @@ public partial class ManageProductDefinitions
                 _productTable.Columns.Add(newColumn);
             }
 
+            IProgress<string> progress = new Progress<string>(message =>
+            {
+                _importingExcel = true;
+                _importingExcelProgress = message;
+                StateHasChanged();
+            });
+
             // add rows
+            int rowsProcessed = 1;
+            int rowCount = worksheet.RowsUsed().Count();
             foreach (var xlRow in worksheet.RowsUsed())
             {
+                progress.Report($"Importing {rowsProcessed} of {rowCount}...");
+
                 // skip the header row
                 if (xlRow == worksheet.FirstRowUsed())
                     continue;
@@ -409,6 +421,7 @@ public partial class ManageProductDefinitions
                 }
 
                 _productTable.Rows.Add(newRow);
+                rowsProcessed++;
             }
 
 
@@ -451,6 +464,7 @@ public partial class ManageProductDefinitions
             await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
         }
 
+        _uploadInProgress = true;
         _fileUploads = files.Select(file => new FileUpload
         {
             File = file,
@@ -522,6 +536,8 @@ public partial class ManageProductDefinitions
             if (tempFilename != null)
                 File.Delete(tempFilename);
         }
+
+        _uploadInProgress = false;
     }
 
     //private List<string> _events = new();
