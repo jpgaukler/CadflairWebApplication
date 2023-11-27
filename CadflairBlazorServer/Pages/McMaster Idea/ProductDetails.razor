@@ -3,7 +3,7 @@
 @page "/{CompanyName}/products/{ProductDefinitionName}/{PartNumber}/"
 @layout MainLayout
 
-<PageTitle>@CompanyName - Categories</PageTitle>
+<PageTitle>@CompanyName - @ProductDefinitionName</PageTitle>
 
 <MudOverlay Visible="_initializing" Class="mud-background" Style="z-index:1200;">
     <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate />
@@ -91,8 +91,14 @@
     </MudStack>
 
     <MudStack Class="pa-3">
-        <MudButton StartIcon="@Icons.Material.Filled.ViewInAr" OnClick="View3DMobile_OnClick" Variant="Variant.Filled" DisableElevation>View 3D</MudButton>
-        <MudButton StartIcon="@Icons.Material.Outlined.Pageview" OnClick="View2DMobile_OnClick" Variant="Variant.Filled" DisableElevation>View 2D</MudButton>
+        @if (_3dAttachment != null)
+        {
+            <MudButton StartIcon="@Icons.Material.Filled.ViewInAr" OnClick="View3DMobile_OnClick" Variant="Variant.Filled" DisableElevation>View 3D</MudButton>
+        }
+        else if (_2dAttachment != null)
+        {
+            <MudButton StartIcon="@Icons.Material.Outlined.Pageview" OnClick="View2DMobile_OnClick" Variant="Variant.Filled" DisableElevation>View 2D</MudButton>
+        }
     </MudStack>
 
     @foreach (var column in _productTable.Columns)

@@ -56,7 +56,7 @@
                     <path d="M3 23C89.445 5.91642 175.379 -4.33371 203 9.33313" stroke-width="6" stroke-linecap="round" />
                 </svg>
                 <div class="fade-opacity-in delay-5 my-10">
-                    <p class="mud-typography mud-typography-body1 my-3">Empower your customers. Revolutionize your CAD library today.</p>
+                    <p class="mud-typography mud-typography-body1 my-3">Revolutionize your CAD library today.</p>
 
                     <!-- configurator demos -->
                     @*<MudButton Href="/configurator/demo/dresser" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Dresser Demo</MudButton>*@
@@ -64,7 +64,10 @@
                     @*<MudButton Href="/configurator/demo/awwac20718classdclasseflanges" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Flange Demo</MudButton>*@
 
                     <!-- mcmaster demo -->
-                    <MudButton Href="/demo/categories/" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">Demo</MudButton>
+                    <MudButton Href="/demo/categories/" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">
+                        Try Demo
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                    </MudButton>
                     @*<MudButton Href="/catalog/mcmaster-catalog-editor" Size="Size.Large" Variant="Variant.Filled" Color="Color.Primary">McMaster Editor</MudButton>*@
 
                 </div>
@@ -73,7 +76,8 @@
 
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudItem sm="8">
-                <MudImage Src="/images/laptop_mockup.png" Alt="hero image" Fluid ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Class="pa-10" />
+                @*<MudImage Src="/images/laptop_mockup.png" Alt="hero image" Fluid ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Class="pa-10" />*@
+                <MudImage Src="/images/product_mockup.png" Alt="hero image" Fluid ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" Class="pa-10" />
             </MudItem>
             <MudItem xs="12">
                 <div style="min-height:100px;"></div>
@@ -98,62 +102,55 @@
         <MudGrid>
 
             <!-- what is cadflair -->
-            <MudItem sm="12">
-                <div style="min-height:125px;"></div>
-            </MudItem>
             <MudItem sm="12" id="learn-more-tag">
-                <MudStack AlignItems="AlignItems.Center">
-                    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.Center" Class="flex-wrap">
-                        <MudText Typo="Typo.h3" Align="Align.Center">What is</MudText>
-                        <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" Height="50" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
-                        <MudText Typo="Typo.h3" Align="Align.Center">?</MudText>
-                    </MudStack>
-                    <MudText Class="mx-15 my-5">
-                        Cadflair is an online, CAD-based product catalog for industrial manufacturing companies. Our goal is to make it simple for companies 
-                        to share CAD data with their customers, so they can purchase with confidence. We believe that CAD data is not just for manufacturing, 
-                        but that it can be used to supplement the sales and quoting process. Cadflair makes it easy to 
-                        share your CAD library on the web. No programming skills required. 
-                        <br /><br />
-                        Why waste valuable time creating detailed solid models and boring PDFs... only to have a customer go silent? 
-                        By automating pre-sales modeling work and sharing CAD data earlier in the product design process, you can <strong>save time AND 
-                        provide greater value to your customers.</strong> Cadflair leverages the latest tools and technologies provided by Autodesk to bring
-                        your CAD data to life.
-                    </MudText>
-                    <MudList>
-                        <MudListItem Text="View 3D CAD models on any device" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Share models with a click" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Get notified when a customer downloads your models" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Streamline customer communication" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Improve lead generation and conversion" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                    </MudList>
-                    @*MudText Class="mx-15 my-5">
-                        Cadflair is an online, CAD-based product catalog for industrial manufacturing companies. Our goal is to make it simple for companies 
-                        to implement a product configurator that can be used as a pre-sales communication tool. We believe that CAD data is not just for manufacturing, 
-                        but that it should be used to supplement the entire product design process, including pre-sales and quoting phases. Cadflair makes it easy to 
-                        create a custom configurator for designed-to-order products. No programming skills required. 
-                        <br /><br />
-                        Why waste valuable time creating detailed solid models and boring PDFs... only to have a customer go silent? 
-                        By automating pre-sales modeling work and sharing CAD data earlier in the product design process, you can <strong>save time AND 
-                        provide greater value to your customers.</strong> Cadflair leverages the latest tools and technologies provided by Autodesk to bring
-                        your CAD data to life.
-                    </MudText>
-                    <MudList>
-                        <MudListItem Text="Reduce time spent on pre-sales CAD modeling" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="View 3D CAD models on any device" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Generate new product configurations in seconds" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Dark" />
-                        <MudListItem Text="Get notified when a customer views your products" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Share models with a click" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                        <MudListItem Text="Improve lead generation and conversion" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" />
-                    </MudList>*@                
-                    </MudStack>
+                <div style="min-height:75px;"></div>
+            </MudItem>
+            <MudItem sm="12" md="6" Class="px-5">
+                <MudStack Row AlignItems="AlignItems.Center" Class="flex-wrap my-10">
+                    <MudText Typo="Typo.h3" Align="Align.Center">What is</MudText>
+                    <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" Height="40" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
+                    <MudText Typo="Typo.h3" Align="Align.Center">?</MudText>
+                </MudStack>
+                <MudText>
+                    Cadflair is an digital product catalog for manufacturing companies. Our mission is to make it simple for companies to share CAD data on the web.
+                    Don't have CAD data available? No problem. At Cadflair, we will work with your team to build a digital library for your products, so you can spend more time growing your business.<br />
+                    <br />
+                    <strong>Customization for Any Industry</strong><br />
+                    No two manufacturing processes are alike. That's why we specialize in creating CAD models that are as unique as your business.
+                    From automotive components to intricate machinery, our team generates models that align with your industry-specific requirements.<br />
+                    <br />
+                    <strong>Efficiency Redefined</strong><br />
+                    Time is money, and we understand urgency in manufacturing. Our CAD models are not just aesthetically pleasing, they're optimized for efficiency.
+                    This means that all models can be viewed in a web-browser, on any device, anytime, anywhere.<br />
+                    <br />
+                    <strong>Collaborative Creation</strong><br />
+                    Your vision, our expertise. We collaborate closely with your team to understand your products and expectations.
+                    Our iterative process ensures that each CAD model is a result of collaborative refinement, guaranteeing a final product that aligns with your expectations.
+                </MudText>
+            </MudItem>
+            <MudItem sm="12" md="6" Class="px-5">
+                <MudStack Row AlignItems="AlignItems.Center" Class="flex-wrap my-10">
+                    <MudText Typo="Typo.h3" Align="Align.Center">Why</MudText>
+                    <MudImage Src="/images/cadflair_logo.svg" Alt="Cadflair Logo" Height="40" ObjectFit="ObjectFit.ScaleDown" ObjectPosition="ObjectPosition.Center" />
+                    <MudText Typo="Typo.h3" Align="Align.Center">?</MudText>
+                </MudStack>
+                <MudText>
+                    In today's connected world, CAD data is not just for manufacturing, it is a vital tool for communicating product details to customers. 
+                    By providing direct access to your CAD data, you can empower your customers to explore the details of every design, 
+                    fostering a deeper understanding of your products, and building confidence in your brand.
+                </MudText>
+                <MudList Class="d-flex flex-column justify-space-between flex-grow-1 py-10">
+                    <MudListItem Text="View 3D CAD models on any device" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" Class="my-1" />
+                    <MudListItem Text="Share models with a click" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" Class="my-1" />
+                    <MudListItem Text="Get notified when customers download your models" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" Class="my-1" />
+                    <MudListItem Text="Improve lead generation and conversion" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" Class="my-1" />
+                    <MudListItem Text="Increase buyer confidence" Avatar="@Icons.Material.Filled.Check" IconColor="Color.Default" Class="my-1" />
+                </MudList>
             </MudItem>
 
             <!-- how it works -->
             <MudItem sm="12">
-                <div style="min-height:125px;"></div>
-            </MudItem>
-            <MudItem sm="12" id="learn-more-tag">
-                <MudText Typo="Typo.h4" Align="Align.Center">How It Works</MudText>
+                <MudText Typo="Typo.h4" Align="Align.Center" Class="mt-15">How It Works</MudText>
             </MudItem>
             <MudItem sm="12" md="4">
                 <MudPaper Outlined Class="pa-5" MinHeight="415px">
@@ -161,11 +158,11 @@
                         <MudText Style="font-size:6rem;" Align="Align.Center"><strong>1</strong></MudText>
                         <MudStack Row AlignItems="AlignItems.Center">
                             <MudIcon Icon="@Icons.Material.Filled.Create" />
-                            <MudText Typo="Typo.h6">Create base models.</MudText>
+                            <MudText Typo="Typo.h6">Create</MudText>
                         </MudStack>
                         <MudText>
-                            Review your products with our team to identify key design parameters.
-                            We will help you create base CAD files that Cadflair will use to generate new product configurations.
+                            Meet with our team to discuss your products, identify design parameters, and aggregate model dimensions.
+                            We will create CAD files for your digital catalog, and review them with your team to ensure the details are just right.
                         </MudText>
                     </MudStack>
                 </MudPaper>
@@ -175,12 +172,12 @@
                     <MudStack Class="mud-height-full">
                         <MudText Style="font-size:6rem;" Align="Align.Center"><strong>2</strong></MudText>
                         <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Material.Filled.Publish" />
-                            <MudText Typo="Typo.h6">Publish to Cadflair.</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Upload" />
+                            <MudText Typo="Typo.h6">Publish</MudText>
                         </MudStack>
                         <MudText>
-                            Publish base models to Cadflair to build out an online, CAD-based product catalog. Cadflair automatically 
-                            generates a webpage for each product. Share the page through social media, or embed it directly into your company's site.
+                            We will upload your models to Cadflair, and generate a filterable catalog for your product library, along with a web page for each unique model.
+                            Models are stored on the latest cloud infrastructure to ensure availability and reliability.
                         </MudText>
                     </MudStack>
                 </MudPaper>
@@ -190,16 +187,16 @@
                     <MudStack Class="mud-height-full">
                         <MudText Style="font-size:6rem;" Align="Align.Center"><strong>3</strong></MudText>
                         <MudStack Row AlignItems="AlignItems.Center">
-                            <MudIcon Icon="@Icons.Material.Filled.ElectricBolt" />
-                            <MudText Typo="Typo.h6">Electrify your sales process.</MudText>
+                            <MudIcon Icon="@Icons.Material.Filled.Share" />
+                            <MudText Typo="Typo.h6">Share</MudText>
                         </MudStack>
                         <MudText>
-                            Provide your customers with CAD data on demand. Generate
-                            new product configurations in seconds, and view full 3D models directly in a browser. 
+                            Provide your customers with CAD data on demand. Share your catalog on social media, or embed it directly into your company's site.
+                            View models on any device, without installing CAD packages or plugins.
                         </MudText>
                         <MudSpacer />
                         <MudStack Row Justify="Justify.FlexEnd">
-                            <MudButton Href="/demo/products" Color="Color.Primary">Try Demo</MudButton>
+                            <MudButton Href="/demo/categories" Color="Color.Primary" Variant="Variant.Filled">Try Demo</MudButton>
                         </MudStack>
                     </MudStack>
                 </MudPaper>
@@ -207,52 +204,6 @@
             <MudItem sm="12">
                 <div style="min-height:125px;"></div>
             </MudItem>
-
-            <!-- demo cards -->
-@*            <MudItem xs="12" Class="my-15">
-                <MudText Typo="Typo.h2" Class="mb-5">Product Demos</MudText>
-                <MudStack Row Justify="Justify.Center" Spacing="5">
-                    <MudCard Class="mud-background-gray" Style="max-width:300px;">
-                        <MudCardMedia Image="images/dresser_exploded.png" Class="ma-5" Height="200" />
-                        <MudCardContent>
-                            <MudStack Spacing="5">
-                                <MudText Typo="Typo.h4"><strong>Jay's Dressers</strong></MudText>
-                                <MudText Typo="Typo.body2">Jay's Dressers implemented an online configurator to minimize time spent on repetitive CAD work. Now their designs go from quoting to manufacturing in a fraction of the time. Design your own dresser here to see how it works! </MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton Href="/demo/products" Color="Color.Primary">Check It Out</MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                    <MudCard Class="mud-background-gray" Style="max-width:300px;">
-                        <MudCardMedia Image="images/silos_card_image.png" Class="ma-5" Height="200" />
-                        <MudCardContent>
-                            <MudStack Spacing="5">
-                                <MudText Typo="Typo.h4"><strong>BIG Silos</strong></MudText>
-                                <MudText Typo="Typo.body2">See how BIG Silos leverages forge to automate their selling process. By generating 2D drawings and 3D step files in the cloud, BIG silos is able to supply their customers with accurate CAD data within minutes of a request!</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton Href="/demo" Color="Color.Primary">Check It Out</MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                    <MudCard Class="mud-background-gray" Style="max-width:300px;">
-                        <MudCardMedia Image="images/silos_card_image.png" Class="ma-5" Height="200" />
-                        <MudCardContent>
-                            <MudStack Spacing="5">
-                                <MudText Typo="Typo.h4"><strong>HammerTek</strong></MudText>
-                                <MudText Typo="Typo.body2">Check out this awesome catalog created by Hammertek! BOOM!</MudText>
-                            </MudStack>
-                        </MudCardContent>
-                        <MudCardActions>
-                            <MudButton Href="/demo" Color="Color.Primary">Check It Out</MudButton>
-                        </MudCardActions>
-                    </MudCard>
-                </MudStack>
-            </MudItem>
-
-
-*@
 
             <!-- contact us -->
             <MudItem xs="12" Class="my-15" id="contact-us-tag">
