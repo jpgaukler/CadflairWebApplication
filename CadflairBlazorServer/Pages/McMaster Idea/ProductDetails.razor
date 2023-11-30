@@ -95,7 +95,7 @@
         {
             <MudButton StartIcon="@Icons.Material.Filled.ViewInAr" OnClick="View3DMobile_OnClick" Variant="Variant.Filled" DisableElevation>View 3D</MudButton>
         }
-        else if (_2dAttachment != null)
+        @if (_2dAttachment != null)
         {
             <MudButton StartIcon="@Icons.Material.Outlined.Pageview" OnClick="View2DMobile_OnClick" Variant="Variant.Filled" DisableElevation>View 2D</MudButton>
         }
