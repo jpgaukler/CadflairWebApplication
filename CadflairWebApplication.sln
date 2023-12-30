@@ -26,7 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairForgeAccess", "Cadf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairInventorLibrary", "CadflairInventorLibrary\CadflairInventorLibrary.csproj", "{B7FA5AC3-725A-42A3-9631-13FEAD2961A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairEntityFrameworkDataAccess", "CadflairEntityFrameworkDataAccess\CadflairEntityFrameworkDataAccess.csproj", "{234807FB-799D-47CB-A906-5AB1B2059896}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairEntityFrameworkDataAccess", "CadflairEntityFrameworkDataAccess\CadflairEntityFrameworkDataAccess.csproj", "{234807FB-799D-47CB-A906-5AB1B2059896}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadflairRestApi", "CadflairRestApi\CadflairRestApi.csproj", "{69DDEE76-91A5-408A-AFC8-863DF024E8BA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{234807FB-799D-47CB-A906-5AB1B2059896}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{234807FB-799D-47CB-A906-5AB1B2059896}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{234807FB-799D-47CB-A906-5AB1B2059896}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69DDEE76-91A5-408A-AFC8-863DF024E8BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69DDEE76-91A5-408A-AFC8-863DF024E8BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69DDEE76-91A5-408A-AFC8-863DF024E8BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69DDEE76-91A5-408A-AFC8-863DF024E8BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
