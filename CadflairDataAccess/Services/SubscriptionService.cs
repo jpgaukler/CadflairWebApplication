@@ -51,5 +51,10 @@ namespace CadflairDataAccess.Services
         {
             return _db.SaveDataAsync("[dbo].[spSubscription_DeleteById]", new { subscription.Id });
         }
+
+        public Task DeleteSubscriptionById(int subscriptionId)
+        {
+            return _db.SaveDataAsync("[dbo].[spSubscription_DeleteById]", new { Id = subscriptionId });
+        }
     }
 }

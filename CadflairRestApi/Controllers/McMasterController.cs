@@ -28,21 +28,6 @@ public class McMasterController : ControllerBase
 
     //}
 
-    [HttpGet]
-    [Route("categories/{id}")]
-    public async Task<ActionResult<Category>> GetCategoryById(int id)
-    {
-        try
-        {
-            var result = await _mcMasterService.GetCategoryById(id);
-            return result == null ? NotFound() : Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unknown error occurred!");
-            return StatusCode(StatusCodes.Status500InternalServerError, "An unknown error occurred!");
-        }
-    }
 
     [HttpGet]
     [Route("subscriptions/{subscriptionId}/categories")]
@@ -52,6 +37,23 @@ public class McMasterController : ControllerBase
         {
             var result = await _mcMasterService.GetCategoriesBySubscriptionId(subscriptionId);
             return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unknown error occurred!");
+            return StatusCode(StatusCodes.Status500InternalServerError, "An unknown error occurred!");
+        }
+    }
+
+    [HttpGet]
+    [Route("subscriptions/{subscriptionId}/categories/{categoryName}")]
+    public async Task<ActionResult<List<Category>>> GetCategoriesBySubscriptionIdAndCategoryName(int subscriptionId, string categoryName)
+    {
+        try
+        {
+            var allCategories = await _mcMasterService.GetCategoriesBySubscriptionId(subscriptionId);
+            var category = allCategories.ToFlatList().FirstOrDefault(i => i.Name == categoryName);
+            return category == null ? NotFound() : Ok(category);
         }
         catch (Exception ex)
         {
@@ -101,8 +103,28 @@ public class McMasterController : ControllerBase
     { 
         try
         {
-            var result = await _mcMasterService.GetProductDefinitionByNameAndSubscriptionId(name, subscriptionId);
-            return result == null ? NotFound() : Ok(result);
+            var productDefinition = await _mcMasterService.GetProductDefinitionByNameAndSubscriptionId(name, subscriptionId);
+            if (productDefinition == null)
+                return NotFound();
+
+            var productTable = await _mcMasterService.GetProductTableByProductDefinitionId(productDefinition.Id);
+            return Ok(new { productDefinition, productTable });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unknown error occurred!");
+            return StatusCode(StatusCodes.Status500InternalServerError, "An unknown error occurred!");
+        }
+    }
+
+    [HttpGet]
+    [Route("subscriptions/{subscriptionId}/categories/{categoryId}/product-definitions")]
+    public async Task<ActionResult<List<ProductDefinition>>> GetProductDefinitionsBySubscriptionIdAndCategoryId(int subscriptionId, int categoryId)
+    {
+        try
+        {
+            var allProductDefinitions = await _mcMasterService.GetProductDefinitionsBySubscriptionId(subscriptionId);
+            return Ok(allProductDefinitions.Where(i => i.CategoryId == categoryId).ToList());
         }
         catch (Exception ex)
         {
@@ -130,22 +152,6 @@ public class McMasterController : ControllerBase
     //public Task<ProductTable> CreateProductTable(int productDefinitionId, int createdById)
     //{
     //}
-
-    [HttpGet]
-    [Route("product-definitions/{productDefinitionId}/product-table")]
-    public async Task<ActionResult<ProductTable>> GetProductTableByProductDefinitionId(int productDefinitionId)
-    {
-        try
-        {
-            var result = await _mcMasterService.GetProductTableByProductDefinitionId(productDefinitionId);
-            return result == null ? NotFound() : Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unknown error occurred!");
-            return StatusCode(StatusCodes.Status500InternalServerError, "An unknown error occurred!");
-        }
-    }
 
     //[HttpDelete]
     //public Task DeleteProductTableById(int productTableId)
