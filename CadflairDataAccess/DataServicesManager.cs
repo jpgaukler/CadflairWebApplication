@@ -13,7 +13,7 @@ namespace CadflairDataAccess
         public ProductService ProductService { get; }
         public CadDriveService CadDriveService { get; }
         public NotificationService NotificationService { get; }
-        public McMasterService McMasterService { get; }
+        public CatalogService CatalogService { get; }
 
         public DataServicesManager(string connectionString)
         {
@@ -24,7 +24,7 @@ namespace CadflairDataAccess
             UserService = new UserService(_dataAccess, NotificationService);
             ProductService = new ProductService(_dataAccess);
             CadDriveService = new CadDriveService(_dataAccess);
-            McMasterService = new McMasterService(_dataAccess);
+            CatalogService = new CatalogService(_dataAccess);
         }
 
         public DataServicesManager(IConfiguration configuration) : this(configuration.GetConnectionString("Default"))

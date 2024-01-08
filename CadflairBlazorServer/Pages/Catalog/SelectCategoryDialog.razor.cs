@@ -28,7 +28,7 @@ public partial class SelectCategoryDialog
 
 
         MudDialogInstance.SetOptions(options);
-        _categories = await DataServicesManager.McMasterService.GetCategoriesBySubscriptionId(SubscriptionId);
+        _categories = await DataServicesManager.CatalogService.GetCategoriesBySubscriptionId(SubscriptionId);
     }
 
     private void Cancel_OnClick() => MudDialogInstance.Cancel();

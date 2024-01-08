@@ -82,8 +82,8 @@ public partial class ManageProductDefinitions
 
         _nameField = _selectedProductDefinition.Name;
         _descriptionField = _selectedProductDefinition.Description;
-        _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
-        _category = _selectedProductDefinition.CategoryId == null ? null : await DataServicesManager.McMasterService.GetCategoryById((int)_selectedProductDefinition.CategoryId);
+        _productTable = await DataServicesManager.CatalogService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
+        _category = _selectedProductDefinition.CategoryId == null ? null : await DataServicesManager.CatalogService.GetCategoryById((int)_selectedProductDefinition.CategoryId);
     }
 
     private void Name_ValueChanged(string value)
@@ -112,7 +112,7 @@ public partial class ManageProductDefinitions
         _selectedProductDefinition.Name = _nameField;
         _selectedProductDefinition.Description = _descriptionField;
         _selectedProductDefinition.CategoryId = _category?.Id;
-        await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+        await DataServicesManager.CatalogService.UpdateProductDefinition(_selectedProductDefinition);
         _isDirty = false;
 
         Snackbar.Add("Changes saved!", Severity.Success);
@@ -161,11 +161,11 @@ public partial class ManageProductDefinitions
         {
             await ForgeServicesManager.ObjectStorageService.DeleteBucket(_selectedProductDefinition.ForgeBucketKey);
             _selectedProductDefinition.ForgeBucketKey = null;
-            await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+            await DataServicesManager.CatalogService.UpdateProductDefinition(_selectedProductDefinition);
         }
 
         // delete data from database
-        await DataServicesManager.McMasterService.DeleteProductDefinitionById(_selectedProductDefinition.Id);
+        await DataServicesManager.CatalogService.DeleteProductDefinitionById(_selectedProductDefinition.Id);
         ProductDefinitions.Remove(_selectedProductDefinition);
         _selectedProductDefinition = null;
     }
@@ -182,7 +182,7 @@ public partial class ManageProductDefinitions
 
         AddProductDefinitionDialog dialog = (AddProductDefinitionDialog)result.Data;
 
-        ProductDefinition newProductDefinition = await DataServicesManager.McMasterService.CreateProductDefinition(subscriptionId: Subscription.Id,
+        ProductDefinition newProductDefinition = await DataServicesManager.CatalogService.CreateProductDefinition(subscriptionId: Subscription.Id,
                                                                                                                    categoryId: null,
                                                                                                                    name: dialog.Name,
                                                                                                                    description: dialog.Description,
@@ -224,14 +224,14 @@ public partial class ManageProductDefinitions
 
         AddRowDialog dialog = (AddRowDialog)result.Data;
 
-        Row newRow = await DataServicesManager.McMasterService.CreateRow(productTableId: _productTable.Id,
+        Row newRow = await DataServicesManager.CatalogService.CreateRow(productTableId: _productTable.Id,
                                                                          partNumber: dialog.PartNumber,
                                                                          createdById: LoggedInUser.Id);
 
         // add an new table value for each column 
         foreach (var tableValue in dialog.NewRowValues)
         {
-            TableValue newTableValue = await DataServicesManager.McMasterService.CreateTableValue(productTableId: _productTable.Id,
+            TableValue newTableValue = await DataServicesManager.CatalogService.CreateTableValue(productTableId: _productTable.Id,
                                                                                                   rowId: newRow.Id,
                                                                                                   columnId: tableValue.ColumnId,
                                                                                                   value: tableValue.Value,
@@ -255,7 +255,7 @@ public partial class ManageProductDefinitions
             await ForgeServicesManager.ObjectStorageService.DeleteObject(_selectedProductDefinition!.ForgeBucketKey, attachment.ForgeObjectKey);
 
         // delete row from table
-        await DataServicesManager.McMasterService.DeleteRowById(_selectedRow.Id);
+        await DataServicesManager.CatalogService.DeleteRowById(_selectedRow.Id);
         _productTable!.Rows.Remove(_selectedRow);
     }
 
@@ -279,13 +279,13 @@ public partial class ManageProductDefinitions
         {
             await ForgeServicesManager.ObjectStorageService.DeleteBucket(_selectedProductDefinition.ForgeBucketKey);
             _selectedProductDefinition.ForgeBucketKey = null;
-            await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+            await DataServicesManager.CatalogService.UpdateProductDefinition(_selectedProductDefinition);
         }
 
         // delete product table and recreate it
-        await DataServicesManager.McMasterService.DeleteProductTableById(_productTable.Id);
-        await DataServicesManager.McMasterService.CreateProductTable(_selectedProductDefinition.Id, LoggedInUser.Id);
-        _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
+        await DataServicesManager.CatalogService.DeleteProductTableById(_productTable.Id);
+        await DataServicesManager.CatalogService.CreateProductTable(_selectedProductDefinition.Id, LoggedInUser.Id);
+        _productTable = await DataServicesManager.CatalogService.GetProductTableByProductDefinitionId(_selectedProductDefinition.Id);
     }
 
     private void RowEditPreview(Row row)
@@ -320,7 +320,7 @@ public partial class ManageProductDefinitions
 
     private async Task RowEditCommit(Row row)
     {
-        await DataServicesManager.McMasterService.UpdateRow(row);
+        await DataServicesManager.CatalogService.UpdateRow(row);
         //AddEvent($"RowEditCommit event: Changes to record: {row.PartNumber} values: {string.Join(", ", row.TableValues.Select(i => i.Value))} committed");
     }
 
@@ -369,7 +369,7 @@ public partial class ManageProductDefinitions
                     continue;
                 }
 
-                Column newColumn = await DataServicesManager.McMasterService.CreateColumn(productTableId: _productTable.Id,
+                Column newColumn = await DataServicesManager.CatalogService.CreateColumn(productTableId: _productTable.Id,
                                                                                           header: columnHeader,
                                                                                           sortOrder: _productTable.Columns.Count + 1,
                                                                                           createdById: LoggedInUser.Id);
@@ -400,7 +400,7 @@ public partial class ManageProductDefinitions
                 if (string.IsNullOrWhiteSpace(partNumber))
                     break;
 
-                Row newRow = await DataServicesManager.McMasterService.CreateRow(productTableId: _productTable.Id,
+                Row newRow = await DataServicesManager.CatalogService.CreateRow(productTableId: _productTable.Id,
                                                                                  partNumber: partNumber,
                                                                                  createdById: LoggedInUser.Id);
 
@@ -411,7 +411,7 @@ public partial class ManageProductDefinitions
                     int columnId = columnMapping.Value;
                     string value = xlRow.Cell(columnMapping.Key).Value.ToString();
 
-                    TableValue newTableValue = await DataServicesManager.McMasterService.CreateTableValue(productTableId: _productTable.Id,
+                    TableValue newTableValue = await DataServicesManager.CatalogService.CreateTableValue(productTableId: _productTable.Id,
                                                                                                           rowId: newRow.Id,
                                                                                                           columnId: columnId,
                                                                                                           value: value,
@@ -446,7 +446,7 @@ public partial class ManageProductDefinitions
             return;
 
         _selectedProductDefinition.ThumbnailUri = thumbnailUri;
-        await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+        await DataServicesManager.CatalogService.UpdateProductDefinition(_selectedProductDefinition);
 
         Snackbar.Add($"Thumbnail updated!", Severity.Success);
     }
@@ -461,7 +461,7 @@ public partial class ManageProductDefinitions
         {
             _selectedProductDefinition.ForgeBucketKey = Guid.NewGuid().ToString();
             await ForgeServicesManager.ObjectStorageService.CreateBucket(_selectedProductDefinition.ForgeBucketKey);
-            await DataServicesManager.McMasterService.UpdateProductDefinition(_selectedProductDefinition);
+            await DataServicesManager.CatalogService.UpdateProductDefinition(_selectedProductDefinition);
         }
 
         _uploadInProgress = true;
@@ -521,7 +521,7 @@ public partial class ManageProductDefinitions
                 await ForgeServicesManager.ModelDerivativeService.TranslateObject(_selectedProductDefinition.ForgeBucketKey, objectKey, false, null);
 
                 // create database record
-                Attachment attachment = await DataServicesManager.McMasterService.CreateAttachment(rowId: matchingRow.Id, forgeObjectKey: objectKey, createdById: LoggedInUser.Id);
+                Attachment attachment = await DataServicesManager.CatalogService.CreateAttachment(rowId: matchingRow.Id, forgeObjectKey: objectKey, createdById: LoggedInUser.Id);
                 matchingRow.Attachments.Add(attachment);
 
                 progress.Report("Success");

@@ -50,8 +50,8 @@ public partial class Products
         try
         {
             _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
-            _productDefinition = await DataServicesManager.McMasterService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
-            _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_productDefinition.Id);
+            _productDefinition = await DataServicesManager.CatalogService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
+            _productTable = await DataServicesManager.CatalogService.GetProductTableByProductDefinitionId(_productDefinition.Id);
             _initializing = false;
         }
         catch (Exception ex)

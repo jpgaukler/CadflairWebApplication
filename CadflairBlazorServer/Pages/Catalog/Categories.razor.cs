@@ -27,8 +27,8 @@ public partial class Categories
         try
         {
             _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
-            _categories = await DataServicesManager.McMasterService.GetCategoriesBySubscriptionId(_subscription.Id);
-            _productDefinitions = await DataServicesManager.McMasterService.GetProductDefinitionsBySubscriptionId(_subscription.Id);
+            _categories = await DataServicesManager.CatalogService.GetCategoriesBySubscriptionId(_subscription.Id);
+            _productDefinitions = await DataServicesManager.CatalogService.GetProductDefinitionsBySubscriptionId(_subscription.Id);
             _initializing = false;
         }
         catch (Exception ex)

@@ -45,7 +45,7 @@ public partial class EditColumnsDialog
             return;
         }
 
-        Column newColumn = await DataServicesManager.McMasterService.CreateColumn(productTableId: ProductTable.Id,
+        Column newColumn = await DataServicesManager.CatalogService.CreateColumn(productTableId: ProductTable.Id,
                                                                                   header: dialog.Header,
                                                                                   sortOrder: ProductTable.Columns.Count + 1,
                                                                                   createdById: LoggedInUser.Id);
@@ -53,7 +53,7 @@ public partial class EditColumnsDialog
         // add an empty value to each row for the new column
         foreach (var row in ProductTable.Rows)
         {
-            TableValue newTableValue = await DataServicesManager.McMasterService.CreateTableValue(productTableId: ProductTable.Id,
+            TableValue newTableValue = await DataServicesManager.CatalogService.CreateTableValue(productTableId: ProductTable.Id,
                                                                                                   rowId: row.Id,
                                                                                                   columnId: newColumn.Id,
                                                                                                   value: string.Empty,
@@ -78,8 +78,8 @@ public partial class EditColumnsDialog
 
         nextColumn.SortOrder -= 1;
         column.SortOrder += 1;
-        await DataServicesManager.McMasterService.UpdateColumn(nextColumn);
-        await DataServicesManager.McMasterService.UpdateColumn(column);
+        await DataServicesManager.CatalogService.UpdateColumn(nextColumn);
+        await DataServicesManager.CatalogService.UpdateColumn(column);
 
         ProductTable.Columns.Sort();
     }
@@ -93,8 +93,8 @@ public partial class EditColumnsDialog
 
         previousColumn.SortOrder += 1;
         column.SortOrder -= 1;
-        await DataServicesManager.McMasterService.UpdateColumn(previousColumn);
-        await DataServicesManager.McMasterService.UpdateColumn(column);
+        await DataServicesManager.CatalogService.UpdateColumn(previousColumn);
+        await DataServicesManager.CatalogService.UpdateColumn(column);
 
         ProductTable.Columns.Sort();
     }
@@ -104,10 +104,10 @@ public partial class EditColumnsDialog
         foreach(var c in ProductTable.Columns.Where(i => i.SortOrder > column.SortOrder))
         {
             c.SortOrder -= 1;
-            await DataServicesManager.McMasterService.UpdateColumn(c);
+            await DataServicesManager.CatalogService.UpdateColumn(c);
         }
 
-        await DataServicesManager.McMasterService.DeleteColumnById(column.Id);
+        await DataServicesManager.CatalogService.DeleteColumnById(column.Id);
         ProductTable.Columns.Remove(column);
     }
 

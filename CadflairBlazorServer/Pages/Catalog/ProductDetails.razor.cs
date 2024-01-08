@@ -35,8 +35,8 @@ public partial class ProductDetails
         try
         {
             _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionBySubdirectoryName(CompanyName);
-            _productDefinition = await DataServicesManager.McMasterService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
-            _productTable = await DataServicesManager.McMasterService.GetProductTableByProductDefinitionId(_productDefinition.Id);
+            _productDefinition = await DataServicesManager.CatalogService.GetProductDefinitionByNameAndSubscriptionId(ProductDefinitionName, _subscription.Id);
+            _productTable = await DataServicesManager.CatalogService.GetProductTableByProductDefinitionId(_productDefinition.Id);
             _row = _productTable.Rows.First(i => i.PartNumber == PartNumber);
             _selectedDownload = _row.Attachments.FirstOrDefault();
             _2dAttachment = _row.Attachments.FirstOrDefault(i => i.ForgeObjectKey.Contains(".pdf"));

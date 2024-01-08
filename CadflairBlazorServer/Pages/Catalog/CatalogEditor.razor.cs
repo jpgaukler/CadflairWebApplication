@@ -16,9 +16,6 @@ public partial class CatalogEditor
     [Parameter] public string CompanyName { get; set; } = string.Empty;
 
     // fields
-    private bool _drawerOpen = true;
-    private bool _initializing = true;
-
     private User? _loggedInUser;
     private Subscription? _subscription;
     private List<Category> _categories = new();
@@ -39,10 +36,8 @@ public partial class CatalogEditor
             }
 
             _subscription = await DataServicesManager.SubscriptionService.GetSubscriptionById((int)_loggedInUser.SubscriptionId!);
-            _categories = await DataServicesManager.McMasterService.GetCategoriesBySubscriptionId(_subscription.Id);
-            _productDefinitions = await DataServicesManager.McMasterService.GetProductDefinitionsBySubscriptionId(_subscription.Id);
-            _initializing = false;
-
+            _categories = await DataServicesManager.CatalogService.GetCategoriesBySubscriptionId(_subscription.Id);
+            _productDefinitions = await DataServicesManager.CatalogService.GetProductDefinitionsBySubscriptionId(_subscription.Id);
         }
         catch (Exception ex)
         {

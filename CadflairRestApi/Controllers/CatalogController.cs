@@ -7,15 +7,15 @@ namespace CadflairRestApi.Controllers;
 
 [ApiController]
 [Route("api/v1")]
-public class McMasterController : ControllerBase
+public class CatalogController : ControllerBase
 {
 
-    private readonly McMasterService _mcMasterService;
-    private readonly ILogger<McMasterController> _logger;
+    private readonly CatalogService _mcMasterService;
+    private readonly ILogger<CatalogController> _logger;
 
-    public McMasterController(DataServicesManager dataServicesManager, ILogger<McMasterController> logger) 
+    public CatalogController(DataServicesManager dataServicesManager, ILogger<CatalogController> logger) 
     {
-        _mcMasterService = dataServicesManager.McMasterService;
+        _mcMasterService = dataServicesManager.CatalogService;
         _logger = logger;
     }
 

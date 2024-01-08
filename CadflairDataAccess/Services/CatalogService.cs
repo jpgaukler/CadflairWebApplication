@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace CadflairDataAccess.Services
 {
-    public class McMasterService
+    public class CatalogService
     {
 
         private readonly DataAccess _db;
 
-        public McMasterService(DataAccess db)
+        public CatalogService(DataAccess db)
         {
             _db = db;
         }

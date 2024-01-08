@@ -57,7 +57,7 @@ public partial class ManageCategories
 
         _selectedCategory.Name = _nameField;
         _selectedCategory.Description = _descriptionField;
-        await DataServicesManager.McMasterService.UpdateCategory(_selectedCategory);
+        await DataServicesManager.CatalogService.UpdateCategory(_selectedCategory);
         _isDirty = false;
 
         Snackbar.Add("Changes saved!", Severity.Success);
@@ -80,7 +80,7 @@ public partial class ManageCategories
             return;
         }
 
-        Category newCategory = await DataServicesManager.McMasterService.CreateCategory(subscriptionId: Subscription.Id,
+        Category newCategory = await DataServicesManager.CatalogService.CreateCategory(subscriptionId: Subscription.Id,
                                                                                         parentId: _selectedCategory?.Id,
                                                                                         name: dialog.Name,
                                                                                         description: dialog.Description,
@@ -122,7 +122,7 @@ public partial class ManageCategories
 
         // TO DO: need to delete the thumbnail from blob storage if there is one
 
-        await DataServicesManager.McMasterService.DeleteCategoryById(_selectedCategory.Id);
+        await DataServicesManager.CatalogService.DeleteCategoryById(_selectedCategory.Id);
 
         if(_selectedCategory.ParentCategory == null)
         {
@@ -142,7 +142,7 @@ public partial class ManageCategories
             return;
 
         _selectedCategory.ThumbnailUri = thumbnailUri;
-        await DataServicesManager.McMasterService.UpdateCategory(_selectedCategory);
+        await DataServicesManager.CatalogService.UpdateCategory(_selectedCategory);
 
         Snackbar.Add($"Thumbnail updated!", Severity.Success);
     }
