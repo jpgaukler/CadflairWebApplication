@@ -96,7 +96,7 @@ namespace CadflairDataAccess.Services
             return newProductDefinition;
         }
 
-        public Task<ProductDefinition> GetProductDefinitionByNameAndSubscriptionId(string name, int subscriptionId)
+        public async Task<ProductDefinition> GetProductDefinitionByNameAndSubscriptionId(string name, int subscriptionId)
         { 
             dynamic values = new
             {
@@ -104,7 +104,9 @@ namespace CadflairDataAccess.Services
                 Name = name,
             };
 
-            return _db.LoadSingleAsync<ProductDefinition, dynamic>("[dbo].[spProductDefinition_GetByNameAndSubscriptionId]", values);
+            ProductDefinition productDefinition = await _db.LoadSingleAsync<ProductDefinition, dynamic>("[dbo].[spProductDefinition_GetByNameAndSubscriptionId]", values);
+            productDefinition.ProductTable = await GetProductTableByProductDefinitionId(productDefinition.Id);
+            return productDefinition;
         }
 
         public Task<List<ProductDefinition>> GetProductDefinitionsBySubscriptionId(int subscriptionId)

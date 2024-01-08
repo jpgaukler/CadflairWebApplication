@@ -13,6 +13,6 @@ namespace CadflairDataAccess.Models
         public string ForgeBucketKey { get; set; }
         public int CreatedById { get; }
         public DateTimeOffset CreatedOn { get; }
-
+        public ProductTable ProductTable { get; set; }
     }
 }

@@ -10,12 +10,12 @@ namespace CadflairRestApi.Controllers;
 public class CatalogController : ControllerBase
 {
 
-    private readonly CatalogService _mcMasterService;
+    private readonly CatalogService _catalogService;
     private readonly ILogger<CatalogController> _logger;
 
     public CatalogController(DataServicesManager dataServicesManager, ILogger<CatalogController> logger) 
     {
-        _mcMasterService = dataServicesManager.CatalogService;
+        _catalogService = dataServicesManager.CatalogService;
         _logger = logger;
     }
 
@@ -35,7 +35,7 @@ public class CatalogController : ControllerBase
     {
         try
         {
-            var result = await _mcMasterService.GetCategoriesBySubscriptionId(subscriptionId);
+            var result = await _catalogService.GetCategoriesBySubscriptionId(subscriptionId);
             return Ok(result);
         }
         catch (Exception ex)
@@ -51,7 +51,7 @@ public class CatalogController : ControllerBase
     {
         try
         {
-            var allCategories = await _mcMasterService.GetCategoriesBySubscriptionId(subscriptionId);
+            var allCategories = await _catalogService.GetCategoriesBySubscriptionId(subscriptionId);
             var category = allCategories.ToFlatList().FirstOrDefault(i => i.Name == categoryName);
             return category == null ? NotFound() : Ok(category);
         }
@@ -87,7 +87,7 @@ public class CatalogController : ControllerBase
     {
         try
         {
-            var result = await _mcMasterService.GetProductDefinitionsBySubscriptionId(subscriptionId);
+            var result = await _catalogService.GetProductDefinitionsBySubscriptionId(subscriptionId);
             return result == null ? NotFound() : Ok(result);
         }
         catch (Exception ex)
@@ -103,12 +103,8 @@ public class CatalogController : ControllerBase
     { 
         try
         {
-            var productDefinition = await _mcMasterService.GetProductDefinitionByNameAndSubscriptionId(name, subscriptionId);
-            if (productDefinition == null)
-                return NotFound();
-
-            var productTable = await _mcMasterService.GetProductTableByProductDefinitionId(productDefinition.Id);
-            return Ok(new { productDefinition, productTable });
+            var result = await _catalogService.GetProductDefinitionByNameAndSubscriptionId(name, subscriptionId);
+            return result == null ? NotFound() : Ok(result);
         }
         catch (Exception ex)
         {
@@ -123,7 +119,7 @@ public class CatalogController : ControllerBase
     {
         try
         {
-            var allProductDefinitions = await _mcMasterService.GetProductDefinitionsBySubscriptionId(subscriptionId);
+            var allProductDefinitions = await _catalogService.GetProductDefinitionsBySubscriptionId(subscriptionId);
             return Ok(allProductDefinitions.Where(i => i.CategoryId == categoryId).ToList());
         }
         catch (Exception ex)

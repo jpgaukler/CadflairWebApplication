@@ -1,3 +1,5 @@
+import ProductTable from "./ProductTable.interface";
+
 export default interface ProductDefinition {
     id: number;
     subscriptionId: number;
@@ -8,4 +10,5 @@ export default interface ProductDefinition {
     forgeBucketKey: string;
     createdById: number;
     createdOn: string;
+    productTable: ProductTable;
 }

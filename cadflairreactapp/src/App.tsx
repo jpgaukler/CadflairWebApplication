@@ -5,6 +5,7 @@ import Categories from './pages/Categories';
 import NoPage from './pages/NoPage';
 import Products from './pages/Products';
 import TestHooks from './pages/TestHooks';
+import ProductDetails from './pages/ProductDetails';
 
 export default function App() {
 
@@ -17,6 +18,7 @@ export default function App() {
                         <Route path=":companyName/categories" element={<Categories />} />
                         <Route path=":companyName/categories/:categoryName" element={<Categories />} />
                         <Route path=":companyName/products/:productDefinitionName" element={<Products />} />
+                        <Route path=":companyName/products/:productDefinitionName/:partNumber" element={<ProductDetails />} />
                         <Route path=":companyName/test" element={<TestHooks />} />
                         <Route path="*" element={<NoPage />} />
                     </Route>

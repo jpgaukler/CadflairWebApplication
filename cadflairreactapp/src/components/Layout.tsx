@@ -1,5 +1,5 @@
 import '@mantine/core/styles.css';
-import { AppShell, Burger, Group, MantineProvider, Skeleton } from '@mantine/core';
+import { AppShell, Burger, Button, Group, MantineProvider, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Outlet } from 'react-router-dom';
 
@@ -10,22 +10,18 @@ export default function Layout() {
         <MantineProvider>
             <AppShell
                 header={{ height: 60 }}
-                navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
                 padding="md"
             >
                 <AppShell.Header>
-                    <Group h="100%" px="md">
-                        <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+                    <Group h="100%" px="md" justify="space-between">
+                        <Text size="xl" fw="800">Cadflair Logo</Text>
+                        <Group>
+                            <Button>Link 1</Button>
+                            <Button>Link 2</Button>
+                            <Button>Link 3</Button>
+                        </Group>
                     </Group>
                 </AppShell.Header>
-                <AppShell.Navbar p="md">
-                    Navbar
-                    {Array(15)
-                        .fill(0)
-                        .map((_, index) => (
-                            <Skeleton key={index} h={28} mt="sm" animate={true} />
-                        ))}
-                </AppShell.Navbar>
                 <AppShell.Main>
                     <Outlet />
                 </AppShell.Main>
