@@ -56,14 +56,6 @@ if not exists (select * from dbo.[Notification] where [Notification].[EventName]
 --	end
 
 
-----add demo product family
---if not exists (select * from dbo.[CatalogFolder] where [CatalogFolder].[DisplayName] = 'Test Family')
---	begin
---		insert into dbo.CatalogFolder([DisplayName], [SubscriptionId], [CreatedById])
---		values
---			 ('Test Family', 1, 1)
---	end
-
 
 
 

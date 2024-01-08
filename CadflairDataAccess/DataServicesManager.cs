@@ -11,7 +11,7 @@ namespace CadflairDataAccess
         public SubscriptionService SubscriptionService { get; }
         public UserService UserService { get; }
         public ProductService ProductService { get; }
-        public CatalogService CatalogService { get; }
+        public CadDriveService CadDriveService { get; }
         public NotificationService NotificationService { get; }
         public McMasterService McMasterService { get; }
 
@@ -23,7 +23,7 @@ namespace CadflairDataAccess
             NotificationService = new NotificationService(_dataAccess);
             UserService = new UserService(_dataAccess, NotificationService);
             ProductService = new ProductService(_dataAccess);
-            CatalogService = new CatalogService(_dataAccess);
+            CadDriveService = new CadDriveService(_dataAccess);
             McMasterService = new McMasterService(_dataAccess);
         }
 

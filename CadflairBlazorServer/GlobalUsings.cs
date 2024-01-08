@@ -8,7 +8,6 @@ global using CadflairDataAccess;
 global using CadflairDataAccess.Models;
 global using CadflairForgeAccess;
 global using CadflairBlazorServer.Controllers;
-global using CadflairBlazorServer.Dialogs;
 global using CadflairBlazorServer.Emails;
 global using CadflairBlazorServer.Services;
 global using CadflairBlazorServer.Shared;

@@ -1,4 +1,3 @@
-using CadflairBlazorServer.Pages.McMaster_Idea;
 using Microsoft.AspNetCore.Components;
 
 namespace CadflairBlazorServer.Pages

@@ -55,7 +55,7 @@ namespace CadflairBlazorServer.Pages
             await _dataServicesManager.UserService.UpdateUser(_loggedInUser);
 
             // create 'Products' folder to act as the root directory
-            await _dataServicesManager.CatalogService.CreateCatalogFolder(subscriptionId: newSubscription.Id, 
+            await _dataServicesManager.CadDriveService.CreateDriveFolder(subscriptionId: newSubscription.Id, 
                                                                           createdById: _loggedInUser.Id, 
                                                                           displayName: "Products", 
                                                                           parentId: null);
