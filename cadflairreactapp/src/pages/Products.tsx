@@ -1,9 +1,9 @@
-import { Image, Text, Group, Grid, Paper, Stack, Title, Table, Loader, Anchor, Drawer, MultiSelect } from '@mantine/core';
+import { Image, Text, Group, Grid, Paper, Stack, Title, Table, Loader, Anchor, Drawer, MultiSelect, Divider, Box, Skeleton } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import Subscription from '../interfaces/Subscription.interface';
 import ProductDefinition from '../interfaces/ProductDefinition.interface';
 import useSWR from 'swr';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Row from '../interfaces/Row.interface';
 
 const fetcher = (url: string) => fetch(url).then(res => {
@@ -19,22 +19,12 @@ export default function Products() {
     const { data: productDefinition, isLoading } = useSWR<ProductDefinition>(subscription ? `/api/v1/subscriptions/${subscription.id}/product-definitions/${params.productDefinitionName}` : null, fetcher)
 
     const [filteredRows, setFilteredRows] = useState<Row[]>([]);
-    const columnFilters: Map<number, string[]> = new Map();
+    const columnFilters = useRef(new Map<number, string[]>());
 
     useEffect(() => {
         setFilteredRows(productDefinition ? productDefinition.productTable.rows : []);
     }, [productDefinition]);
 
-
-    if (isLoading)
-        return (
-            <>
-                <Stack h="100%" mih="90dvh" justify="center" align="center">
-                    <Loader color="blue" />
-                    <Text>Loading...</Text>
-                </Stack>
-            </>
-        );
 
     function getDistinctColumnValues(columnId: number): string[] {
 
@@ -49,27 +39,18 @@ export default function Products() {
 
     function handleFilterChange(columnId: number, values: string[]) {
         // clear previous filter values
-        columnFilters.delete(columnId);
+        columnFilters.current.delete(columnId);
 
         // set new filter values
         if (values.length > 0)
-            columnFilters.set(columnId, values);
-
-        console.log(columnFilters);
+            columnFilters.current.set(columnId, values);
 
         const filteredRows = productDefinition?.productTable.rows.filter((row) => {
             for (const tableValue of row.tableValues) { 
-                const columnFilter = columnFilters.get(tableValue.columnId);
+                const columnFilter = columnFilters.current.get(tableValue.columnId);
 
                 if (!columnFilter)
                     continue;
-
-                //if (row.partNumber === "ANSI-B300-0.5B") {
-                //    console.log(`filter:`);
-                //    console.log(columnFilter);
-                //    console.log(`table Value:`);
-                //    console.log(tableValue.value);
-                //}
 
                 // check to see if this value is selected in the column filters
                 if (!columnFilter.includes(tableValue.value))
@@ -79,7 +60,6 @@ export default function Products() {
             return true;
         });
 
-        console.log(filteredRows);
         setFilteredRows(filteredRows ? filteredRows : []);
     }
 
@@ -87,19 +67,25 @@ export default function Products() {
     return (
         <>
             <Grid>
-                <Grid.Col span={2}>
-                    <Title order={4}>Filter</Title>
-                    <Stack>
-                        {productDefinition?.productTable?.columns.map(col =>
-                            <MultiSelect
-                                key={col.id}
-                                label={col.header}
-                                placeholder="Pick value"
-                                data={getDistinctColumnValues(col.id)}
-                                onChange={(values) => handleFilterChange(col.id, values)}
-                            />
-                        )}
-                    </Stack>
+                <Grid.Col span={2} style={{ borderRight: "1px solid black" }}>
+                    <Box pos="relative">
+                        <Title order={3}>Filter</Title>
+                        {isLoading 
+                            ? <>
+                                {Array(10).fill(0).map((_, index) => <Skeleton key={index} h={28} mt="sm" />)}
+                            </>
+                            : <Stack>
+                                {productDefinition?.productTable?.columns.map(col =>
+                                    <MultiSelect
+                                        key={col.id}
+                                        label={col.header}
+                                        placeholder="Pick value"
+                                        data={getDistinctColumnValues(col.id)}
+                                        onChange={(values) => handleFilterChange(col.id, values)}
+                                    />
+                                )}
+                            </Stack>}
+                    </Box>
                 </Grid.Col>
                 <Grid.Col span={10}>
                     <h1>Product Definitions Page</h1>
@@ -128,16 +114,27 @@ export default function Products() {
                             </Table.Tr>
                         </Table.Thead>
                         <Table.Tbody>
-                            {filteredRows.map(row =>
-                                <Table.Tr key={row.id}>
-                                    <Table.Td>
-                                        <Anchor href={`/${params.companyName}/products/${params.productDefinitionName}/${row.partNumber}`}>{row.partNumber}</Anchor>
-                                    </Table.Td>
-                                    {row.tableValues.map(tableValue =>
-                                        <Table.Td key={tableValue.id}>{tableValue.value}</Table.Td>
-                                    )}
-                                </Table.Tr>
-                            )}
+                            {isLoading 
+                                ? <>
+                                    <Table.Tr>
+                                        <Table.Td colSpan={100}>
+                                            <Stack w="100%" justify="center" align="center">
+                                                <Loader color="blue" />
+                                                <Text>Loading...</Text>
+                                            </Stack>
+                                        </Table.Td>
+                                    </Table.Tr>
+                                </>
+                                : filteredRows.map(row =>
+                                    <Table.Tr key={row.id}>
+                                        <Table.Td>
+                                            <Anchor href={`/${params.companyName}/products/${params.productDefinitionName}/${row.partNumber}`}>{row.partNumber}</Anchor>
+                                        </Table.Td>
+                                        {row.tableValues.map(tableValue =>
+                                            <Table.Td key={tableValue.id}>{tableValue.value}</Table.Td>
+                                        )}
+                                    </Table.Tr>
+                                )}
                         </Table.Tbody>
                     </Table>
                 </Grid.Col>

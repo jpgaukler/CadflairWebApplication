@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CadflairDataAccess\CadflairDataAccess.csproj" />
+    <ProjectReference Include="..\CadflairForgeAccess\CadflairForgeAccess.csproj" />
   </ItemGroup>
 
 </Project>

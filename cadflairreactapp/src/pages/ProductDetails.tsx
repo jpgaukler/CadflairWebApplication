@@ -1,10 +1,11 @@
-import { Image, Text, Group, Grid, Paper, Stack, Title, Table, Loader, Anchor, Box } from '@mantine/core';
+import { Image, Text, Group, Grid, Paper, Stack, Title, Table, Loader, Anchor, Box, MultiSelect, Select } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import Subscription from '../interfaces/Subscription.interface';
 import ProductDefinition from '../interfaces/ProductDefinition.interface';
 import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 import Row from '../interfaces/Row.interface';
+import ForgeViewer from '../components/ForgeViewer';
 
 const fetcher = (url: string) => fetch(url).then(res => {
     console.log(res);
@@ -56,11 +57,17 @@ export default function ProductDetails() {
                     <Text fw={500}>{productDefinition?.name}</Text>
                     <Text size="sm" c="dimmed">{productDefinition?.description}</Text>
                 </Stack>
+
+                <Select
+                    label="Downloads"
+                    placeholder="Pick value"
+                    data={row?.attachments.map(a => a.forgeObjectKey)}
+                />
             </Group>
 
             <Group w="100%" grow>
-                <Box bg="red">
-                    This is where the viewer window should go
+                <Box h="500px">
+                    <ForgeViewer bucketKey={productDefinition?.forgeBucketKey} objectKey={row?.attachments[0].forgeObjectKey} />
                 </Box>
 
                 <Box bg="blue">

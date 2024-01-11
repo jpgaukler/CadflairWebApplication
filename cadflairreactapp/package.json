@@ -12,10 +12,12 @@
   "dependencies": {
     "@mantine/core": "^7.3.2",
     "@mantine/hooks": "^7.3.2",
+    "@tabler/icons-react": "^2.45.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
-    "swr": "^2.2.4"
+    "swr": "^2.2.4",
+    "typescript-plugin-css-modules": "^5.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
