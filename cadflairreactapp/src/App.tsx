@@ -7,15 +7,18 @@ import Products from './pages/Products';
 import TestHooks from './pages/TestHooks';
 import ProductDetails from './pages/ProductDetails';
 import { MantineProvider, createTheme} from '@mantine/core';
+import ComingSoon from './pages/ComingSoon';
 
 const theme = createTheme({
+    primaryColor: "cadflairBlue",
+    primaryShade: 3,
     colors: {
         // Add your color
-        cadFlairBlue: [
+        cadflairBlue: [
             "#e1faff",
             "#cbefff",
             "#9adbff",
-            "#64c7ff",
+            "#50C0FF",
             "#3bb6fe",
             "#21acfe",
             "#09a7ff",
@@ -31,11 +34,12 @@ export default function App() {
 
     return (
         <>
-            <MantineProvider theme={theme} defaultColorScheme="dark">
+            <MantineProvider theme={theme}>
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Layout />}>
                             <Route index element={<Home />} />
+                            <Route path="comingsoon" element={<ComingSoon />} />
                             <Route path=":companyName/categories" element={<Categories />} />
                             <Route path=":companyName/categories/:categoryName" element={<Categories />} />
                             <Route path=":companyName/products/:productDefinitionName" element={<Products />} />

@@ -1,6 +1,6 @@
 ﻿
 .vectorUnderline {
-    stroke: red;
+    stroke: var(--mantine-color-anchor);
     width: 150px;
     stroke-dasharray: 450;
     stroke-dashoffset: 450;
@@ -49,5 +49,5 @@
 }
 
 .content {
-    background: linear-gradient(0deg, white 0%, gray 50%);
+    background: linear-gradient(0deg, #e0e0e0 0%, #f5f5f5 50%);
 }
