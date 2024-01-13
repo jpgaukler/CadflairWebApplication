@@ -1,5 +1,6 @@
 using CadflairDataAccess;
 using CadflairForgeAccess;
+using FluentEmail.Graph;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.AddScoped(x => new DataServicesManager(builder.Configuration.GetConnectionString("CadflairStaging")));
 builder.Services.AddScoped<ForgeServicesManager>();
+
+// Fluent Email
+builder.Services.AddFluentEmail("donotreply@cadflair.com")
+                .AddGraphSender(new GraphSenderOptions()
+                {
+                    ClientId = builder.Configuration["MailCredentials:ClientId"],
+                    TenantId = builder.Configuration["MailCredentials:TenantId"],
+                    Secret = builder.Configuration["MailCredentials:Secret"],
+                });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

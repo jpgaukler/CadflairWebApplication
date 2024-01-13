@@ -1,3 +1,7 @@
+import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
+import { MantineProvider, createTheme} from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -6,7 +10,6 @@ import NoPage from './pages/NoPage';
 import Products from './pages/Products';
 import TestHooks from './pages/TestHooks';
 import ProductDetails from './pages/ProductDetails';
-import { MantineProvider, createTheme} from '@mantine/core';
 import ComingSoon from './pages/ComingSoon';
 
 const theme = createTheme({
@@ -35,6 +38,7 @@ export default function App() {
     return (
         <>
             <MantineProvider theme={theme}>
+                <Notifications />
                 <BrowserRouter>
                     <Routes>
                         <Route path="/" element={<Layout />}>
