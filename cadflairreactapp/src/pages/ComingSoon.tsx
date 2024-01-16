@@ -1,5 +1,5 @@
 import { Text, Anchor, Container, Grid, Stack, Title, Group } from "@mantine/core";
-import { IconHourglass, IconMail, IconMessages, IconQuestionMark } from "@tabler/icons-react";
+import { IconHourglass, IconMail, IconMessages } from "@tabler/icons-react";
 import ContactUsForm from "../components/ContactUsForm";
 
 

@@ -51,7 +51,7 @@ export default function ForgeViewer(props: ForgeViewerProps) {
 
                 const onDocumentLoadSuccess = (doc:any) => {
                     const viewables = doc.getRoot().getDefaultGeometry();
-                    viewer.loadDocumentNode(doc, viewables).then((i) => {
+                    viewer.loadDocumentNode(doc, viewables).then(() => {
                         // documented loaded, add any additional actions here
                         console.log('Forge Viewer: onDocumentLoadSuccess()');
                     });
@@ -62,7 +62,7 @@ export default function ForgeViewer(props: ForgeViewerProps) {
                 }
 
                 // event used to hide unwanted controls on the toolbar
-                const onToolbarCreated = (e) => {
+                const onToolbarCreated = () => {
                     //console.log('on toobar created: ');
                     //for (var i = 0; i < viewer.toolbar.getNumberOfControls(); i++) {
                     //    var controlId = viewer.toolbar.getControlId(i);
@@ -80,7 +80,7 @@ export default function ForgeViewer(props: ForgeViewerProps) {
                 }
 
                 // event used to hide unwanted controls on the toolbar
-                const onExtensionLoaded = (e) => {
+                const onExtensionLoaded = (e:any) => {
                     //console.log('loaded extension: ' + e.extensionId);
 
                     //if (e.extensionId === 'Autodesk.DocumentBrowser') {

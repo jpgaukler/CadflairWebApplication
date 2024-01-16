@@ -1,5 +1,5 @@
-import { Container, Title, Text, List, Group, Button, Image, ThemeIcon, rem, Stack, Paper, TextInput, Textarea, Box, Anchor, Grid } from "@mantine/core";
-import { IconArrowBarUp, IconArrowDown, IconArrowRight, IconCheck, IconChevronDown, IconCircleCheck, IconEdit, IconShare } from "@tabler/icons-react";
+import { Container, Title, Text, List, Group, Button, Image, ThemeIcon, rem, Stack, Paper, Anchor, Grid } from "@mantine/core";
+import { IconArrowBarUp, IconArrowRight, IconChevronDown, IconCircleCheck, IconEdit, IconShare } from "@tabler/icons-react";
 import classes from './Home.module.css';
 import logo from '../assets/cadflair_logo.svg';
 import heroImg from '../assets/product_mockup.png';

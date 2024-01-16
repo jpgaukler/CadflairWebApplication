@@ -18,7 +18,7 @@ export default function TestHooks() {
     return (
         <>
             <h1>Product Definitions Page</h1>
-            <Title order={1}>{subscription.companyName}</Title>
+            <Title order={1}>{subscription?.companyName}</Title>
         </>
     );
 

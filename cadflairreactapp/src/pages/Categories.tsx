@@ -1,4 +1,4 @@
-import { Image, Text, Group, Grid, Paper, Stack, Title, Loader, Box } from '@mantine/core';
+import { Image, Text, Group, Grid, Paper, Stack, Title, Loader } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router-dom';
 import Category from '../interfaces/Category.interface';
 import ProductDefinition from '../interfaces/ProductDefinition.interface';

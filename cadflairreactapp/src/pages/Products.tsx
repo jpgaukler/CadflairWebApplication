@@ -1,4 +1,4 @@
-import { Image, Text, Group, Grid, Paper, Stack, Title, Table, Loader, Anchor, Drawer, MultiSelect, Divider, Box, Skeleton } from '@mantine/core';
+import { Image, Text, Group, Grid, Stack, Title, Table, Loader, Anchor, MultiSelect, Box, Skeleton } from '@mantine/core';
 import { useParams } from 'react-router-dom';
 import Subscription from '../interfaces/Subscription.interface';
 import ProductDefinition from '../interfaces/ProductDefinition.interface';
