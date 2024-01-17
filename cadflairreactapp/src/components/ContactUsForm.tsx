@@ -33,7 +33,7 @@ export default function ContactUsForm() {
 
         setLoading(true);
 
-        fetch("api/v1/contact-us", {
+        fetch("https://cadflairrestapi.azurewebsites.net/api/v1/contact-us", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

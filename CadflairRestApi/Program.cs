@@ -11,6 +11,21 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
+string policyName = "CadflairPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: policyName,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173",
+                                             "https://www.cadflair.com",
+                                             "https://cadflair.com",
+                                             "https://polite-plant-02e2de80f.4.azurestaticapps.net")
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod();
+                      });
+});
+
 builder.Services.AddScoped(x => new DataServicesManager(builder.Configuration.GetConnectionString("CadflairStaging")));
 builder.Services.AddScoped<ForgeServicesManager>();
 
@@ -37,6 +52,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(policyName);
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

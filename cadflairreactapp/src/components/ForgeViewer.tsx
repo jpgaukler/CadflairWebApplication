@@ -23,7 +23,7 @@ export default function ForgeViewer(props: ForgeViewerProps) {
         //const urnResponse = await fetch(`/api/v1/forge/buckets/${props.bucketKey}/objects/${props.objectKey}`);
         //const urn = await urnResponse.json();
 
-        fetch(`/api/v1/forge/buckets/${props.bucketKey}/objects/${props.objectKey}/urn`)
+        fetch(`https://cadflairrestapi.azurewebsites.net/api/v1/forge/buckets/${props.bucketKey}/objects/${props.objectKey}/urn`)
             .then(res => res.json())
             .then(data => {
                 console.log(data);
