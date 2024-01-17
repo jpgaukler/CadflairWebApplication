@@ -22,9 +22,9 @@ export default function Categories() {
     const params = useParams();
     const navigate = useNavigate();
 
-    const { data: subscription } = useSWR<Subscription>(`/api/v1/subscriptions/${params.companyName}`, fetcher)
-    const { data: allCategories, isLoading:categoriesLoading } = useSWR<Category[]>(subscription ? `/api/v1/subscriptions/${subscription.id}/categories/` : null, fetcher)
-    const { data: allProductDefinitions, isLoading:productsLoading } = useSWR<ProductDefinition[]>(subscription ? `/api/v1/subscriptions/${subscription.id}/product-definitions` : null, fetcher)
+    const { data: subscription } = useSWR<Subscription>(`https://cadflairrestapi.azurewebsites.net/api/v1/subscriptions/${params.companyName}`, fetcher)
+    const { data: allCategories, isLoading:categoriesLoading } = useSWR<Category[]>(subscription ? `https://cadflairrestapi.azurewebsites.net/api/v1/subscriptions/${subscription.id}/categories/` : null, fetcher)
+    const { data: allProductDefinitions, isLoading:productsLoading } = useSWR<ProductDefinition[]>(subscription ? `https://cadflairrestapi.azurewebsites.net/api/v1/subscriptions/${subscription.id}/product-definitions` : null, fetcher)
 
     const [categories, setCategories] = useState<Category[]>([]);
     const [productDefinitions, setProductDefinitions] = useState<ProductDefinition[]>([]);

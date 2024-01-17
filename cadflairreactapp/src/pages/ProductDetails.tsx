@@ -15,8 +15,8 @@ const fetcher = (url: string) => fetch(url).then(res => {
 export default function ProductDetails() {
     const params = useParams();
 
-    const { data: subscription } = useSWR<Subscription>(`/api/v1/subscriptions/${params.companyName}`, fetcher)
-    const { data: productDefinition, isLoading } = useSWR<ProductDefinition>(subscription ? `/api/v1/subscriptions/${subscription.id}/product-definitions/${params.productDefinitionName}` : null, fetcher)
+    const { data: subscription } = useSWR<Subscription>(`https://cadflairrestapi.azurewebsites.net/api/v1/subscriptions/${params.companyName}`, fetcher)
+    const { data: productDefinition, isLoading } = useSWR<ProductDefinition>(subscription ? `https://cadflairrestapi.azurewebsites.net/api/v1/subscriptions/${subscription.id}/product-definitions/${params.productDefinitionName}` : null, fetcher)
 
     const [row, setRow] = useState<Row>();
 
