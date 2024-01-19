@@ -67,4 +67,20 @@ public class ForgeController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, $"Failed to load model from derivative - bucketKey: {bucketKey}, objectKey: {objectKey}");
         }
     }
+
+    [HttpGet]
+    [Route("forge/buckets/{bucketKey}/objects/{objectKey}/signed-url")]
+    public async Task<IActionResult> GetSignedUrl(string bucketKey, string objectKey)
+    {
+        try
+        {
+            string url = await _forgeServicesManager.ObjectStorageService.GetSignedDownloadUrl(bucketKey, objectKey);
+            return Ok(new { Url = url });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, $"Failed to get signed url - bucketKey: {bucketKey}, objectKey: {objectKey}");
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Failed to generate download url - bucketKey: {bucketKey}, objectKey: {objectKey}");
+        }
+    }
 }

@@ -35,11 +35,11 @@ export default function Layout() {
             </AppShell.Header>
             <AppShell.Aside h="100%">
                 <NavLink href="/" label="Home" />
-                <NavLink href="demo/categories" label="Demo" />
-                <NavLink href="#contact-us" label="Contact Us" />
+                <NavLink href="/demo/categories" label="Demo" />
+                <NavLink href="/#contact-us" label="Contact Us" />
             </AppShell.Aside>
-            <AppShell.Main>
-                <Box style={{ zIndex: 10, position: "relative" }} bg="#ffffff" >
+            <AppShell.Main >
+                <Box style={{ zIndex: 10, position: "relative" }} bg="#ffffff" mih="100vh">
                     <Outlet />
                 </Box>
             </AppShell.Main>
