@@ -16,9 +16,9 @@ export default function Layout() {
         >
             <AppShell.Header bg="dark.8">
                 <Group h="100%" px="md" justify="space-between">
-                    <a href="/" style={{ height: "100%" }}>
-                        <Image src={logoDark} alt="Cadflair Logo" h="100%" p="xs" w="auto" fit="contain" />
-                    </a>
+                    <Anchor href="/" h="100%" py="sm">
+                        <Image src={logoDark} alt="Cadflair Logo" h="100%" w="auto" fit="contain" />
+                    </Anchor>
                     <Group gap="3px" visibleFrom="sm">
                         <a href="/">
                             <Button variant="subtle" c="white">Home</Button>
