@@ -12,7 +12,7 @@ export default function Layout() {
         <AppShell
             header={{ height: 60 }}
             aside={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened, desktop:true } }}
-            footer={{ height: { base: 770, xs:600, sm: 500, md: 400, lg: 300 }, offset: true }}
+            footer={{ height: { base: "75vh", xs:"75vh", sm: 500, md: 400, lg: 300 }, offset: true }}
         >
             <AppShell.Header bg="dark.8">
                 <Group h="100%" px="md" justify="space-between">
@@ -47,8 +47,8 @@ export default function Layout() {
                 <Container size="lg" h="100%">
                     <Stack h="100%" justify="center">
                         <Grid>
-                            <Grid.Col span={{ sm: 12, md: 4 }}>
-                                <Image src={logoDark} alt="Cadflair Logo" maw={275} mb="lg" />
+                            <Grid.Col span={{ sm: 12, md: 6 }}>
+                                <Image src={logoDark} alt="Cadflair Logo" maw={250} mb="lg" />
                             </Grid.Col>
 
                             <Grid.Col span={{ xs: 6, md: 2 }}>
@@ -70,13 +70,13 @@ export default function Layout() {
                                 </Stack>
                             </Grid.Col>
 
-                            <Grid.Col span={{ xs: 6, md: 2 }}>
-                                <Stack>
-                                    <Text tt="uppercase" fw={600} c="white" lts={1.35}>Resources</Text>
-                                    <Anchor href="/comingsoon">Documentation</Anchor>
-                                    <Anchor href="/comingsoon">Tutorials</Anchor>
-                                </Stack>
-                            </Grid.Col>
+                            {/*<Grid.Col span={{ xs: 6, md: 2 }}>*/}
+                            {/*    <Stack>*/}
+                            {/*        <Text tt="uppercase" fw={600} c="white" lts={1.35}>Resources</Text>*/}
+                            {/*        <Anchor href="/comingsoon">Documentation</Anchor>*/}
+                            {/*        <Anchor href="/comingsoon">Tutorials</Anchor>*/}
+                            {/*    </Stack>*/}
+                            {/*</Grid.Col>*/}
 
                             <Grid.Col span={{ xs: 6, md: 2 }}>
                                 <Stack>
