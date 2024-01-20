@@ -2,6 +2,7 @@ import '@mantine/core/styles.css';
 import { Text, AppShell, Image, Button, Group, Burger, Container, Grid, Stack, Anchor, Box, NavLink } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
 import logoDark from '../assets/cadflair_logo_dark.svg';
+import logoIcon from '../assets/cadflair_logo_icon.svg';
 import { useDisclosure } from '@mantine/hooks';
 
 
@@ -17,7 +18,8 @@ export default function Layout() {
             <AppShell.Header bg="dark.8">
                 <Group h="100%" px="md" justify="space-between">
                     <a href="/" style={{ height: "100%" }}>
-                        <Image src={logoDark} alt="Cadflair Logo" h="100%" p="xs" />
+                        <Image src={logoDark} alt="Cadflair Logo" h="100%" p="xs" visibleFrom="md" />
+                        <Image src={logoIcon} alt="Cadflair Logo" h="100%" p="xs" hiddenFrom="md" />
                     </a>
                     <Group gap="3px" visibleFrom="sm">
                         <a href="/">
