@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import { useEffect, useState } from 'react';
 import Row from '../interfaces/Row.interface';
 import ForgeViewer from '../components/ForgeViewer';
-import { Icon3dCubeSphere, IconCheck, IconCopy, IconDownload, IconScanEye, IconShare2, IconSwitchHorizontal, IconToggleLeft } from '@tabler/icons-react';
+import { Icon3dCubeSphere, IconCheck, IconCopy, IconDownload, IconScanEye, IconShare2 } from '@tabler/icons-react';
 import QRCode from 'react-qr-code';
 import Attachment from '../interfaces/Attachment.interface';
 import { useMediaQuery } from '@mantine/hooks';
