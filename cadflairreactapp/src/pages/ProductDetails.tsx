@@ -148,7 +148,7 @@ export default function ProductDetails() {
                 {!isMobile &&
                     <Grid.Col span={6} visibleFrom="md">
                         <Box pos="absolute" style={{ zIndex: 10 }} p="8px">
-                            {attachment3d && activeAttachment?.forgeObjectKey.includes(".stp") &&
+                            {attachment2d && activeAttachment?.forgeObjectKey.includes(".stp") &&
                                 <Button
                                     leftSection={<IconScanEye/> }
                                     onClick={() => setActiveAttachment(attachment2d)}
@@ -156,7 +156,7 @@ export default function ProductDetails() {
                                 >
                                     View 2D
                                 </Button>}
-                            {attachment2d && activeAttachment?.forgeObjectKey.includes(".pdf") &&
+                            {attachment3d && activeAttachment?.forgeObjectKey.includes(".pdf") &&
                                 <Button
                                     leftSection={<Icon3dCubeSphere/> }
                                     onClick={() => setActiveAttachment(attachment3d)}
