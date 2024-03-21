@@ -10,6 +10,12 @@ As a mechanical engineer, I spent a lot of time working with CAD data, but notic
 
 My goal was to build a website that could serve as an online catalog showcasing simple 3D CAD models. Without any web development experience, I thought this would be a fun way to learn how web development worked, and create something that I thought would be useful. I imagined that I was building a startup SAAS product that could be used by small to mid-sized manufacturing companies.
 
+## How does it work?
+Check out the diagram below for a simple overview of the application architecture! In short, the site consists of a React app on the front-end, with is supported by a REST API and SQL database on the backend. I used Autodesk Platform Services (formerly Autodesk Forge) for processing and storing the CAD files. 
+
+![Cadflair Diagram](https://github.com/jpgaukler/CadflairWebApplication/assets/97172053/375e51d7-38cc-4233-b65a-4baf5a0def76)
+
+
 ## What did I learn?
 I LEARNED A LOT!
 
