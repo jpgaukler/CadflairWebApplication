@@ -1,0 +1,20 @@
+<!-- nav -->
+<header class="fixed top-0 left-0 right-0 bg-primary shadow-3 z-5" [style.height]="appBarHeight">
+    <div class="flex align-items-center justify-content-between h-full px-3">
+        <a href="/" class="h-full p-2">
+            <img src="assets/cadflair_logo.svg" alt="logo" class="max-w-full max-h-full" />
+        </a>
+        <div>
+            <p-button label="Home"></p-button>
+            <p-button label="Demo"></p-button>
+            <p-button label="Contact Us"></p-button>
+            <!-- <p-button label="Light" (onClick)="changeTheme('material-indigo')"></p-button> -->
+            <!-- <p-button label="Dark" (onClick)="changeTheme('material-indigo-dark')"></p-button> -->
+        </div>
+    </div>
+</header>
+
+<!-- main -->
+<main class="surface-ground min-h-screen" [style.padding-top]="appBarHeight">
+    <router-outlet />
+</main>

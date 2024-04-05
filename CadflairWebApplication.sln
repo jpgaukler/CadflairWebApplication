@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CadflairRestApi", "Cadflair
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "cadflairreactapp", "CadflairReactApp\cadflairreactapp.esproj", "{92C16868-DEE9-4F80-BAA8-96316CCC8202}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "CadflairAngularApp", "CadflairAngularApp\CadflairAngularApp.esproj", "{0E594487-1A96-4CD7-A85A-93BD210D1070}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,12 @@ Global
 		{92C16868-DEE9-4F80-BAA8-96316CCC8202}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92C16868-DEE9-4F80-BAA8-96316CCC8202}.Release|Any CPU.Build.0 = Release|Any CPU
 		{92C16868-DEE9-4F80-BAA8-96316CCC8202}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{0E594487-1A96-4CD7-A85A-93BD210D1070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E594487-1A96-4CD7-A85A-93BD210D1070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E594487-1A96-4CD7-A85A-93BD210D1070}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{0E594487-1A96-4CD7-A85A-93BD210D1070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E594487-1A96-4CD7-A85A-93BD210D1070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E594487-1A96-4CD7-A85A-93BD210D1070}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
