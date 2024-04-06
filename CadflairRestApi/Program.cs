@@ -19,8 +19,11 @@ builder.Services.AddCors(options =>
                       {
                           policy.WithOrigins("http://localhost:5173",
                                              "http://localhost:4200",
-                                             "https://www.cadflair.com",
                                              "https://cadflair.com",
+                                             "https://www.cadflair.com",
+                                             "https://angular.cadflair.com",
+                                             "https://react.cadflair.com",
+                                             "https://delightful-sky-0f3ae450f.5.azurestaticapps.net",
                                              "https://polite-plant-02e2de80f.4.azurestaticapps.net")
                                  .AllowAnyHeader()
                                  .AllowAnyMethod();
