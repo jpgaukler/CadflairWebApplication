@@ -1,1 +1,25 @@
-<p>categories works!</p>
+<div class="grid grid-nogutter">
+    <div *ngFor="let category of categories;"
+         class="col-4 h-full shadow-3 border-round p-3 surface-section"
+         (click)="onCategoryClick(category)">
+        <div class="h-full">
+            <img [src]="category.thumbnailUri" alt="thumbnail" class="max-h-full max-w-full" />
+        </div>
+        <div class="flex flex-column">
+            <h2>{{ category.name }}</h2>
+            <p>{{ category.description }}</p>
+        </div>
+    </div>
+
+    <div *ngFor="let product of productDefinitions;"
+         class="col-4 h-full shadow-3 border-round p-3 surface-section"
+         (click)="onProductDefinitionClick(product)">
+        <div class="h-full">
+            <img [src]="product.thumbnailUri" alt="thumbnail" class="max-h-full max-w-full" />
+        </div>
+        <div class="flex flex-column">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+        </div>
+    </div>
+</div>

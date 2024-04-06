@@ -18,6 +18,7 @@ builder.Services.AddCors(options =>
                       policy =>
                       {
                           policy.WithOrigins("http://localhost:5173",
+                                             "http://localhost:4200",
                                              "https://www.cadflair.com",
                                              "https://cadflair.com",
                                              "https://polite-plant-02e2de80f.4.azurestaticapps.net")

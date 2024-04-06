@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 
@@ -7,7 +8,8 @@ import { CardModule } from 'primeng/card';
   standalone: true,
   imports: [
     ButtonModule,
-    CardModule
+    CardModule,
+    RouterLink
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'

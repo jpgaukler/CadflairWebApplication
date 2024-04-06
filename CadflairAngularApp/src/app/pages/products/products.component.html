@@ -1,1 +1,31 @@
-<p>products works!</p>
+<div>
+    <div class="flex flex-row gap-3">
+        <div class="h-full">
+            <img [src]="productDefinition?.thumbnailUri" alt="thumbnail" class="max-h-full max-w-full" />
+        </div>
+        <div class="flex flex-column">
+            <h1>{{ productDefinition?.name }}</h1>
+            <p>{{ productDefinition?.description }}</p>
+        </div>
+    </div>
+</div>
+
+
+<p-table *ngIf="productDefinition" [value]="productDefinition.productTable.rows">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Part Number</th>
+            <th *ngFor="let column of productDefinition.productTable.columns;">
+                {{ column.header }}
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row>
+        <tr>
+            <td>{{ row.partNumber }}</td>
+            <td *ngFor="let tableValue of row.tableValues;">
+                {{ tableValue.value }}
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
