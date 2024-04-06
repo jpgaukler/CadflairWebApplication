@@ -1,13 +1,12 @@
-name: Azure Static Web Apps CI/CD
+name: Azure Static Web Apps CI/CD - Angular App
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
-    branches:
-      - main
+    paths:
+      - CadflairAngularApp/**
+      - .github/workflows/azure-static-web-apps-delightful-sky-0f3ae450f.yml.yml
 
 jobs:
   build_and_deploy_job:
