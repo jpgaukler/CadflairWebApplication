@@ -8,6 +8,7 @@
     <PublishAssetsDirectory>$(MSBuildProjectDirectory)\dist\cadflair-app\browser</PublishAssetsDirectory>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\app\components\" />
     <Folder Include="src\app\pages\" />
   </ItemGroup>
 </Project>

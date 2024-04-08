@@ -50,3 +50,100 @@ p {
   line-height: 1.75;
   margin: 0 0 1rem
 }
+
+.container {
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media(min-width: 600px) {
+  .container {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+.container-disable-gutters {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media(min-width: 600px) {
+  .container-fixed {
+    max-width: 600px;
+  }
+}
+
+@media(min-width: 960px) {
+  .container-fixed {
+    max-width: 960px;
+  }
+}
+
+@media(min-width: 1280px) {
+  .container-fixed {
+    max-width: 1280px;
+  }
+}
+
+@media(min-width: 1920px) {
+  .container-fixed {
+    max-width: 1920px;
+  }
+}
+
+@media(min-width: 2560px) {
+  .container-fixed {
+    max-width: 2560px;
+  }
+}
+
+@media(min-width: 0) {
+  .container-maxwidth-xs {
+    max-width: 444px;
+  }
+}
+
+@media(min-width: 600px) {
+  .container-maxwidth-sm {
+    max-width: 600px;
+  }
+}
+
+@media(min-width: 960px) {
+  .container-maxwidth-md {
+    max-width: 960px;
+  }
+}
+
+@media(min-width: 1280px) {
+  .container-maxwidth-lg {
+    max-width: 1280px;
+  }
+}
+
+@media(min-width: 1920px) {
+  .container-maxwidth-xl {
+    max-width: 1920px;
+  }
+}
+
+@media(min-width: 2560px) {
+  .container-maxwidth-xxl {
+    max-width: 2560px;
+  }
+}
+
+.line-clamp-4 {
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+

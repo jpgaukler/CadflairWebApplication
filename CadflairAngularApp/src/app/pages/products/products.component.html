@@ -1,31 +1,56 @@
-<div>
-    <div class="flex flex-row gap-3">
-        <div class="h-full">
-            <img [src]="productDefinition?.thumbnailUri" alt="thumbnail" class="max-h-full max-w-full" />
+<div class="flex flex-row surface-section">
+    <div style="min-width:300px;" class="p-3">
+        <div class="flex flex-row justify-content-between align-items-baseline">
+            <h3>Filter By</h3>
+            <p>Counts: {{ filteredRows.length }}</p>
         </div>
-        <div class="flex flex-column">
-            <h1>{{ productDefinition?.name }}</h1>
-            <p>{{ productDefinition?.description }}</p>
+        <div *ngIf="productDefinition" class="flex flex-column gap-3">
+            <p-multiSelect *ngFor="let column of productDefinition.productTable.columns;"
+                           [options]="getDistinctColumnValues(column.id)"
+                           [placeholder]="column.header"
+                           (onChange)="onFilterChange(column.id, $event.value)"
+                           display="chip"
+                           [style]="{'width':'100%'}"
+                           [showClear]="true"></p-multiSelect>
         </div>
     </div>
+    <div class="container container-maxwidth-lg">
+        <div class="py-5">
+            <h1>{{ productDefinition?.name }}</h1>
+            <div class="flex flex-row gap-3">
+                <div class="h-full">
+                    <img [src]="productDefinition?.thumbnailUri" alt="thumbnail" class="max-h-full max-w-full" />
+                </div>
+                <p>{{ productDefinition?.description }}</p>
+            </div>
+        </div>
+        <p-table *ngIf="productDefinition"
+                 [value]="filteredRows"
+                 responsiveLayout="stack"
+                 [scrollable]="true"
+                 scrollHeight="75vh"
+                 [virtualScroll]="true"
+                 [virtualScrollItemSize]="65">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Part Number</th>
+                    <th *ngFor="let column of productDefinition.productTable.columns;">
+                        {{ column.header }}
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr style="height:65px">
+                    <td>
+                        <span class="p-column-title font-medium">Part Number</span>
+                        <p-button [label]="row.partNumber" [link]="true" (onClick)="onRowClick(row.partNumber)"></p-button>
+                    </td>
+                    <td *ngFor="let tableValue of row.tableValues;"
+                        class="p-column-title">
+                        <span class="p-column-title font-medium">{{ getColumnHeader(tableValue) }}</span>{{ tableValue.value }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
 </div>
-
-
-<p-table *ngIf="productDefinition" [value]="productDefinition.productTable.rows">
-    <ng-template pTemplate="header">
-        <tr>
-            <th>Part Number</th>
-            <th *ngFor="let column of productDefinition.productTable.columns;">
-                {{ column.header }}
-            </th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-row>
-        <tr>
-            <td>{{ row.partNumber }}</td>
-            <td *ngFor="let tableValue of row.tableValues;">
-                {{ tableValue.value }}
-            </td>
-        </tr>
-    </ng-template>
-</p-table>

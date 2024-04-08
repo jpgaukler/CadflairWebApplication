@@ -26,11 +26,13 @@ export class AppComponent {
 
   constructor() {
     this.primengConfig.ripple = true;
+    this.themeService.setTheme('cadflair');
 
-    const theme = this.localStorageService.getItem(this.themeService.themeSetting);
+  //  const theme = this.localStorageService.getItem(this.themeService.themeSetting);
 
-    if (theme)
-      this.themeService.setTheme(theme);
+  //  if (theme) {
+  //    this.themeService.setTheme(theme);
+  //  }
   }
 
 

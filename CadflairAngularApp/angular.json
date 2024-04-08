@@ -52,13 +52,8 @@
             "styles": [
               "src/styles.css",
               {
-                "input": "src/theme-material-indigo.css",
-                "bundleName": "material-indigo",
-                "inject": false
-              },
-              {
-                "input": "src/theme-material-indigo-dark.css",
-                "bundleName": "material-indigo-dark",
+                "input": "src/theme/theme.css",
+                "bundleName": "cadflair",
                 "inject": false
               }
             ],
