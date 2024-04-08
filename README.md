@@ -57,10 +57,11 @@ I LEARNED A LOT!
 
 
 ## Results
-Cadflair changed as my skills and knowledge of web development grew. Although I have not completed every feature that I first imagined, I was successful in creating a demo that showcases what Cadflair could become. I set up a simple catalog that includes various pipe and flange products. (I chose pipe fittings because the CAD models were simple and easy to make). Initially I only knew C#, so I created the site entirely in the .NET stack, and hosted a Blazor Server app to act as both front-end and back-end. I later recreated the site using React with a REST API to handle all the data, in an effort to make the site more performant. Take a look at both approaches using the links below!
+Cadflair changed as my skills and knowledge of web development grew. Although I have not completed every feature that I first imagined, I was successful in creating a demo that showcases what Cadflair could become. I set up a simple catalog that includes various pipe and flange products. (I chose pipe fittings because the CAD models were simple and easy to make). Initially I only knew C#, so I created the site entirely in the .NET stack, and hosted a Blazor Server app to act as both front-end and back-end. I later wrote a REST API so I could experiment with building the front end using React and Angular (I really enjoy Angular, it feels very similar to Blazor!) Take a look at the different approaches using the links below!
 
 ### Compare the resuts here!
 * Version 1: [Cadflair - Blazor Server](https://cadflair.azurewebsites.net/)
-* Version 2: [Cadflair - React](https://cadflair.com/)
+* Version 2: [Cadflair - React](https://react.cadflair.com/)
+* IN PROGRESS! - Version 3: [Cadflair - Angular](https://angular.cadflair.com/)
 
 
