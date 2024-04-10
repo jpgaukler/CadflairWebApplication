@@ -1,82 +1,54 @@
-
-<div class="p-3">
-    <h1>{{ productDefinition?.name}}</h1>
-    <p>Part Number {{ row?.partNumber }}</p>
-</div>
-<div class="grid grid-nogutter">
-    <div class="col-12 lg:col-6" style="min-height:50vh;">
-        <app-forge-viewer [bucketKey]="productDefinition?.forgeBucketKey"
-                          [objectKey]="activeAttachment?.forgeObjectKey" />
+<div class="surface-section min-h-screen">
+    <div class="p-3">
+        <h1>{{ productDefinition?.name}}</h1>
+        <p>Part Number: {{ row?.partNumber }}</p>
     </div>
+    <div class="grid grid-nogutter">
+        <div class="col-12 lg:col-6 px-3" style="min-height:50vh;">
+            <div class="relative h-full">
+                <app-forge-viewer [bucketKey]="productDefinition?.forgeBucketKey"
+                                  [objectKey]="activeAttachment?.forgeObjectKey" />
+                <div class="absolute top-0 left-0 z-5 p-2">
+                    <p-button *ngIf="activeAttachment2d && activeAttachment?.forgeObjectKey?.includes('.pdf')"
+                              (onClick)="onView3dClick()"
+                              [rounded]="true"
+                              label="View 3D"></p-button>
+                    <p-button *ngIf="activeAttachment2d && activeAttachment?.forgeObjectKey?.includes('.stp')"
+                              (onClick)="onView2dClick()"
+                              [rounded]="true"
+                              label="View 2D"></p-button>
+                </div>
+            </div>
+        </div>
 
-    <div class="col-12 lg:col-6">
-        <div class="flex flex-column gap-3">
+        <div class="col-12 lg:col-6 px-3">
+            <div class="flex flex-column gap-3">
+                <div class="p-3">
+                    <h4>Downloads</h4>
+                    <div class="flex flex-row align-items-center gap-3">
+                        <div class="flex-grow-1">
+                            <p-dropdown [options]="getDownloadOptions()"
+                                        placeholder="Select File"
+                                        (onChange)="onDownloadChange($event.value)"
+                                        [style]="{'width':'100%'}" />
 
-            <p-button *ngIf="activeAttachment3d"
-                      label="View 3D"></p-button>
-
-            <p-button *ngIf="activeAttachment2d"
-                      label="View 2D"></p-button>
-            <p>Downloads</p>
-            <div class="flex flex-row gap-3">
-                                <p-dropdown [options]="getDownloadOptions()"
-                                       placeholder="Select File"
-                                       (onChange)="onDownloadChange()"
-                                       [style]="{'flex-grow':'1'}" />
-<!--                         <a target="_blank" [href]="downloadLink">
-                            Download
-                        </a>        
- -->            </div>
-            <!--             <Table>
-                   <Table.Tbody>
-                       {row?.tableValues.map(tableValue =>
-                       <Table.Tr key={tableValue.id}>
-                           <Table.Td>
-                               <Text fw="500">
-                                   {productDefinition?.productTable.columns.find(c => c.id === tableValue.columnId)?.header}
-                               </Text>
-                           </Table.Td>
-                           <Table.Td>
-                               <Text>
-                                   {tableValue.value}
-                               </Text>
-                           </Table.Td>
-                       </Table.Tr>
-                       )}
-                   </Table.Tbody>
-               </Table>
-    -->
-            <!--             <p-table *ngIf="productDefinition"
-                        [value]="filteredRows"
-                        responsiveLayout="stack"
-                        [scrollable]="true"
-                        scrollHeight="75vh"
-                        [virtualScroll]="true"
-                        [virtualScrollItemSize]="65">
-                   <ng-template pTemplate="header">
-                       <tr>
-                           <th>Part Number</th>
-                           <th *ngFor="let column of productDefinition.productTable.columns;">
-                               {{ column.header }}
-                           </th>
-                       </tr>
-                   </ng-template>
-                   <ng-template pTemplate="body" let-row>
-                       <tr style="height:65px">
-                           <td>
-                               <span class="p-column-title font-medium">Part Number</span>
-                               <p-button [label]="row.partNumber" [link]="true" (onClick)="onRowClick(row.partNumber)"></p-button>
-                           </td>
-                           <td *ngFor="let tableValue of row.tableValues;"
-                               class="p-column-title">
-                               <span class="p-column-title font-medium">{{ getColumnHeader(tableValue) }}</span>{{ tableValue.value }}
-                           </td>
-                       </tr>
-                   </ng-template>
-               </p-table>
-    -->
-            <p>{{productDefinition?.description}}</p>
+                        </div>
+                        <p-button label="Download" (onClick)="onDownloadClick()"></p-button>
+                    </div>
+                </div>
+                <div *ngIf="productDefinition">
+                    <div *ngFor="let column of productDefinition.productTable.columns" class="px-3">
+                        <div class="flex justify-content-between">
+                            <div class="font-medium">{{ column.header }}</div>
+                            <div>{{ getColumnValue(column.id) }}</div>
+                        </div>
+                        <p-divider />
+                    </div>
+                </div>
+                <div class="p-3">{{productDefinition?.description}}</div>
+            </div>
         </div>
     </div>
-</div>
 
+
+</div>

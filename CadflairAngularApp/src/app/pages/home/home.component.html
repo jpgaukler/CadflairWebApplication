@@ -1,7 +1,7 @@
 <!-- Hero -->
 <div class="surface-section">
-    <div class="container container-maxwidth-xl">
-        <div class="flex flex-row justify-content-around pt-8">
+    <div class="container container-maxwidth-lg">
+        <div class="flex flex-column md:flex-row justify-content-around py-8 px-5">
             <div class="flex flex-column">
                 <div>
                     <h1>
@@ -18,12 +18,12 @@
                     </div>
                 </div>
             </div>
-            <div class="overflow-hidden">
+            <div class="overflow-hidden hidden md:block">
                 <img src="assets/product_mockup.png" alt="Image" width="600">
             </div>
         </div>
         <div class="flex justify-content-center py-5">
-            <a href="#learn-more" class="t">
+            <a href="#learn-more" class="no-underline text-900">
                 <div class="flex flex-column align-items-center gap-3">
                     <div>Learn More</div>
                     <span class="pi pi-chevron-down"></span>
@@ -34,17 +34,15 @@
 </div>
 
 <div class="content">
-    <div class="container container-maxwidth-xl">
+    <div class="container container-maxwidth-lg">
         <div class="grid grid-nogutter">
             <div id="learn-more" class="col-12 h-4rem"></div>
 
             <!-- What is cadflair? -->
-            <div class="col-12 md:col-6 p-5">
+            <div class="col-12 md:col-6 p-3">
                 <div class="flex flex-column gap-3">
-                    <div class="flex flex-row align-items-center">
-                        <h2 order={2} size="2.5rem" fw="600">What is</h2>
-                        <img [src]="logoPath" alt="logo" />
-                        <h2 order={2} size="2.5rem" fw="600">?</h2>
+                    <div class="flex flex-row align-items-baseline">
+                        <h2 class="text-5xl">What is Cadflair?</h2>
                     </div>
                     <p>
                         Cadflair is an digital product catalog for manufacturing companies. Our mission is to make it simple for companies to share CAD data on the web.
@@ -67,51 +65,54 @@
 
 
             <!-- Why Cadflair? -->
-            <div class="col-12 md:col-6 p-5">
+            <div class="col-12 md:col-6 p-3">
                 <div class="flex flex-column">
                     <div class="flex flex-row align-items-center">
-                        <h2 order={2} size="2.5rem" fw="600">Why</h2>
-                        <img [src]="logoPath" alt="logo" />
-                        <h2 order={2} size="2.5rem" fw="600">?</h2>
+                        <h2 class="text-5xl">Why Cadflair?</h2>
                     </div>
                     <p>
                         In today's connected world, CAD data is not just for manufacturing, it is a vital tool for communicating product details to customers.
                         By providing direct access to your CAD data, you can empower your customers to explore the details of every design,
                         fostering a deeper understanding of your products, and building confidence in your brand.
                     </p>
-                    <ul>
-                        <li>
-                            View 3D CAD models on any device
-                        </li>
-                        <li>
-                            Share models with a click
-                        </li>
-                        <li>
-                            Get notified when customers download your models
-                        </li>
-                        <li>
-                            Improve lead generation and conversion
-                        </li>
-                        <li>
-                            Increase buyer confidence
-                        </li>
-                    </ul>
+                    <div class="flex flex-column gap-3 p-3">
+                        <div class="flex gap-3 align-items-center">
+                            <span class="pi pi-check-circle" style="font-size: 1.5rem"></span>
+                            <p class="m-0">View 3D CAD models on any device</p>
+                        </div>
+                        <div class="flex gap-3 align-items-center">
+                            <span class="pi pi-check-circle" style="font-size: 1.5rem"></span>
+                            <p class="m-0">Share models with a click</p>
+                        </div>
+                        <div class="flex gap-3 align-items-center">
+                            <span class="pi pi-check-circle" style="font-size: 1.5rem"></span>
+                            <p class="m-0">Get notified when customers download your models</p>
+                        </div>
+                        <div class="flex gap-3 align-items-center">
+                            <span class="pi pi-check-circle" style="font-size: 1.5rem"></span>
+                            <p class="m-0">Improve lead generation and conversion</p>
+                        </div>
+                        <div class="flex gap-3 align-items-center">
+                            <span class="pi pi-check-circle" style="font-size: 1.5rem"></span>
+                            <p class="m-0">Increase buyer confidence</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- How it works? -->
-            <div class="col-12 grid p-5">
+            <div class="col-12 grid p-3">
                 <div class="col-12 flex flex-row justify-content-center">
                     <h2>How It Works</h2>
                 </div>
                 <div class="col-12 md:col-4 border">
                     <div class="h-full shadow-3 border-round p-3 surface-section">
                         <p class="text-8xl font-bold text-center">1</p>
-                        <div class="flex flex-column align-items-center">
-                            <!-- <IconEdit size={24} stroke={1} /> -->
-                            <p>Create</p>
+                        <div class="flex flex-row align-items-center">
+                            <span class="pi pi-file-edit" style="font-size: 1.5rem"></span>
+                            <h4 class="text-2xl ml-3 my-0">Create</h4>
                         </div>
-                        <p>
+                        <p class="mt-3">
                             Meet with our team to discuss your products, identify design parameters, and aggregate model dimensions.
                             We will create CAD files for your digital catalog, and review them with your team to ensure the details are just right.
                         </p>
@@ -120,11 +121,11 @@
                 <div class="col-12 md:col-4">
                     <div class="h-full shadow-3 border-round p-3 surface-section">
                         <p class="text-8xl font-bold text-center">2</p>
-                        <div class="flex flex-column align-items-center">
-                            <!-- <IconArrowBarUp size={24} stroke={1} /> -->
-                            <p>Publish</p>
+                        <div class="flex flex-row align-items-center">
+                            <span class="pi pi-upload" style="font-size: 1.5rem"></span>
+                            <h4 class="text-2xl ml-3 my-0">Publish</h4>
                         </div>
-                        <p>
+                        <p class="mt-3">
                             We will upload your models to Cadflair, and generate a filterable catalog for your product library, along with a web page for each unique model.
                             Models are stored on the latest cloud infrastructure to ensure availability and reliability.
                         </p>
@@ -133,19 +134,16 @@
                 <div class="col-12 md:col-4">
                     <div class="h-full shadow-3 border-round p-3 surface-section">
                         <p class="text-8xl font-bold text-center">3</p>
-                        <div class="flex flex-column align-items-center">
-                            <!-- <IconShare size={24} stroke={1} /> -->
-                            <p>Share</p>
+                        <div class="flex flex-row align-items-center">
+                            <span class="pi pi-share-alt" style="font-size: 1.5rem"></span>
+                            <h4 class="text-2xl ml-3 my-0">Share</h4>
                         </div>
-                        <p>
+                        <p class="mt-3">
                             Provide your customers with CAD data on demand. Share your catalog on social media, or embed it directly into your company's site.
                             View models on any device, without installing CAD packages or plugins.
                         </p>
-                        <div class="justify-content-end w-full">
-                            <a href="demo/categories">
-                                link
-                                <!-- <Button rightSection={<IconArrowRight size={20} stroke={2} />}>Try Demo</Button> -->
-                            </a>
+                        <div class="flex justify-content-end w-full">
+                            <button pButton pRipple icon="pi pi-arrow-right" iconPos="right" label="Try Demo" type="button" (click)="onDemoClick()"></button>
                         </div>
                     </div>
                 </div>
@@ -153,7 +151,7 @@
 
 
             <!-- Contact us -->
-            <div class="col-12 p-5">
+            <div class="col-12 p-3 my-8">
                 <p-card id="contact-us">
                     <div class="flex flex-column">
                         <h4><strong>Contact Us</strong></h4>
@@ -161,7 +159,7 @@
                             Cadflair is currently in development, but we are looking for early adopters to help us build a rock solid product.
                             Want to be involved? Please reach out if you think Cadflair could help your business!
                         </p>
-                        <!-- <ContactUsForm /> -->
+                        <app-contact-us/>
                     </div>
                 </p-card>
             </div>

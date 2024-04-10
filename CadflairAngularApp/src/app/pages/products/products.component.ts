@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ButtonModule } from 'primeng/button';
+import { SidebarModule } from 'primeng/sidebar';
 import Subscription from '../../../interfaces/Subscription.interface';
 import ProductDefinition from '../../../interfaces/ProductDefinition.interface';
 import Row from '../../../interfaces/Row.interface';
@@ -17,7 +18,8 @@ import TableValue from '../../../interfaces/TableValue.interface';
     TableModule,
     CommonModule,
     MultiSelectModule,
-    ButtonModule
+    ButtonModule,
+    SidebarModule
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
@@ -32,6 +34,7 @@ export class ProductsComponent implements OnChanges {
   private router: Router = inject(Router);
 
   // props
+  sidebarVisible: boolean = false;
   subscription?: Subscription;
   productDefinition?: ProductDefinition;
   columnFilters: Map<number, string[]> = new Map<number, string[]>();

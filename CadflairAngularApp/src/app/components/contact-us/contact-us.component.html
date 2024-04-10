@@ -1,0 +1,27 @@
+<form [formGroup]="contactUsForm" (submit)="onSubmit()" class="flex flex-column gap-3">
+    <div class="flex flex-column gap-2">
+        <label for="first-name">First Name</label>
+        <input id="first-name" type="text" pInputText formControlName="firstName" />
+    </div>
+    <div class="flex flex-column gap-2">
+        <label for="last-name">Last Name</label>
+        <input id="last-name" type="text" pInputText formControlName="lastName" />
+    </div>
+    <div class="flex flex-column gap-2">
+        <label for="email">Email</label>
+        <input id="email" type="text" pInputText formControlName="email" />
+    </div>
+    <div class="flex flex-column gap-2">
+        <label for="company">Company Name</label>
+        <input id="company" type="text" pInputText formControlName="company" />
+    </div>
+    <div class="flex flex-column gap-2">
+        <label for="message">Message</label>
+        <textarea id="message" rows="5" pInputTextarea formControlName="message"></textarea>
+        <small class="text-right">{{ contactUsForm.controls['message'].value.length ?? '0'  }}/500</small>
+    </div>
+    <div class="flex justify-content-center">
+        <button pButton pRipple label="Submit" type="submit" [disabled]="contactUsForm.invalid"></button>
+    </div>
+</form>
+

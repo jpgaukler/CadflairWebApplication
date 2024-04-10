@@ -14,15 +14,25 @@ export class ForgeService {
   //  return data;
   //}
 
-  async getObjectUrn(bucketKey:string, objectKey:string) {
+  async getObjectUrn(bucketKey: string, objectKey: string): Promise<any> {
     const response = await fetch(`${this.baseUrl}/forge/buckets/${bucketKey}/objects/${objectKey}/urn`);
     const data = await response.json();
+
+    if (response.status !== 200)
+      return undefined;
 
     return data;
   }
 
-  async getSignedUrl() {
+  async getSignedUrl(forgeBucketKey: string, forgeObjectKey: string): Promise<string> {
+    const response = await fetch(`${this.baseUrl}/forge/buckets/${forgeBucketKey}/objects/${forgeObjectKey}/signed-url`);
+    const data = await response.json();
+    const url: string = data.url;
 
+    if (response.status !== 200)
+      return '';
+
+    return url;
   }
 
 }

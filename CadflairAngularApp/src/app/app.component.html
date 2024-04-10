@@ -1,20 +1,72 @@
 <!-- nav -->
-<header class="fixed top-0 left-0 right-0 surface-900 shadow-3 z-5" [style.height]="appBarHeight">
+<header class="fixed top-0 left-0 right-0 surface-900 shadow-3" [style.height]="appBarHeight" style="z-index:100;">
     <div class="flex align-items-center justify-content-between h-full px-3">
         <a href="/" class="h-full p-2">
             <img src="assets/cadflair_logo_dark.svg" alt="logo" class="max-w-full max-h-full" />
         </a>
-        <div>
-            <p-button label="Home"></p-button>
-            <p-button label="Demo"></p-button>
-            <p-button label="Contact Us"></p-button>
+        <div class="hidden md:flex gap-3">
+            <p-button label="Home" [link]="true" (onClick)="onHomeClick()"></p-button>
+            <p-button label="Demo" [link]="true" (onClick)="onDemoClick()"></p-button>
+            <p-button label="Contact Us" (onClick)="onContactUsClick()"></p-button>
             <!-- <p-button label="Light" (onClick)="changeTheme('material-indigo')"></p-button> -->
             <!-- <p-button label="Dark" (onClick)="changeTheme('material-indigo-dark')"></p-button> -->
         </div>
+        <div class="block md:hidden">
+            <p-button (click)="sidebarVisible = true" icon="pi pi-align-justify" [text]="true"></p-button>
+        </div>
     </div>
 </header>
+
+<p-sidebar [(visible)]="sidebarVisible" position="right">
+    <div class="flex flex-column gap-3">
+        <p-button label="Home" [link]="true" (onClick)="onHomeClick()"></p-button>
+        <p-button label="Demo" [link]="true" (onClick)="onDemoClick()"></p-button>
+        <p-button label="Contact Us" [link]="true" (onClick)="onContactUsClick()"></p-button>
+    </div>
+</p-sidebar>
 
 <!-- main -->
 <main class="surface-ground min-h-screen" [style.padding-top]="appBarHeight">
     <router-outlet />
 </main>
+
+<!-- Hero -->
+<footer class="surface-900" style="padding-top:100px; padding-bottom:100px;">
+    <div class="container container-maxwidth-lg">
+        <div class="flex flex-column justify-content-center">
+            <div class="grid grid-nogutter">
+                <div class="col-12 md:col-6 mb-5">
+                    <img src="assets/cadflair_logo_dark.svg" alt="logo" class="max-w-full max-h-full" />
+                </div>
+
+                <div class="col-6 md:col-2">
+                    <div class="flex flex-column gap-3">
+                        <h4 class="uppercase text-white">Why Cadflair?</h4>
+                        <a class="text-primary">Product Demo</a>
+                        <a class="text-primary">Testimonies</a>
+                        <a class="text-primary">FAQ</a>
+                    </div>
+                </div>
+
+                <div class="col-6 md:col-2">
+                    <div class="flex flex-column gap-3">
+                        <h4 class="uppercase text-white">Product</h4>
+                        <a class="text-primary">Pricing</a>
+                        <a class="text-primary">Features</a>
+                        <a class="text-primary">Technology</a>
+                        <a class="text-primary">Releases</a>
+                    </div>
+                </div>
+
+                <div class="col-6 md:col-2">
+                    <div class="flex flex-column gap-3">
+                        <h4 class="uppercase text-white">Company</h4>
+                        <a class="text-primary">About Us</a>
+                        <a class="text-primary">News</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+

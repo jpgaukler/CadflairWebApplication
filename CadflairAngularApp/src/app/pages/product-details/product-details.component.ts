@@ -6,10 +6,12 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
+import { DividerModule } from 'primeng/divider';
 import ProductDefinition from '../../../interfaces/ProductDefinition.interface';
 import Row from '../../../interfaces/Row.interface';
 import Subscription from '../../../interfaces/Subscription.interface';
 import Attachment from '../../../interfaces/Attachment.interface';
+import { ForgeService } from '../../services/forge.service';
 
 @Component({
   selector: 'app-product-details',
@@ -19,6 +21,7 @@ import Attachment from '../../../interfaces/Attachment.interface';
     DropdownModule,
     ButtonModule,
     TableModule,
+    DividerModule,
     CommonModule
   ],
   templateUrl: './product-details.component.html',
@@ -32,6 +35,7 @@ export class ProductDetailsComponent implements OnChanges {
   @Input() partNumber!: string;
 
   // services
+  private forgeService: ForgeService = inject(ForgeService);
   private catalogService: CatalogService = inject(CatalogService);
   private router: Router = inject(Router);
 
@@ -57,15 +61,44 @@ export class ProductDetailsComponent implements OnChanges {
 
     const matchingRow = this.productDefinition.productTable.rows.find(r => r.partNumber === this.partNumber);
     this.row = matchingRow;
-    this.activeAttachment = this.row?.attachments.find(i => i.forgeObjectKey.includes("stp"));
+    this.activeAttachment3d = this.row?.attachments.find(i => i.forgeObjectKey.includes("stp"));
+    this.activeAttachment2d = this.row?.attachments.find(i => i.forgeObjectKey.includes("pdf"));
+    this.activeAttachment = this.activeAttachment3d;
   }
 
-  onDownloadChange(): void {
+  async onDownloadChange(forgeObjectKey:string): Promise<void> {
+    if (!this.productDefinition)
+      return;
 
+    if (!forgeObjectKey) {
+      this.downloadLink = undefined;
+      return;
+    }
+
+    this.downloadLink = await this.forgeService.getSignedUrl(this.productDefinition?.forgeBucketKey, forgeObjectKey);
+  }
+
+  onDownloadClick(): void {
+    if (!this.downloadLink)
+      return;
+
+    window.location.href = this.downloadLink; 
   }
 
   getDownloadOptions(): string[] {
     return this.row?.attachments.map(a => a.forgeObjectKey) ?? [];
+  }
+
+  getColumnValue(columnId: number): string {
+    return this.row?.tableValues.find(i => i.columnId === columnId)?.value ?? ''
+  }
+
+  onView2dClick(): void {
+    this.activeAttachment = this.activeAttachment2d;
+  }
+
+  onView3dClick(): void {
+    this.activeAttachment = this.activeAttachment3d;
   }
 
 }

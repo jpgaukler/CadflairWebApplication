@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { ContactUsComponent } from '../../components/contact-us/contact-us.component';
 
 @Component({
   selector: 'app-home',
@@ -9,7 +10,8 @@ import { CardModule } from 'primeng/card';
   imports: [
     ButtonModule,
     CardModule,
-    RouterLink
+    RouterLink,
+    ContactUsComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
