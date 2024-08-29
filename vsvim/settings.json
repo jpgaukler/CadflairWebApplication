@@ -1,0 +1,76 @@
+{
+    "workbench.colorTheme": "Default Dark Modern",
+    "editor.minimap.enabled": false,
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    // "files.exclude": {
+    //     "**/dist": true
+    // },
+    // "search.exclude": {
+    //     "**/dist": true
+    // },
+    // "files.watcherExclude": {
+    //     "**/dist": true
+    // },
+    "javascript.referencesCodeLens.enabled": true,
+    "javascript.referencesCodeLens.showOnAllFunctions": true,
+    "typescript.referencesCodeLens.enabled": true,
+    "typescript.implementationsCodeLens.enabled": true,
+    "typescript.implementationsCodeLens.showOnInterfaceMethods": true,
+    "typescript.referencesCodeLens.showOnAllFunctions": true,
+    "vim.foldfix": true,
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+        // down to next blank line
+        "before": ["J"],
+        "after": ["}"]
+        },
+        {
+        // up to next blank line
+        "before": ["K"],
+        "after": ["{"]
+        },
+        {
+        // to end of line
+        "before": ["L"],
+        "after": ["<End>"]
+        },
+        {
+        // to start of line
+        "before": ["H"],
+        "after": ["^"]
+        },
+        {
+        // change window
+        "before": ["W"],
+        "after": ["<C-w>"]
+        }
+    ],
+    "vim.visualModeKeyBindingsNonRecursive": [
+        {
+        // down to next blank line
+        "before": ["J"],
+        "after": ["}"]
+        },
+        {
+        // up to next blank line
+        "before": ["K"],
+        "after": ["{"]
+        },
+        {
+        // to end of line
+        "before": ["L"],
+        "after": ["<End>"]
+        },
+        {
+        // to start of line
+        "before": ["H"],
+        "after": ["^"]
+        }
+    ],
+    "vim.handleKeys": {
+        "<C-p>": false, // enter search pallete
+        "<C-b>": false, // collapse sidebar
+        "<C-f>": false // find
+    },
+}
